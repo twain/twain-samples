@@ -1,0 +1,9 @@
+SCC = This is a Source Code Control file
+
+[TWAIN_APP_VS2003.sln]
+SCC_Aux_Path = "\\opt14-03\VSS_TWAIN\"
+SCC_Project_Name = "$/TWG/Twain_App_sample01/visual_studio", LCBAAAAA
+
+[TWAIN_APP_VS2003.vcproj]
+SCC_Aux_Path = "\\opt14-03\VSS_TWAIN\"
+SCC_Project_Name = "$/TWG/Twain_App_sample01/visual_studio", LCBAAAAA

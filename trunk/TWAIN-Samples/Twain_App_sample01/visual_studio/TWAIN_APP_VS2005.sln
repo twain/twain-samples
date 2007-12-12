@@ -1,0 +1,23 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Twain_App_sample01", "TWAIN_APP_VS2005.vcproj", "{431AD693-726F-41AB-AA59-B81F5D2E5847}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{431AD693-726F-41AB-AA59-B81F5D2E5847}.Debug.ActiveCfg = Debug|Win32
+		{431AD693-726F-41AB-AA59-B81F5D2E5847}.Debug.Build.0 = Debug|Win32
+		{431AD693-726F-41AB-AA59-B81F5D2E5847}.Release.ActiveCfg = Release|Win32
+		{431AD693-726F-41AB-AA59-B81F5D2E5847}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
