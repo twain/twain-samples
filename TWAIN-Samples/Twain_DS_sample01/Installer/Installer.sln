@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DS Installer 32", "DS Installer 32.vdproj", "{A540EBDC-617D-41C1-B8A1-8A7AF85F753F}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DS Installer 64", "DS Installer 64.vdproj", "{3A198E1E-1A53-422A-852A-BF6D613ADC83}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Default = Debug|Default
+		Release|Default = Release|Default
+		Description = Installers for sample TWAIN DS
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A540EBDC-617D-41C1-B8A1-8A7AF85F753F}.Debug|Default.ActiveCfg = Debug
+		{A540EBDC-617D-41C1-B8A1-8A7AF85F753F}.Release|Default.ActiveCfg = Release
+		{A540EBDC-617D-41C1-B8A1-8A7AF85F753F}.Release|Default.Build.0 = Release
+		{3A198E1E-1A53-422A-852A-BF6D613ADC83}.Debug|Default.ActiveCfg = Debug
+		{3A198E1E-1A53-422A-852A-BF6D613ADC83}.Release|Default.ActiveCfg = Release
+		{3A198E1E-1A53-422A-852A-BF6D613ADC83}.Release|Default.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
