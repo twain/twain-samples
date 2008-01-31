@@ -4,10 +4,7 @@
 	Version="7.10"
 	Name="TWAINDS_VS2003_mfc32"
 	ProjectGUID="{1E73CADF-90D9-45E9-97E2-CD25E3532DB4}"
-	SccProjectName="&quot;$/TWG/TWAINDS_Sample01&quot;, VEBAAAAA"
-	SccAuxPath=""
-	SccLocalPath=".."
-	SccProvider="MSSCCI:Microsoft Visual SourceSafe"
+	RootNamespace="TWAINDS_VS2005_mfc32"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -25,7 +22,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/GR"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\"
+				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\;..\..\Common"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;TWAINDS_SAMPLE01_EXPORTS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -53,11 +50,12 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy Application to pub\bin directory"
-				CommandLine="copy $(TargetPath)  $(ProjectDir)\..\pub\bin &amp; copy $(ProjectDir)\..\..\pub\external\bin\FreeImage.dll $(ProjectDir)\..\pub\bin"/>
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot;
+copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;"/>
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST $(ProjectDir)\..\pub\bin mkdir $(ProjectDir)\..\pub\bin"/>
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -82,7 +80,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\"
+				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\;..\..\Common"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TWAINDS_SAMPLE01_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -107,11 +105,12 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy Application to pub\bin directory"
-				CommandLine="copy $(TargetPath)  $(ProjectDir)\..\pub\bin &amp; copy $(ProjectDir)\..\..\pub\external\bin\FreeImage.dll $(ProjectDir)\..\pub\bin"/>
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot;
+copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;"/>
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST $(ProjectDir)\..\pub\bin mkdir $(ProjectDir)\..\pub\bin"/>
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -136,7 +135,16 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath="..\src\CommonDS.cpp">
+			</File>
+			<File
+				RelativePath="..\..\common\CommonTWAIN.cpp">
+			</File>
+			<File
 				RelativePath="..\src\CScanner_FreeImage.cpp">
+			</File>
+			<File
+				RelativePath="..\..\common\CTiffWriter.cpp">
 			</File>
 			<File
 				RelativePath="..\src\CTWAINDS_Base.cpp">
@@ -145,22 +153,10 @@
 				RelativePath="..\src\CTWAINDS_FreeImage.cpp">
 			</File>
 			<File
-				RelativePath="..\src\DSMInterface.cpp">
+				RelativePath="..\src\CTWAINDS_Sample1.cpp">
 			</File>
 			<File
-				RelativePath=".\stdafx.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
+				RelativePath="..\src\DSMInterface.cpp">
 			</File>
 			<File
 				RelativePath="..\src\TWAINContainer.cpp">
@@ -174,25 +170,25 @@
 			<File
 				RelativePath="..\src\TWAINContainerInt.cpp">
 			</File>
-			<File
-				RelativePath="..\src\TWAINDimensionFix32.cpp">
-			</File>
-			<File
-				RelativePath="..\src\CTWAINDS_Sample1.cpp">
-			</File>
-			<File
-				RelativePath="..\src\TWAINResolutionFix32.cpp">
-			</File>
-			<File
-				RelativePath="..\src\TWAINUnitsDepFrame.cpp">
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
+				RelativePath="..\..\common\Common.h">
+			</File>
+			<File
+				RelativePath="..\src\CommonDS.h">
+			</File>
+			<File
+				RelativePath="..\..\common\CommonTWAIN.h">
+			</File>
+			<File
 				RelativePath="..\src\CScanner_FreeImage.h">
+			</File>
+			<File
+				RelativePath="..\..\common\CTiffWriter.h">
 			</File>
 			<File
 				RelativePath="..\src\CTWAINDS_Base.h">
@@ -201,22 +197,13 @@
 				RelativePath="..\src\CTWAINDS_FreeImage.h">
 			</File>
 			<File
-				RelativePath="..\src\Common.h">
+				RelativePath="..\src\CTWAINDS_Sample1.h">
 			</File>
-      <File
-				RelativePath="..\src\CommonDS.h">
-      </File>
-      <File
-				RelativePath="..\src\CommonTWAIN.h">
-      </File>
-      <File
+			<File
 				RelativePath="..\src\DSMInterface.h">
 			</File>
 			<File
 				RelativePath=".\resource.h">
-			</File>
-			<File
-				RelativePath=".\stdafx.h">
 			</File>
 			<File
 				RelativePath="..\src\TWAINContainer.h">
@@ -230,25 +217,13 @@
 			<File
 				RelativePath="..\src\TWAINContainerInt.h">
 			</File>
-			<File
-				RelativePath="..\src\TWAINDimensionFix32.h">
-			</File>
-			<File
-				RelativePath="..\src\CTWAINDS_Sample1.h">
-			</File>
-			<File
-				RelativePath="..\src\TWAINResolutionFix32.h">
-			</File>
-			<File
-				RelativePath="..\src\TWAINUnitsDepFrame.h">
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 			<File
-				RelativePath=".\TWAINGUI.rc">
+				RelativePath=".\TWAINDS_GUI.rc">
 			</File>
 		</Filter>
 	</Files>

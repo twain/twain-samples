@@ -107,7 +107,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy Data Source to windows\twain_32\sample2 dir"
-				CommandLine="copy $(TargetPath)  c:\windows\twain_32\sample2&#x0D;&#x0A;copy $(ProjectDir)\..\..\pub\external\bin\FreeImage.dll c:\windows\twain_32\sample2&#x0D;&#x0A;copy $(ProjectDir)\..\..\pub\bin\TWAIN_logo.png c:\windows\twain_32\sample2&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(TargetPath)&quot;  c:\windows\twain_32\sample2&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; c:\windows\twain_32\sample2&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png&quot; c:\windows\twain_32\sample2&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -196,7 +196,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy datasource to windows\twain_64\sample2 dir"
-				CommandLine="copy $(TargetPath)  c:\windows\twain_64\sample2&#x0D;&#x0A;copy $(ProjectDir)\..\..\pub\external\bin\FreeImagedx64.dll c:\windows\twain_64\sample2&#x0D;&#x0A;copy $(ProjectDir)\..\..\pub\bin\TWAIN_logo.png c:\windows\twain_64\sample2&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(TargetPath)&quot;  c:\windows\twain_64\sample2&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImagedx64.dll&quot; c:\windows\twain_64\sample2&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png&quot; c:\windows\twain_64\sample2&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -279,7 +279,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy Data Source to pub\bin directory"
-				CommandLine="copy $(TargetPath)  $(ProjectDir)\..\pub\bin&#x0D;&#x0A;copy $(ProjectDir)\..\..\pub\external\bin\FreeImage.dll $(ProjectDir)\..\pub\bin&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -363,7 +363,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy Application to pub\bin directory"
-				CommandLine="copy $(TargetPath)  $(ProjectDir)\..\pub\bin&#x0D;&#x0A;copy $(ProjectDir)\..\..\pub\external\bin\FreeImagex64.dll $(ProjectDir)\..\pub\bin&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImagex64.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
