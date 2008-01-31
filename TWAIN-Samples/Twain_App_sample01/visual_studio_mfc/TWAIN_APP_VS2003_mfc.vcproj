@@ -4,10 +4,7 @@
 	Version="7.10"
 	Name="TWAIN_App_mfc"
 	ProjectGUID="{A41F1D7E-7F85-410C-89FF-A82545154628}"
-	SccProjectName="&quot;$/TWG/Twain_App_sample01&quot;, FYAAAAAA"
-	SccAuxPath=""
-	SccLocalPath=".."
-	SccProvider="MSSCCI:Microsoft Visual SourceSafe"
+	RootNamespace="TWAIN_App_VS2003_mfc"
 	Keyword="MFCProj">
 	<Platforms>
 		<Platform
@@ -24,7 +21,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\"
+				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\;..\..\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -52,11 +49,11 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy Application to pub\bin directory"
-				CommandLine="copy $(TargetPath)  $(ProjectDir)\..\pub\bin &amp; copy $(ProjectDir)\..\..\pub\external\bin\FreeImage.dll $(ProjectDir)\..\pub\bin"/>
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot; &amp; copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;"/>
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST $(ProjectDir)\..\pub\bin mkdir $(ProjectDir)\..\pub\bin"/>
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -84,7 +81,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\"
+				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\;..\..\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
 				MinimalRebuild="FALSE"
 				RuntimeLibrary="2"
@@ -113,11 +110,11 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy Application to pub\bin directory"
-				CommandLine="copy $(TargetPath)  $(ProjectDir)\..\pub\bin &amp; copy $(ProjectDir)\..\..\pub\external\bin\FreeImage.dll $(ProjectDir)\..\pub\bin"/>
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot; &amp; copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;"/>
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST $(ProjectDir)\..\pub\bin mkdir $(ProjectDir)\..\pub\bin"/>
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -145,7 +142,10 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="..\src\CTiffWriter.cpp">
+				RelativePath="..\..\common\CommonTWAIN.cpp">
+			</File>
+			<File
+				RelativePath="..\..\common\CTiffWriter.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -225,7 +225,13 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\src\CTiffWriter.h">
+				RelativePath="..\..\common\Common.h">
+			</File>
+			<File
+				RelativePath="..\..\common\CommonTWAIN.h">
+			</File>
+			<File
+				RelativePath="..\..\common\CTiffWriter.h">
 			</File>
 			<File
 				RelativePath="..\src\DSMInterface.h">
@@ -254,28 +260,25 @@
 			<File
 				RelativePath="..\src\TwainApp_ui.h">
 			</File>
-			<File
-				RelativePath="..\src\TwainStructs.h">
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 			<File
-				RelativePath=".\res\mfc.ico">
-			</File>
-			<File
 				RelativePath=".\mfc.rc">
 			</File>
 			<File
 				RelativePath=".\res\mfc.rc2">
+			</File>
+			<File
+				RelativePath=".\res\twain.ico">
 			</File>
 		</Filter>
 	</Files>
 	<Globals>
 		<Global
 			Name="RESOURCE_FILE"
-			Value="visual_studio_2003_mfc32.rc"/>
+			Value="mfc.rc"/>
 	</Globals>
 </VisualStudioProject>

@@ -26,7 +26,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST $(ProjectDir)\..\pub\bin mkdir $(ProjectDir)\..\pub\bin"
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -97,7 +97,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy Application to pub\bin directory"
-				CommandLine="copy $(TargetPath)  $(ProjectDir)\..\pub\bin &amp; copy $(ProjectDir)\..\..\pub\external\bin\FreeImage.dll $(ProjectDir)\..\pub\bin"
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot; &amp; copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -111,7 +111,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST $(ProjectDir)\..\pub\bin mkdir $(ProjectDir)\..\pub\bin"
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -179,7 +179,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy Application to pub\bin directory"
-				CommandLine="copy $(TargetPath)  $(ProjectDir)\..\pub\bin &amp; copy $(ProjectDir)\..\..\pub\external\bin\FreeImage.dll $(ProjectDir)\..\pub\bin"
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot; &amp; copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;"
 			/>
 		</Configuration>
 	</Configurations>
