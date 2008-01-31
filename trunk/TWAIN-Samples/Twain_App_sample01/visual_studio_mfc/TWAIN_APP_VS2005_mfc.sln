@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWAIN_App_VS2003_mfc", "TWAIN_APP_VS2005_mfc.vcproj", "{A41F1D7E-7F85-410C-89FF-A82545154628}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWAIN_App_VS2005_mfc", "TWAIN_APP_VS2005_mfc.vcproj", "{A41F1D7E-7F85-410C-89FF-A82545154628}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

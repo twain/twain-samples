@@ -4,33 +4,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWAIN_App_VS_mfc", "TWAIN_A
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(SourceCodeControl) = preSolution
-		SccNumberOfProjects = 5
-		SccProjectName0 = \u0022$/TWG/Twain_App_sample01\u0022,\u0020FYAAAAAA
-		SccLocalPath0 = ..
-		SccProvider0 = MSSCCI:Microsoft\u0020Visual\u0020SourceSafe
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection0 = visual_studio_2003_mfc32\\
-		SolutionUniqueID = {3A0F3FDC-423D-4D79-AA97-0FFB12792A0E}
-		SccProjectUniqueName1 = visual_studio_2003_mfc32.vcproj
-		SccLocalPath1 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection1 = visual_studio_2003_mfc32\\
-		SccProjectUniqueName2 = ..\\..\\Twain_DS_sample01\\visual_studio_2003\\Twain_DS_sample01.vcproj
-		SccProjectName2 = \u0022$/TWG/Twain_DS_sample01\u0022,\u0020VEBAAAAA
-		SccLocalPath2 = ..\\..\\Twain_DS_sample01
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection2 = visual_studio_2003\\
-		SccProjectUniqueName3 = ..\\..\\Twain_DSM\\visual_studio_2003\\TWAIN_DSM.vcproj
-		SccProjectName3 = \u0022$/TWG/Twain_DSM\u0022,\u0020UCBAAAAA
-		SccLocalPath3 = ..\\..\\Twain_DSM
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection3 = visual_studio_2003\\
-		SccProjectUniqueName4 = ..\\visual_studio_2003\\Twain_App_sample01.vcproj
-		SccLocalPath4 = ..
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection4 = visual_studio_2003\\
-	EndGlobalSection
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Release = Release

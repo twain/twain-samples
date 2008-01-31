@@ -2,13 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="Twain_App_sample01"
+	Name="TWAIN_APP_CMD"
 	ProjectGUID="{431AD693-726F-41AB-AA59-B81F5D2E5847}"
 	RootNamespace="Twain_App_sample01"
-	SccProjectName="&quot;$/TWG/Twain_App_sample01&quot;, FYAAAAAA"
-	SccAuxPath=""
-	SccLocalPath=".."
-	SccProvider="MSSCCI:Microsoft Visual SourceSafe"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -24,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..\pub\external\include\"
+				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\;..\..\Common"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -50,11 +46,11 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy Application to pub\bin directory"
-				CommandLine="copy $(TargetPath)  $(ProjectDir)\..\pub\bin &amp; copy $(ProjectDir)\..\..\pub\external\bin\FreeImage.dll $(ProjectDir)\..\pub\bin"/>
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot; &amp; copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;"/>
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST $(ProjectDir)\..\pub\bin mkdir $(ProjectDir)\..\pub\bin"/>
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -78,7 +74,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".;..\..\pub\external\include\"
+				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\;..\..\Common"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="4"
 				UsePrecompiledHeader="0"
@@ -102,11 +98,11 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy Application to pub\bin directory"
-				CommandLine="copy $(TargetPath)  $(ProjectDir)\..\pub\bin &amp; copy $(ProjectDir)\..\..\pub\external\bin\FreeImage.dll $(ProjectDir)\..\pub\bin"/>
+				CommandLine="copy &quot;$(TargetPath)  $(ProjectDir)\..\pub\bin&quot; &amp; copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;"/>
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST $(ProjectDir)\..\pub\bin mkdir $(ProjectDir)\..\pub\bin"/>
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -131,7 +127,10 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="..\src\CTiffWriter.cpp">
+				RelativePath="..\..\common\CommonTWAIN.cpp">
+			</File>
+			<File
+				RelativePath="..\..\common\CTiffWriter.cpp">
 			</File>
 			<File
 				RelativePath="..\src\DSMInterface.cpp">
@@ -154,7 +153,13 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\src\CTiffWriter.h">
+				RelativePath="..\..\common\Common.h">
+			</File>
+			<File
+				RelativePath="..\..\common\CommonTWAIN.h">
+			</File>
+			<File
+				RelativePath="..\..\common\CTiffWriter.h">
 			</File>
 			<File
 				RelativePath="..\src\DSMInterface.h">
@@ -163,13 +168,13 @@
 				RelativePath="..\src\main.h">
 			</File>
 			<File
+				RelativePath="..\..\pub\external\include\twain.h">
+			</File>
+			<File
 				RelativePath="..\src\TwainApp.h">
 			</File>
 			<File
 				RelativePath="..\src\TwainApp_ui.h">
-			</File>
-			<File
-				RelativePath="..\src\TwainStructs.h">
 			</File>
 		</Filter>
 	</Files>
