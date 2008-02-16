@@ -683,6 +683,8 @@ bool CTWAINDS_Base::DoXferReadyEvent()
   /// Document only updates with new sheet of paper.
   m_DocumentNumber++;
   m_PageNumber++;
+  m_CurrentState = dsState_XferReady;
+  getImageInfo(&m_ImageInfo);
 
   // Tell the DSM that we are ready to send images
   if(TWRC_SUCCESS==_DSM_Entry(getIdentity(),
@@ -693,7 +695,6 @@ bool CTWAINDS_Base::DoXferReadyEvent()
                               0))
   {
     bRC = true;
-    m_CurrentState = dsState_XferReady;
   }
   return bRC;
 }

@@ -607,8 +607,6 @@ TW_INT16 CTWAINDS_FreeImage::enableDS(pTW_USERINTERFACE _pData)
       setConditionCode(TWCC_SEQERROR);
       return TWRC_FAILURE;
     }
-
-    getImageInfo(&m_ImageInfo);
   }
   else
   {
@@ -823,7 +821,8 @@ TW_INT16 CTWAINDS_FreeImage::transfer()
   {
     /// @todo Unknow paper size
     // for unknow paper size need to use reallocate and keep transfering and adding to image data.
-    ;
+    setConditionCode(TWCC_CAPUNSUPPORTED);
+    return TWRC_FAILURE;
   }
 
   if(twrc == TWRC_FAILURE)

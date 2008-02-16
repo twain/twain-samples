@@ -1,2 +1,8 @@
 December 10, 2007 JFL Peripheral Solutions jimw@jflinc.com
     * Initial Release.
+
+February 15, 2008 JFL Peripheral Solutions jimw@jflinc.com
+    * Fix state transition error, reported by Mark.  
+      DS was not being updated to proper state when the App is using callback to get image after receiving XferReady.
+      CTWAINDS_Base.cpp
+      CTWAINDS_FreeeImage.cpp
