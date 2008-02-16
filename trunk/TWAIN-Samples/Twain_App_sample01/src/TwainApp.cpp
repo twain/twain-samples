@@ -492,7 +492,10 @@ void TwainApp::getSources()
   switch (twrc)
   {
   case TWRC_SUCCESS:
-    m_DataSources.push_back(Source);
+    if( Source.SupportedGroups & DF_DS2 )
+    {
+      m_DataSources.push_back(Source);
+    }
     break;
 
   case TWRC_FAILURE:
@@ -520,7 +523,10 @@ void TwainApp::getSources()
     switch (twrc)
     {
     case TWRC_SUCCESS:
-      m_DataSources.push_back(Source);
+      if( Source.SupportedGroups & DF_DS2 )
+      {
+        m_DataSources.push_back(Source);
+      }
       break;
 
     case TWRC_FAILURE:
@@ -779,7 +785,9 @@ void TwainApp::initiateTransfer_Native()
   cout << "app: Starting a TWSX_NATIVE transfer..." << endl;
 
   TW_STR255 szOutFileName;
-  bool bPendingXfers = true;
+  bool      bPendingXfers = true;
+  TW_UINT16 twrc          = TWRC_SUCCESS;
+
   while(bPendingXfers)
   {
     m_nXferNum++;
@@ -790,7 +798,7 @@ void TwainApp::initiateTransfer_Native()
 
     // get the image details
     cout << "app: Getting the image info..." << endl;
-    TW_UINT16 twrc = _DSM_Entry(
+    twrc = _DSM_Entry(
       &m_MyInfo,
       m_pDataSource,
       DG_IMAGE,
@@ -801,7 +809,7 @@ void TwainApp::initiateTransfer_Native()
     if(TWRC_SUCCESS != twrc)
     {
       printError(m_pDataSource, "Error while trying to get the image information!");
-      return;
+      break;
     }
 
     TW_MEMREF hImg = 0;
@@ -825,7 +833,7 @@ void TwainApp::initiateTransfer_Native()
       if(0 == pDIB)
       {
         cerr << "App: Unable to lock memory, transfer failed" << endl;
-        return;
+        break;
       }
 
       // Set the filename to save to
@@ -897,6 +905,7 @@ void TwainApp::initiateTransfer_Native()
       // see if there are any more transfers to do
       cout << "app: Checking to see if there are more images to transfer..." << endl;
       TW_PENDINGXFERS pendxfers;
+      memset( &pendxfers, 0, sizeof(pendxfers) );
 
       twrc = _DSM_Entry(
         &m_MyInfo,
@@ -924,13 +933,46 @@ void TwainApp::initiateTransfer_Native()
     }
     else if(TWRC_CANCEL == twrc)
     {
-      bPendingXfers = false;
+      printError(m_pDataSource, "Canceled transfer image");
+      break;
     }
     else if(TWRC_FAILURE == twrc)
     {
       printError(m_pDataSource, "Failed to transfer image");
-      bPendingXfers = false;
+      break;
     }
+  }
+
+  // Check to see if we left the scan loop before we were actualy done scanning
+  // This will hapen if we had an error.  Need to let the DS know we are not going 
+  // to transfer more images
+  if(bPendingXfers == true)
+  {
+      cout << "app: Stop any transfer we may have started but could not finish..." << endl;
+      TW_PENDINGXFERS pendxfers;
+      memset( &pendxfers, 0, sizeof(pendxfers) );
+
+      twrc = _DSM_Entry(
+        &m_MyInfo,
+        m_pDataSource,
+        DG_CONTROL,
+        DAT_PENDINGXFERS,
+        MSG_ENDXFER,
+        (TW_MEMREF)&pendxfers);
+
+      // We need to get rid of any pending transfers
+      if(0 != pendxfers.Count)
+      {
+        memset( &pendxfers, 0, sizeof(pendxfers) );
+
+        _DSM_Entry(
+          &m_MyInfo,
+          m_pDataSource,
+          DG_CONTROL,
+          DAT_PENDINGXFERS,
+          MSG_RESET,
+          (TW_MEMREF)&pendxfers);
+      }
   }
 
   // adjust our state now that the scanning session is done
@@ -947,7 +989,9 @@ void TwainApp::initiateTransfer_File()
   cout << "app: Starting a TWSX_FILE transfer..." << endl;
 
   // start the transfer
-  bool bPendingXfers = true;
+  bool      bPendingXfers = true;
+  TW_UINT16 twrc          = TWRC_SUCCESS;
+
   while(bPendingXfers)
   {
     m_nXferNum++;
@@ -957,7 +1001,7 @@ void TwainApp::initiateTransfer_File()
 
     // get the image details
     cout << "app: Getting the image info..." << endl;
-    TW_UINT16 twrc = _DSM_Entry(
+    twrc = _DSM_Entry(
       &m_MyInfo,
       m_pDataSource,
       DG_IMAGE,
@@ -968,7 +1012,7 @@ void TwainApp::initiateTransfer_File()
     if(TWRC_SUCCESS != twrc)
     {
       printError(m_pDataSource, "Error while trying to get the image information!");
-      return;
+      break;
     }
 
     // setup the file xfer
@@ -999,7 +1043,7 @@ void TwainApp::initiateTransfer_File()
     if(TWRC_SUCCESS != twrc)
     {
       printError(m_pDataSource, "Error while trying to setup the file transfer");
-      return;
+      break;
     }
 
     cout << "app: Starting file transfer..." << endl;
@@ -1013,10 +1057,16 @@ void TwainApp::initiateTransfer_File()
 
     if(TWRC_XFERDONE == twrc)
     {
+#ifdef _WINDOWS
+        ShellExecute(m_Parent, "open", filexfer.FileName, NULL, NULL, SW_SHOWNORMAL);
+#else
+         cout << "app: File \"" << filexfer.FileName << "\" saved..." << endl;
+#endif
       // see if there are any more transfers to do
       cout << "app: Checking to see if there are more images to transfer..." << endl;
       TW_PENDINGXFERS pendxfers;
       memset(&pendxfers, 0, sizeof(pendxfers));
+
       twrc = _DSM_Entry(
         &m_MyInfo,
         m_pDataSource,
@@ -1034,12 +1084,6 @@ void TwainApp::initiateTransfer_File()
           // nothing left to transfer, finished.
           bPendingXfers = false;
         }
-        
-#ifdef _WINDOWS
-        ShellExecute(m_Parent, "open", filexfer.FileName, NULL, NULL, SW_SHOWNORMAL);
-#else
-         cout << "app: File \"" << filexfer.FileName << "\" saved..." << endl;
-#endif
       }
       else
       {
@@ -1049,13 +1093,46 @@ void TwainApp::initiateTransfer_File()
     }
     else if(TWRC_CANCEL == twrc)
     {
-      bPendingXfers = false;
+      printError(m_pDataSource, "Canceled transfer image");
+      break;
     }
     else if(TWRC_FAILURE == twrc)
     {
       printError(m_pDataSource, "Failed to transfer image");
-      bPendingXfers = false;
+      break;
     }
+  }
+
+  // Check to see if we left the scan loop before we were actualy done scanning
+  // This will hapen if we had an error.  Need to let the DS know we are not going 
+  // to transfer more images
+  if(bPendingXfers == true)
+  {
+      cout << "app: Stop any transfer we may have started but could not finish..." << endl;
+      TW_PENDINGXFERS pendxfers;
+      memset( &pendxfers, 0, sizeof(pendxfers) );
+
+      twrc = _DSM_Entry(
+        &m_MyInfo,
+        m_pDataSource,
+        DG_CONTROL,
+        DAT_PENDINGXFERS,
+        MSG_ENDXFER,
+        (TW_MEMREF)&pendxfers);
+
+      // We need to get rid of any pending transfers
+      if(0 != pendxfers.Count)
+      {
+        memset( &pendxfers, 0, sizeof(pendxfers) );
+
+        _DSM_Entry(
+          &m_MyInfo,
+          m_pDataSource,
+          DG_CONTROL,
+          DAT_PENDINGXFERS,
+          MSG_RESET,
+          (TW_MEMREF)&pendxfers);
+      }
   }
 
   // adjust our state now that the scanning session is done
@@ -1080,6 +1157,7 @@ void TwainApp::initiateTransfer_Memory()
   TW_STR255         szOutFileName;
   TW_SETUPMEMXFER   SourcesBufferSizes;   /**< Used to set up the buffer size used by memory transfer method */
   bool              bPendingXfers = true;
+  TW_UINT16         twrc          = TWRC_SUCCESS;
 
   // start the transfer
   while(bPendingXfers)
@@ -1092,7 +1170,7 @@ void TwainApp::initiateTransfer_Memory()
 
     // get the image details
     cout << "app: Getting the image info..." << endl;
-    TW_UINT16 twrc = _DSM_Entry(
+    twrc = _DSM_Entry(
       &m_MyInfo,
       m_pDataSource,
       DG_IMAGE,
@@ -1103,7 +1181,7 @@ void TwainApp::initiateTransfer_Memory()
     if(TWRC_SUCCESS != twrc)
     {
       printError(m_pDataSource, "Error while trying to get the image information!");
-      return;
+      break;
     }
 
     // Set the filename to save to
@@ -1124,7 +1202,7 @@ void TwainApp::initiateTransfer_Memory()
     if(TWRC_SUCCESS != twrc)
     {
       printError(m_pDataSource, "Error while trying to get the buffer sizes from the source!");
-      return;
+      break;
     }
 
     // -setup a buffer to hold the strip from the data source
@@ -1146,7 +1224,7 @@ void TwainApp::initiateTransfer_Memory()
     if(0 == hMem)
     {
       printError(0, "Error allocating memory");
-      return;
+      break;
     }
 
     memXferBufTemplate.Memory.TheMem = (TW_MEMREF)_DSM_LockMemory(hMem);
@@ -1219,10 +1297,6 @@ void TwainApp::initiateTransfer_Memory()
 
         if(TWRC_XFERDONE == twrc)
         {
-          // cleanup
-          delete pTifImg;
-          pTifImg = 0;
-
 #ifdef _WINDOWS
           ShellExecute(m_Parent, "open", szOutFileName, NULL, NULL, SW_SHOWNORMAL);
 #else
@@ -1234,17 +1308,36 @@ void TwainApp::initiateTransfer_Memory()
       }
       else if(TWRC_CANCEL == twrc)
       {
+        printError(m_pDataSource, "Canceled transfer while trying to get a strip of data from the source!");
         break;
       }
       else if(TWRC_FAILURE == twrc)
       {
         printError(m_pDataSource, "Error while trying to get a strip of data from the source!");
+        break;
       }
+    }
+
+    // cleanup
+    if(pTifImg)
+    {
+      delete pTifImg;
+    }
+    pTifImg = 0;
+    // cleanup memory used to transfer image
+    _DSM_UnlockMemory((TW_MEMREF)(memXferBufTemplate.Memory.TheMem));
+    _DSM_Free(hMem);
+
+    if(TWRC_XFERDONE != twrc)
+    {
+      // We were not able to transfer an image don't try to transfer more
+      break;
     }
 
     // The transfer is done. Tell the source
     cout << "app: Checking to see if there are more images to transfer..." << endl;
     TW_PENDINGXFERS pendxfers;
+    memset( &pendxfers, 0, sizeof(pendxfers) );
 
     twrc = _DSM_Entry(
       &m_MyInfo,
@@ -1269,9 +1362,38 @@ void TwainApp::initiateTransfer_Memory()
       bPendingXfers = false;
     }
 
-    // cleanup memory used to transfer image
-    _DSM_UnlockMemory((TW_MEMREF)(memXferBufTemplate.Memory.TheMem));
-    _DSM_Free(hMem);
+  }
+
+  // Check to see if we left the scan loop before we were actualy done scanning
+  // This will hapen if we had an error.  Need to let the DS know we are not going 
+  // to transfer more images
+  if(bPendingXfers == true)
+  {
+      cout << "app: Stop any transfer we may have started but could not finish..." << endl;
+      TW_PENDINGXFERS pendxfers;
+      memset( &pendxfers, 0, sizeof(pendxfers) );
+
+      twrc = _DSM_Entry(
+        &m_MyInfo,
+        m_pDataSource,
+        DG_CONTROL,
+        DAT_PENDINGXFERS,
+        MSG_ENDXFER,
+        (TW_MEMREF)&pendxfers);
+
+      // We need to get rid of any pending transfers
+      if(0 != pendxfers.Count)
+      {
+        memset( &pendxfers, 0, sizeof(pendxfers) );
+
+        _DSM_Entry(
+          &m_MyInfo,
+          m_pDataSource,
+          DG_CONTROL,
+          DAT_PENDINGXFERS,
+          MSG_RESET,
+          (TW_MEMREF)&pendxfers);
+      }
   }
 
   // adjust our state now that the scanning session is done
@@ -1423,6 +1545,17 @@ void TwainApp::set_CAP_XFERCOUNT(const TW_INT16 _count)
   _DSM_UnlockMemory((TW_MEMREF)pVal);
   _DSM_Free(cap.hContainer);
 
+  // now that we have set it, re-get it to ensure it was set
+  if(get_CAP(m_CAP_XFERCOUNT))
+  {
+    TW_INT16 count;
+    if(getCAP_XFERCOUNT(count) &&
+      count == _count)
+    {
+      cout << "Capability successfully set!" << endl;
+    }
+  }
+
   return;
 }
 
@@ -1463,7 +1596,6 @@ void TwainApp::set_ICAP_UNITS(const TW_UINT16 _val)
   _DSM_Free(cap.hContainer);
 
   // now that we have set it, re-get it to ensure it was set
-  m_ICAP_UNITS.Cap = ICAP_UNITS;
   if(get_CAP(m_ICAP_UNITS))
   {
     if(TWON_ENUMERATION == m_ICAP_UNITS.ConType &&
@@ -1476,10 +1608,7 @@ void TwainApp::set_ICAP_UNITS(const TW_UINT16 _val)
         cout << "Capability successfully set!" << endl;
 
         // successfully setting this cap means that we have to re-obtain the X/Y resolutions as well
-        m_ICAP_XRESOLUTION.Cap = ICAP_XRESOLUTION;
         get_CAP(m_ICAP_XRESOLUTION);
-
-        m_ICAP_YRESOLUTION.Cap = ICAP_YRESOLUTION;
         get_CAP(m_ICAP_YRESOLUTION);
       }
       _DSM_UnlockMemory((TW_MEMREF)pCapPT);
@@ -1526,7 +1655,6 @@ void TwainApp::set_ICAP_PIXELTYPE(const TW_UINT16 _pt)
   _DSM_Free(cap.hContainer);
 
   // now that we have set it, re-get it to ensure it was set
-  m_ICAP_PIXELTYPE.Cap = ICAP_PIXELTYPE;
   if(get_CAP(m_ICAP_PIXELTYPE))
   {
     if(TWON_ENUMERATION == m_ICAP_PIXELTYPE.ConType &&
@@ -1559,7 +1687,6 @@ void TwainApp::set_ICAP_PIXELTYPE(const TW_UINT16 _pt)
     break;
   }
 
-  m_ICAP_BITDEPTH.Cap = ICAP_BITDEPTH;
   get_CAP(m_ICAP_BITDEPTH);
 
   return;
@@ -1609,6 +1736,9 @@ void TwainApp::set_ICAP_RESOLUTION(const TW_UINT16 _ICAP, const pTW_FIX32 _pVal)
   _DSM_Free(cap.hContainer);
 
   // Get the new RESOLUTION caps values to see if the set was successfull.
+  get_CAP(m_ICAP_XRESOLUTION);
+  get_CAP(m_ICAP_YRESOLUTION);
+
   pTW_CAPABILITY pCapRes = 0;
 
   if(ICAP_XRESOLUTION == _ICAP)
@@ -1620,8 +1750,6 @@ void TwainApp::set_ICAP_RESOLUTION(const TW_UINT16 _ICAP, const pTW_FIX32 _pVal)
     pCapRes = &m_ICAP_YRESOLUTION;
   }
   
-  get_CAP(*pCapRes);
-
   // check ICAP_XRESOLUTION
   if(TWON_ENUMERATION == pCapRes->ConType &&
     0 != pCapRes->hContainer)
@@ -1675,7 +1803,6 @@ void TwainApp::set_ICAP_FRAMES(const pTW_FRAME _pFrame)
   _DSM_Free(cap.hContainer);
 
   // now that we have set it, re-get it to ensure it was set
-  m_ICAP_FRAMES.Cap = ICAP_FRAMES;
   if(get_CAP(m_ICAP_FRAMES))
   {
     if(TWON_ENUMERATION == m_ICAP_FRAMES.ConType &&
@@ -1736,7 +1863,6 @@ void TwainApp::set_ICAP_XFERMECH(const TW_UINT16 _mech)
   _DSM_Free(cap.hContainer);
 
   // now that we have set it, re-get it to ensure it was set
-  m_ICAP_XFERMECH.Cap = ICAP_XFERMECH;
   if(get_CAP(m_ICAP_XFERMECH))
   {
     TW_UINT16 mech;
@@ -1791,7 +1917,6 @@ void TwainApp::set_ICAP_IMAGEFILEFORMAT(const TW_UINT16 _fileformat)
   _DSM_Free(cap.hContainer);
 
   // now that we have set it, re-get it to ensure it was set
-  m_ICAP_IMAGEFILEFORMAT.Cap = ICAP_IMAGEFILEFORMAT;
   if(get_CAP(m_ICAP_IMAGEFILEFORMAT))
   {
     TW_UINT16 fileformat;
@@ -1845,7 +1970,6 @@ void TwainApp::set_ICAP_COMPRESSION(const TW_UINT16 _comp)
   _DSM_Free(cap.hContainer);
 
   // now that we have set it, re-get it to ensure it was set
-  m_ICAP_COMPRESSION.Cap = ICAP_COMPRESSION;
   if(get_CAP(m_ICAP_COMPRESSION))
   {
     TW_UINT16 comp;
