@@ -228,15 +228,47 @@ TW_INT16 CTWAINContainerInt::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
   if(TWON_ONEVALUE == _pCap->ConType)
   {
     pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(_pCap->hContainer);
-
-    int nVal = -1;
-
-    if(isValidType(pCap->ItemType) &&
-       ((nVal = getIndexForValue(getValue(pCap))) >= 0))
+    if(isValidType(pCap->ItemType))
     {
-      m_nCurrent = nVal;
-    }
+      switch(m_unGetType)
+      {
+        case TWON_ONEVALUE:
+        {
+          m_listInts.clear();
+          m_listInts.push_back(getValue(pCap));
+          m_nCurrent = 0;
+        }
+        break;
+        case TWON_ENUMERATION:
+        {
+          int nVal = -1;
 
+          if( (nVal = getIndexForValue(getValue(pCap))) >= 0 )
+          {
+            m_nCurrent = nVal;
+          }
+          else
+          {
+            twrc = TWRC_CHECKSTATUS;
+            Condition = TWCC_BADVALUE;
+          }
+        }
+        break;
+        //case TWON_ARRAY:
+        //break;
+        //case TWON_RANGE:
+        //break;
+        default:
+          twrc = TWRC_FAILURE;
+          Condition = TWCC_CAPBADOPERATION;
+        break;
+      }
+    }
+    else // NOT isValidType(pCap->ItemType))
+    {
+      twrc = TWRC_FAILURE;
+      Condition = TWCC_CAPBADOPERATION;
+    }
     _DSM_UnlockMemory((TW_MEMREF)pCap);
   }
   else if(TWON_ENUMERATION == _pCap->ConType)
@@ -272,6 +304,11 @@ TW_INT16 CTWAINContainerInt::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
           Condition = TWCC_SUCCESS;
         }
       }
+    }
+    else // NOT isValidType(pCap->ItemType))
+    {
+      twrc = TWRC_FAILURE;
+      Condition = TWCC_CAPBADOPERATION;
     }
 
     _DSM_UnlockMemory((TW_MEMREF)pCap);

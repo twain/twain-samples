@@ -390,6 +390,8 @@ bool CTWAINContainerFrame::isValidType(const TW_UINT16 _unTWType)
 
 TW_INT16 CTWAINContainerFrame::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
 {
+  // TW_FRAME can override the current and available list regardless if they
+  // are available in the default list.
   TW_INT16 twrc = TWRC_SUCCESS;
   Condition = TWCC_SUCCESS;
 
@@ -399,13 +401,44 @@ TW_INT16 CTWAINContainerFrame::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
 
     if(isValidType(pCap->ItemType))
     {
-      /// @todo check to see if frame is in range
       InternalFrame frame(pCap->Item, m_Unit, m_Xres, m_Yres);
 
-      m_listFrames.clear();
-      m_listFrames.push_back(frame);
-
-      m_nCurrent = 0;
+      switch(m_unGetType)
+      {
+        case TWON_ONEVALUE:
+        case TWON_ENUMERATION:
+        {
+          /// @todo check to see if frame is in range
+          m_listFrames.clear();
+          m_listFrames.push_back(frame);
+          m_nCurrent = 0;
+        }
+        break;
+        /*
+        case TWON_ENUMERATION:
+        {
+          int nVal = -1;
+          if((nVal = getIndexForValue(frame)) >= 0)
+          {
+            m_nCurrent = nVal;
+          }
+          else
+          {
+            twrc = TWRC_CHECKSTATUS;
+            Condition = TWCC_BADVALUE;
+          }
+        }
+        break;
+        */
+        //case TWON_ARRAY:
+        //break;
+        //case TWON_RANGE:
+        //break;
+        default:
+          twrc = TWRC_FAILURE;
+          Condition = TWCC_CAPBADOPERATION;
+        break;
+      }
     }
 
     _DSM_UnlockMemory((TW_MEMREF)pCap);

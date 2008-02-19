@@ -159,22 +159,40 @@ TW_INT16 CTWAINContainerFix32::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
   {
     pTW_ONEVALUE_FIX32 pCap = (pTW_ONEVALUE_FIX32)_DSM_LockMemory(_pCap->hContainer);
 
-    int nVal = -1;
-
     if(isValidType(pCap->ItemType))
     {
       float flVal = FIX32ToFloat(pCap->Item);
-
-      /*if(TWON_RANGE == m_unGetType)
+      switch(m_unGetType)
       {
-      }
-      else */
-      if(TWON_ENUMERATION == m_unGetType)
-      {
-        if((nVal = getIndexForValue(flVal)) >= 0)
+        case TWON_ONEVALUE:
         {
-          m_nCurrent = nVal;
+          m_listFloats.clear();
+          m_listFloats.push_back(flVal);
+          m_nCurrent = 0;
         }
+        break;
+        case TWON_ENUMERATION:
+        {
+          int nVal = -1;
+          if((nVal = getIndexForValue(flVal)) >= 0)
+          {
+            m_nCurrent = nVal;
+          }
+          else
+          {
+            twrc = TWRC_CHECKSTATUS;
+            Condition = TWCC_BADVALUE;
+          }
+        }
+        break;
+        //case TWON_ARRAY:
+        //break;
+        //case TWON_RANGE:
+        //break;
+        default:
+          twrc = TWRC_FAILURE;
+          Condition = TWCC_CAPBADOPERATION;
+        break;
       }
     }
 
