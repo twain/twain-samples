@@ -29,7 +29,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST $(ProjectDir)\..\pub\bin mkdir $(ProjectDir)\..\pub\bin&#x0D;&#x0A;if NOT EXIST c:\windows\twain_32\sample2 mkdir c:\windows\twain_32\sample2&#x0D;&#x0A;"
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;&#x0D;&#x0A;if NOT EXIST c:\windows\twain_32\sample2 mkdir c:\windows\twain_32\sample2&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -121,7 +121,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST $(ProjectDir)\..\pub\bin mkdir $(ProjectDir)\..\pub\bin&#x0D;&#x0A;if NOT EXIST c:\windows\twain_64\sample2 mkdir c:\windows\twain_64\sample2&#x0D;&#x0A;"
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;&#x0D;&#x0A;if NOT EXIST c:\windows\twain_64\sample2 mkdir c:\windows\twain_64\sample2&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -210,7 +210,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST $(ProjectDir)\..\pub\bin mkdir $(ProjectDir)\..\pub\bin"
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -293,7 +293,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST $(ProjectDir)\..\pub\bin mkdir $(ProjectDir)\..\pub\bin"
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

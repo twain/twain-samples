@@ -416,7 +416,7 @@ void TwainApp::loadDS(const TW_UINT32 _dsID)
     break;
 
   default:
-    printError(0, "Failed to open data source.");
+    printError(m_pDataSource, "Failed to open data source.");
     m_pDataSource = 0;
     break;
   }
@@ -492,10 +492,7 @@ void TwainApp::getSources()
   switch (twrc)
   {
   case TWRC_SUCCESS:
-    if( Source.SupportedGroups & DF_DS2 )
-    {
-      m_DataSources.push_back(Source);
-    }
+    m_DataSources.push_back(Source);
     break;
 
   case TWRC_FAILURE:
@@ -523,10 +520,7 @@ void TwainApp::getSources()
     switch (twrc)
     {
     case TWRC_SUCCESS:
-      if( Source.SupportedGroups & DF_DS2 )
-      {
-        m_DataSources.push_back(Source);
-      }
+      m_DataSources.push_back(Source);
       break;
 
     case TWRC_FAILURE:
