@@ -1,5 +1,10 @@
 /* ======================================================================== *\
 
+  Copyright (C) 2007 TWAIN Working Group: Adobe Systems Incorporated, 
+  AnyDoc Software Inc., Eastman Kodak Company, Fujitsu Computer Products 
+  of America, JFL Peripheral Solutions Inc., Ricoh Corporation, and 
+  Xerox Corporation.  All rights reserved.
+
   Copyright (C) 1991, 1992 TWAIN Working Group: Aldus, Caere, Eastman-Kodak,
   Hewlett-Packard and Logitech Corporations.  All rights reserved.
 
@@ -71,6 +76,9 @@
                                  for 1.91 Specification MLM
     version 2.0  Sept 2007       Added new types and definitions required
                                  for 2.0 Specification FHH
+    version 2.0  Mar 2008        Depreciated ICAP_PIXELTYPEs TWPT_SRGB64, TWPT_BGR, 
+                                 TWPT_CIELAB, TWPT_CIELUV, and TWPT_YCBCR  JMW
+    version 2.0  Mar 2008        Added missing new 2.0 CAP_ definitions JMW
 \* ======================================================================== */
 
 #ifndef TWAIN
@@ -126,7 +134,7 @@
 #if defined(TWH_CMP_MSC) | defined(TWH_CMP_BORLAND)
     typedef HANDLE  TW_HANDLE;
     typedef LPVOID  TW_MEMREF;
-    typedef INT_PTR TW_INTPTR;
+    typedef UINT_PTR TW_UINTPTR;
 
 /* MacOS/X... */ 
 #elif defined(TWH_CMP_XCODE)
@@ -137,10 +145,10 @@
 
     #ifdef TWH_32BIT
       //32 bit GNU
-      typedef unsigned long      TW_INTPTR;
+      typedef unsigned long      TW_UINTPTR;
     #else
       //64 bit GNU
-      typedef unsigned long long TW_INTPTR;
+      typedef unsigned long long TW_UINTPTR;
     #endif
 
 /* Everything else... */ 
@@ -153,10 +161,10 @@
 
     #ifdef TWH_32BIT
       //32 bit GNU
-      typedef unsigned long      TW_INTPTR;
+      typedef unsigned long      TW_UINTPTR;
     #else
       //64 bit GNU
-      typedef unsigned long long TW_INTPTR;
+      typedef unsigned long long TW_UINTPTR;
     #endif
 #endif
 
@@ -348,7 +356,7 @@ typedef struct {
    /* DG_CONTROL / DAT_FILESYSTEM / MSG_DELETE field    */
    int        Recursive; /* recursively delete all sub-directories */
    /* DG_CONTROL / DAT_FILESYSTEM / MSG_GETINFO fields  */
-   TW_INT32   FileType; /* One of the TWFT_xxxx values */
+   TW_INT32   FileType; /* One of the TWFY_xxxx values */
    TW_UINT32  Size; /* Size of current FileType */
    TW_STR32   CreateTimeDate; /* creation date of the file */
    TW_STR32   ModifiedTimeDate; /* last date the file was modified */
@@ -685,11 +693,7 @@ typedef struct  {
 #define TWPT_CIEXYZ      8
 #define TWPT_LAB         9
 #define TWPT_SRGB       10 /* 1.91 */
-#define TWPT_SRGB64     11 /* 1.91 */
-#define TWPT_BGR        12 /* 1.91 */
-#define TWPT_CIELAB     13 /* 1.91 */
-#define TWPT_CIELUV     14 /* 1.91 */
-#define TWPT_YCBCR      15 /* 1.91 */
+#define TWPT_SCRGB      11 /* 1.91 */
 #define TWPT_INFRARED   16 /* 2.0 */
 
 /* ICAP_SUPPORTEDSIZES values (SS_ means Supported Sizes) */
@@ -895,17 +899,6 @@ typedef struct  {
 #define TWDE_POWERSAVE              15
 #define TWDE_POWERSAVENOTIFY        16
 
-/* File Types for TW_FILESYSTEM */
-#define TWFT_CAMERA                 0
-#define TWFT_CAMERATOP              1
-#define TWFT_CAMERABOTTOM           2
-#define TWFT_CAMERAPREVIEW          3
-#define TWFT_DOMAIN                 4
-#define TWFT_HOST                   5
-#define TWFT_DIRECTORY              6
-#define TWFT_IMAGE                  7
-#define TWFT_UNKNOWN                8
-
 
 /* CAP_FEEDERALIGNMENT values (FA_ means feeder alignment) */
 #define TWFA_NONE   0
@@ -917,7 +910,7 @@ typedef struct  {
 #define TWFO_FIRSTPAGEFIRST 0
 #define TWFO_LASTPAGEFIRST  1
 
-/* CAP_FEEDERPOCKETS */
+/* CAP_FEEDERPOCKET */
 #define TWFP_POCKETERROR    0
 #define TWFP_POCKET1        1
 #define TWFP_POCKET2        2
@@ -936,12 +929,8 @@ typedef struct  {
 #define TWFP_POCKET15       15
 #define TWFP_POCKET16       16
 
-/* CAP_FEEDERTYPE */ 
-#define TWFP_GENERAL        0
-#define TWFP_PICTURE        1
-
-/* CAP_ICCPROFILE */ 
-#define TWIC_NOINFILE       0
+/* ICAP_ICCPROFILE */ 
+#define TWIC_NONE           0
 #define TWIC_LINK           1
 #define TWIC_EMBED          2
 
@@ -1014,7 +1003,7 @@ typedef struct  {
 #define TWOV_LEFTRIGHT  3
 #define TWOV_ALL        4
 
-/* TW_FILESYSTEM.FileType values (FT_ means file type) */
+/* TW_FILESYSTEM.FileType values (FY_ means file type) */
 #define TWFY_CAMERA         0
 #define TWFY_CAMERATOP      1
 #define TWFY_CAMERABOTTOM   2
@@ -1649,6 +1638,12 @@ typedef struct  {
 #define CAP_BATTERYPERCENTAGE       0x1033   /* Added 1.8 */
 #define CAP_CAMERASIDE              0x1034   /* Added 1.91 */
 #define CAP_SEGMENTED               0x1035   /* Added 1.91 */
+#define CAP_CAMERAENABLED           0x1036   /* Added 2.0 */
+#define CAP_CAMERAORDER             0x1037   /* Added 2.0 */
+#define CAP_MICRENABLED             0x1038   /* Added 2.0 */
+#define CAP_FEEDERPREP              0x1039   /* Added 2.0 */
+#define CAP_FEEDERPOCKET            0x103a   /* Added 2.0 */
+
  
 /* image data sources MAY support these caps */
 #define ICAP_AUTOBRIGHT                   0x1100
@@ -1720,6 +1715,10 @@ typedef struct  {
 #define ICAP_AUTOMATICDESKEW              0x1151  /* Added 1.8 */
 #define ICAP_AUTOMATICROTATE              0x1152  /* Added 1.8 */
 #define ICAP_JPEGQUALITY                  0x1153  /* Added 1.9 */
+#define ICAP_FEEDERTYPE                   0x1154  /* Added 1.91 */
+#define ICAP_ICCPROFILE                   0x1155  /* Added 1.91 */
+#define ICAP_AUTOSIZE                     0x1156  /* Added 2.0 */
+
 
 /* image data sources MAY support these audio caps */
 #define ACAP_AUDIOFILEFORMAT    0x1201  /* Added 1.8 */
@@ -1914,6 +1913,12 @@ typedef wchar_t           TW_UNI512[512],     FAR *pTW_UNI512;
 /* CAP_FILESYSTEM values (FS_ means file system) */
 #define TWFS_FILESYSTEM       0
 #define TWFS_RECURSIVEDELETE  1
+
+#define TWPT_SRGB64     11 /* 1.91 */
+#define TWPT_BGR        12 /* 1.91 */
+#define TWPT_CIELAB     13 /* 1.91 */
+#define TWPT_CIELUV     14 /* 1.91 */
+#define TWPT_YCBCR      15 /* 1.91 */
 
 /* DAT_SETUPFILEXFER2. Sets up DS to application data transfer via a file. */
 /* Added 1.9                                                               */
@@ -2148,9 +2153,9 @@ typedef struct {
 /* Restore the previous packing alignment: this occurs after all structures are defined */
 #ifdef TWH_CMP_MSC
     #pragma pack (pop, before_twain)
-#elif defined(TWH_CMP_GNUC)
+#elif defined(TWH_CMP_GNU)
     #pragma pack (pop, before_twain)
-#elif defined(TWH_CMP_BORLANDC)
+#elif defined(TWH_CMP_BORLAND)
     #pragma option –a.
 #elif defined(TWH_CMP_XCODE)
     #if PRAGMA_STRUCT_ALIGN

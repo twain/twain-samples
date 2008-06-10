@@ -1,2 +1,8 @@
+2008-06-10 JFL Peripheral Solutions jimw@jflinc.com
+
+    * TwainApp.cpp List all DS, not just version 2.
+    * Update to newest twain.h file
+    
+    
 December 10, 2007 JFL Peripheral Solutions jimw@jflinc.com
     * Initial Release.
