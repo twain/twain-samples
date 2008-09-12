@@ -1,3 +1,9 @@
+2008-09-12 JFL Peripheral Solutions jimw@jflinc.com
+
+    * Fix typo
+    * Use latest DSM merge module
+    * Increase build number
+
 December 10, 2007 JFL Peripheral Solutions jimw@jflinc.com
     * Initial Release.
 

@@ -58,33 +58,6 @@
     }
     "Configurations"
     {
-        "Debug"
-        {
-        "DisplayName" = "8:Debug"
-        "IsDebugOnly" = "11:TRUE"
-        "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug64\\DS Installer 64.msi"
-        "PackageFilesAs" = "3:2"
-        "PackageFileSize" = "3:-2147483648"
-        "CabType" = "3:1"
-        "Compression" = "3:2"
-        "SignOutput" = "11:FALSE"
-        "CertificateFile" = "8:"
-        "PrivateKeyFile" = "8:"
-        "TimeStampServer" = "8:"
-        "InstallerBootstrapper" = "3:2"
-            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
-            {
-            "Enabled" = "11:TRUE"
-            "PromptEnabled" = "11:TRUE"
-            "PrerequisitesLocation" = "2:1"
-            "Url" = "8:"
-            "ComponentsUrl" = "8:"
-                "Items"
-                {
-                }
-            }
-        }
         "Release"
         {
         "DisplayName" = "8:Release"
@@ -134,7 +107,7 @@
         {
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_164B111C280C4535AC7E0ECE5A7DE80E"
             {
-            "SourcePath" = "8:..\\pub\\bin\\TWAIN_logo.png"
+            "SourcePath" = "8:..\\..\\pub\\bin\\TWAIN_logo.png"
             "TargetName" = "8:TWAIN_logo.png"
             "Tag" = "8:"
             "Folder" = "8:_7F3AC73469D641B392D2D1F48A9249E9"
@@ -325,15 +298,15 @@
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:1.0.2"
         "Manufacturer" = "8:TWAIN Working Group"
         "ARPHELPTELEPHONE" = "8:http://www.twainforum.org/phpBB2/index.php"
         "ARPHELPLINK" = "8:http://sourceforge.net/projects/twain-samples/"
         "Title" = "8:TWAIN Sample DS 64 Installer"
         "Subject" = "8:"
         "ARPCONTACT" = "8:TWAIN Working Group"
-        "Keywords" = "8:TWIAN 2.0 DS Sample 64bit"
-        "ARPCOMMENTS" = "8:Sample software only TWIAN 2.0 Data Source using freeimage"
+        "Keywords" = "8:TWAIN 2.0 DS Sample 64bit"
+        "ARPCOMMENTS" = "8:Sample software only TWAIN 2.0 Data Source using freeimage"
         "ARPURLINFOABOUT" = "8:http://twain.org"
         "ARPPRODUCTICON" = "8:_B7ECB12BF6AB400BACA48E8A3E93AD3B"
         "ARPIconIndex" = "3:0"
@@ -743,7 +716,7 @@
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:FALSE"
-            "SourcePath" = "8:..\\..\\pub\\bin\\twain64\\TWAINDSM64.msm"
+            "SourcePath" = "8:..\\..\\pub\\external\\bin\\TWAINDSM64.msm"
                 "Properties"
                 {
                 }
