@@ -61,9 +61,9 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
 // Global Variables
-bool gWaitForDS;                /**< global statis to indicate if we are waiting for DS */
-TwainApp* gpTwainApplication;   /**< The main application */
-extern bool gUSE_CALLBACKS;    // defined in TwainApp.cpp
+TW_UINT16   gDSMessage;           /**< global statis to indicate if we are waiting for DS */
+TwainApp   *gpTwainApplication;   /**< The main application */
+extern bool gUSE_CALLBACKS;       // defined in TwainApp.cpp
 
 //////////////////////////////////////////////////////////////////////////////
 /** 
@@ -289,7 +289,7 @@ void negotiateCaps()
 */
 void EnableDS()
 {
-  gWaitForDS = true;
+  gDSMessage = 0;
 
   // -Enable the data source. This puts us in state 5 which means that we
   // have to wait for the data source to tell us to move to state 6 and
@@ -303,7 +303,7 @@ void EnableDS()
   }
 
   // now we have to wait until we hear something back from the DS.
-  while(gWaitForDS)
+  while(!gDSMessage)
   {
 
     // If we are using callbacks, there is nothing to do here except sleep
@@ -325,15 +325,14 @@ void EnableDS()
       switch (twEvent.TWMessage)
       {
         case MSG_XFERREADY:
-          gWaitForDS = false;
-          gpTwainApplication->m_DSMState = 6;
-          break;
         case MSG_CLOSEDSREQ:
-          break;
         case MSG_CLOSEDSOK:
-          break;
         case MSG_NULL:
-          // no message returned from the source
+          gDSMessage = twEvent.TWMessage;
+          break;
+
+        default:
+          cerr << "\nError - Unknown message in MSG_PROCESSEVENT loop\n" << endl;
           break;
       }
     }
@@ -348,8 +347,13 @@ void EnableDS()
   // At this point the source has sent us a callback saying that it is ready to
   // transfer the image.
 
-  // move to state 6 as a result of the data source. We can start a scan now.
-  gpTwainApplication->startScan();
+  if(gDSMessage == MSG_XFERREADY)
+  {
+    // move to state 6 as a result of the data source. We can start a scan now.
+    gpTwainApplication->m_DSMState = 6;
+
+    gpTwainApplication->startScan();
+  }
 
   // Scan is done, disable the ds, thus moving us back to state 4 where we
   // can negotiate caps again.
@@ -363,6 +367,8 @@ void EnableDS()
 * Callback funtion for DS.  This is a callback function that will be called by
 * the source when it is ready for the application to start a scan. This 
 * callback needs to be registered with the DSM before it can be called.
+* It is important that the application returns right away after recieving this
+* message.  Set a flag and return.  Do not process the callback in this function.
 */
 #ifdef TWH_CMP_MSC
 TW_UINT16 FAR PASCAL
@@ -385,16 +391,19 @@ DSMCallback(pTW_IDENTITY _pOrigin,
   {
     return TWRC_FAILURE;
   }
+  switch (_MSG)
+  {
+    case MSG_XFERREADY:
+    case MSG_CLOSEDSREQ:
+    case MSG_CLOSEDSOK:
+    case MSG_NULL:
+      gDSMessage = _MSG;
+      break;
 
-  if(MSG_XFERREADY == _MSG)
-  {
-    gWaitForDS = false;
-    gpTwainApplication->m_DSMState = 6;
-  }
-  else
-  {
-    cerr << "Error - Unknown message in callback routine" << endl;
-    twrc = TWRC_FAILURE;
+    default:
+      cerr << "Error - Unknown message in callback routine" << endl;
+      twrc = TWRC_FAILURE;
+      break;
   }
 
   return twrc;

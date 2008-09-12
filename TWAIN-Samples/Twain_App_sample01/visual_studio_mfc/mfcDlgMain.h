@@ -84,7 +84,6 @@ public:
   afx_msg void OnLbnSelchangeDS();
   afx_msg void OnBnClickedConnectDs();
   afx_msg void OnLbnDblclkDs();
-//  virtual BOOL PreTranslateMessage(MSG* pMsg);
 
   CString   m_sStc_DS;
   CListBox  m_lst_DS;

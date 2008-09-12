@@ -80,7 +80,6 @@ public:
   afx_msg void OnDestroy();
   afx_msg void OnLbnSelchangeCAPS();
   afx_msg void OnBnClickedScan();
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
   afx_msg void OnBnClickedCancel();
   afx_msg void OnLbnDblclkCaps();
   void UpdateImageInfo();

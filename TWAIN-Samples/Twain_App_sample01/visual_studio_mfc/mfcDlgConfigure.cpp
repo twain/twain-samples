@@ -56,12 +56,15 @@
 */
 TwainApp *g_pTWAINApp = NULL;
 extern bool gUSE_CALLBACKS;    // defined in TwainApp.cpp
+TW_UINT16   gDSMessage;        /**< global statis to indicate if we are waiting for DS */
 
 //////////////////////////////////////////////////////////////////////////////
 /**
 * Callback funtion for DS.  This is a callback function that will be called by
 * the source when it is ready for the application to start a scan. This 
 * callback needs to be registered with the DSM before it can be called.
+* It is important that the application returns right away after recieving this
+* message.  Set a flag and return.  Do not process the callback in this function.
 */
 TW_UINT16 FAR PASCAL DSMCallback(pTW_IDENTITY _pOrigin,
             pTW_IDENTITY _pDest,
@@ -79,27 +82,14 @@ TW_UINT16 FAR PASCAL DSMCallback(pTW_IDENTITY _pOrigin,
   {
     return TWRC_FAILURE;
   }
+  
   switch (_MSG)
   {
     case MSG_XFERREADY:
-      g_pTWAINApp->m_DSMState = 6;
-      // move to state 6 as a result of the data source. We can start a scan now.
-      g_pTWAINApp->startScan();
-      // Scan is done, disable the ds, thus moving us back to state 4 where we
-      // can negotiate caps again.
-      g_pTWAINApp->disableDS();
-      break;
-
     case MSG_CLOSEDSREQ:
-      g_pTWAINApp->disableDS();
-      break;
-
     case MSG_CLOSEDSOK:
-      g_pTWAINApp->disableDS();
-      break;
-
     case MSG_NULL:
-      // no message returned from the source
+      gDSMessage = _MSG;
       break;
 
     default:
@@ -663,6 +653,8 @@ void Cmfc32DlgConfigure::OnLbnDblclkCaps()
 
 void Cmfc32DlgConfigure::OnBnClickedScan()
 {
+  gDSMessage = 0;
+
   // -Enable the data source. This puts us in state 5 which means that we
   // have to wait for the data source to tell us to move to state 6 and
   // start the transfer.  Once in state 5, no more set ops can be done on the
@@ -674,76 +666,65 @@ void Cmfc32DlgConfigure::OnBnClickedScan()
     return;
   }
 
-  // If we are using callbacks, there is nothing to do here except sleep
-  // and wait for our callback from the DS.  If we are not using them, 
-  // then we have to poll the DSM.
-  if(gUSE_CALLBACKS)
+  // now we have to wait until we hear something back from the DS.
+  while(!gDSMessage)
   {
-//#ifdef TWH_CMP_MSC
-//    Sleep(1000);
-//#else
-//    sleep(1);
-//#endif //TWH_CMP_MSC
 
-    // At this point the source has sent us a callback saying that it is ready to
-    // transfer the image.
-
-    // move to state 6 as a result of the data source. We can start a scan now.
-//    g_pTWAINApp->startScan();
-
-    // Scan is done, disable the ds, thus moving us back to state 4 where we
-    // can negotiate caps again.
-//    g_pTWAINApp->disableDS();
-    //OnOK();
-  }
-
-}
-
-BOOL Cmfc32DlgConfigure::PreTranslateMessage(MSG* pMsg)
-{
-  if(5 <= g_pTWAINApp->m_DSMState)
-  {
-    TW_INT16  rc;
-    TW_EVENT  twEvent = {0};
-
-    twEvent.pEvent    = (TW_MEMREF)pMsg;
-    twEvent.TWMessage = MSG_NULL;
-
-    rc = _DSM_Entry( g_pTWAINApp->getAppIdentity(),
-                g_pTWAINApp->getDataSource(),
-                DG_CONTROL,
-                DAT_EVENT,
-                MSG_PROCESSEVENT,
-                (TW_MEMREF)&twEvent);
-
-    if( TWRC_DSEVENT == rc )
+    // If we are using callbacks, there is nothing to do here except sleep
+    // and wait for our callback from the DS.  If we are not using them, 
+    // then we have to poll the DSM.
+    if(!gUSE_CALLBACKS)
     {
-          switch (twEvent.TWMessage)
-          {
-            case MSG_XFERREADY:
-                  
-                  
-                  g_pTWAINApp->m_DSMState = 6;
-                  g_pTWAINApp->startScan();
-                  UpdateImageInfo();
-                  //UpdateExtImageInfo();
-                  g_pTWAINApp->disableDS();
-                  break;
-            case MSG_CLOSEDSREQ:
-                  g_pTWAINApp->disableDS();
-                  break;
-            case MSG_CLOSEDSOK:
-                  g_pTWAINApp->disableDS();
-                  break;
-            case MSG_NULL:
-                  // no message returned from the source
-                  break;
-          }
-      return FALSE;
+      TW_EVENT twEvent = {0};
+
+      twEvent.TWMessage = MSG_NULL;
+      _DSM_Entry( g_pTWAINApp->getAppIdentity(),
+                  g_pTWAINApp->getDataSource(),
+                  DG_CONTROL,
+                  DAT_EVENT,
+                  MSG_PROCESSEVENT,
+                  (TW_MEMREF)&twEvent);
+
+      // check for message from Source
+      switch (twEvent.TWMessage)
+      {
+        case MSG_XFERREADY:
+        case MSG_CLOSEDSREQ:
+        case MSG_CLOSEDSOK:
+        case MSG_NULL:
+          gDSMessage = twEvent.TWMessage;
+          break;
+
+        default:
+          TRACE("Error - Unknown message in MSG_PROCESSEVENT loop");
+          break;
+      }
     }
+
+#ifdef TWH_CMP_MSC
+    Sleep(1000);
+#else
+    sleep(1);
+#endif //TWH_CMP_MSC
   }
 
-  return CDialog::PreTranslateMessage(pMsg);
+  // At this point the source has sent us a callback saying that it is ready to
+  // transfer the image.
+
+  if(gDSMessage == MSG_XFERREADY)
+  {
+    // move to state 6 as a result of the data source. We can start a scan now.
+    g_pTWAINApp->m_DSMState = 6;
+    g_pTWAINApp->updateIMAGEINFO();
+    UpdateImageInfo();
+    g_pTWAINApp->startScan();
+  }
+
+  // Scan is done, disable the ds, thus moving us back to state 4 where we
+  // can negotiate caps again.
+  g_pTWAINApp->disableDS();
+
+  return;
 }
 
 void Cmfc32DlgConfigure::OnBnClickedCancel()
