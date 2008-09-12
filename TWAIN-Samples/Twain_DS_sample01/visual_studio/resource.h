@@ -1,10 +1,9 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by TWAINGUI.rc
+// Used by TWAINDS_GUI.rc
 //
 #define IDD_DLG_TWAINSAMPLE             1000
 #define IDC_CBX_RESOLUTION              1000
-#define IDD_DLG_TWAINSAMPLE             1000
 #define IDC_CBX_PAPERSIZE               1001
 #define IDC_CBX_PIXELTYPE               1002
 

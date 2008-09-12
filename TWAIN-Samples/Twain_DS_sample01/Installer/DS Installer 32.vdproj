@@ -58,39 +58,12 @@
     }
     "Configurations"
     {
-        "Debug"
-        {
-        "DisplayName" = "8:Debug"
-        "IsDebugOnly" = "11:TRUE"
-        "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug32\\Installer.msi"
-        "PackageFilesAs" = "3:2"
-        "PackageFileSize" = "3:-2147483648"
-        "CabType" = "3:1"
-        "Compression" = "3:2"
-        "SignOutput" = "11:FALSE"
-        "CertificateFile" = "8:"
-        "PrivateKeyFile" = "8:"
-        "TimeStampServer" = "8:"
-        "InstallerBootstrapper" = "3:2"
-            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
-            {
-            "Enabled" = "11:TRUE"
-            "PromptEnabled" = "11:TRUE"
-            "PrerequisitesLocation" = "2:1"
-            "Url" = "8:"
-            "ComponentsUrl" = "8:"
-                "Items"
-                {
-                }
-            }
-        }
         "Release"
         {
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:TWAINDS_win32_installer\\Installer.msi"
+        "OutputFilename" = "8:TWAINDS_win32_installer\\DS Installer 32.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -179,7 +152,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_82FC78C1D02143AD89B4D9BD6721D026"
             {
-            "SourcePath" = "8:..\\pub\\bin\\TWAIN_logo.png"
+            "SourcePath" = "8:..\\..\\pub\\bin\\TWAIN_logo.png"
             "TargetName" = "8:TWAIN_logo.png"
             "Tag" = "8:"
             "Folder" = "8:_425B83679B2D435AAD48C246EBD188D1"
@@ -330,15 +303,15 @@
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:1.0.2"
         "Manufacturer" = "8:TWAIN Working Group"
         "ARPHELPTELEPHONE" = "8:http://www.twainforum.org/phpBB2/index.php"
         "ARPHELPLINK" = "8:http://sourceforge.net/projects/twain-samples/"
         "Title" = "8:TWAIN Sample DS 32 Installer"
         "Subject" = "8:"
         "ARPCONTACT" = "8:TWAIN Working Group"
-        "Keywords" = "8:TWIAN 2.0 DS Sample 32bit"
-        "ARPCOMMENTS" = "8:Sample software only TWIAN 2.0 Data Source using freeimage"
+        "Keywords" = "8:TWAIN 2.0 DS Sample 32bit"
+        "ARPCOMMENTS" = "8:Sample software only TWAIN 2.0 Data Source using freeimage"
         "ARPURLINFOABOUT" = "8:http://twain.org"
         "ARPPRODUCTICON" = "8:_914BB823F10544F082D7DD50B14DD151"
         "ARPIconIndex" = "3:0"
@@ -748,7 +721,7 @@
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:FALSE"
-            "SourcePath" = "8:..\\..\\pub\\bin\\twain32\\TWAINDSM32.msm"
+            "SourcePath" = "8:..\\..\\pub\\external\\bin\\TWAINDSM32.msm"
                 "Properties"
                 {
                     "_92C0B735BA65418D80665F240AE78CAF.F6BD06CC863147E1A74785A2413759ED"
