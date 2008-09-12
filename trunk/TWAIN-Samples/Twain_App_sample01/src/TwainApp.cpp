@@ -774,6 +774,29 @@ void TwainApp::startScan()
 }
 
 //////////////////////////////////////////////////////////////////////////////
+bool TwainApp::updateIMAGEINFO()
+{
+  // clear our image info structure
+  memset(&m_ImageInfo, 0, sizeof(m_ImageInfo));
+
+  // get the image details
+  cout << "app: Getting the image info..." << endl;
+  TW_UINT16 twrc = _DSM_Entry(
+    &m_MyInfo,
+    m_pDataSource,
+    DG_IMAGE,
+    DAT_IMAGEINFO,
+    MSG_GET,
+    (TW_MEMREF)&(m_ImageInfo));
+
+  if(TWRC_SUCCESS != twrc)
+  {
+    printError(m_pDataSource, "Error while trying to get the image information!");
+  }
+  return TWRC_SUCCESS==twrc? true:false;
+}
+
+//////////////////////////////////////////////////////////////////////////////
 void TwainApp::initiateTransfer_Native()
 {
   cout << "app: Starting a TWSX_NATIVE transfer..." << endl;
@@ -787,22 +810,8 @@ void TwainApp::initiateTransfer_Native()
     m_nXferNum++;
     memset(szOutFileName, 0, sizeof(szOutFileName));
 
-    // clear our image info structure
-    memset(&m_ImageInfo, 0, sizeof(m_ImageInfo));
-
-    // get the image details
-    cout << "app: Getting the image info..." << endl;
-    twrc = _DSM_Entry(
-      &m_MyInfo,
-      m_pDataSource,
-      DG_IMAGE,
-      DAT_IMAGEINFO,
-      MSG_GET,
-      (TW_MEMREF)&(m_ImageInfo));
-
-    if(TWRC_SUCCESS != twrc)
+    if(!updateIMAGEINFO())
     {
-      printError(m_pDataSource, "Error while trying to get the image information!");
       break;
     }
 
@@ -990,22 +999,8 @@ void TwainApp::initiateTransfer_File()
   {
     m_nXferNum++;
 
-    // clear our image info structure
-    memset(&m_ImageInfo, 0, sizeof(m_ImageInfo));
-
-    // get the image details
-    cout << "app: Getting the image info..." << endl;
-    twrc = _DSM_Entry(
-      &m_MyInfo,
-      m_pDataSource,
-      DG_IMAGE,
-      DAT_IMAGEINFO,
-      MSG_GET,
-      (TW_MEMREF)&(m_ImageInfo));
-
-    if(TWRC_SUCCESS != twrc)
+    if(!updateIMAGEINFO())
     {
-      printError(m_pDataSource, "Error while trying to get the image information!");
       break;
     }
 
@@ -1051,6 +1046,15 @@ void TwainApp::initiateTransfer_File()
 
     if(TWRC_XFERDONE == twrc)
     {
+      // Findout where the file was actualy saved
+      twrc = _DSM_Entry(
+        &m_MyInfo,
+        m_pDataSource,
+        DG_CONTROL,
+        DAT_SETUPFILEXFER,
+        MSG_GET,
+        (TW_MEMREF)&(filexfer));
+
 #ifdef _WINDOWS
         ShellExecute(m_Parent, "open", filexfer.FileName, NULL, NULL, SW_SHOWNORMAL);
 #else
@@ -1159,22 +1163,8 @@ void TwainApp::initiateTransfer_Memory()
     m_nXferNum++;
     memset(szOutFileName, 0, sizeof(szOutFileName));
 
-    // clear our image info structure
-    memset(&m_ImageInfo, 0, sizeof(m_ImageInfo));
-
-    // get the image details
-    cout << "app: Getting the image info..." << endl;
-    twrc = _DSM_Entry(
-      &m_MyInfo,
-      m_pDataSource,
-      DG_IMAGE,
-      DAT_IMAGEINFO,
-      MSG_GET,
-      (TW_MEMREF)&(m_ImageInfo));
-
-    if(TWRC_SUCCESS != twrc)
+    if(!updateIMAGEINFO())
     {
-      printError(m_pDataSource, "Error while trying to get the image information!");
       break;
     }
 
@@ -1291,6 +1281,13 @@ void TwainApp::initiateTransfer_Memory()
 
         if(TWRC_XFERDONE == twrc)
         {
+          // deleting the CTiffWriter object will close the file
+          if(pTifImg)
+          {
+            delete pTifImg;
+            pTifImg = 0;
+          }
+
 #ifdef _WINDOWS
           ShellExecute(m_Parent, "open", szOutFileName, NULL, NULL, SW_SHOWNORMAL);
 #else
@@ -1316,8 +1313,8 @@ void TwainApp::initiateTransfer_Memory()
     if(pTifImg)
     {
       delete pTifImg;
+      pTifImg = 0;
     }
-    pTifImg = 0;
     // cleanup memory used to transfer image
     _DSM_UnlockMemory((TW_MEMREF)(memXferBufTemplate.Memory.TheMem));
     _DSM_Free(hMem);
@@ -1455,6 +1452,33 @@ FIBITMAP* TwainApp::createDIB()
 }
 
 //////////////////////////////////////////////////////////////////////////////
+pTW_IDENTITY TwainApp::getAppIdentity()
+{
+  return &m_MyInfo;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+pTW_IDENTITY TwainApp::getDataSource(TW_INT16 _index /*= -1*/) const
+{
+  if(_index < 0 )
+  {
+    return m_pDataSource;
+  }
+  else
+  {
+    if(((unsigned int)_index) < m_DataSources.size())
+    {
+      return (pTW_IDENTITY)&m_DataSources[_index];
+    }
+    else
+    {
+      return NULL;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
 bool TwainApp::get_CAP(TW_CAPABILITY& _cap)
 {
   if(m_DSMState < 4)
@@ -1504,23 +1528,23 @@ bool TwainApp::get_CAP(TW_CAPABILITY& _cap)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-void TwainApp::set_CAP_XFERCOUNT(const TW_INT16 _count)
+bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_INT16 _value)
 {
+  bool  bResult = true;
   TW_CAPABILITY cap;
-  cap.Cap = CAP_XFERCOUNT;
+  cap.Cap     = Cap;
   cap.ConType = TWON_ONEVALUE;
 
   cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_INT16));
   if(0 == cap.hContainer)
   {
     printError(0, "Error allocating memory");
-    return;
+    return false;
   }
-
   pTW_ONEVALUE_INT16 pVal = (pTW_ONEVALUE_INT16)_DSM_LockMemory(cap.hContainer);
 
   pVal->ItemType = TWTY_INT16;
-  pVal->Item = _count;
+  pVal->Item = _value;
 
   // capability structure is set, make the call to the source now
   TW_INT16 twrc = _DSM_Entry(
@@ -1534,10 +1558,97 @@ void TwainApp::set_CAP_XFERCOUNT(const TW_INT16 _count)
   if(TWRC_FAILURE == twrc)
   {
     printError(m_pDataSource, "Could not set capability");
+    bResult = false;
   }
 
   _DSM_UnlockMemory((TW_MEMREF)pVal);
   _DSM_Free(cap.hContainer);
+  return bResult;
+}
+
+bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_UINT16 _value)
+{
+  bool  bResult = true;
+  TW_CAPABILITY cap;
+  cap.Cap     = Cap;
+  cap.ConType = TWON_ONEVALUE;
+
+  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_UINT16));
+  if(0 == cap.hContainer)
+  {
+    printError(0, "Error allocating memory");
+    return false;
+  }
+  pTW_ONEVALUE_UINT16 pVal = (pTW_ONEVALUE_UINT16)_DSM_LockMemory(cap.hContainer);
+
+  pVal->ItemType = TWTY_UINT16;
+  pVal->Item = _value;
+
+  // capability structure is set, make the call to the source now
+  TW_INT16 twrc = _DSM_Entry(
+    &m_MyInfo,
+    m_pDataSource,
+    DG_CONTROL,
+    DAT_CAPABILITY,
+    MSG_SET,
+    (TW_MEMREF)&(cap));
+
+  if(TWRC_FAILURE == twrc)
+  {
+    printError(m_pDataSource, "Could not set capability");
+    bResult = false;
+  }
+
+  _DSM_UnlockMemory((TW_MEMREF)pVal);
+  _DSM_Free(cap.hContainer);
+  return bResult;
+}
+
+
+bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValue)
+{
+  bool  bResult = true;
+  TW_CAPABILITY cap;
+  cap.Cap = Cap;
+  cap.ConType = TWON_ONEVALUE;
+
+  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_FIX32));
+  if(0 == cap.hContainer)
+  {
+    printError(0, "Error allocating memory");
+    return false;
+  }
+
+  pTW_ONEVALUE_FIX32 pVal = (pTW_ONEVALUE_FIX32)_DSM_LockMemory(cap.hContainer);
+
+  pVal->ItemType = TWTY_FIX32;
+  pVal->Item = *_pValue;
+
+  // capability structure is set, make the call to the source now
+  TW_UINT16 twrc = _DSM_Entry(
+    &m_MyInfo,
+    m_pDataSource,
+    DG_CONTROL,
+    DAT_CAPABILITY,
+    MSG_SET,
+    (TW_MEMREF)&(cap));
+
+  if(TWRC_FAILURE == twrc)
+  {
+    printError(m_pDataSource, "Could not set capability");
+    bResult = false;
+  }
+
+  _DSM_UnlockMemory((TW_MEMREF)pVal);
+  _DSM_Free(cap.hContainer);
+
+  return bResult;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+void TwainApp::set_CAP_XFERCOUNT(const TW_INT16 _count)
+{
+  set_CapabilityOneValue(CAP_XFERCOUNT, _count);
 
   // now that we have set it, re-get it to ensure it was set
   if(get_CAP(m_CAP_XFERCOUNT))
@@ -1556,38 +1667,7 @@ void TwainApp::set_CAP_XFERCOUNT(const TW_INT16 _count)
 //////////////////////////////////////////////////////////////////////////////
 void TwainApp::set_ICAP_UNITS(const TW_UINT16 _val)
 {
-  TW_CAPABILITY cap;
-
-  cap.Cap        = ICAP_UNITS;
-  cap.ConType    = TWON_ONEVALUE;
-  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_UINT16));
-  if(0 == cap.hContainer)
-  {
-    printError(0, "Error allocating memory");
-    return;
-  }
-
-  pTW_ONEVALUE_UINT16 pVal = (pTW_ONEVALUE_UINT16)_DSM_LockMemory(cap.hContainer);
-
-  pVal->ItemType = TWTY_UINT16;
-  pVal->Item = _val;
-
-  // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_CAPABILITY,
-    MSG_SET,
-    (TW_MEMREF)&(cap));
-
-  if(TWRC_FAILURE == twrc)
-  {
-    printError(m_pDataSource, "Could not set capability");
-  }
-
-  _DSM_UnlockMemory((TW_MEMREF)pVal);
-  _DSM_Free(cap.hContainer);
+  set_CapabilityOneValue(ICAP_UNITS, _val);
 
   // now that we have set it, re-get it to ensure it was set
   if(get_CAP(m_ICAP_UNITS))
@@ -1615,38 +1695,7 @@ void TwainApp::set_ICAP_UNITS(const TW_UINT16 _val)
 //////////////////////////////////////////////////////////////////////////////
 void TwainApp::set_ICAP_PIXELTYPE(const TW_UINT16 _pt)
 {
-  TW_CAPABILITY cap;
-  cap.Cap = ICAP_PIXELTYPE;
-  cap.ConType = TWON_ONEVALUE;
-
-  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_UINT16));
-  if(0 == cap.hContainer)
-  {
-    printError(0, "Error allocating memory");
-    return;
-  }
-
-  pTW_ONEVALUE_UINT16 pVal = (pTW_ONEVALUE_UINT16)_DSM_LockMemory(cap.hContainer);
-
-  pVal->ItemType = TWTY_UINT16;
-  pVal->Item = _pt;
-
-  // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_CAPABILITY,
-    MSG_SET,
-    (TW_MEMREF)&(cap));
-
-  if(TWRC_FAILURE == twrc)
-  {
-    printError(m_pDataSource, "Could not set capability");
-  }
-
-  _DSM_UnlockMemory((TW_MEMREF)pVal);
-  _DSM_Free(cap.hContainer);
+  set_CapabilityOneValue(ICAP_PIXELTYPE, _pt);
 
   // now that we have set it, re-get it to ensure it was set
   if(get_CAP(m_ICAP_PIXELTYPE))
@@ -1696,38 +1745,7 @@ void TwainApp::set_ICAP_RESOLUTION(const TW_UINT16 _ICAP, const pTW_FIX32 _pVal)
     return;
   }
 
-  TW_CAPABILITY cap;
-  cap.Cap = _ICAP;
-  cap.ConType = TWON_ONEVALUE;
-
-  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_FIX32));
-  if(0 == cap.hContainer)
-  {
-    printError(0, "Error allocating memory");
-    return;
-  }
-
-  pTW_ONEVALUE_FIX32 pVal = (pTW_ONEVALUE_FIX32)_DSM_LockMemory(cap.hContainer);
-
-  pVal->ItemType = TWTY_FIX32;
-  pVal->Item = *_pVal;
-
-  // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_CAPABILITY,
-    MSG_SET,
-    (TW_MEMREF)&(cap));
-
-  if(TWRC_FAILURE == twrc)
-  {
-    printError(m_pDataSource, "Could not set capability");
-  }
-
-  _DSM_UnlockMemory((TW_MEMREF)pVal);
-  _DSM_Free(cap.hContainer);
+  set_CapabilityOneValue(_ICAP, _pVal);
 
   // Get the new RESOLUTION caps values to see if the set was successfull.
   get_CAP(m_ICAP_XRESOLUTION);
@@ -1823,38 +1841,7 @@ void TwainApp::set_ICAP_FRAMES(const pTW_FRAME _pFrame)
 //////////////////////////////////////////////////////////////////////////////
 void TwainApp::set_ICAP_XFERMECH(const TW_UINT16 _mech)
 {
-  TW_CAPABILITY cap;
-  cap.Cap = ICAP_XFERMECH;
-  cap.ConType = TWON_ONEVALUE;
-
-  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_UINT16));
-  if(0 == cap.hContainer)
-  {
-    printError(0, "Error allocating memory");
-    return;
-  }
-
-  pTW_ONEVALUE_UINT16 pVal = (pTW_ONEVALUE_UINT16)_DSM_LockMemory(cap.hContainer);
-
-  pVal->ItemType = TWTY_UINT16;
-  pVal->Item = _mech;
-
-  // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_CAPABILITY,
-    MSG_SET,
-    (TW_MEMREF)&(cap));
-
-  if(TWRC_FAILURE == twrc)
-  {
-    printError(m_pDataSource, "Could not set capability");
-  }
-
-  _DSM_UnlockMemory((TW_MEMREF)pVal);
-  _DSM_Free(cap.hContainer);
+  set_CapabilityOneValue(ICAP_XFERMECH, _mech);
 
   // now that we have set it, re-get it to ensure it was set
   if(get_CAP(m_ICAP_XFERMECH))
@@ -1877,38 +1864,7 @@ void TwainApp::set_ICAP_XFERMECH(const TW_UINT16 _mech)
 //////////////////////////////////////////////////////////////////////////////
 void TwainApp::set_ICAP_IMAGEFILEFORMAT(const TW_UINT16 _fileformat)
 {
-  TW_CAPABILITY cap;
-  cap.Cap = ICAP_IMAGEFILEFORMAT;
-  cap.ConType = TWON_ONEVALUE;
-
-  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_UINT16));
-  if(0 == cap.hContainer)
-  {
-    printError(0, "Error allocating memory");
-    return;
-  }
-
-  pTW_ONEVALUE_UINT16 pVal = (pTW_ONEVALUE_UINT16)_DSM_LockMemory(cap.hContainer);
-
-  pVal->ItemType = TWTY_UINT16;
-  pVal->Item = _fileformat;
-
-  // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_CAPABILITY,
-    MSG_SET,
-    (TW_MEMREF)&(cap));
-
-  if(TWRC_FAILURE == twrc)
-  {
-    printError(m_pDataSource, "Could not set capability");
-  }
-
-  _DSM_UnlockMemory((TW_MEMREF)pVal);
-  _DSM_Free(cap.hContainer);
+  set_CapabilityOneValue(ICAP_IMAGEFILEFORMAT, _fileformat);
 
   // now that we have set it, re-get it to ensure it was set
   if(get_CAP(m_ICAP_IMAGEFILEFORMAT))
@@ -1930,38 +1886,7 @@ void TwainApp::set_ICAP_IMAGEFILEFORMAT(const TW_UINT16 _fileformat)
 //////////////////////////////////////////////////////////////////////////////
 void TwainApp::set_ICAP_COMPRESSION(const TW_UINT16 _comp)
 {
-  TW_CAPABILITY cap;
-  cap.Cap = ICAP_COMPRESSION;
-  cap.ConType = TWON_ONEVALUE;
-
-  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_UINT16));
-  if(0 == cap.hContainer)
-  {
-    printError(0, "Error allocating memory");
-    return;
-  }
-
-  pTW_ONEVALUE_UINT16 pVal = (pTW_ONEVALUE_UINT16)_DSM_LockMemory(cap.hContainer);
-
-  pVal->ItemType = TWTY_UINT16;
-  pVal->Item = _comp;
-
-  // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_CAPABILITY,
-    MSG_SET,
-    (TW_MEMREF)&(cap));
-
-  if(TWRC_FAILURE == twrc)
-  {
-    printError(m_pDataSource, "Could not set capability");
-  }
-
-  _DSM_UnlockMemory((TW_MEMREF)pVal);
-  _DSM_Free(cap.hContainer);
+  set_CapabilityOneValue(ICAP_COMPRESSION, _comp);
 
   // now that we have set it, re-get it to ensure it was set
   if(get_CAP(m_ICAP_COMPRESSION))
@@ -2240,33 +2165,6 @@ bool TwainApp::getICAP_COMPRESSION(TW_UINT16& _val)
   }
 
   return bret;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-pTW_IDENTITY TwainApp::getAppIdentity()
-{
-  return &m_MyInfo;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-pTW_IDENTITY TwainApp::getDataSource(TW_INT16 _index /*= -1*/) const
-{
-  if(_index < 0 )
-  {
-    return m_pDataSource;
-  }
-  else
-  {
-    if(((unsigned int)_index) < m_DataSources.size())
-    {
-      return (pTW_IDENTITY)&m_DataSources[_index];
-    }
-    else
-    {
-      return NULL;
-    }
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////

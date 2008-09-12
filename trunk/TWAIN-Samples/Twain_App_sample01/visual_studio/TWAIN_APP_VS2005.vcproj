@@ -219,6 +219,10 @@
 				RelativePath="..\src\TwainApp_ui.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\src\VerifySignature.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

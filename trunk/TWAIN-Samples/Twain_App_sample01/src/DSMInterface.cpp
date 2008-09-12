@@ -45,6 +45,11 @@
 #include <iostream>
 using namespace std;
 
+// On Windows the official TWAINDSM.dll is signed.  this function can verify the signature.
+#ifdef TWH_CMP_MSC
+BOOL VerifyEmbeddedSignature(LPCWSTR pwszSourceFile);
+#endif
+
 #ifdef TWH_CMP_MSC
 HMODULE
 #else
@@ -100,6 +105,15 @@ bool LoadDSMLib(char* _pszLibName)
 
   if((gpDSM=LOADLIBRARY(_pszLibName)) != 0)
   {
+// On Windows the official TWAINDSM.dll is signed.  this function can verify the signature.
+#ifdef TWH_CMP_MSC
+ 	  WCHAR szPath[MAX_PATH];
+	  if(GetModuleFileNameW(gpDSM, szPath, MAX_PATH))
+    {
+      VerifyEmbeddedSignature(szPath);
+    }
+#endif //TWH_CMP_MSC
+
     if((gpDSM_Entry=(DSMENTRYPROC)LOADFUNCTION(gpDSM, "DSM_Entry")) == 0)
     {
 #ifdef TWH_CMP_MSC // dlsym returning NULL is not an error on Unix

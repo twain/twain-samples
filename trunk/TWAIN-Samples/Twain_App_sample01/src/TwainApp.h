@@ -239,6 +239,30 @@ public:
   void initiateTransfer_Memory();
 
 /**
+* Try to sets a OneValue Capability to the value passed
+* @param[in] Cap the capability to update to set
+* @param[in] _value the value to set
+* @return true if successful
+*/
+  bool set_CapabilityOneValue(TW_UINT16 Cap, const TW_INT16 _value);
+
+/**
+* Try to sets a OneValue Capability to the value passed
+* @param[in] Cap the capability to update to set
+* @param[in] _value the value to set
+* @return true if successful
+*/
+  bool set_CapabilityOneValue(TW_UINT16 Cap, const TW_UINT16 _value);
+
+/**
+* Try to sets a OneValue Capability to the value passed
+* @param[in] Cap the capability to update to set
+* @param[in] _value the value to set
+* @return true if successful
+*/
+  bool set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValue);
+
+/**
 * Gets the capability.
 * @param[in,out] _cap the capability struct to fill. _cap.Cap needs to be
 * filled with the capability to retrieve.
@@ -388,6 +412,12 @@ public:
 * @return pointer to the image info
 */
   pTW_IMAGEINFO getIMAGEINFO() {return &m_ImageInfo;}
+
+/**
+* retrieve the imageinfo for the current image
+* @return true on succes
+*/
+  bool updateIMAGEINFO();
 
   ////////////////
   // CAPABILITIES

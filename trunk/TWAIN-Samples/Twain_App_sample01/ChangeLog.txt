@@ -1,3 +1,16 @@
+2008-09-12 JFL Peripheral Solutions jimw@jflinc.com
+
+    * mfcDlgConfigure.cpp, Fix DSM Callback, to set flag and return right away
+    * mfcDlgConfigure.cpp, Display image info on dialog
+    * VerifySignature.cpp, DSMInterface.cpp, Added sample code to verify the Integrity of the DSM being loaded.
+    * TwainApp.cpp, Close the file with memory transfer so it can be displayed.
+    * TwainApp.cpp, TwainApp.h, Create updateIMAGEINFO as a separate function
+    * TwainApp.cpp, TwainApp.h, Create set_CapabilityXXXX functions for to simplify code.
+    * Statically link to MFC, remove dependencies from installer.
+    * Fix typos
+    * Use latest DSM merge module
+    * Increase build number
+
 2008-06-10 JFL Peripheral Solutions jimw@jflinc.com
 
     * TwainApp.cpp List all DS, not just version 2.

@@ -23,7 +23,7 @@
 			OutputDirectory="$(ConfigurationName)32"
 			IntermediateDirectory="$(ConfigurationName)32"
 			ConfigurationType="1"
-			UseOfMFC="2"
+			UseOfMFC="1"
 			CharacterSet="2"
 			>
 			<Tool
@@ -52,7 +52,7 @@
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -77,6 +77,8 @@
 				OutputFile="$(OutDir)\$(ProjectName)32_d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib"
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames="uafxcwd.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -113,7 +115,7 @@
 			OutputDirectory="$(ConfigurationName)64"
 			IntermediateDirectory="$(ConfigurationName)64"
 			ConfigurationType="1"
-			UseOfMFC="2"
+			UseOfMFC="1"
 			CharacterSet="2"
 			>
 			<Tool
@@ -143,7 +145,7 @@
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;WIN64"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -168,6 +170,8 @@
 				OutputFile="$(OutDir)\$(ProjectName)64_d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib"
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames="uafxcwd.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="17"
@@ -204,7 +208,7 @@
 			OutputDirectory="$(ConfigurationName)32"
 			IntermediateDirectory="$(ConfigurationName)32"
 			ConfigurationType="1"
-			UseOfMFC="2"
+			UseOfMFC="1"
 			CharacterSet="2"
 			>
 			<Tool
@@ -231,11 +235,11 @@
 				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\;..\..\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
 				MinimalRebuild="false"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -256,6 +260,8 @@
 				OutputFile="$(OutDir)\$(ProjectName)32.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib"
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames="uafxcw.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -294,7 +300,7 @@
 			OutputDirectory="$(ConfigurationName)64"
 			IntermediateDirectory="$(ConfigurationName)64"
 			ConfigurationType="1"
-			UseOfMFC="2"
+			UseOfMFC="1"
 			CharacterSet="2"
 			>
 			<Tool
@@ -322,7 +328,7 @@
 				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\;..\..\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;WIN64"
 				MinimalRebuild="false"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -347,6 +353,8 @@
 				OutputFile="$(OutDir)\$(ProjectName)64.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib"
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames="uafxcw.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -523,6 +531,10 @@
 			</File>
 			<File
 				RelativePath="..\src\TwainApp_ui.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\VerifySignature.cpp"
 				>
 			</File>
 		</Filter>
