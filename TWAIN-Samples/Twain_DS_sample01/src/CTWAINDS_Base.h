@@ -519,6 +519,15 @@ public:
   */
   virtual TW_INT16 updatePreDependencies(CTWAINContainer* _pContainer);
 
+  /**
+  * Validate the value being used to set a capability.  Ranges and enums can be tested
+  * by the capability but OneValues might have only some values that are acceptable.
+  * Override this function in base class to support more capabilities
+  * @param[in] _pCap a pointer to TW_CAPABILITY structure.
+  * @return a valid TWRC_xxxx return code.
+  */
+  virtual TW_INT16 validateCapabilitySet(CTWAINContainer* _pContainer);
+
     /**
   * if the CTWAINContainer is dependend on another Capabiltiy. 
   * This function is used to get the data it needs.
