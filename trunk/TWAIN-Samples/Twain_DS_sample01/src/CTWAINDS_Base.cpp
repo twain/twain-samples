@@ -488,7 +488,7 @@ TW_INT16 CTWAINDS_Base::dat_imagememxfer(TW_UINT16         _MSG,
 
     default:
       setConditionCode(TWCC_BADPROTOCOL);
-      assert(0);
+      //assert(0);
       twrc = TWRC_FAILURE;
       break;
   }
@@ -599,7 +599,7 @@ TW_INT16 CTWAINDS_Base::dat_pendingxfers(TW_UINT16        _MSG,
 
     default:
       setConditionCode(TWCC_BADPROTOCOL);
-      assert(0);
+      //assert(0);
       twrc = TWRC_FAILURE;
       break;
   }
@@ -835,14 +835,30 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
         case MSG_GETDEFAULT:
         case MSG_GET:
           _pCap->ConType = (MSG_GET==_MSG)?_pContainer->GetGetType():TWON_ONEVALUE;
-          updatePreDependencies(_pContainer);
+          twrc = updatePreDependencies(_pContainer);
+          if(twrc != TWRC_SUCCESS)
+          {
+            break;
+          }
+
          _pCap->hContainer = _pContainer->GetContainer(_MSG);
           twrc = TWRC_SUCCESS;
           break;
 
         case MSG_SET:
           {
-            updatePreDependencies(_pContainer);
+            twrc = updatePreDependencies(_pContainer);
+            if(twrc != TWRC_SUCCESS)
+            {
+              break;
+            }
+
+            twrc = validateCapabilitySet(_pContainer);
+            if(twrc != TWRC_SUCCESS)
+            {
+              break;
+            }
+
             TW_INT16 Condition;
             twrc = _pContainer->Set(_pCap, Condition);
             if(twrc != TWRC_SUCCESS)
@@ -857,6 +873,31 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
         break;
       }
     } // if(TWRC_SUCCESS == twrc)
+  }
+
+  return twrc;
+}
+
+TW_INT16 CTWAINDS_Base::validateCapabilitySet(CTWAINContainer* _pContainer)
+{
+  TW_INT16 twrc  = TWRC_SUCCESS;
+
+  switch(_pContainer->GetCapID())
+  {
+    case CAP_XFERCOUNT:
+    {
+      CTWAINContainerInt *pnCap = dynamic_cast<CTWAINContainerInt*>(_pContainer);
+      int Count = -1;
+        
+      if(!pnCap || !pnCap->GetCurrent(Count) || Count == 0 || Count <-1)
+      {
+        twrc = TWRC_FAILURE;
+        setConditionCode(TWCC_BADVALUE);
+      }
+      break;
+    }
+    default:
+    break;
   }
 
   return twrc;
