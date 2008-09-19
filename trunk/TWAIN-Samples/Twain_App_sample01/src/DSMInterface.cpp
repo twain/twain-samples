@@ -110,7 +110,12 @@ bool LoadDSMLib(char* _pszLibName)
  	  WCHAR szPath[MAX_PATH];
 	  if(GetModuleFileNameW(gpDSM, szPath, MAX_PATH))
     {
-      VerifyEmbeddedSignature(szPath);
+      if(!VerifyEmbeddedSignature(szPath))
+      {
+        // Only continue using the DSM from trusted distributor
+        unLoadDSMLib();
+        return false;
+      }
     }
 #endif //TWH_CMP_MSC
 

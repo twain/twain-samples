@@ -57,7 +57,7 @@ BOOL VerifyEmbeddedSignature( LPCWSTR pwszSourceFile )
   WinTrustData.cbStruct             = sizeof(WinTrustData);
   WinTrustData.pPolicyCallbackData  = NULL;             // Use default code signing EKU.
   WinTrustData.pSIPClientData       = NULL;             // No data to pass to SIP.
-  WinTrustData.dwUIChoice           = WTD_UI_ALL;//WTD_UI_NONE;      // Disable WVT UI.
+  WinTrustData.dwUIChoice           = WTD_UI_NONE;      // Disable WVT UI.    //WTD_UI_NONE; WTD_UI_ALL; WTD_UI_NOGOOD;
   WinTrustData.fdwRevocationChecks  = WTD_REVOKE_NONE;  // No revocation checking.
   WinTrustData.dwUnionChoice        = WTD_CHOICE_FILE;  // Verify an embedded signature on a file.
   WinTrustData.dwStateAction        = 0;                // Default verification.
@@ -80,7 +80,7 @@ BOOL VerifyEmbeddedSignature( LPCWSTR pwszSourceFile )
           - UI was disabled in dwUIChoice. No publisher or time stamp chain errors.
           - UI was enabled in dwUIChoice and the user clicked "Yes" when asked to run the signed subject.
       */
-      TRACE( "The file \"%s\" is signed and the signature was verified.", pwszSourceFile );
+      TRACE( _T("The file \"%s\" is signed and the signature was verified.\n"), pwszSourceFile );
       break;
   
     case TRUST_E_NOSIGNATURE:
@@ -93,12 +93,12 @@ BOOL VerifyEmbeddedSignature( LPCWSTR pwszSourceFile )
          || dwLastError == TRUST_E_PROVIDER_UNKNOWN )
         {
           // The file was not signed.
-          TRACE( "The file \"%s\" is not signed.", pwszSourceFile );
+          TRACE( _T("The file \"%s\" is not signed.\n"), pwszSourceFile );
         } 
         else 
         {
           // The signature was not valid or there was an error opening the file.
-          TRACE( "An unknown error occurred trying to verify the signature of the \"%s\" file.", pwszSourceFile );
+          TRACE( _T("An unknown error occurred trying to verify the signature of the \"%s\" file.\n"), pwszSourceFile );
           lStatus = dwLastError;
         }
       }
@@ -106,12 +106,12 @@ BOOL VerifyEmbeddedSignature( LPCWSTR pwszSourceFile )
 
     case TRUST_E_EXPLICIT_DISTRUST:
       // The hash that represents the subject or the publisher is not allowed by the admin or user.
-      TRACE( "The signature is present, but specifically disallowed." );
+      TRACE( _T("The signature is present, but specifically disallowed.\n") );
       break;
 
     case TRUST_E_SUBJECT_NOT_TRUSTED:
       // The user clicked "No" when asked to install and run.
-      TRACE( "The signature is present, but not trusted." );
+      TRACE( _T("The signature is present, but not trusted.\n") );
       break;
 
     case CRYPT_E_SECURITY_SETTINGS:
@@ -119,20 +119,20 @@ BOOL VerifyEmbeddedSignature( LPCWSTR pwszSourceFile )
       // by the admin and the admin policy has disabled user trust. No signature, publisher 
       // or time stamp errors.
       TRACE( "CRYPT_E_SECURITY_SETTINGS - The hash representing the subject or the "
-            "publisher wasn't explicitly trusted by the admin and admin policy has "
-            "disabled user trust. No signature, publisher or timestamp errors." );
+             "publisher wasn't explicitly trusted by the admin and admin policy has "
+             "disabled user trust. No signature, publisher or timestamp errors.\n" );
       break;
 
     case CERT_E_UNTRUSTEDROOT:
       TRACE( "A certificate chain processed, but terminated in a root "
-           "certificate which is not trusted by the trust provider. " );
+             "certificate which is not trusted by the trust provider.\n" );
       break;
 
     default:
       // The UI was disabled in dwUIChoice or the admin policy 
       // has disabled user trust. lStatus contains the 
       // publisher or time stamp chain error.
-      TRACE( "Error is:%d ", lStatus );
+      TRACE( _T("Error is:%d \n"), lStatus );
       break;
   }
 
@@ -149,7 +149,7 @@ BOOL VerifyEmbeddedSignature( LPCWSTR pwszSourceFile )
         0,
         NULL ))
   {
-    TRACE("Error: %s", (LPCTSTR)lpMsgBuf);
+    TRACE(_T("Error: %s \n"), (LPCTSTR)lpMsgBuf);
     
     {
       HWND hWnd = NULL;
