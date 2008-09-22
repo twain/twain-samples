@@ -57,7 +57,7 @@ BOOL VerifyEmbeddedSignature( LPCWSTR pwszSourceFile )
   WinTrustData.cbStruct             = sizeof(WinTrustData);
   WinTrustData.pPolicyCallbackData  = NULL;             // Use default code signing EKU.
   WinTrustData.pSIPClientData       = NULL;             // No data to pass to SIP.
-  WinTrustData.dwUIChoice           = WTD_UI_NONE;      // Disable WVT UI.    //WTD_UI_NONE; WTD_UI_ALL; WTD_UI_NOGOOD;
+  WinTrustData.dwUIChoice           = WTD_UI_NOGOOD;    // Disable WVT UI.    //WTD_UI_NONE; WTD_UI_ALL; WTD_UI_NOGOOD; //NOGOOD will not display a dialog for no signature
   WinTrustData.fdwRevocationChecks  = WTD_REVOKE_NONE;  // No revocation checking.
   WinTrustData.dwUnionChoice        = WTD_CHOICE_FILE;  // Verify an embedded signature on a file.
   WinTrustData.dwStateAction        = 0;                // Default verification.
@@ -94,6 +94,10 @@ BOOL VerifyEmbeddedSignature( LPCWSTR pwszSourceFile )
         {
           // The file was not signed.
           TRACE( _T("The file \"%s\" is not signed.\n"), pwszSourceFile );
+          if(IDYES==::MessageBox( NULL, L"The TWAIN DSM is not signed.\nContinue to load this DSM?", L"The TWAIN DSM Signature", MB_YESNO|MB_ICONQUESTION))
+          {
+            lStatus = ERROR_SUCCESS;
+          }
         } 
         else 
         {
