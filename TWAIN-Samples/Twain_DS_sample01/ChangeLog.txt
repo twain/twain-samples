@@ -1,6 +1,12 @@
+2008-09-29 JFL Peripheral Solutions jimw@jflinc.com
+
+    * Fix several bugs with MSG_SET and TWON_ENUMERATION containers when bad data is used.
+      TWAINContainerInt.cpp, TWAINContainerFix32.cpp, TWAINContainerInt.cpp
+    
 2008-09-12 JFL Peripheral Solutions jimw@jflinc.com
 
     * Fix typo
+    * add mechanism to Validate TWON_ONEVALUES
     * Use latest DSM merge module
     * Increase build number
 

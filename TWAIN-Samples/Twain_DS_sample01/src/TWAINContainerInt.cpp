@@ -249,7 +249,7 @@ TW_INT16 CTWAINContainerInt::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
           }
           else
           {
-            twrc = TWRC_CHECKSTATUS;
+            twrc = TWRC_FAILURE;
             Condition = TWCC_BADVALUE;
           }
         }
@@ -277,12 +277,11 @@ TW_INT16 CTWAINContainerInt::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
 
     if(isValidType(pCap->ItemType))
     {
-      m_nCurrent = pCap->CurrentIndex;
-      // We ignor trying to set the default.  The default can not be changed from outside
-
+      int  nNewCurrentIndex  = pCap->CurrentIndex;
       IntVector::iterator iter;
-      m_listInts.clear();
-  
+      bool bListCleared      = false; // We only want to crear the current list if we are passed 
+                                      // valid data, and only clear it once through the loop of testing
+      
       for(TW_UINT32 x = 0; x < pCap->NumItems; ++x)
       {
         // only set the value if it exists in m_listIntsDefault
@@ -290,19 +289,59 @@ TW_INT16 CTWAINContainerInt::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
 
         if(iter != m_listIntsDefault.end())
         {
-          m_listInts.push_back(pCap->ItemList[x]);
+          // We have valid data
+          if(!bListCleared)
+          {
+            // only clear the list if we have not done so already
+            m_listInts.clear();
+            bListCleared = true;
+          }
+
+          // only add it if it was not added already
+          iter = find(m_listInts.begin(), m_listInts.end(), pCap->ItemList[x]);
+          if(iter == m_listInts.end())
+          {
+            m_listInts.push_back(pCap->ItemList[x]);
+          }
+          else
+          {
+            nNewCurrentIndex--;
+            twrc = TWRC_CHECKSTATUS;
+            Condition = TWCC_BADVALUE;
+          }
         }
         else
         {
-          // if the index was pointing to this value we have to change it because this value is now invalid
-          if(x == (UINT)m_nCurrent) // casting to uint to remove compiler warning
+          // if the index is below the current then we need to adjust what is going to be current
+          if(x < pCap->CurrentIndex)
           {
-            m_nCurrent = 0;
+            nNewCurrentIndex--;
           }
           
           twrc = TWRC_CHECKSTATUS;
-          Condition = TWCC_SUCCESS;
+          Condition = TWCC_BADVALUE;
         }
+      }
+
+      // If the list has been cleared then there was at at least some valid data
+      if(bListCleared)
+      {
+        if(nNewCurrentIndex >= 0 && nNewCurrentIndex < (int)(m_listInts.size()))
+        {
+          m_nCurrent = nNewCurrentIndex;
+        }
+        else
+        {
+          // the new current index is not in range
+          m_nCurrent = 0;
+          twrc = TWRC_CHECKSTATUS;
+          Condition = TWCC_BADVALUE;
+        }
+      }
+      else
+      {
+        twrc = TWRC_FAILURE;
+        Condition = TWCC_BADVALUE;
       }
     }
     else // NOT isValidType(pCap->ItemType))
