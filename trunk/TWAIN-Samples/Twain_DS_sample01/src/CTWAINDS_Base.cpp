@@ -316,12 +316,16 @@ TW_INT16 CTWAINDS_Base::dat_capability(TW_UINT16      _MSG,
     }
 
     // when some capabilities are changed it requires changing others
-    if(twrc == TWRC_SUCCESS)
+    if(twrc == TWRC_SUCCESS || twrc == TWRC_CHECKSTATUS)
     {
       // Only Set and Reset message are of concern
       if( MSG_SET == _MSG || MSG_RESET == _MSG )
       {
-        twrc = updatePostDependencies(_MSG, _pCap->Cap);
+        TW_INT16 twrc2 = updatePostDependencies(_MSG, _pCap->Cap);
+        if(twrc == TWRC_SUCCESS && twrc2 != TWRC_SUCCESS)
+        {
+          twrc = twrc2;
+        }
       }
     }
   }

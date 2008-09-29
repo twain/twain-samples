@@ -470,10 +470,15 @@ TW_INT16 CTWAINContainerFrame::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
         }
         else
         {
-          twrc = TWRC_CHECKSTATUS;          
-          Condition = TWCC_SUCCESS;
+          twrc = TWRC_FAILURE;
+          Condition = TWCC_BADVALUE;
         }
       }
+    }
+    else // NOT isValidType(pCap->ItemType))
+    {
+      twrc = TWRC_FAILURE;
+      Condition = TWCC_CAPBADOPERATION;
     }
 
     _DSM_UnlockMemory((TW_MEMREF)pCap);
