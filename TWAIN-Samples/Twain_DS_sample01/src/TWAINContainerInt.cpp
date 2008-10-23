@@ -160,6 +160,10 @@ void CTWAINContainerInt::fillValues(void* _pItemList, const TW_UINT32 _unNumItem
         ((TW_UINT16*)_pItemList)[x] = (TW_UINT16)m_listInts[x];
       break;
 
+      case TWTY_UINT32:
+        ((TW_UINT32*)_pItemList)[x] = (TW_UINT32)m_listInts[x];
+      break;
+
       case TWTY_BOOL:
         ((TW_BOOL*)_pItemList)[x] = (TW_BOOL)m_listInts[x];
       break;
@@ -178,6 +182,7 @@ bool CTWAINContainerInt::isValidType(const TW_UINT16 _unTWType)
     case TWTY_INT32:
     case TWTY_UINT8:
     case TWTY_UINT16:
+    case TWTY_UINT32:
     case TWTY_BOOL:
       bret = true;
     break;
@@ -210,6 +215,10 @@ int CTWAINContainerInt::getValue(const pTW_ONEVALUE _pVal)
 
     case TWTY_UINT16:
       nRet = *((TW_UINT16*)&(_pVal->Item));
+    break;
+
+    case TWTY_UINT32:
+      nRet = *((TW_UINT32*)&(_pVal->Item));
     break;
 
     case TWTY_BOOL:
@@ -305,7 +314,11 @@ TW_INT16 CTWAINContainerInt::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
           }
           else
           {
-            nNewCurrentIndex--;
+            // if the index is below the current then we need to adjust what is going to be current
+            if(x < pCap->CurrentIndex)
+            {
+              nNewCurrentIndex--;
+            }
             twrc = TWRC_CHECKSTATUS;
             Condition = TWCC_BADVALUE;
           }

@@ -1,3 +1,13 @@
+2008-10-23 JFL Peripheral Solutions jimw@jflinc.com
+
+    * Don't allow updating capabilities when CurrentState >= dsState_XferReady.
+    * Fix bug of not setting condition code correctly in some cases.
+    * Add function to Validate set capabilities before they are committed.
+    * Do not allow exferCount of 0 or less than -1
+    * Constrain Frames to within the min width and height of the scanner Physical width and height of the scanner.
+    * Fix bug with InternalFrame constructor using SupportedSize not generating correct size frame.
+    * Add support for TW_UINT32 in TWAINContainerInt class.
+
 2008-09-29 JFL Peripheral Solutions jimw@jflinc.com
 
     * Fix several bugs with MSG_SET and TWON_ENUMERATION containers when bad data is used.

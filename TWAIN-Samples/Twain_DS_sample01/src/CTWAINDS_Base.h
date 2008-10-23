@@ -526,9 +526,9 @@ public:
   * @param[in] _pCap a pointer to TW_CAPABILITY structure.
   * @return a valid TWRC_xxxx return code.
   */
-  virtual TW_INT16 validateCapabilitySet(CTWAINContainer* _pContainer);
+  virtual TW_INT16 validateCapabilitySet(pTW_CAPABILITY _pCap);
 
-    /**
+  /**
   * if the CTWAINContainer is dependend on another Capabiltiy. 
   * This function is used to get the data it needs.
   * @param[in] MSG the message that was sent
@@ -536,6 +536,14 @@ public:
   * @return a valid TWRC_xxxx return code.
   */
   virtual TW_INT16 updatePostDependencies(TW_UINT16 MSG, TW_UINT16 Cap);
+
+  /**
+  * Update the frame to bewithin the constrains of the scanners Phyisical 
+  * dimentions and minimum allowed sizes.
+  * @param[in out] _frame the frame to update.
+  * @return true if the frame is not change, false if changed.
+  */
+  virtual bool ConstrainFrameToScanner(InternalFrame& _frame);
 
   /**
   * get the current unit and resolution.  A helper function used by Unit dependent cap

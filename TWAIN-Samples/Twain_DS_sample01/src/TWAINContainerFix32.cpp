@@ -235,7 +235,10 @@ TW_INT16 CTWAINContainerFix32::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
           }
           else
           {
-            nNewCurrentIndex--;
+            if(x < pCap->CurrentIndex)
+            {
+              nNewCurrentIndex--;
+            }
             twrc = TWRC_CHECKSTATUS;
             Condition = TWCC_BADVALUE;
           }

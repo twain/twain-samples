@@ -42,44 +42,26 @@
 
 InternalFrame::InternalFrame()
 {
-  unLeft   = 0;
-  unTop    = 0;
-  unRight  = 0;
-  unBottom = 0;
+  nLeft   = 0;
+  nTop    = 0;
+  nRight  = 0;
+  nBottom = 0;
 }
 
-InternalFrame::InternalFrame(UINT left, UINT top, UINT right, UINT bottom)
+InternalFrame::InternalFrame(int left, int top, int right, int bottom)
 {
-  unLeft   = left;
-  unTop    = top;
-  unRight  = right;
-  unBottom = bottom;
-}
-
-InternalFrame::InternalFrame(float left, float top, float right, float bottom, int fromUnits, float Xresolution, float Yresolution)
-{
-  unLeft   = int(ConvertUnits(left,   fromUnits, TWUN_1000INCHES, Xresolution));
-  unTop    = int(ConvertUnits(top,    fromUnits, TWUN_1000INCHES, Yresolution));
-  unRight  = int(ConvertUnits(right,  fromUnits, TWUN_1000INCHES, Xresolution));
-  unBottom = int(ConvertUnits(bottom, fromUnits, TWUN_1000INCHES, Yresolution));
+  nLeft   = left;
+  nTop    = top;
+  nRight  = right;
+  nBottom = bottom;
 }
 
 InternalFrame::InternalFrame(const TW_FRAME twFrame, int fromUnits, float Xresolution, float Yresolution)
 {
-  unLeft   = int(ConvertUnits(FIX32ToFloat(twFrame.Left),   fromUnits, TWUN_1000INCHES, Xresolution));
-  unTop    = int(ConvertUnits(FIX32ToFloat(twFrame.Top),    fromUnits, TWUN_1000INCHES, Yresolution));
-  unRight  = int(ConvertUnits(FIX32ToFloat(twFrame.Right),  fromUnits, TWUN_1000INCHES, Xresolution));
-  unBottom = int(ConvertUnits(FIX32ToFloat(twFrame.Bottom), fromUnits, TWUN_1000INCHES, Yresolution));
-}
-
-TW_FRAME InternalFrame::AsTW_FRAME(int toUnits, float Xresolution, float Yresolution)
-{
-  TW_FRAME frame;
-  frame.Left   = FloatToFIX32(ConvertUnits(float(unLeft),   TWUN_1000INCHES, toUnits, Xresolution));
-  frame.Top    = FloatToFIX32(ConvertUnits(float(unTop),    TWUN_1000INCHES, toUnits, Yresolution));
-  frame.Right  = FloatToFIX32(ConvertUnits(float(unRight),  TWUN_1000INCHES, toUnits, Xresolution));
-  frame.Bottom = FloatToFIX32(ConvertUnits(float(unBottom), TWUN_1000INCHES, toUnits, Yresolution));
-  return frame;
+  nLeft   = int(ConvertUnits(FIX32ToFloat(twFrame.Left),   fromUnits, TWUN_1000INCHES, Xresolution));
+  nTop    = int(ConvertUnits(FIX32ToFloat(twFrame.Top),    fromUnits, TWUN_1000INCHES, Yresolution));
+  nRight  = int(ConvertUnits(FIX32ToFloat(twFrame.Right),  fromUnits, TWUN_1000INCHES, Xresolution));
+  nBottom = int(ConvertUnits(FIX32ToFloat(twFrame.Bottom), fromUnits, TWUN_1000INCHES, Yresolution));
 }
 
 InternalFrame::InternalFrame(const TW_UINT16 ss)	
@@ -88,182 +70,200 @@ InternalFrame::InternalFrame(const TW_UINT16 ss)
 	switch(ss)	
 	{
 		case TWSS_USLEDGER:
-			InternalFrame( 0, 0, 11.0f,  17.0f, TWUN_INCHES, 100, 100);
+			SetFrame( 0, 0, 11.0f,  17.0f, TWUN_INCHES, 100, 100);
       break;
 		case TWSS_USLEGAL:
-			InternalFrame( 0, 0,  8.5f,  14.0f, TWUN_INCHES, 100, 100);
+			SetFrame( 0, 0,  8.5f,  14.0f, TWUN_INCHES, 100, 100);
       break;
 		case TWSS_USLETTER:
-			InternalFrame( 0, 0,  8.5f,  11.0f, TWUN_INCHES, 100, 100);
+			SetFrame( 0, 0,  8.5f,  11.0f, TWUN_INCHES, 100, 100);
       break;
 		case TWSS_USEXECUTIVE:
-			InternalFrame( 0, 0,  7.25f, 10.5f, TWUN_INCHES, 100, 100);
+			SetFrame( 0, 0,  7.25f, 10.5f, TWUN_INCHES, 100, 100);
       break;
 		case TWSS_USSTATEMENT:
-			InternalFrame( 0, 0,  5.5f,   8.5f, TWUN_INCHES, 100, 100);
+			SetFrame( 0, 0,  5.5f,   8.5f, TWUN_INCHES, 100, 100);
       break;
 		case TWSS_BUSINESSCARD:
-			InternalFrame( 0, 0,  3.5f,   2.0f, TWUN_INCHES, 100, 100);
+			SetFrame( 0, 0,  3.5f,   2.0f, TWUN_INCHES, 100, 100);
       break;
 
     case TWSS_4A0:
-			InternalFrame( 0, 0,168.2f, 237.8f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,168.2f, 237.8f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_2A0:
-			InternalFrame( 0, 0,118.9f, 168.2f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,118.9f, 168.2f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_A0:
-			InternalFrame( 0, 0, 84.1f, 118.9f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 84.1f, 118.9f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_A1:
-			InternalFrame( 0, 0, 59.4f,  84.1f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 59.4f,  84.1f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_A2:
-			InternalFrame( 0, 0, 42.0f,  59.4f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 42.0f,  59.4f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_A3:
-			InternalFrame( 0, 0, 29.7f,  42.0f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 29.7f,  42.0f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_A4:  //	case TWSS_A4LETTER:
-			InternalFrame( 0, 0, 21.0f,  29.7f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 21.0f,  29.7f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_A5:
-			InternalFrame( 0, 0, 14.8f,  21.0f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 14.8f,  21.0f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_A6:
-			InternalFrame( 0, 0, 10.5f,  14.8f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 10.5f,  14.8f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_A7:
-			InternalFrame( 0, 0,  7.4f,  10.5f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  7.4f,  10.5f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_A8:
-			InternalFrame( 0, 0,  5.2f,   7.4f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  5.2f,   7.4f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_A9:
-			InternalFrame( 0, 0,  3.7f,   5.2f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  3.7f,   5.2f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_A10:
-			InternalFrame( 0, 0,  2.6f,   3.7f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  2.6f,   3.7f, TWUN_CENTIMETERS, 100, 100);
       break;
 
 		case TWSS_ISOB0:
-			InternalFrame( 0, 0,100.0f, 141.4f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,100.0f, 141.4f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_ISOB1:
-			InternalFrame( 0, 0, 70.7f, 100.0f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 70.7f, 100.0f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_ISOB2:
-			InternalFrame( 0, 0, 50.0f,  70.7f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 50.0f,  70.7f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_ISOB3:  //  case TWSS_B3:
-			InternalFrame( 0, 0, 35.3f,  50.0f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 35.3f,  50.0f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_ISOB4:  //  case TWSS_B4:
-			InternalFrame( 0, 0, 25.0f,  35.4f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 25.0f,  35.4f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_ISOB5:
-			InternalFrame( 0, 0, 17.6f,  25.0f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 17.6f,  25.0f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_ISOB6:  //	case TWSS_B6:
-			InternalFrame( 0, 0, 12.5f,  17.6f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 12.5f,  17.6f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_ISOB7:
-			InternalFrame( 0, 0,  8.8f,  12.5f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  8.8f,  12.5f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_ISOB8:
-			InternalFrame( 0, 0,  6.2f,   8.8f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  6.2f,   8.8f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_ISOB9:
-			InternalFrame( 0, 0,  4.4f,   6.2f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  4.4f,   6.2f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_ISOB10:
-			InternalFrame( 0, 0,  3.1f,   4.4f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  3.1f,   4.4f, TWUN_CENTIMETERS, 100, 100);
       break;
 
 		case TWSS_JISB0:
-			InternalFrame( 0, 0,103.0f, 145.6f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,103.0f, 145.6f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_JISB1:
-			InternalFrame( 0, 0, 72.8f, 103.0f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 72.8f, 103.0f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_JISB2:
-			InternalFrame( 0, 0, 51.5f,  72.8f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 51.5f,  72.8f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_JISB3:
-			InternalFrame( 0, 0, 36.4f,  51.5f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 36.4f,  51.5f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_JISB4:
-			InternalFrame( 0, 0, 25.7f,  36.4f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 25.7f,  36.4f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_JISB5:  //	case TWSS_B5LETTER:
-			InternalFrame( 0, 0, 18.2f,  25.7f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 18.2f,  25.7f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_JISB6:
-			InternalFrame( 0, 0, 12.8f,  18.2f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 12.8f,  18.2f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_JISB7:
-			InternalFrame( 0, 0,  9.1f,  12.8f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  9.1f,  12.8f, TWUN_CENTIMETERS, 100, 100);
       break;
     case TWSS_JISB8:
-			InternalFrame( 0, 0,  6.4f,   9.1f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  6.4f,   9.1f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_JISB9:
-			InternalFrame( 0, 0,  4.5f,   6.4f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  4.5f,   6.4f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_JISB10:
-			InternalFrame( 0, 0,  3.2f,   4.5f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  3.2f,   4.5f, TWUN_CENTIMETERS, 100, 100);
       break;
 
 		case TWSS_C0:
-			InternalFrame( 0, 0, 91.7f, 129.7f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 91.7f, 129.7f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_C1:
-			InternalFrame( 0, 0, 64.8f,  91.7f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 64.8f,  91.7f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_C2:
-			InternalFrame( 0, 0, 45.8f,  64.8f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 45.8f,  64.8f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_C3:
-			InternalFrame( 0, 0, 32.4f,  45.8f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 32.4f,  45.8f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_C4:
-			InternalFrame( 0, 0, 22.9f,  32.4f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 22.9f,  32.4f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_C5:
-			InternalFrame( 0, 0, 16.2f,  22.9f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 16.2f,  22.9f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_C6:
-			InternalFrame( 0, 0, 11.4f,  16.2f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0, 11.4f,  16.2f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_C7:
-			InternalFrame( 0, 0,  8.1f,  11.4f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  8.1f,  11.4f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_C8:
-			InternalFrame( 0, 0,  5.7f,   8.1f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  5.7f,   8.1f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_C9:
-			InternalFrame( 0, 0,  4.0f,   5.7f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  4.0f,   5.7f, TWUN_CENTIMETERS, 100, 100);
       break;
 		case TWSS_C10:
-			InternalFrame( 0, 0,  2.8f,   4.0f, TWUN_CENTIMETERS, 100, 100);
+			SetFrame( 0, 0,  2.8f,   4.0f, TWUN_CENTIMETERS, 100, 100);
       break;
 
     default:
-      InternalFrame(0, 0, 0, 0);	//if we don't recognize their size, return a default frame
+        nLeft = nTop = nRight = nBottom = 0;
       break;
 	}
-
-	
 }
 
+
+InternalFrame* InternalFrame::SetFrame(float left, float top, float right, float bottom, int fromUnits, float Xresolution, float Yresolution)
+{
+  nLeft   = int(ConvertUnits(left,   fromUnits, TWUN_1000INCHES, Xresolution));
+  nTop    = int(ConvertUnits(top,    fromUnits, TWUN_1000INCHES, Yresolution));
+  nRight  = int(ConvertUnits(right,  fromUnits, TWUN_1000INCHES, Xresolution));
+  nBottom = int(ConvertUnits(bottom, fromUnits, TWUN_1000INCHES, Yresolution));
+
+  return this;
+}
+
+TW_FRAME InternalFrame::AsTW_FRAME(int toUnits, float Xresolution, float Yresolution)
+{
+  TW_FRAME frame;
+  frame.Left   = FloatToFIX32(ConvertUnits(float(nLeft),   TWUN_1000INCHES, toUnits, Xresolution));
+  frame.Top    = FloatToFIX32(ConvertUnits(float(nTop),    TWUN_1000INCHES, toUnits, Yresolution));
+  frame.Right  = FloatToFIX32(ConvertUnits(float(nRight),  TWUN_1000INCHES, toUnits, Xresolution));
+  frame.Bottom = FloatToFIX32(ConvertUnits(float(nBottom), TWUN_1000INCHES, toUnits, Yresolution));
+  return frame;
+}
 
 
 bool operator== (const InternalFrame& _frame1, const InternalFrame& _frame2)
 {
-  if((2> abs((int)_frame1.unLeft   - (int)_frame2.unLeft)  ) &&
-     (2> abs((int)_frame1.unTop    - (int)_frame2.unTop)   ) &&
-     (2> abs((int)_frame1.unRight  - (int)_frame2.unRight) ) &&
-     (2> abs((int)_frame1.unBottom - (int)_frame2.unBottom)) )
+  if((2> abs((int)_frame1.nLeft   - (int)_frame2.nLeft)  ) &&
+     (2> abs((int)_frame1.nTop    - (int)_frame2.nTop)   ) &&
+     (2> abs((int)_frame1.nRight  - (int)_frame2.nRight) ) &&
+     (2> abs((int)_frame1.nBottom - (int)_frame2.nBottom)) )
   {
     return true;
   }
@@ -487,6 +487,21 @@ TW_INT16 CTWAINContainerFrame::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
   return twrc;
 }
 
+bool CTWAINContainerFrame::Set(const InternalFrame& _frame)
+{
+  // Set is only called after the Frame has been initilized by calling Add
+  if(m_nDefault == -1)
+  {
+    assert(m_nDefault != -1);
+    return false;
+  }
+
+  m_listFrames.clear();
+  m_listFrames.push_back(_frame);
+  m_nCurrent = 0;
+  return true;
+}
+
 bool CTWAINContainerFrame::Reset()
 {
   m_nCurrent = m_nDefault;
@@ -544,9 +559,9 @@ const FrameVector &CTWAINContainerFrame::GetSupported()
   return m_listFrames;
 }
 
-bool CTWAINContainerFrame::Add(const UINT _unLeft, const UINT _unTop, const UINT _unRight, const UINT _unBottom, bool _bDefault /*= false*/)
+bool CTWAINContainerFrame::Add(const int _nLeft, const int _nTop, const int _nRight, const int _nBottom, bool _bDefault /*= false*/)
 {
-  InternalFrame frame(_unLeft, _unTop, _unRight, _unBottom);
+  InternalFrame frame(_nLeft, _nTop, _nRight, _nBottom);
   
   return Add(frame, _bDefault);
 }
@@ -562,9 +577,9 @@ bool CTWAINContainerFrame::Add(const InternalFrame& _frame, bool _bDefault /*= f
   return true;
 }
 
-bool CTWAINContainerFrame::SetCurrent(const UINT _unLeft, const UINT _unTop, const UINT _unRight, const UINT _unBottom)
+bool CTWAINContainerFrame::SetCurrent(const int _nLeft, const int _nTop, const int _nRight, const int _nBottom)
 {
-  InternalFrame frame(_unLeft, _unTop, _unRight, _unBottom);
+  InternalFrame frame(_nLeft, _nTop, _nRight, _nBottom);
   
   return SetCurrent(frame);
 }
