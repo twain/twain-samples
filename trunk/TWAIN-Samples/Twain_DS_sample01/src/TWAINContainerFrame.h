@@ -1,5 +1,5 @@
 /***************************************************************************
-* Copyright © 2007 TWAIN Working Group:  
+* Copyright  2007 TWAIN Working Group:  
 *   Adobe Systems Incorporated, AnyDoc Software Inc., Eastman Kodak Company, 
 *   Fujitsu Computer Products of America, JFL Peripheral Solutions Inc., 
 *   Ricoh Corporation, and Xerox Corporation.
@@ -50,10 +50,10 @@
 */
 struct InternalFrame
 {
-  UINT unLeft;           /**< left */
-  UINT unTop;            /**< top */
-  UINT unRight;          /**< right */
-  UINT unBottom;         /**< bottom */
+  int nLeft;           /**< left */
+  int nTop;            /**< top */
+  int nRight;          /**< right */
+  int nBottom;         /**< bottom */
 
   /**
   * Constructor
@@ -67,20 +67,7 @@ struct InternalFrame
   * @param[in] right Right
   * @param[in] bottom Bottom
   */
-  InternalFrame(UINT left, UINT top, UINT right, UINT bottom);
-
-  /**
-  * Constructor Convert to interanal from external units
-  * @param[in] left Left
-  * @param[in] lop Top
-  * @param[in] right Right
-  * @param[in] bottom Bottom
-  * @param[in] fromUnits the units to convert to
-  * @param[in] Xresolution the X resolution
-  * @param[in] Yresolution the Y resolution
-  * @return true if success.
-  */
-  InternalFrame(float left, float top, float right, float bottom, int fromUnits, float Xresolution, float Yresolution);
+  InternalFrame(int left, int top, int right, int bottom);
 
   /**
   * Constructor Convert to interanal from TW_FRAME
@@ -93,6 +80,13 @@ struct InternalFrame
   InternalFrame(const TW_FRAME twFrame, int fromUnits, float Xresolution, float Yresolution);
 
   /**
+  * create interanal frame from a SupportedSize
+  * @param[in] ss the CSupportedSize to create internal frame from
+  * @return the InternalFrame
+  */
+  InternalFrame(const TW_UINT16 ss);
+
+  /**
   * Convert interanal frame value to external TW_FRAME value converting the units
   * @param[in] toUnits the units to convert to
   * @param[in] Xresolution the X resolution
@@ -101,12 +95,19 @@ struct InternalFrame
   */
   TW_FRAME AsTW_FRAME(int toUnits, float Xresolution, float Yresolution);
 
-  /**
-  * create interanal frame from a SupportedSize
-  * @param[in] ss the CSupportedSize to create internal frame from
-  * @return the InternalFrame
+protected:
+    /**
+  * Set the frame to interanal from external units
+  * @param[in] left Left
+  * @param[in] lop Top
+  * @param[in] right Right
+  * @param[in] bottom Bottom
+  * @param[in] fromUnits the units to convert to
+  * @param[in] Xresolution the X resolution
+  * @param[in] Yresolution the Y resolution
+  * @return true if success.
   */
-  InternalFrame(const TW_UINT16 ss);
+  InternalFrame * SetFrame(float left, float top, float right, float bottom, int fromUnits, float Xresolution, float Yresolution);
 };
 
 /**
@@ -159,14 +160,21 @@ public:
 
   /**
   * Try to add a value for container.  The first value added to a capabiltiy is set as the default and current value.
-  * @param[in] _unLeft left
-  * @param[in] _unTop top
-  * @param[in] _unRight right
-  * @param[in] _unBottom bottom
+  * @param[in] _nLeft left
+  * @param[in] _nTop top
+  * @param[in] _nRight right
+  * @param[in] _nBottom bottom
   * @param[in] _bDefault if true explisitly sets this value to be the default and current.  
   * @return true if success.
   */
-  bool Add(const UINT _unLeft, const UINT _unTop, const UINT _unRight, const UINT _unBottom, bool _bDefault = false);  
+  bool Add(const int _nLeft, const int _nTop, const int _nRight, const int _nBottom, bool _bDefault = false);  
+
+  /**
+  * Set the current Frame. Only used after the default has been set using Add
+  * @param[in] _frame the value to be added.
+  * @return true if success.
+  */
+  bool Set(const InternalFrame& _frame);
 
   /**
   * Try to set the current value for container.
@@ -179,13 +187,13 @@ public:
   /**
   * Try to set the current value for container.
   * The value must already be part of the container.
-  * @param[in] _unLeft left
-  * @param[in] _unTop top
-  * @param[in] _unRight right
-  * @param[in] _unBottom bottom
+  * @param[in] _nLeft left
+  * @param[in] _nTop top
+  * @param[in] _nRight right
+  * @param[in] _nBottom bottom
   * @return true if success.
   */
-  bool SetCurrent(const UINT _unLeft, const UINT _unTop, const UINT _unRight, const UINT _unBottom);  
+  bool SetCurrent(const int _nLeft, const int _nTop, const int _nRight, const int _nBottom);  
 
   /**
   * Return the default value through _frame if set.
@@ -229,7 +237,7 @@ public:
   */
   void setCurrentUnits(int Unit, float Xres, float Yres);
 
- protected:
+protected:
   /**
   * Check to see if type is valid.
   * @param[in] _unTWType type to check

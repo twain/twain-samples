@@ -268,6 +268,11 @@ TW_INT16 CTWAINDS_Base::dat_capability(TW_UINT16      _MSG,
 
   if(MSG_RESETALL == _MSG) // special case
   {
+    if(m_CurrentState >= dsState_XferReady)
+    {
+      setConditionCode(TWCC_SEQERROR);
+      return TWRC_FAILURE;
+    }
     // Loop through all supported caps and reset them.
     CTWAINContainer      *pCap     = NULL;
     CTWAINContainerInt   *pCapSC   = dynamic_cast<CTWAINContainerInt*>(findCapability(CAP_SUPPORTEDCAPS));
@@ -313,13 +318,11 @@ TW_INT16 CTWAINDS_Base::dat_capability(TW_UINT16      _MSG,
     if(0 != pCap)
     {
       twrc = handleCap(_MSG, pCap, _pCap);
-    }
 
-    // when some capabilities are changed it requires changing others
-    if(twrc == TWRC_SUCCESS || twrc == TWRC_CHECKSTATUS)
-    {
-      // Only Set and Reset message are of concern
-      if( MSG_SET == _MSG || MSG_RESET == _MSG )
+      // when some capabilities are successfully changed with Set or Reset 
+      // it requires changing others
+      if( (twrc == TWRC_SUCCESS || twrc == TWRC_CHECKSTATUS) && 
+          (MSG_SET == _MSG || MSG_RESET == _MSG) )
       {
         TW_INT16 twrc2 = updatePostDependencies(_MSG, _pCap->Cap);
         if(twrc == TWRC_SUCCESS && twrc2 != TWRC_SUCCESS)
@@ -832,6 +835,12 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
       {
         case MSG_RESET:
           //MSG_RESET is supposed to reset and then return the current value
+          if(m_CurrentState >= dsState_XferReady)
+          {
+            setConditionCode(TWCC_SEQERROR);
+            twrc = TWRC_FAILURE;
+            break;
+          }
           _pContainer->Reset();
           //change the behavior to a get current
           _MSG = MSG_GETCURRENT;
@@ -851,23 +860,37 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
 
         case MSG_SET:
           {
+            if(m_CurrentState >= dsState_XferReady)
+            {
+              setConditionCode(TWCC_SEQERROR);
+              twrc = TWRC_FAILURE;
+              break;
+            }
             twrc = updatePreDependencies(_pContainer);
             if(twrc != TWRC_SUCCESS)
             {
               break;
             }
 
-            twrc = validateCapabilitySet(_pContainer);
+            twrc = validateCapabilitySet(_pCap);
             if(twrc != TWRC_SUCCESS)
             {
-              break;
+              setConditionCode(TWCC_BADVALUE);
+              if(twrc == TWRC_FAILURE)
+              {
+                break;
+              }
             }
 
             TW_INT16 Condition;
-            twrc = _pContainer->Set(_pCap, Condition);
-            if(twrc != TWRC_SUCCESS)
+            TW_INT16 twrc2 = _pContainer->Set(_pCap, Condition);
+            if(twrc2 != TWRC_SUCCESS)
             {
               setConditionCode(Condition);
+              if(twrc == TWRC_SUCCESS && twrc2 != TWRC_SUCCESS)
+              {
+                twrc = twrc2;
+              }
             }
           }
         break;
@@ -882,21 +905,70 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
   return twrc;
 }
 
-TW_INT16 CTWAINDS_Base::validateCapabilitySet(CTWAINContainer* _pContainer)
+//////////////////////////////////////////////////////////////////////////////
+TW_INT16 CTWAINDS_Base::validateCapabilitySet(pTW_CAPABILITY _pCap)
 {
   TW_INT16 twrc  = TWRC_SUCCESS;
 
-  switch(_pContainer->GetCapID())
+  switch(_pCap->Cap)
   {
     case CAP_XFERCOUNT:
     {
-      CTWAINContainerInt *pnCap = dynamic_cast<CTWAINContainerInt*>(_pContainer);
-      int Count = -1;
-        
-      if(!pnCap || !pnCap->GetCurrent(Count) || Count == 0 || Count <-1)
+      twrc = TWRC_FAILURE;
+      if(TWON_ONEVALUE == _pCap->ConType)
       {
-        twrc = TWRC_FAILURE;
-        setConditionCode(TWCC_BADVALUE);
+        pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(_pCap->hContainer);
+
+        if(pCap)
+        {
+          if( (TW_INT16)pCap->Item == -1 || (TW_INT16)pCap->Item > 0 )
+          {
+            twrc = TWRC_SUCCESS;
+          }
+          _DSM_UnlockMemory((TW_MEMREF)pCap);
+        }
+      }
+      break;
+    }
+    case ICAP_FRAMES:
+    {
+      int   unit = TWUN_PIXELS;
+      float Xres = 100;
+      float Yres = 100;
+      twrc = getCurrentUnits(unit, Xres, Yres);
+
+      if(TWON_ONEVALUE == _pCap->ConType)
+      {
+        pTW_ONEVALUE_FRAME pCap = (pTW_ONEVALUE_FRAME)_DSM_LockMemory(_pCap->hContainer);
+
+        if(pCap && pCap->ItemType == TWTY_FRAME)
+        {
+          InternalFrame frame(pCap->Item, unit, Xres, Yres);
+          if(ConstrainFrameToScanner(frame))
+          {
+            pCap->Item = frame.AsTW_FRAME(unit, Xres, Yres);
+            twrc = TWRC_CHECKSTATUS;
+          }
+          _DSM_UnlockMemory((TW_MEMREF)pCap);
+        }
+      }
+      else if(TWON_ENUMERATION == _pCap->ConType)
+      {
+        pTW_ENUMERATION_FRAME pCap = (pTW_ENUMERATION_FRAME)_DSM_LockMemory(_pCap->hContainer);
+
+        if(pCap && pCap->ItemType == TWTY_FRAME)
+        {
+          for(TW_UINT32 x = 0; x < pCap->NumItems; ++x)
+          {
+            InternalFrame frame(pCap->ItemList[x], unit, Xres, Yres);
+            if(ConstrainFrameToScanner(frame))
+            {
+              pCap->ItemList[x] = frame.AsTW_FRAME(unit, Xres, Yres);
+              twrc = TWRC_CHECKSTATUS;
+            }
+          }
+          _DSM_UnlockMemory((TW_MEMREF)pCap);
+        }
       }
       break;
     }
@@ -907,6 +979,7 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(CTWAINContainer* _pContainer)
   return twrc;
 }
 
+//////////////////////////////////////////////////////////////////////////////
 TW_INT16 CTWAINDS_Base::updatePreDependencies(CTWAINContainer* _pContainer)
 {
   TW_INT16 twrc  = TWRC_SUCCESS;
@@ -938,6 +1011,7 @@ TW_INT16 CTWAINDS_Base::updatePreDependencies(CTWAINContainer* _pContainer)
   return twrc;
 }
 
+//////////////////////////////////////////////////////////////////////////////
 TW_INT16 CTWAINDS_Base::updatePostDependencies(TW_UINT16 MSG, TW_UINT16 Cap)
 {
   TW_INT16 twrc  = TWRC_SUCCESS;
@@ -962,19 +1036,15 @@ TW_INT16 CTWAINDS_Base::updatePostDependencies(TW_UINT16 MSG, TW_UINT16 Cap)
         break;
       }
 
-      if(MSG_SET == MSG)
+      if( MSG == MSG_SET
+       || MSG == MSG_RESET )
       {
         int ss;
         pDepCapSS->GetCurrent(ss);
         InternalFrame frame(ss);
-        
-        pDepCapFrames->Reset();
-        pDepCapFrames->Add(frame);
+        ConstrainFrameToScanner(frame);
+        pDepCapFrames->Set(frame);
       }        
-      else if(MSG_RESET == MSG)
-      {
-        pDepCapFrames->Reset();
-      }
     }
     break;
     
@@ -991,7 +1061,8 @@ TW_INT16 CTWAINDS_Base::updatePostDependencies(TW_UINT16 MSG, TW_UINT16 Cap)
         break;
       }
 
-      if(MSG_SET == MSG || MSG_RESET == MSG)
+      if( MSG == MSG_SET
+       || MSG == MSG_RESET )
       {
         // Figure out if the current frame is in our list of ICAP_SUPPORTEDSIZES
         // if it is in the list, then we need to set the current SS to match
@@ -1031,7 +1102,58 @@ TW_INT16 CTWAINDS_Base::updatePostDependencies(TW_UINT16 MSG, TW_UINT16 Cap)
   return twrc;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+bool CTWAINDS_Base::ConstrainFrameToScanner(InternalFrame& _frame)
+{
+  bool bChanged = false;
+  float fMaxValue;
+  float fMinValue;
 
+  // ICAP_PHYSICALWIDTH and ICAP_PHYSICALHEIGHT are required Caps while
+  // ICAP_MINIMUMWIDTH and ICAP_MINIMUMHEIGHT are not required caps.
+  CTWAINContainerFix32* pPhysicalWidth  = dynamic_cast<CTWAINContainerFix32*>(findCapability(ICAP_PHYSICALWIDTH));
+  CTWAINContainerFix32* pPhysicalHeight = dynamic_cast<CTWAINContainerFix32*>(findCapability(ICAP_PHYSICALHEIGHT));
+  CTWAINContainerFix32* pMinWidth       = dynamic_cast<CTWAINContainerFix32*>(findCapability(ICAP_MINIMUMWIDTH));
+  CTWAINContainerFix32* pMinHeight      = dynamic_cast<CTWAINContainerFix32*>(findCapability(ICAP_MINIMUMHEIGHT));
+
+  // Constrain the width
+  if(_frame.nLeft < 0)
+  {
+    _frame.nLeft = 0;
+    bChanged = true;
+  }
+  if(pPhysicalWidth && true == pPhysicalWidth->GetCurrent(fMaxValue) && (int)fMaxValue < _frame.nRight)
+  {
+    _frame.nRight = (int)fMaxValue;
+    bChanged = true;
+  }
+  if(pMinWidth && true == pMinWidth->GetCurrent(fMinValue) && (int)fMinValue > _frame.nRight-_frame.nLeft)
+  {
+    _frame.nLeft  = max( 0, _frame.nLeft - ((int)fMinValue - (_frame.nRight-_frame.nLeft)) );
+    _frame.nRight = _frame.nLeft + max((int)fMinValue, _frame.nRight-_frame.nLeft);
+    bChanged = true;
+  }
+
+  // Constrain the height
+  if(_frame.nTop < 0)
+  {
+    _frame.nTop = 0;
+    bChanged = true;
+  }
+  if(pPhysicalHeight && true == pPhysicalHeight->GetCurrent(fMaxValue) && (int)fMaxValue < _frame.nBottom)
+  {
+    _frame.nBottom = (int)fMaxValue;
+    bChanged = true;
+  }
+  if(pMinHeight && true == pMinHeight->GetCurrent(fMinValue) && (int)fMinValue > _frame.nBottom-_frame.nTop)
+  {
+    _frame.nTop  = max( 0, _frame.nTop - ((int)fMinValue - (_frame.nBottom-_frame.nTop)) );
+    _frame.nBottom = _frame.nTop + max((int)fMinValue, _frame.nBottom-_frame.nTop);
+    bChanged = true;
+  }
+
+  return bChanged;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 TW_INT16 CTWAINDS_Base::getCurrentUnits(int &Unit, float &Xres, float &Yres)
