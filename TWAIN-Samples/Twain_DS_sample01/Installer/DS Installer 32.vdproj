@@ -63,7 +63,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:TWAINDS_win32_installer\\DS Installer 32.msi"
+        "OutputFilename" = "8:TWAINDS_win32_installer\\twainds.win32.installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -75,7 +75,7 @@
         "InstallerBootstrapper" = "3:2"
             "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
             {
-            "Enabled" = "11:TRUE"
+            "Enabled" = "11:FALSE"
             "PromptEnabled" = "11:TRUE"
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
@@ -84,7 +84,7 @@
                 {
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.2.0"
                     {
-                    "Name" = "8:Microsoft .NET Framework 2.0"
+                    "Name" = "8:.NET Framework 2.0"
                     "ProductCode" = "8:Microsoft.Net.Framework.2.0"
                     }
                 }
@@ -296,14 +296,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TWAIN 2.0 DS 32bit Sample"
-        "ProductCode" = "8:{FBFDCBF6-57BE-4558-B93E-D048CC0DA9D6}"
-        "PackageCode" = "8:{DBF15355-6198-41EA-82C7-C07CBC57CF20}"
+        "ProductCode" = "8:{F1573A15-ABC0-4318-A3F0-2D727ACD1167}"
+        "PackageCode" = "8:{FF465AF6-4D5A-4D7B-B087-8083A2DD10CF}"
         "UpgradeCode" = "8:{42397C41-AA95-45D0-A500-A692EB1A93B4}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.2"
+        "ProductVersion" = "8:1.0.4"
         "Manufacturer" = "8:TWAIN Working Group"
         "ARPHELPTELEPHONE" = "8:http://www.twainforum.org/phpBB2/index.php"
         "ARPHELPLINK" = "8:http://sourceforge.net/projects/twain-samples/"
