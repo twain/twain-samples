@@ -559,7 +559,8 @@ TW_INT16 CTWAINDS_FreeImage::enableDS(pTW_USERINTERFACE _pData)
     return TWRC_FAILURE;
   }
 
-  if(FALSE == _pData->ShowUI)
+  // @todo Impliment UI in the DS
+  if(1)//FALSE == _pData->ShowUI)
   {
     m_CurrentState = dsState_Enabled;
 
@@ -606,6 +607,13 @@ TW_INT16 CTWAINDS_FreeImage::enableDS(pTW_USERINTERFACE _pData)
       m_CurrentState = dsState_Open;
       setConditionCode(TWCC_SEQERROR);
       return TWRC_FAILURE;
+    }
+
+    // @todo remove this when UI is working
+    if(TRUE == _pData->ShowUI)
+    {
+      setConditionCode(TWCC_BADPROTOCOL);
+      return TWRC_CHECKSTATUS;
     }
   }
   else
@@ -760,53 +768,13 @@ TW_INT16 CTWAINDS_FreeImage::transfer()
       dwRead = MIN(64000, nImageSize) / nDestBytesPerRow * nDestBytesPerRow;
       dwReceived =0;
 
-//      if(TWPT_RGB!=m_ImageInfo.PixelType)
-//      {
-        // if BW or GRAY just copy the data
-        if( !m_Scanner.getScanStrip(pImageData, dwRead, dwReceived) ||
-            dwReceived != dwReceived / nDestBytesPerRow * nDestBytesPerRow)
-        {
-          //No more data to recieve fill the rest
-          break;
-        }
-        pImageData += dwReceived;
-//      }
-/*      else
+      if( !m_Scanner.getScanStrip(pImageData, dwRead, dwReceived) ||
+          dwReceived != dwReceived / nDestBytesPerRow * nDestBytesPerRow)
       {
-        // With color images we need to reorder the data
-        if(hImageBuff == 0)
-        {
-          hImageBuff  = _DSM_Alloc(dwRead);
-          if(!hImageBuff)
-          {
-            _DSM_UnlockMemory(pData);
-            setConditionCode(TWCC_LOWMEMORY);
-            return TWRC_FAILURE;
-          }
-        }
-        BYTE *pBuff = (BYTE *)_DSM_LockMemory(hImageBuff);
-
-        if( !m_Scanner.getScanStrip(pBuff, dwRead, dwReceived))
-        {
-          _DSM_UnlockMemory(pBuff);
-          break;
-        }
-
-        //need to re-order from BGR to RGB, pixel by pixel
-        for(WORD nRow = 0; nRow < dwReceived/nDestBytesPerRow; nRow++)
-        {
-          for(WORD nCol = 0; nCol<m_ImageInfo.ImageWidth; nCol++)
-          {
-            pImageData[(nCol*3)] = pBuff[FI_RGBA_RED];
-            pImageData[(nCol*3)+1] = pBuff[FI_RGBA_GREEN];
-            pImageData[(nCol*3)+2] = pBuff[FI_RGBA_BLUE];
-            pBuff += 3;
-          }
-          pImageData += nDestBytesPerRow;
-        }
-
-        _DSM_UnlockMemory(pBuff);
-      }*/
+        //No more data to recieve fill the rest
+        break;
+      }
+      pImageData += dwReceived;
       
       nImageSize -= dwReceived;
     }while(nImageSize>0 && twrc == TWRC_SUCCESS);

@@ -42,6 +42,8 @@
 
 #include "TWAINContainer.h"
 
+static int GetIndexIntValue(pTW_ENUMERATION pCap, TW_UINT32 index);
+
 /**
 * This class can be used for any Integer based TWAIN container. 
 * All values are stored internally as 1/1000th of an inch. They are converted

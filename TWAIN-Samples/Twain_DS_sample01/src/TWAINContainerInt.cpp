@@ -294,7 +294,8 @@ TW_INT16 CTWAINContainerInt::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
       for(TW_UINT32 x = 0; x < pCap->NumItems; ++x)
       {
         // only set the value if it exists in m_listIntsDefault
-        iter = find(m_listIntsDefault.begin(), m_listIntsDefault.end(), pCap->ItemList[x]);
+        int nValue = GetIndexIntValue(pCap, x);
+        iter = find(m_listIntsDefault.begin(), m_listIntsDefault.end(), nValue);
 
         if(iter != m_listIntsDefault.end())
         {
@@ -307,10 +308,10 @@ TW_INT16 CTWAINContainerInt::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
           }
 
           // only add it if it was not added already
-          iter = find(m_listInts.begin(), m_listInts.end(), pCap->ItemList[x]);
+          iter = find(m_listInts.begin(), m_listInts.end(), nValue);
           if(iter == m_listInts.end())
           {
-            m_listInts.push_back(pCap->ItemList[x]);
+            m_listInts.push_back(nValue);
           }
           else
           {
@@ -468,3 +469,41 @@ int CTWAINContainerInt::getIndexForValue(const int _nVal)
   return ret;
 }
 
+static int GetIndexIntValue(pTW_ENUMERATION pCap, TW_UINT32 index)
+{
+  int rtn = 0;
+  if(pCap && pCap->NumItems > index)
+  {
+    switch(pCap->ItemType)
+    {
+      case TWTY_INT8:
+        rtn = ((TW_INT8*)&pCap->ItemList)[index];
+        break;
+
+      case TWTY_INT16:
+        rtn = ((TW_INT16*)&pCap->ItemList)[index];
+        break;
+
+      case TWTY_INT32:
+        rtn = ((TW_INT32*)&pCap->ItemList)[index];
+        break;
+
+      case TWTY_UINT8:
+        rtn = ((TW_UINT8*)&pCap->ItemList)[index];
+        break;
+
+      case TWTY_UINT16:
+        rtn = ((TW_UINT16*)&pCap->ItemList)[index];
+        break;
+
+      case TWTY_UINT32:
+        rtn = ((TW_UINT32*)&pCap->ItemList)[index];
+        break;
+      
+      case TWTY_BOOL:
+        rtn = ((TW_BOOL*)&pCap->ItemList)[index];
+        break;
+    }
+  }
+  return rtn;
+}
