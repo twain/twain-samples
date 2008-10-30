@@ -1,5 +1,11 @@
 2008-10-23 JFL Peripheral Solutions jimw@jflinc.com
 
+    * Fix bug of not indexing Enumeration values correctly for int types.  
+        Causing MSG_SET with TWON_ENUMERATION to fail
+    * Always Enable DS without UI even when TW_USERINTERFACE.ShowUI is TRUE.
+    
+2008-10-23 JFL Peripheral Solutions jimw@jflinc.com
+
     * Don't allow updating capabilities when CurrentState >= dsState_XferReady.
     * Fix bug of not setting condition code correctly in some cases.
     * Add function to Validate set capabilities before they are committed.
