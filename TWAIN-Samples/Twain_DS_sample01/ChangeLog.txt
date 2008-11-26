@@ -1,4 +1,8 @@
-2008-10-23 JFL Peripheral Solutions jimw@jflinc.com
+2008-11-26 JFL Peripheral Solutions jimw@jflinc.com
+
+    * Update TW_SETUPMEMXFER MSG_GET to reflect the current minimum memory requirements to do a memory transfer.
+
+2008-10-30 JFL Peripheral Solutions jimw@jflinc.com
 
     * Fix bug of not indexing Enumeration values correctly for int types.  
         Causing MSG_SET with TWON_ENUMERATION to fail
