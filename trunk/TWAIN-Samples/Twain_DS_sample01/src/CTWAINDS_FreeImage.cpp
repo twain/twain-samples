@@ -677,12 +677,67 @@ TW_INT16 CTWAINDS_FreeImage::getMemoryXfer(pTW_SETUPMEMXFER _pData)
   }
 
   // Min is the physical width at highest res and hishest bits/pixel count
-  // chose 64k because this is a typical sweet spot for most real world scanners
-  // (max transfer size for SCSI read of typical SCSI devices)
   TW_UINT32 bytes = (TW_UINT32)BYTES_PERLINE_ALIGN4(8.5*600, 24);
   _pData->MinBufSize = bytes;
+
+  // chose 64k because this is a typical sweet spot for most real world scanners
+  // (max transfer size for SCSI read of typical SCSI devices)
   _pData->MaxBufSize = MAX(64*1024, bytes);//bytes;
   _pData->Preferred  = MAX(64*1024, bytes);//bytes;
+
+  // Update the min based on current settings.
+  if(m_CurrentState == dsState_XferReady)
+  {
+    // If we have an image ready then we can use that info to get the memory requirements
+    //get the number of bytes per line we'll need for this image, and make sure it's DWORD-aligned
+    _pData->MinBufSize = BYTES_PERLINE_ALIGN4(m_ImageInfo.ImageWidth, m_ImageInfo.BitsPerPixel);
+  }
+  else
+  {
+    // calculate the min based on the current settings
+    int                   nBitDepth     = 24;
+    float                 fXResolution  = 600.0f;
+    float                 fWidth        = 8.5f * fXResolution;
+    CTWAINContainerInt   *pnCap         = 0;
+    CTWAINContainerFix32 *pfCap         = 0;
+    InternalFrame         frame;
+   
+    if(0 == (pnCap = dynamic_cast<CTWAINContainerInt*>(findCapability(ICAP_BITDEPTH))))
+    {
+      cerr << "Could not get ICAP_BITDEPTH" << endl;
+      setConditionCode(TWCC_BUMMER);
+      return TWRC_FAILURE;
+    }
+    else
+    {
+      pnCap->GetCurrent(nBitDepth);
+    }
+
+    if(0 == (pfCap = dynamic_cast<CTWAINContainerFix32*>(findCapability(ICAP_XRESOLUTION))))
+    {
+      cerr << "Could not get ICAP_XRESOLUTION" << endl;
+      setConditionCode(TWCC_BUMMER);
+      return TWRC_FAILURE;
+    }
+    else
+    {
+      pfCap->GetCurrent(fXResolution);
+    }
+
+    if(!m_pICAP_FRAMES->GetCurrent(frame))
+    {
+      cerr << "Could not get ICAP_FRAMES" << endl;
+      setConditionCode(TWCC_BUMMER);
+      return TWRC_FAILURE;
+    }
+    else
+    {
+      // Get the scanning window by converting from our internal units to pixels.
+      TW_FRAME TWframe = frame.AsTW_FRAME(TWUN_PIXELS, fXResolution, fXResolution);
+      fWidth  = FIX32ToFloat(TWframe.Right) - FIX32ToFloat(TWframe.Left);
+    }
+    _pData->MinBufSize = (TW_UINT32)BYTES_PERLINE_ALIGN4(fWidth, nBitDepth);
+  }
 
   return TWRC_SUCCESS;
 }
