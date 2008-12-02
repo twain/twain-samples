@@ -469,7 +469,7 @@ int CTWAINContainerInt::getIndexForValue(const int _nVal)
   return ret;
 }
 
-static int GetIndexIntValue(pTW_ENUMERATION pCap, TW_UINT32 index)
+int GetIndexIntValue(pTW_ENUMERATION pCap, TW_UINT32 index)
 {
   int rtn = 0;
   if(pCap && pCap->NumItems > index)

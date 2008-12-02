@@ -42,6 +42,12 @@
 
 #include "TWAINContainer.h"
 
+  /**
+  * Return the Int Value of the index into an enumeration of Ints  
+  * @param[in] pCap The enumeration to retreive the value
+  * @param[in] index the index into the enumeration to retrieve the value.
+  * @return the Int value at index into pCap
+  */
 static int GetIndexIntValue(pTW_ENUMERATION pCap, TW_UINT32 index);
 
 /**
