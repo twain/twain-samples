@@ -1,3 +1,12 @@
+2008-12-23 JFL Peripheral Solutions jimw@jflinc.com
+
+    * Add Doxygen comments to the code
+    * Fix many cases where UnlockMemory was not using handle returned by allocate memory to unlock
+    * Update memory functions to reflect handle to memory is being used.
+    * mfcDlgConfigure.cpp, & main.cpp, update scan loop to dispatch Windows messages to open DS dialog
+    * Add Extended Image Info
+
+
 2008-09-12 JFL Peripheral Solutions jimw@jflinc.com
 
     * mfcDlgConfigure.cpp, Fix DSM Callback, to set flag and return right away
@@ -10,6 +19,7 @@
     * Fix typos
     * Use latest DSM merge module
     * Increase build number
+
 
 2008-06-10 JFL Peripheral Solutions jimw@jflinc.com
 

@@ -24,6 +24,7 @@
 			IntermediateDirectory="$(ConfigurationName)32"
 			ConfigurationType="1"
 			UseOfMFC="1"
+			UseOfATL="0"
 			CharacterSet="2"
 			>
 			<Tool
@@ -73,12 +74,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="FreeImage.lib"
+				AdditionalDependencies="nafxcwd.lib libcmtd.lib FreeImage.lib"
 				OutputFile="$(OutDir)\$(ProjectName)32_d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib"
 				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames=""
+				IgnoreDefaultLibraryNames="nafxcwd.lib libcmtd.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -166,12 +167,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="FreeImagedx64.lib"
+				AdditionalDependencies="nafxcwd.lib libcmtd.lib FreeImagedx64.lib"
 				OutputFile="$(OutDir)\$(ProjectName)64_d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib"
 				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames=""
+				IgnoreDefaultLibraryNames="nafxcwd.lib libcmtd.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="17"
@@ -256,12 +257,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="FreeImage.lib"
+				AdditionalDependencies="Nafxcw.lib Libcmt.lib FreeImage.lib"
 				OutputFile="$(OutDir)\$(ProjectName)32.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib"
 				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames=""
+				IgnoreDefaultLibraryNames="Nafxcw.lib;Libcmt.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -349,12 +350,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="FreeImagex64.lib"
+				AdditionalDependencies="Nafxcw.lib Libcmt.lib FreeImagex64.lib"
 				OutputFile="$(OutDir)\$(ProjectName)64.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib"
 				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames=""
+				IgnoreDefaultLibraryNames="Nafxcw.lib Libcmt.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

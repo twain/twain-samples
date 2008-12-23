@@ -31,7 +31,7 @@
 
 /**
 * @file DSMInterface.h
-* User interface for TWAIN Application
+* Common defines and typedefs used for accessing DSM for TWAIN Applications.
 * @author TWAIN Working Group
 * @date April 2007
 */
@@ -52,7 +52,8 @@
 
 /**
 * Load the DSM library.
-* param[in] the name of the DSM library to open
+* @param[in] the name of the DSM library to open
+* @return true if success.
 */
 bool LoadDSMLib(char* _pszLibName);
 
@@ -62,27 +63,27 @@ bool LoadDSMLib(char* _pszLibName);
 void unLoadDSMLib();
 
 /**
-* Initilize and registor the entry point into the DSM.
+* Initialize and register the entry point into the DSM.
 * @param[in] _pOrigin Identifies the source module of the message. This could
-*            identify an Application, a Source, or the Source Manager.
+*           identify an Application, a Source, or the Source Manager.
 *
 * @param[in] _pDest Identifies the destination module for the message.
-*            This could identify an application or a data source.
-*            If this is NULL, the message goes to the Source Manager.
+*           This could identify an application or a data source.
+*           If this is NULL, the message goes to the Source Manager.
 *
 * @param[in] _DG The Data Group. 
-*            Example: DG_IMAGE.
+*           Example: DG_IMAGE.
 *
 * @param[in] _DAT The Data Attribute Type.
-*            Example: DAT_IMAGEMEMXFER.
+*           Example: DAT_IMAGEMEMXFER.
 *    
 * @param[in] _MSG The message.  Messages are interpreted by the destination module
-*            with respect to the Data Group and the Data Attribute Type.  
-*            Example: MSG_GET.
+*           with respect to the Data Group and the Data Attribute Type.  
+*           Example: MSG_GET.
 *
 * @param[in,out] _pData A pointer to the data structure or variable identified 
-*            by the Data Attribute Type.
-*            Example: (TW_MEMREF)&ImageMemXfer
+*           by the Data Attribute Type.
+*           Example: (TW_MEMREF)&ImageMemXfer
 *                   where ImageMemXfer is a TW_IMAGEMEMXFER structure.
 *                    
 * @return a valid TWRC_xxxx return code.
@@ -104,23 +105,23 @@ TW_HANDLE _DSM_Alloc(TW_UINT32 _size);
 
 /**
 * Free previously allocated global memory
-* @param[in] _pPtr TW_HANDLE to the memory needing free.
+* @param[in] _hMemory TW_HANDLE to the memory needing free.
 */
-void _DSM_Free(TW_HANDLE _pPtr);
+void _DSM_Free(TW_HANDLE _hMemory);
 
 /**
 * Lock global memory from being updated by others. return a pointer to the 
 * memory so we can update it.
-* @param[in] _pMemory TW_HANDLE to the memory to update.
+* @param[in] _hMemory TW_HANDLE to the memory to update.
 * @return TW_MEMREF pointer to the memory.
 */
-TW_MEMREF _DSM_LockMemory(TW_HANDLE _pMemory);
+TW_MEMREF _DSM_LockMemory(TW_HANDLE _hMemory);
 
 /**
-* Lock global memory to allow updating by others.
-* @param[in] _pMemory TW_MEMREF pointer to memory
+* Unlock global memory after locking. to allow updating by others.
+* @param[in] _hMemory TW_HANDLE to memory returned by _DSM_Alloc
 */
-void _DSM_UnlockMemory(TW_MEMREF _pMemory);
+void _DSM_UnlockMemory(TW_HANDLE _hMemory);
 
 /**
 * Not Used.

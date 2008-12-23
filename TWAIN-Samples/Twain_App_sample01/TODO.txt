@@ -1,4 +1,3 @@
-December 10, 2007 JFL Peripheral Solutions jimw@jflinc.com 
+December 23, 2008 JFL Peripheral Solutions jimw@jflinc.com 
 ===============================
 - extend capability negotiations
-- add DAT_EXTIMAGEINFO / TW_EXTIMAGEINFO support

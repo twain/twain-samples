@@ -57,7 +57,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:TWAINAPP_win32_installer\\App Installer 32.msi"
+        "OutputFilename" = "8:TWAINAPP_win32_installer\\twainapp.win32.installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -255,7 +255,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TWAIN 2.0 App 32bit Sample"
         "ProductCode" = "8:{8FB891DF-3D56-4115-8365-83EFD3F38B36}"
-        "PackageCode" = "8:{33F2AEEF-F1A8-418D-9E7A-7AFCE6DA3302}"
+        "PackageCode" = "8:{442412EE-8FD2-48A1-BFDF-B1ADC540767C}"
         "UpgradeCode" = "8:{3093BF18-1ADD-4A3C-AE32-8F818163DFAF}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
@@ -374,6 +374,20 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEAD18521FDD4DC1802D0BBEE837FE5A"
+            {
+            "Name" = "8:TWAIN2 Sample App"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_AC8F61B9ACC64241B00C28FB68E9A3AF"
+            "Folder" = "8:_499C21D1EE6243C7912F1A2B7C4C6A99"
+            "WorkingFolder" = "8:_96730F9B11A14CA78A60C4C3863A6FF7"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
         }
         "UserInterface"
         {

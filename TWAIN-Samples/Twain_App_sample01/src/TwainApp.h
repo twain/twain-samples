@@ -113,6 +113,11 @@ public:
 */
   ~TwainApp();
 
+
+  TW_UINT16 DSM_Entry(TW_UINT32    _DG,
+                      TW_UINT16    _DAT,
+                      TW_UINT16    _MSG,
+                      TW_MEMREF    _pData);
 /**
 * Print out error message and condition code from DS.  Looks up the 
 * condition code using the _pdestID and prints it after the _errorMsg.
@@ -257,7 +262,7 @@ public:
 /**
 * Try to sets a OneValue Capability to the value passed
 * @param[in] Cap the capability to update to set
-* @param[in] _value the value to set
+* @param[in] _pValue the value to set
 * @return true if successful
 */
   bool set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValue);
@@ -414,26 +419,45 @@ public:
   pTW_IMAGEINFO getIMAGEINFO() {return &m_ImageInfo;}
 
 /**
+* Gets the extended image info of the currently transfered image
+* @return pointer to the extended image info
+*/
+  string getEXIMAGEINFO(){return m_strExImageInfo;}
+
+/**
 * retrieve the imageinfo for the current image
 * @return true on succes
 */
   bool updateIMAGEINFO();
 
+/**
+* retrieve the extended image info for the current image
+* @return true on succes
+*/
+  void updateEXIMAGEINFO();
+
+/**
+* retrieve the extended image info name for a given Info ID for the current image
+* @param[in] InfoID the id to retrieve the info of
+* @return string of the extended image info
+*/
+  string GetExtImageInfoName(int InfoID);
+
   ////////////////
   // CAPABILITIES
 
-  TW_CAPABILITY m_CAP_XFERCOUNT;        /**< Number of images the application is willing to accept this session. */
-  TW_CAPABILITY m_ICAP_XFERMECH;        /**< Transfer mechanism - used to learn options and set-up for upcoming transfer. */
-  TW_CAPABILITY m_ICAP_IMAGEFILEFORMAT; /**< File format saved when using File Xfer Mechanism. */
-  TW_CAPABILITY m_ICAP_COMPRESSION;     /**< Compression method used for upcoming transfer. */
-  TW_CAPABILITY m_ICAP_UNITS;           /**< Unit of measure (inches, centimeters, etc). */
-  TW_CAPABILITY m_ICAP_PIXELTYPE;       /**< The type of pixel data (B/W, gray, color, etc). */
-  TW_CAPABILITY m_ICAP_BITDEPTH;        /**< Pixel bit depth for Current value of ICAP_PIXELTYPE. */
-  TW_CAPABILITY m_ICAP_XRESOLUTION;     /**< Current/Available optical resolutions for x-axis. */
-  TW_CAPABILITY m_ICAP_YRESOLUTION;     /**< Current/Available optical resolutions for y-axis */
-  TW_CAPABILITY m_ICAP_FRAMES;          /**< Size and location of frames on page. */
+  TW_CAPABILITY   m_CAP_XFERCOUNT;        /**< Number of images the application is willing to accept this session. */
+  TW_CAPABILITY   m_ICAP_XFERMECH;        /**< Transfer mechanism - used to learn options and set-up for upcoming transfer. */
+  TW_CAPABILITY   m_ICAP_IMAGEFILEFORMAT; /**< File format saved when using File Xfer Mechanism. */
+  TW_CAPABILITY   m_ICAP_COMPRESSION;     /**< Compression method used for upcoming transfer. */
+  TW_CAPABILITY   m_ICAP_UNITS;           /**< Unit of measure (inches, centimeters, etc). */
+  TW_CAPABILITY   m_ICAP_PIXELTYPE;       /**< The type of pixel data (B/W, gray, color, etc). */
+  TW_CAPABILITY   m_ICAP_BITDEPTH;        /**< Pixel bit depth for Current value of ICAP_PIXELTYPE. */
+  TW_CAPABILITY   m_ICAP_XRESOLUTION;     /**< Current/Available optical resolutions for x-axis. */
+  TW_CAPABILITY   m_ICAP_YRESOLUTION;     /**< Current/Available optical resolutions for y-axis */
+  TW_CAPABILITY   m_ICAP_FRAMES;          /**< Size and location of frames on page. */
 
-  int m_DSMState;                       /**< The current TWAIN state of the dsm (2-7) */
+  int             m_DSMState;             /**< The current TWAIN state of the dsm (2-7) */
 
 protected:
 /**
@@ -443,19 +467,17 @@ protected:
 */
   FIBITMAP* createDIB();
 
-  HWND              m_Parent;               /**< Handle to Window to recieve window messages. */
-  TW_IDENTITY       m_MyInfo;               /**< Identity structure with this applications identity details */
-  pTW_IDENTITY      m_pDataSource;          /**< Pointer of Identity structure to current loaded data souce */
+  HWND                m_Parent;               /**< Handle to Window to recieve window messages. */
+  TW_IDENTITY         m_MyInfo;               /**< Identity structure with this applications identity details */
+  pTW_IDENTITY        m_pDataSource;          /**< Pointer of Identity structure to current loaded data souce */
   vector<TW_IDENTITY> m_DataSources;        /**< Store a list of available data sources located by DSM */
-//  bool              m_bDSCapsNegotiated;    /**< @todo NOT USED */
-//  FIBITMAP         *m_pDIB;                 /**< @todo NOT USED */
 
-  TW_IMAGEINFO      m_ImageInfo;            /**< Detailed image info retrieved from the DS */
-  pTW_EXTIMAGEINFO  m_pExtImageInfo;        /**< Detailed extended image info retrieved from the DS */
-  TW_UINT16         m_nXferNum;             /**< Keep track of the number of images attempted to transfer - used when saving file to disk*/
+  TW_IMAGEINFO        m_ImageInfo;            /**< Detailed image info retrieved from the DS */
+  pTW_EXTIMAGEINFO    m_pExtImageInfo;        /**< Detailed extended image info retrieved from the DS */
+  TW_UINT16           m_nXferNum;             /**< Keep track of the number of images attempted to transfer - used when saving file to disk*/
+  string              m_strExImageInfo;       /**< Extended image info retrieved from the DS */
 
-
-  TW_USERINTERFACE  m_ui;                   /**< Coordinates UI between application and data source. */
+  TW_USERINTERFACE    m_ui;                   /**< Coordinates UI between application and data source. */
 };
 
 #endif //  __TWAINAPP_H__

@@ -1,4 +1,4 @@
-# Doxyfile 1.5.2
+# Doxyfile 1.5.6
 
 #---------------------------------------------------------------------------
 # Project related configuration options
@@ -29,6 +29,7 @@ STRIP_FROM_PATH        = /
 STRIP_FROM_INC_PATH    = 
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = YES
+QT_AUTOBRIEF           = NO
 MULTILINE_CPP_IS_BRIEF = NO
 DETAILS_AT_TOP         = YES
 INHERIT_DOCS           = YES
@@ -37,10 +38,15 @@ TAB_SIZE               = 2
 ALIASES                = 
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
+OPTIMIZE_FOR_FORTRAN   = NO
+OPTIMIZE_OUTPUT_VHDL   = NO
 BUILTIN_STL_SUPPORT    = NO
 CPP_CLI_SUPPORT        = NO
+SIP_SUPPORT            = NO
+IDL_PROPERTY_SUPPORT   = YES
 DISTRIBUTE_GROUP_DOC   = NO
 SUBGROUPING            = YES
+TYPEDEF_HIDES_STRUCT   = NO
 #---------------------------------------------------------------------------
 # Build related configuration options
 #---------------------------------------------------------------------------
@@ -49,6 +55,7 @@ EXTRACT_PRIVATE        = YES
 EXTRACT_STATIC         = YES
 EXTRACT_LOCAL_CLASSES  = YES
 EXTRACT_LOCAL_METHODS  = YES
+EXTRACT_ANON_NSPACES   = NO
 HIDE_UNDOC_MEMBERS     = NO
 HIDE_UNDOC_CLASSES     = NO
 HIDE_FRIEND_COMPOUNDS  = NO
@@ -60,6 +67,7 @@ SHOW_INCLUDE_FILES     = YES
 INLINE_INFO            = YES
 SORT_MEMBER_DOCS       = YES
 SORT_BRIEF_DOCS        = NO
+SORT_GROUP_NAMES       = NO
 SORT_BY_SCOPE_NAME     = YES
 GENERATE_TODOLIST      = YES
 GENERATE_TESTLIST      = YES
@@ -69,6 +77,8 @@ ENABLED_SECTIONS       =
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
 SHOW_DIRECTORIES       = NO
+SHOW_FILES             = YES
+SHOW_NAMESPACES        = YES
 FILE_VERSION_FILTER    = 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -84,7 +94,7 @@ WARN_LOGFILE           =
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = . \
-                         ../pub/external/include/twain.h
+                         src
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
@@ -117,7 +127,10 @@ FILE_PATTERNS          = *.c \
                          *.xpm \
                          *.dox
 RECURSIVE              = YES
-EXCLUDE                = ./visual_studio
+EXCLUDE                = ./visual_studio \
+                         ./visual_studio_mfc \
+                         ../pub/include/twain/twain.h \
+                         ./TWAIN2_Speed_Test
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = 
 EXCLUDE_SYMBOLS        = 
@@ -156,15 +169,21 @@ HTML_FOOTER            =
 HTML_STYLESHEET        = 
 HTML_ALIGN_MEMBERS     = YES
 GENERATE_HTMLHELP      = NO
+GENERATE_DOCSET        = NO
+DOCSET_FEEDNAME        = "Doxygen generated docs"
+DOCSET_BUNDLE_ID       = org.doxygen.Project
+HTML_DYNAMIC_SECTIONS  = NO
 CHM_FILE               = 
 HHC_LOCATION           = 
 GENERATE_CHI           = NO
+CHM_INDEX_ENCODING     = 
 BINARY_TOC             = NO
 TOC_EXPAND             = NO
 DISABLE_INDEX          = NO
 ENUM_VALUES_PER_LINE   = 4
 GENERATE_TREEVIEW      = NO
 TREEVIEW_WIDTH         = 250
+FORMULA_FONTSIZE       = 10
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
@@ -224,7 +243,8 @@ EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = 
-PREDEFINED             = _WIN32:=1
+PREDEFINED             = _WIN32:=1 \
+                         TWH_CMP_MSC=1
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------
@@ -242,6 +262,8 @@ CLASS_DIAGRAMS         = YES
 MSCGEN_PATH            = 
 HIDE_UNDOC_RELATIONS   = NO
 HAVE_DOT               = YES
+DOT_FONTNAME           = FreeSans
+DOT_FONTPATH           = 
 CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = YES
 GROUP_GRAPHS           = YES
@@ -257,6 +279,7 @@ DOT_IMAGE_FORMAT       = png
 DOT_PATH               = "C:/Program Files/ATT/Graphviz/bin"
 DOTFILE_DIRS           = 
 DOT_GRAPH_MAX_NODES    = 50
+MAX_DOT_GRAPH_DEPTH    = 1000
 DOT_TRANSPARENT        = NO
 DOT_MULTI_TARGETS      = NO
 GENERATE_LEGEND        = YES
