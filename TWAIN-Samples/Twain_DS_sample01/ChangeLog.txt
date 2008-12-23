@@ -1,12 +1,21 @@
+2008-12-23 JFL Peripheral Solutions jimw@jflinc.com
+
+    * Add Doxygen comments to the code
+    * Fix many cases where UnlockMemory was not using handle returned by allocate memory to unlock
+    * Update memory functions to reflect handle to memory is being used.
+
+
 2008-11-26 JFL Peripheral Solutions jimw@jflinc.com
 
     * Update TW_SETUPMEMXFER MSG_GET to reflect the current minimum memory requirements to do a memory transfer.
+
 
 2008-10-30 JFL Peripheral Solutions jimw@jflinc.com
 
     * Fix bug of not indexing Enumeration values correctly for int types.  
         Causing MSG_SET with TWON_ENUMERATION to fail
     * Always Enable DS without UI even when TW_USERINTERFACE.ShowUI is TRUE.
+
     
 2008-10-23 JFL Peripheral Solutions jimw@jflinc.com
 
@@ -18,10 +27,12 @@
     * Fix bug with InternalFrame constructor using SupportedSize not generating correct size frame.
     * Add support for TW_UINT32 in TWAINContainerInt class.
 
+
 2008-09-29 JFL Peripheral Solutions jimw@jflinc.com
 
     * Fix several bugs with MSG_SET and TWON_ENUMERATION containers when bad data is used.
       TWAINContainerInt.cpp, TWAINContainerFix32.cpp, TWAINContainerInt.cpp
+
     
 2008-09-12 JFL Peripheral Solutions jimw@jflinc.com
 
@@ -30,8 +41,10 @@
     * Use latest DSM merge module
     * Increase build number
 
+
 December 10, 2007 JFL Peripheral Solutions jimw@jflinc.com
     * Initial Release.
+
 
 February 15, 2008 JFL Peripheral Solutions jimw@jflinc.com
     * Fix state transition error, reported by Mark.  

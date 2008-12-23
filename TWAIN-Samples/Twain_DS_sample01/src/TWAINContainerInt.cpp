@@ -71,7 +71,7 @@ TW_HANDLE CTWAINContainerInt::GetContainer(const TW_UINT16 _unMsg)
       // If the Cap has been constrained the default may only be in the defaultlist.
       pCap->Item = (MSG_GETDEFAULT == _unMsg)?m_listIntsDefault[m_nDefault]:m_listInts[m_nCurrent];
 
-      _DSM_UnlockMemory((TW_MEMREF)pCap);
+      _DSM_UnlockMemory(hContainer);
     }
   }
   else if(MSG_GET == _unMsg)
@@ -111,7 +111,7 @@ TW_HANDLE CTWAINContainerInt::GetContainer(const TW_UINT16 _unMsg)
 
         fillValues(&pCap->ItemList, pCap->NumItems, m_unItemType);
 
-        _DSM_UnlockMemory((TW_MEMREF)pCap);
+        _DSM_UnlockMemory(hContainer);
       }
     }
     else if(TWON_ARRAY == m_unGetType)
@@ -126,7 +126,7 @@ TW_HANDLE CTWAINContainerInt::GetContainer(const TW_UINT16 _unMsg)
 
         fillValues(&pCap->ItemList, pCap->NumItems, m_unItemType);
 
-        _DSM_UnlockMemory((TW_MEMREF)pCap);
+        _DSM_UnlockMemory(hContainer);
       }
     }
   } // else if(MSG_GET == _unMsg)
@@ -278,7 +278,7 @@ TW_INT16 CTWAINContainerInt::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
       twrc = TWRC_FAILURE;
       Condition = TWCC_CAPBADOPERATION;
     }
-    _DSM_UnlockMemory((TW_MEMREF)pCap);
+    _DSM_UnlockMemory(_pCap->hContainer);
   }
   else if(TWON_ENUMERATION == _pCap->ConType)
   {
@@ -364,7 +364,7 @@ TW_INT16 CTWAINContainerInt::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
       Condition = TWCC_CAPBADOPERATION;
     }
 
-    _DSM_UnlockMemory((TW_MEMREF)pCap);
+    _DSM_UnlockMemory(_pCap->hContainer);
   }
 
   return twrc;

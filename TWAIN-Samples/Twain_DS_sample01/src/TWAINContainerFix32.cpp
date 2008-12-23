@@ -71,7 +71,7 @@ TW_HANDLE CTWAINContainerFix32::GetContainer(const TW_UINT16 _unMsg)
       const float flVal = (MSG_GETDEFAULT == _unMsg)?m_listFloatsDefault[m_nDefault]:m_listFloats[m_nCurrent];
       
       pCap->Item = FloatToFIX32(flVal);
-      _DSM_UnlockMemory((TW_MEMREF)pCap);
+      _DSM_UnlockMemory(hContainer);
     }
   }
   else if(MSG_GET == _unMsg)
@@ -112,7 +112,7 @@ TW_HANDLE CTWAINContainerFix32::GetContainer(const TW_UINT16 _unMsg)
           pCap->ItemList[x] = FloatToFIX32(m_listFloats[x]);
         }
 
-        _DSM_UnlockMemory((TW_MEMREF)pCap);
+        _DSM_UnlockMemory(hContainer);
       }
     }
     else if(TWON_ARRAY == m_unGetType)
@@ -130,7 +130,7 @@ TW_HANDLE CTWAINContainerFix32::GetContainer(const TW_UINT16 _unMsg)
           pCap->ItemList[x] = FloatToFIX32(m_listFloats[x]);
         }
 
-        _DSM_UnlockMemory((TW_MEMREF)pCap);
+        _DSM_UnlockMemory(hContainer);
       }
     }
   }
@@ -196,7 +196,7 @@ TW_INT16 CTWAINContainerFix32::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
       }
     }
 
-    _DSM_UnlockMemory((TW_MEMREF)pCap);
+    _DSM_UnlockMemory(_pCap->hContainer);
   }
   else if(TWON_ENUMERATION == _pCap->ConType)
   {
@@ -283,7 +283,7 @@ TW_INT16 CTWAINContainerFix32::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
       Condition = TWCC_CAPBADOPERATION;
     }
 
-    _DSM_UnlockMemory((TW_MEMREF)pCap);
+    _DSM_UnlockMemory(_pCap->hContainer);
   }
 
   return twrc;

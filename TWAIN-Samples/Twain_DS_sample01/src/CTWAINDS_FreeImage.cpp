@@ -813,10 +813,8 @@ TW_INT16 CTWAINDS_FreeImage::transfer()
 
     TW_MEMREF   pData       = _DSM_LockMemory(m_hImageData);
     BYTE       *pImageData  = (BYTE*)pData;
-    TW_HANDLE   hImageBuff  = 0;
-
-    DWORD dwRead;
-    DWORD dwReceived;
+    DWORD       dwRead;
+    DWORD       dwReceived;
 
     do
     {
@@ -834,11 +832,7 @@ TW_INT16 CTWAINDS_FreeImage::transfer()
       nImageSize -= dwReceived;
     }while(nImageSize>0 && twrc == TWRC_SUCCESS);
 
-    _DSM_UnlockMemory(pData);
-    if(hImageBuff)
-    {
-      _DSM_Free(hImageBuff);
-    }
+    _DSM_UnlockMemory(m_hImageData);
   }
   else
   {
@@ -1258,7 +1252,7 @@ TW_INT16 CTWAINDS_FreeImage::dat_imagelayout(TW_UINT16         _MSG,
         pTW_ONEVALUE_FRAME pCap = (pTW_ONEVALUE_FRAME)_DSM_LockMemory(cap.hContainer);
         pCap->Item = _pData->Frame;
         pCap->ItemType = TWTY_FRAME;
-        _DSM_UnlockMemory((TW_MEMREF)pCap);
+        _DSM_UnlockMemory(hContainer);
 
         TW_INT16 Condition;
         if(!m_pICAP_FRAMES->Set(&cap, Condition))
