@@ -788,7 +788,7 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
       pCap->ItemType = TWTY_INT32;
       pCap->Item = _pContainer->getMSG_QUERYSUPPORT();
 
-      _DSM_UnlockMemory((TW_MEMREF)pCap);
+      _DSM_UnlockMemory(_pCap->hContainer);
       twrc = TWRC_SUCCESS;
     }
   }
@@ -925,7 +925,7 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(pTW_CAPABILITY _pCap)
           {
             twrc = TWRC_SUCCESS;
           }
-          _DSM_UnlockMemory((TW_MEMREF)pCap);
+          _DSM_UnlockMemory(_pCap->hContainer);
         }
       }
       break;
@@ -949,7 +949,7 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(pTW_CAPABILITY _pCap)
             pCap->Item = frame.AsTW_FRAME(unit, Xres, Yres);
             twrc = TWRC_CHECKSTATUS;
           }
-          _DSM_UnlockMemory((TW_MEMREF)pCap);
+          _DSM_UnlockMemory(_pCap->hContainer);
         }
       }
       else if(TWON_ENUMERATION == _pCap->ConType)
@@ -967,7 +967,7 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(pTW_CAPABILITY _pCap)
               twrc = TWRC_CHECKSTATUS;
             }
           }
-          _DSM_UnlockMemory((TW_MEMREF)pCap);
+          _DSM_UnlockMemory(_pCap->hContainer);
         }
       }
       break;
@@ -1398,7 +1398,7 @@ TW_INT16 CTWAINDS_Base::saveImageFileAsTIFF()
     if(!pTifImg->WriteTIFFData(reinterpret_cast<char*>(pImage), nBPL*nHeight))
     {
       setConditionCode(TWCC_FILEWRITEERROR);
-      _DSM_UnlockMemory(pImage);
+      _DSM_UnlockMemory(m_hImageData);
       delete pTifImg;
       return TWRC_FAILURE;
     }
@@ -1406,7 +1406,7 @@ TW_INT16 CTWAINDS_Base::saveImageFileAsTIFF()
   else // color
   {
     // we need to reverse the color from BRG to RGB
-    BYTE    *pLineBuff = NULL;
+    BYTE      *pLineBuff = NULL;
     TW_HANDLE  hLineBuff = _DSM_Alloc(nBPL);
 
     if( NULL == hLineBuff )
@@ -1445,18 +1445,18 @@ TW_INT16 CTWAINDS_Base::saveImageFileAsTIFF()
       if(!pTifImg->WriteTIFFData(reinterpret_cast<char*>(pLineBuff), nBPL))
       {
         setConditionCode(TWCC_FILEWRITEERROR);
-        _DSM_UnlockMemory(pImage);
+        _DSM_UnlockMemory(m_hImageData);
         delete pTifImg;
         return TWRC_FAILURE;
       }
     }
 
-    _DSM_UnlockMemory(pLineBuff);
+    _DSM_UnlockMemory(hLineBuff);
     _DSM_Free(hLineBuff);
 
   }
   delete pTifImg;
-  _DSM_UnlockMemory(pImage);
+  _DSM_UnlockMemory(m_hImageData);
 
   return TWRC_XFERDONE;
 }
@@ -1502,7 +1502,7 @@ TW_INT16 CTWAINDS_Base::saveImageFileAsBMP()
   fwrite(pDIB, 1, nDIBSize, pFile);
   fclose(pFile);
   pFile = 0;
-  _DSM_UnlockMemory(pDIB);
+  _DSM_UnlockMemory(hDIB);
   _DSM_Free(hDIB);
 
   return TWRC_XFERDONE;
@@ -1574,7 +1574,7 @@ TW_INT16 CTWAINDS_Base::getDIBImage(TW_MEMREF* _pImage)
     pDIBInfoHeader->biClrUsed       = numcolors;
     pDIBInfoHeader->biClrImportant  = numcolors;	//all the colors are important
 
-    _DSM_UnlockMemory(pDIBInfoHeader);	//unlock our DIB memory
+    _DSM_UnlockMemory(hDIB);	//unlock our DIB memory
 
     // Add Pallette
     pDestBuff =(BYTE*)_DSM_LockMemory(hDIB);	//get a pointer to the destination data
@@ -1663,12 +1663,12 @@ TW_INT16 CTWAINDS_Base::getDIBImage(TW_MEMREF* _pImage)
   // cleanup
   if(pSourceBuff)
   {
-    _DSM_UnlockMemory(pSourceBuff);
+    _DSM_UnlockMemory(m_hImageData);
   }
 
   if(pDestBuff)
   {
-    _DSM_UnlockMemory(pDestBuff);
+    _DSM_UnlockMemory(hDIB);
   }
 
   if(twrc != TWRC_SUCCESS)
@@ -1805,11 +1805,11 @@ TW_INT16 CTWAINDS_Base::transferMemoryBuffers(pTW_IMAGEMEMXFER _ImageXfer)
     twrc = TWRC_XFERDONE;
   }
 
-  _DSM_UnlockMemory((TW_MEMREF)pSourceBuff);
+  _DSM_UnlockMemory(m_hImageData);
 
   if(TWMF_HANDLE & _ImageXfer->Memory.Flags)
   {
-     _DSM_UnlockMemory((TW_MEMREF)pDestBuff);
+     _DSM_UnlockMemory(_ImageXfer->Memory.TheMem);
   }
 
   return twrc;

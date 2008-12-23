@@ -309,7 +309,7 @@ TW_HANDLE CTWAINContainerFrame::GetContainer(const TW_UINT16 _unMsg)
       pCap->Item = frame.AsTW_FRAME(m_Unit, m_Xres, m_Yres);
       pCap->ItemType = m_unItemType;
 
-      _DSM_UnlockMemory((TW_MEMREF)pCap);
+      _DSM_UnlockMemory(hContainer);
     }
   }
   else if(MSG_GET == _unMsg)
@@ -350,7 +350,7 @@ TW_HANDLE CTWAINContainerFrame::GetContainer(const TW_UINT16 _unMsg)
           pCap->ItemList[x] = m_listFrames[x].AsTW_FRAME(m_Unit, m_Xres, m_Yres);
         }
 
-        _DSM_UnlockMemory((TW_MEMREF)pCap);
+        _DSM_UnlockMemory(hContainer);
       }
     }
     else if(TWON_ARRAY == m_unGetType)
@@ -368,7 +368,7 @@ TW_HANDLE CTWAINContainerFrame::GetContainer(const TW_UINT16 _unMsg)
           pCap->ItemList[x] = m_listFrames[x].AsTW_FRAME(m_Unit, m_Xres, m_Yres);
         }
 
-        _DSM_UnlockMemory((TW_MEMREF)pCap);
+        _DSM_UnlockMemory(hContainer);
       }
     }
   }
@@ -441,7 +441,7 @@ TW_INT16 CTWAINContainerFrame::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
       }
     }
 
-    _DSM_UnlockMemory((TW_MEMREF)pCap);
+    _DSM_UnlockMemory(_pCap->hContainer);
   }
   else if(TWON_ENUMERATION == _pCap->ConType)
   {
@@ -481,7 +481,7 @@ TW_INT16 CTWAINContainerFrame::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
       Condition = TWCC_CAPBADOPERATION;
     }
 
-    _DSM_UnlockMemory((TW_MEMREF)pCap);
+    _DSM_UnlockMemory(_pCap->hContainer);
   }
 
   return twrc;

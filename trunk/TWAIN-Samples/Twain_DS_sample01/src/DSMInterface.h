@@ -31,7 +31,7 @@
 
 /**
 * @file DSMInterface.h
-* Common defines and typedefs used for accessing DSM.
+* Common defines and typedefs used for accessing DSM for TWAIN Data Sources.
 * @author TWAIN Working Group
 * @date April 2007
 */
@@ -42,19 +42,19 @@
 #include "CommonDS.h"
 
 /**
-* Load the DSM.
-* @param[in] the name of DSM libreary.
+* Load the DSM library.
+* @param[in] the name of the DSM library to open
 * @return true if success.
 */
 bool LoadDSMLib(char* _pszLibName);
 
 /**
-* Unload the DSM.
+* Unload the DSM library.
 */
 void unLoadDSMLib();
 
 /**
-* Initialize and registor the entry point into the DSM.
+* Initialize and register the entry point into the DSM.
 * @param[in] _pOrigin Identifies the source module of the message. This could
 *           identify an Application, a Source, or the Source Manager.
 *
@@ -103,23 +103,23 @@ TW_HANDLE _DSM_Alloc(TW_UINT32 _size);
 
 /**
 * Free previously allocated global memory
-* @param[in] _pPtr TW_HANDLE to the memory needing free.
+* @param[in] _hMemory TW_HANDLE to the memory needing free.
 */
-void _DSM_Free(TW_HANDLE _pPtr);
+void _DSM_Free(TW_HANDLE _hMemory);
 
 /**
 * Lock global memory from being updated by others. return a pointer to the 
 * memory so we can update it.
-* @param[in] _pMemory TW_HANDLE to the memory to update.
+* @param[in] _hMemory TW_HANDLE to the memory to update.
 * @return TW_MEMREF pointer to the memory.
 */
-TW_MEMREF _DSM_LockMemory(TW_HANDLE _pMemory);
+TW_MEMREF _DSM_LockMemory(TW_HANDLE _hMemory);
 
 /**
-* Lock global memory to allow updating by others.
-* @param[in] _pMemory TW_MEMREF pointer to memory
+* Unlock global memory after locking. to allow updating by others.
+* @param[in] _hMemory TW_HANDLE to memory returned by _DSM_Alloc
 */
-void _DSM_UnlockMemory(TW_MEMREF _pMemory);
+void _DSM_UnlockMemory(TW_HANDLE _hMemory);
 
 /**
 * Display the user interface for TWAIN.

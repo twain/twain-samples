@@ -31,7 +31,7 @@
 
 /**
 * @file DSMInterface.cpp
-* Common defines and typedefs used for accessing DSM.
+* Common defines and typedefs used for accessing DSM for Twain Data Sources.
 * @author TWAIN Working Group
 * @date April 2007
 */
@@ -208,45 +208,45 @@ TW_HANDLE _DSM_Alloc(TW_UINT32 _size)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-void _DSM_Free(TW_HANDLE _pPtr)
+void _DSM_Free(TW_HANDLE _hMemory)
 {
   if(g_DSM_Entry.DSM_MemFree)
   {
-    return g_DSM_Entry.DSM_MemFree(_pPtr);
+    return g_DSM_Entry.DSM_MemFree(_hMemory);
   }
 
 #ifdef TWH_CMP_MSC
-  ::GlobalFree(_pPtr);
+  ::GlobalFree(_hMemory);
 #endif
 
   return;
 }
 
 //////////////////////////////////////////////////////////////////////////////
-TW_MEMREF _DSM_LockMemory(TW_HANDLE _pMemory)
+TW_MEMREF _DSM_LockMemory(TW_HANDLE _hMemory)
 {
   if(g_DSM_Entry.DSM_MemLock)
   {
-    return g_DSM_Entry.DSM_MemLock(_pMemory);
+    return g_DSM_Entry.DSM_MemLock(_hMemory);
   }
 
 #ifdef TWH_CMP_MSC
-  return (TW_MEMREF)::GlobalLock(_pMemory);
+  return (TW_MEMREF)::GlobalLock(_hMemory);
 #endif
 
   return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////
-void _DSM_UnlockMemory(TW_MEMREF _pMemory)
+void _DSM_UnlockMemory(TW_HANDLE _hMemory)
 {
   if(g_DSM_Entry.DSM_MemUnlock)
   {
-    return g_DSM_Entry.DSM_MemUnlock(_pMemory);
+    return g_DSM_Entry.DSM_MemUnlock(_hMemory);
   }
 
 #ifdef TWH_CMP_MSC
-  ::GlobalUnlock(_pMemory);
+  ::GlobalUnlock(_hMemory);
 #endif
 
   return;
