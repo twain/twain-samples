@@ -424,7 +424,7 @@ void Cmfc32DlgConfigure::OnLbnDblclkCaps()
                 bChange = true;
               }
             }
-            _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+            _DSM_UnlockMemory(pCap->hContainer);
           }
           break;
         case TWON_ONEVALUE:
@@ -462,7 +462,7 @@ void Cmfc32DlgConfigure::OnLbnDblclkCaps()
                 bChange = true;
               }
             }
-            _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+            _DSM_UnlockMemory(pCap->hContainer);
           }
           break;
         case TWON_ONEVALUE:
@@ -500,7 +500,7 @@ void Cmfc32DlgConfigure::OnLbnDblclkCaps()
                 bChange = true;
               }
             }
-            _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+            _DSM_UnlockMemory(pCap->hContainer);
           }
           break;
         case TWON_ONEVALUE:
@@ -538,7 +538,7 @@ void Cmfc32DlgConfigure::OnLbnDblclkCaps()
                 bChange = true;
               }
             }
-            _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+            _DSM_UnlockMemory(pCap->hContainer);
           }
           break;
         case TWON_ONEVALUE:
@@ -576,7 +576,7 @@ void Cmfc32DlgConfigure::OnLbnDblclkCaps()
                 bChange = true;
               }
             }
-            _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+            _DSM_UnlockMemory(pCap->hContainer);
           }
           break;
         case TWON_ONEVALUE:
@@ -620,7 +620,7 @@ void Cmfc32DlgConfigure::OnLbnDblclkCaps()
                 bChange = true;
               }
             }
-            _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+            _DSM_UnlockMemory(pCap->hContainer);
           }
           break;
         case TWON_ONEVALUE:
@@ -673,18 +673,25 @@ void Cmfc32DlgConfigure::OnBnClickedScan()
     // If we are using callbacks, there is nothing to do here except sleep
     // and wait for our callback from the DS.  If we are not using them, 
     // then we have to poll the DSM.
-    if(!gUSE_CALLBACKS)
+	  MSG Msg;
+
+	  if(!GetMessage((LPMSG)&Msg, NULL, 0, 0))
     {
-      TW_EVENT twEvent = {0};
+      break;//WM_QUIT
+    }
+    TW_EVENT twEvent = {0};
+    twEvent.pEvent = (TW_MEMREF)&Msg;
+    twEvent.TWMessage = MSG_NULL;
+    TW_UINT16  twRC = TWRC_NOTDSEVENT;
+    twRC = _DSM_Entry( g_pTWAINApp->getAppIdentity(),
+                g_pTWAINApp->getDataSource(),
+                DG_CONTROL,
+                DAT_EVENT,
+                MSG_PROCESSEVENT,
+                (TW_MEMREF)&twEvent);
 
-      twEvent.TWMessage = MSG_NULL;
-      _DSM_Entry( g_pTWAINApp->getAppIdentity(),
-                  g_pTWAINApp->getDataSource(),
-                  DG_CONTROL,
-                  DAT_EVENT,
-                  MSG_PROCESSEVENT,
-                  (TW_MEMREF)&twEvent);
-
+    if(!gUSE_CALLBACKS && twRC==TWRC_DSEVENT)
+    {
       // check for message from Source
       switch (twEvent.TWMessage)
       {
@@ -696,16 +703,15 @@ void Cmfc32DlgConfigure::OnBnClickedScan()
           break;
 
         default:
-          TRACE("Error - Unknown message in MSG_PROCESSEVENT loop");
+          cerr << "\nError - Unknown message in MSG_PROCESSEVENT loop\n" << endl;
           break;
       }
     }
-
-#ifdef TWH_CMP_MSC
-    Sleep(1000);
-#else
-    sleep(1);
-#endif //TWH_CMP_MSC
+    if(twRC!=TWRC_DSEVENT)
+	  {   
+		  TranslateMessage ((LPMSG)&Msg);
+		  DispatchMessage ((LPMSG)&Msg);
+	  }
   }
 
   // At this point the source has sent us a callback saying that it is ready to
@@ -718,6 +724,7 @@ void Cmfc32DlgConfigure::OnBnClickedScan()
     g_pTWAINApp->updateIMAGEINFO();
     UpdateImageInfo();
     g_pTWAINApp->startScan();
+    UpdateExtImageInfo();
   }
 
   // Scan is done, disable the ds, thus moving us back to state 4 where we
@@ -754,5 +761,6 @@ void Cmfc32DlgConfigure::UpdateImageInfo()
 
 void Cmfc32DlgConfigure::UpdateExtImageInfo()
 {
-
+  m_sStc_ExtImageInfo = g_pTWAINApp->getEXIMAGEINFO().c_str();
+  UpdateData(false);
 }

@@ -46,6 +46,7 @@ using namespace std;
 
 #include "TwainApp_ui.h"
 
+/** the size of the temp buffer */
 #define TEMPBUFSIZE 80
 
 /**
@@ -198,9 +199,9 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION _pCap)
 
 
 //////////////////////////////////////////////////////////////////////////////
-void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE_FIX32 _pVal)
+void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE_FIX32 _pCap)
 {
-  if(0 == _pVal)
+  if(0 == _pCap)
   {
     return;
   }
@@ -212,22 +213,22 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE_FIX32 _pVal)
     << "Showing supported types. * indicates current setting.\n\n"
     << "q - done\n";
 
-  if(TWTY_FIX32 == _pVal->ItemType)
+  if(TWTY_FIX32 == _pCap->ItemType)
   {
-    cout << "1 - " << _pVal->Item.Whole << "." << _pVal->Item.Frac << "*\n" << endl;
+    cout << "1 - " << _pCap->Item.Whole << "." << _pCap->Item.Frac << "*\n" << endl;
   }
-  else //if(TWTY_FIX32 != _pVal->ItemType)
+  else //if(TWTY_FIX32 != _pCap->ItemType)
   {
-    cerr << getErrorString_UnexpectedType(TWTY_FIX32, _pVal->ItemType) << endl;
+    cerr << getErrorString_UnexpectedType(TWTY_FIX32, _pCap->ItemType) << endl;
   }
   
   return;
 }
 
 //////////////////////////////////////////////////////////////////////////////
-void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION_FIX32 _pVal)
+void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION_FIX32 _pCap)
 {
-  if(0 == _pVal)
+  if(0 == _pCap)
   {
     return;
   }
@@ -239,16 +240,16 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION_FIX32 _pVal)
     << "Showing supported types. * indicates current setting.\n\n"
     << "q - done\n";
 
-  if(TWTY_FIX32 == _pVal->ItemType)
+  if(TWTY_FIX32 == _pCap->ItemType)
   {
-    for(TW_UINT32 x = 0; x < _pVal->NumItems; ++x)
+    for(TW_UINT32 x = 0; x < _pCap->NumItems; ++x)
     {
       cout << x << " - ";
 
       cout
-        << _pVal->ItemList[x].Whole << "." << _pVal->ItemList[x].Frac;
+        << _pCap->ItemList[x].Whole << "." << _pCap->ItemList[x].Frac;
 
-      if(x == _pVal->CurrentIndex)
+      if(x == _pCap->CurrentIndex)
       {
         cout << "*";
       }
@@ -257,9 +258,9 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION_FIX32 _pVal)
     }
     cout << endl;
   }
-  else //if(TWTY_FIX32 != _pVal->ItemType)
+  else //if(TWTY_FIX32 != _pCap->ItemType)
   {
-    cerr << getErrorString_UnexpectedType(TWTY_FIX32, _pVal->ItemType) << endl;
+    cerr << getErrorString_UnexpectedType(TWTY_FIX32, _pCap->ItemType) << endl;
   }
 
   return;

@@ -145,6 +145,11 @@ void TwainApp::fillIdentity(TW_IDENTITY& _identity)
   return;
 }
 
+TW_UINT16 TwainApp::DSM_Entry(TW_UINT32 _DG,TW_UINT16 _DAT, TW_UINT16 _MSG, TW_MEMREF _pData)
+{
+  return _DSM_Entry(&m_MyInfo, m_pDataSource, _DG, _DAT, _MSG, _pData);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 void TwainApp::exit()
 {
@@ -163,27 +168,13 @@ void TwainApp::exit()
         {
           TW_PENDINGXFERS pendxfers;
           memset( &pendxfers, 0, sizeof(pendxfers) );
-
-          _DSM_Entry(
-            &m_MyInfo,
-            m_pDataSource,
-            DG_CONTROL,
-            DAT_PENDINGXFERS,
-            MSG_ENDXFER,
-            (TW_MEMREF)&pendxfers);
+          DSM_Entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
 
           // We need to get rid of any pending transfers
           if(0 != pendxfers.Count)
           {
             memset( &pendxfers, 0, sizeof(pendxfers) );
-
-            _DSM_Entry(
-              &m_MyInfo,
-              m_pDataSource,
-              DG_CONTROL,
-              DAT_PENDINGXFERS,
-              MSG_RESET,
-              (TW_MEMREF)&pendxfers);
+            DSM_Entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_RESET, (TW_MEMREF)&pendxfers);
           }
           
           // Any pending transfers should now be cancled
@@ -398,13 +389,7 @@ void TwainApp::loadDS(const TW_UINT32 _dsID)
 
     callback.CallBackProc = (TW_MEMREF)DSMCallback;    
 
-    if(TWRC_SUCCESS != (twrc = _DSM_Entry(
-      &(m_MyInfo),
-      m_pDataSource,
-      DG_CONTROL,
-      DAT_CALLBACK,
-      MSG_REGISTER_CALLBACK,
-      (TW_MEMREF)&callback)))
+    if(TWRC_SUCCESS != (twrc = DSM_Entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF)&callback)))
     {
       cout << "DG_CONTROL / DAT_CALLBACK / MSG_REGISTER_CALLBACK Failed: " << twrc << endl;
     }
@@ -538,7 +523,7 @@ void TwainApp::getSources()
   return;
 }
 
-TW_IDENTITY Source;
+TW_IDENTITY Source; /**< used to store the source that is return by getDefaultDataSource */
 //////////////////////////////////////////////////////////////////////////////
 pTW_IDENTITY TwainApp::getDefaultDataSource()
 {
@@ -680,20 +665,15 @@ bool TwainApp::enableDS()
     return false;
   }
 
-  m_ui.ShowUI = FALSE;
-  m_ui.ModalUI = FALSE;
+  m_ui.ShowUI = TRUE;
+  m_ui.ModalUI = TRUE;
   m_ui.hParent = 0;
   m_DSMState = 5;
 
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_USERINTERFACE,
-    MSG_ENABLEDS,
-    (TW_MEMREF)&(m_ui));
+  TW_UINT16 twrc = DSM_Entry(DG_CONTROL, DAT_USERINTERFACE, MSG_ENABLEDS, (TW_MEMREF)&(m_ui));
 
-  if(TWRC_SUCCESS != twrc)
+  if( TWRC_SUCCESS != twrc &&
+      TWRC_CHECKSTATUS != twrc )
   {
     m_DSMState = 4;
     printError(m_pDataSource, "Cannot enable source");
@@ -719,13 +699,7 @@ void TwainApp::disableDS()
     return;
   }
 
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_USERINTERFACE,
-    MSG_DISABLEDS,
-    (TW_MEMREF)&(m_ui));
+  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_USERINTERFACE, MSG_DISABLEDS, (TW_MEMREF)&(m_ui) );
 
   if(TWRC_SUCCESS == twrc)
   {
@@ -781,13 +755,7 @@ bool TwainApp::updateIMAGEINFO()
 
   // get the image details
   cout << "app: Getting the image info..." << endl;
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_IMAGE,
-    DAT_IMAGEINFO,
-    MSG_GET,
-    (TW_MEMREF)&(m_ImageInfo));
+  TW_UINT16 twrc = DSM_Entry( DG_IMAGE, DAT_IMAGEINFO, MSG_GET, (TW_MEMREF)&(m_ImageInfo));
 
   if(TWRC_SUCCESS != twrc)
   {
@@ -818,13 +786,7 @@ void TwainApp::initiateTransfer_Native()
     TW_MEMREF hImg = 0;
 
     cout << "app: Starting the transfer..." << endl;
-    twrc = _DSM_Entry(
-      &m_MyInfo,
-      m_pDataSource,
-      DG_IMAGE,
-      DAT_IMAGENATIVEXFER,
-      MSG_GET,
-      (TW_MEMREF)&hImg);
+    twrc = DSM_Entry( DG_IMAGE, DAT_IMAGENATIVEXFER, MSG_GET, (TW_MEMREF)&hImg);
 
     if(TWRC_XFERDONE == twrc)
     {
@@ -901,22 +863,18 @@ void TwainApp::initiateTransfer_Native()
 #endif
       }
 
-      _DSM_UnlockMemory((TW_MEMREF)pDIB);
+      _DSM_UnlockMemory(hImg);
       _DSM_Free(hImg);
       pDIB = 0;
+      
+      updateEXIMAGEINFO();
 
       // see if there are any more transfers to do
       cout << "app: Checking to see if there are more images to transfer..." << endl;
       TW_PENDINGXFERS pendxfers;
       memset( &pendxfers, 0, sizeof(pendxfers) );
 
-      twrc = _DSM_Entry(
-        &m_MyInfo,
-        m_pDataSource,
-        DG_CONTROL,
-        DAT_PENDINGXFERS,
-        MSG_ENDXFER,
-        (TW_MEMREF)&pendxfers);
+      twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
 
       if(TWRC_SUCCESS == twrc)
       {
@@ -955,26 +913,14 @@ void TwainApp::initiateTransfer_Native()
       TW_PENDINGXFERS pendxfers;
       memset( &pendxfers, 0, sizeof(pendxfers) );
 
-      twrc = _DSM_Entry(
-        &m_MyInfo,
-        m_pDataSource,
-        DG_CONTROL,
-        DAT_PENDINGXFERS,
-        MSG_ENDXFER,
-        (TW_MEMREF)&pendxfers);
+      twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
 
       // We need to get rid of any pending transfers
       if(0 != pendxfers.Count)
       {
         memset( &pendxfers, 0, sizeof(pendxfers) );
 
-        _DSM_Entry(
-          &m_MyInfo,
-          m_pDataSource,
-          DG_CONTROL,
-          DAT_PENDINGXFERS,
-          MSG_RESET,
-          (TW_MEMREF)&pendxfers);
+        DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_RESET, (TW_MEMREF)&pendxfers);
       }
   }
 
@@ -984,6 +930,473 @@ void TwainApp::initiateTransfer_Native()
   cout << "app: DONE!" << endl;
 
   return;
+}
+void TwainApp::updateEXIMAGEINFO()
+{
+  try
+  {
+    TW_EXTIMAGEINFO exImgInfo;
+    exImgInfo.NumInfos = 1;
+    exImgInfo.Info[0].InfoID = TWEI_BARCODECOUNT;
+    exImgInfo.Info[0].NumItems=0;
+    exImgInfo.Info[0].ItemType = TWTY_UINT32;
+    exImgInfo.Info[0].Item = 0;
+    exImgInfo.Info[0].CondCode = 0;
+    
+    TW_UINT16 twrc          = TWRC_SUCCESS;
+    twrc =     _DSM_Entry(
+      &m_MyInfo,
+      m_pDataSource,
+      DG_IMAGE,
+      DAT_EXTIMAGEINFO,
+      MSG_GET,
+      (TW_MEMREF)&exImgInfo);
+    twrc = 0;
+    if(twrc!= TWRC_SUCCESS)
+    {
+      return;
+    }
+
+/** 
+* @def NUMBER_INFOS   
+*   Number of extended image infos to retrieve.
+* @def BARCODE_INFOS  
+*   Number of extended image info for each barcode to retrieve.
+*/
+#define NUMBER_INFOS 10
+#define BARCODE_INFOS 6
+    int num_infos = NUMBER_INFOS;
+    int cur_info = 0;
+    if(TWRC_SUCCESS==exImgInfo.Info[0].CondCode)
+    {
+      num_infos += (BARCODE_INFOS * (TW_UINT32)exImgInfo.Info[0].Item);
+    }
+
+    TW_HANDLE hexInfo = _DSM_Alloc(sizeof(TW_EXTIMAGEINFO)+sizeof(TW_INFO)*(num_infos-1));
+    TW_EXTIMAGEINFO *pexImgInfo = (TW_EXTIMAGEINFO*) _DSM_LockMemory(hexInfo);
+    memset(pexImgInfo, 0,sizeof(TW_EXTIMAGEINFO)+sizeof(TW_INFO)*(num_infos-1));
+    pexImgInfo->NumInfos = num_infos;
+
+    if(TWRC_SUCCESS==exImgInfo.Info[0].CondCode)
+    {
+      for(UINT nCount = 0; nCount < exImgInfo.Info[0].Item; nCount++)
+      {
+        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODETYPE;
+        pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
+        cur_info++;
+        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODETEXTLENGTH;
+        pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
+        cur_info++;
+        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODETEXT;
+        pexImgInfo->Info[cur_info].ItemType = 0;
+        cur_info++;
+        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODEX;
+        pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
+        cur_info++;
+        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODEY;
+        pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
+        cur_info++;
+        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODEROTATION;
+        pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
+        cur_info++;
+        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODECONFIDENCE;
+        pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
+        cur_info++;      
+      }
+    }
+
+    pexImgInfo->Info[cur_info].InfoID = TWEI_BOOKNAME;
+    pexImgInfo->Info[cur_info].ItemType = 0;
+    cur_info++;      
+
+    pexImgInfo->Info[cur_info].InfoID = TWEI_CHAPTERNUMBER;
+    pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
+    cur_info++;      
+
+    pexImgInfo->Info[cur_info].InfoID = TWEI_DOCUMENTNUMBER;
+    pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
+    cur_info++;      
+
+    pexImgInfo->Info[cur_info].InfoID = TWEI_PAGENUMBER;
+    pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
+    cur_info++;      
+
+    pexImgInfo->Info[cur_info].InfoID = TWEI_PAGESIDE;
+    pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
+    cur_info++;      
+
+    pexImgInfo->Info[cur_info].InfoID = TWEI_CAMERA;
+    pexImgInfo->Info[cur_info].ItemType = 0;
+    cur_info++;      
+
+    pexImgInfo->Info[cur_info].InfoID = TWEI_FRAMENUMBER;
+    pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
+    cur_info++;      
+
+    pexImgInfo->Info[cur_info].InfoID = TWEI_FRAME;
+    pexImgInfo->Info[cur_info].ItemType = 0;
+    cur_info++;      
+
+    pexImgInfo->Info[cur_info].InfoID = TWEI_MAGTYPE;
+    pexImgInfo->Info[cur_info].ItemType = TWTY_UINT16;
+    cur_info++;      
+
+    pexImgInfo->Info[cur_info].InfoID = TWEI_MAGDATA;
+    pexImgInfo->Info[cur_info].ItemType = 0;
+    cur_info++;      
+
+    twrc =     _DSM_Entry(
+      &m_MyInfo,
+      m_pDataSource,
+      DG_IMAGE,
+      DAT_EXTIMAGEINFO,
+      MSG_GET,
+      (TW_MEMREF)pexImgInfo);
+    twrc = 0;
+    if(twrc!= TWRC_SUCCESS)
+    {
+      return;
+    }
+    m_strExImageInfo = "";
+    for(int nIndex = 0; nIndex < num_infos; nIndex++)
+    {
+      m_strExImageInfo +=GetExtImageInfoName(pexImgInfo->Info[nIndex].InfoID);
+      m_strExImageInfo +="\t";
+      if(TWRC_SUCCESS==pexImgInfo->Info[nIndex].CondCode)
+      {
+        char chTemp[1024];
+        switch(pexImgInfo->Info[nIndex].ItemType)
+        {
+          case TWTY_UINT32:
+          case TWTY_UINT16:
+            sprintf_s(chTemp,1024,"%d",pexImgInfo->Info[nIndex].Item);
+            break;
+          case TWTY_STR32:
+          case TWTY_STR64:
+          case TWTY_STR128:
+          case TWTY_STR255:
+          case TWTY_STR1024:
+            {
+            char *chTest = (char *)_DSM_LockMemory((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
+
+            sprintf_s(chTemp,1024,"%s",chTest);
+            _DSM_UnlockMemory((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
+            _DSM_Free((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
+            }
+            break;
+          case TWTY_FRAME:
+            {
+            TW_FRAME *pFrame = (TW_FRAME *)_DSM_LockMemory((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
+
+            sprintf_s(chTemp,1024,"\r\n\tLeft\t%0.2f\r\n\tTop\t%.2f\r\n\tRight\t%.2f\r\n\tBottom\t%.2f",
+                      FIX32ToFloat(pFrame->Left),FIX32ToFloat(pFrame->Top),
+                      FIX32ToFloat(pFrame->Right),FIX32ToFloat(pFrame->Bottom));
+            _DSM_UnlockMemory((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
+            _DSM_Free((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
+            }
+            break;
+          default:
+            sprintf_s(chTemp,1024,"Unsupporetd type");
+            break;
+        }
+        m_strExImageInfo +=chTemp;
+      }
+      else
+      {
+        m_strExImageInfo +="Unsupported";
+      }
+      m_strExImageInfo +="\r\n";
+    }
+    _DSM_UnlockMemory(hexInfo);
+    _DSM_Free(hexInfo);
+  }
+	catch(...) 
+	{ 
+    //Log("Failure reading extended image info: %s", LPCSTR(error->m_strDescription));
+	}
+  return;
+}
+
+string TwainApp::GetExtImageInfoName(int InfoID)
+{
+  string text;
+
+  switch(InfoID)
+  {
+  case TWEI_BARCODEX:
+    text = "TWEI_BARCODEX:";
+    break;
+
+  case TWEI_BARCODEY:
+    text = "TWEI_BARCODEY:";
+    break;
+
+	case TWEI_BARCODETEXT:
+    text = "TWEI_BARCODETEXT:";
+    break;
+
+	case TWEI_BARCODETYPE:
+    text = "TWEI_BARCODETYPE:";
+    break;
+
+	case TWEI_DESHADETOP:
+    text = "TWEI_DESHADETOP:";
+    break;
+
+	case TWEI_DESHADELEFT:
+    text = "TWEI_DESHADELEFT:";
+    break;
+
+	case TWEI_DESHADEHEIGHT:
+    text = "TWEI_DESHADEHEIGHT:";
+    break;
+
+	case TWEI_DESHADEWIDTH:
+    text = "TWEI_DESHADEWIDTH:";
+    break;
+
+	case TWEI_DESHADESIZE:
+    text = "TWEI_DESHADESIZE:";
+    break;
+
+	case TWEI_SPECKLESREMOVED:
+    text = "TWEI_SPECKLESREMOVED:";
+    break;
+
+	case TWEI_HORZLINEXCOORD:
+    text = "TWEI_HORZLINEXCOORD:";
+    break;
+
+	case TWEI_HORZLINEYCOORD:
+    text = "TWEI_HORZLINEYCOORD:";
+    break;
+
+	case TWEI_HORZLINELENGTH:
+    text = "TWEI_HORZLINELENGTH:";
+    break;
+
+	case TWEI_HORZLINETHICKNESS:
+    text = "TWEI_HORZLINETHICKNESS:";
+    break;
+
+	case TWEI_VERTLINEXCOORD:
+    text = "TWEI_VERTLINEXCOORD:";
+    break;
+
+	case TWEI_VERTLINEYCOORD:
+    text = "TWEI_VERTLINEYCOORD:";
+    break;
+
+	case TWEI_VERTLINELENGTH:
+    text = "TWEI_VERTLINELENGTH:";
+    break;
+
+	case TWEI_VERTLINETHICKNESS:
+    text = "TWEI_VERTLINETHICKNESS:";
+    break;
+
+	case TWEI_PATCHCODE:
+    text = "TWEI_PATCHCODE:";
+    break;
+
+	case TWEI_ENDORSEDTEXT:
+    text = "TWEI_ENDORSEDTEXT:";
+    break;
+
+	case TWEI_FORMCONFIDENCE:
+    text = "TWEI_FORMCONFIDENCE:";
+    break;
+
+	case TWEI_FORMTEMPLATEMATCH:
+    text = "TWEI_FORMTEMPLATEMATCH:";
+    break;
+
+	case TWEI_FORMTEMPLATEPAGEMATCH:
+    text = "TWEI_FORMTEMPLATEPAGEMATCH:";
+    break;
+
+	case TWEI_FORMHORZDOCOFFSET:
+    text = "TWEI_FORMHORZDOCOFFSET:";
+    break;
+
+	case TWEI_FORMVERTDOCOFFSET:
+    text = "TWEI_FORMVERTDOCOFFSET:";
+    break;
+
+	case TWEI_BARCODECOUNT:
+    text = "TWEI_BARCODECOUNT:";
+    break;
+
+	case TWEI_BARCODECONFIDENCE:
+    text = "TWEI_BARCODECONFIDENCE:";
+    break;
+
+	case TWEI_BARCODEROTATION:
+    text = "TWEI_BARCODEROTATION:";
+    break;
+
+	case TWEI_BARCODETEXTLENGTH:
+    text = "TWEI_BARCODETEXTLENGTH:";
+    break;
+
+	case TWEI_DESHADECOUNT:
+    text = "TWEI_DESHADECOUNT:";
+    break;
+
+	case TWEI_DESHADEBLACKCOUNTOLD:
+    text = "TWEI_DESHADEBLACKCOUNTOLD:";
+    break;
+
+	case TWEI_DESHADEBLACKCOUNTNEW:
+    text = "TWEI_DESHADEBLACKCOUNTNEW:";
+    break;
+
+	case TWEI_DESHADEBLACKRLMIN:
+    text = "TWEI_DESHADEBLACKRLMIN:";
+    break;
+
+	case TWEI_DESHADEBLACKRLMAX:
+    text = "TWEI_DESHADEBLACKRLMAX:";
+    break;
+
+	case TWEI_DESHADEWHITECOUNTOLD:
+    text = "TWEI_DESHADEWHITECOUNTOLD:";
+    break;
+
+	case TWEI_DESHADEWHITECOUNTNEW:
+    text = "TWEI_DESHADEWHITECOUNTNEW:";
+    break;
+
+	case TWEI_DESHADEWHITERLMIN:
+    text = "TWEI_DESHADEWHITERLMIN:";
+    break;
+
+	case TWEI_DESHADEWHITERLAVE:
+    text = "TWEI_DESHADEWHITERLAVE:";
+    break;
+
+	case TWEI_DESHADEWHITERLMAX:
+    text = "TWEI_DESHADEWHITERLMAX:";
+    break;
+
+	case TWEI_BLACKSPECKLESREMOVED:
+    text = "TWEI_BLACKSPECKLESREMOVED:";
+    break;
+
+	case TWEI_WHITESPECKLESREMOVED:
+    text = "TWEI_WHITESPECKLESREMOVED:";
+    break;
+
+	case TWEI_HORZLINECOUNT:
+    text = "TWEI_HORZLINECOUNT:";
+    break;
+
+	case TWEI_VERTLINECOUNT:
+    text = "TWEI_VERTLINECOUNT:";
+    break;
+
+	case TWEI_DESKEWSTATUS:
+    text = "TWEI_DESKEWSTATUS:";
+    break;
+
+	case TWEI_SKEWORIGINALANGLE:
+    text = "TWEI_SKEWORIGINALANGLE:";
+    break;
+
+	case TWEI_SKEWFINALANGLE:
+    text = "TWEI_SKEWFINALANGLE:";
+    break;
+
+	case TWEI_SKEWCONFIDENCE:
+    text = "TWEI_SKEWCONFIDENCE:";
+    break;
+
+	case TWEI_SKEWWINDOWX1:
+    text = "TWEI_SKEWWINDOWX1:";
+    break;
+
+	case TWEI_SKEWWINDOWY1:
+    text = "TWEI_SKEWWINDOWY1:";
+    break;
+
+	case TWEI_SKEWWINDOWX2:
+    text = "TWEI_SKEWWINDOWX2:";
+    break;
+
+	case TWEI_SKEWWINDOWY2:
+    text = "TWEI_SKEWWINDOWY2:";
+    break;
+
+	case TWEI_SKEWWINDOWX3:
+    text = "TWEI_SKEWWINDOWX3:";
+    break;
+
+	case TWEI_SKEWWINDOWY3:
+    text = "TWEI_SKEWWINDOWY3:";
+    break;
+
+	case TWEI_SKEWWINDOWX4:
+    text = "TWEI_SKEWWINDOWX4:";
+    break;
+
+	case TWEI_SKEWWINDOWY4:
+    text = "TWEI_SKEWWINDOWY4:";
+    break;
+
+	case TWEI_BOOKNAME:
+    text = "TWEI_BOOKNAME:";
+    break;
+
+	case TWEI_CHAPTERNUMBER:
+    text = "TWEI_CHAPTERNUMBER:";
+    break;
+
+	case TWEI_DOCUMENTNUMBER:
+    text = "TWEI_DOCUMENTNUMBER:";
+    break;
+
+	case TWEI_PAGENUMBER:
+    text = "TWEI_PAGENUMBER:";
+    break;
+
+	case TWEI_CAMERA:
+    text = "TWEI_CAMERA:";
+    break;
+
+	case TWEI_FRAMENUMBER:
+    text = "TWEI_FRAMENUMBER:";
+    break;
+
+	case TWEI_FRAME:
+    text = "TWEI_FRAME:";
+    break;
+
+	case TWEI_PIXELFLAVOR:
+    text = "TWEI_PIXELFLAVOR:";
+    break;
+
+	case TWEI_PAGESIDE:
+    text = "TWEI_PAGESIDE:";
+    break;
+
+	case TWEI_MAGDATA:
+    text = "TWEI_MAGDATA:";
+    break;
+
+	case TWEI_MAGTYPE:
+    text = "TWEI_MAGTYPE:";
+    break;
+
+  default:
+    {
+      char chTemp[256];
+      sprintf_s(chTemp,256,"ExtImageInfo ID 0x:4X",InfoID);
+      text = chTemp;
+    }
+    break;
+  }
+
+  return text;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1021,13 +1434,7 @@ void TwainApp::initiateTransfer_File()
     filexfer.Format = fileformat;
 
     cout << "app: Sending file transfer details..." << endl;
-    twrc = _DSM_Entry(
-      &m_MyInfo,
-      m_pDataSource,
-      DG_CONTROL,
-      DAT_SETUPFILEXFER,
-      MSG_SET,
-      (TW_MEMREF)&(filexfer));
+    twrc = DSM_Entry( DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, (TW_MEMREF)&(filexfer));
 
     if(TWRC_SUCCESS != twrc)
     {
@@ -1036,24 +1443,12 @@ void TwainApp::initiateTransfer_File()
     }
 
     cout << "app: Starting file transfer..." << endl;
-    twrc = _DSM_Entry(
-      &m_MyInfo,
-      m_pDataSource,
-      DG_IMAGE,
-      DAT_IMAGEFILEXFER,
-      MSG_GET,
-      0);
+    twrc = DSM_Entry( DG_IMAGE, DAT_IMAGEFILEXFER, MSG_GET, 0);
 
     if(TWRC_XFERDONE == twrc)
     {
       // Findout where the file was actualy saved
-      twrc = _DSM_Entry(
-        &m_MyInfo,
-        m_pDataSource,
-        DG_CONTROL,
-        DAT_SETUPFILEXFER,
-        MSG_GET,
-        (TW_MEMREF)&(filexfer));
+      twrc = DSM_Entry( DG_CONTROL, DAT_SETUPFILEXFER, MSG_GET, (TW_MEMREF)&(filexfer));
 
 #ifdef _WINDOWS
         ShellExecute(m_Parent, "open", filexfer.FileName, NULL, NULL, SW_SHOWNORMAL);
@@ -1065,13 +1460,7 @@ void TwainApp::initiateTransfer_File()
       TW_PENDINGXFERS pendxfers;
       memset(&pendxfers, 0, sizeof(pendxfers));
 
-      twrc = _DSM_Entry(
-        &m_MyInfo,
-        m_pDataSource,
-        DG_CONTROL,
-        DAT_PENDINGXFERS,
-        MSG_ENDXFER,
-        (TW_MEMREF)&pendxfers);
+      twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
 
       if(TWRC_SUCCESS == twrc)
       {
@@ -1109,27 +1498,13 @@ void TwainApp::initiateTransfer_File()
       cout << "app: Stop any transfer we may have started but could not finish..." << endl;
       TW_PENDINGXFERS pendxfers;
       memset( &pendxfers, 0, sizeof(pendxfers) );
-
-      twrc = _DSM_Entry(
-        &m_MyInfo,
-        m_pDataSource,
-        DG_CONTROL,
-        DAT_PENDINGXFERS,
-        MSG_ENDXFER,
-        (TW_MEMREF)&pendxfers);
+      twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
 
       // We need to get rid of any pending transfers
       if(0 != pendxfers.Count)
       {
         memset( &pendxfers, 0, sizeof(pendxfers) );
-
-        _DSM_Entry(
-          &m_MyInfo,
-          m_pDataSource,
-          DG_CONTROL,
-          DAT_PENDINGXFERS,
-          MSG_RESET,
-          (TW_MEMREF)&pendxfers);
+        DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_RESET, (TW_MEMREF)&pendxfers);
       }
   }
 
@@ -1175,13 +1550,7 @@ void TwainApp::initiateTransfer_Memory()
     cout << "app: getting the buffer sizes..." << endl;
     memset(&SourcesBufferSizes, 0, sizeof(SourcesBufferSizes));
 
-    twrc = _DSM_Entry(
-      &m_MyInfo,
-      m_pDataSource,
-      DG_CONTROL,
-      DAT_SETUPMEMXFER,
-      MSG_GET,
-      (TW_MEMREF)&(SourcesBufferSizes));
+    twrc = DSM_Entry( DG_CONTROL, DAT_SETUPMEMXFER, MSG_GET, (TW_MEMREF)&(SourcesBufferSizes));
 
     if(TWRC_SUCCESS != twrc)
     {
@@ -1234,13 +1603,7 @@ void TwainApp::initiateTransfer_Memory()
       memset(memXferBuf.Memory.TheMem, 0, memXferBuf.Memory.Length);
 
       // get the row data
-      twrc = _DSM_Entry(
-        &m_MyInfo,
-        m_pDataSource,
-        DG_IMAGE,
-        DAT_IMAGEMEMXFER,
-        MSG_GET,
-        (TW_MEMREF)&(memXferBuf));
+      twrc = DSM_Entry( DG_IMAGE, DAT_IMAGEMEMXFER, MSG_GET, (TW_MEMREF)&(memXferBuf));
 
       if(TWRC_SUCCESS == twrc || TWRC_XFERDONE == twrc)
       {
@@ -1316,7 +1679,7 @@ void TwainApp::initiateTransfer_Memory()
       pTifImg = 0;
     }
     // cleanup memory used to transfer image
-    _DSM_UnlockMemory((TW_MEMREF)(memXferBufTemplate.Memory.TheMem));
+    _DSM_UnlockMemory(hMem);
     _DSM_Free(hMem);
 
     if(TWRC_XFERDONE != twrc)
@@ -1330,13 +1693,7 @@ void TwainApp::initiateTransfer_Memory()
     TW_PENDINGXFERS pendxfers;
     memset( &pendxfers, 0, sizeof(pendxfers) );
 
-    twrc = _DSM_Entry(
-      &m_MyInfo,
-      m_pDataSource,
-      DG_CONTROL,
-      DAT_PENDINGXFERS,
-      MSG_ENDXFER,
-      (TW_MEMREF)&pendxfers);
+    twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
 
     if(TWRC_SUCCESS == twrc)
     {
@@ -1363,27 +1720,13 @@ void TwainApp::initiateTransfer_Memory()
       cout << "app: Stop any transfer we may have started but could not finish..." << endl;
       TW_PENDINGXFERS pendxfers;
       memset( &pendxfers, 0, sizeof(pendxfers) );
-
-      twrc = _DSM_Entry(
-        &m_MyInfo,
-        m_pDataSource,
-        DG_CONTROL,
-        DAT_PENDINGXFERS,
-        MSG_ENDXFER,
-        (TW_MEMREF)&pendxfers);
+      twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
 
       // We need to get rid of any pending transfers
       if(0 != pendxfers.Count)
       {
         memset( &pendxfers, 0, sizeof(pendxfers) );
-
-        _DSM_Entry(
-          &m_MyInfo,
-          m_pDataSource,
-          DG_CONTROL,
-          DAT_PENDINGXFERS,
-          MSG_RESET,
-          (TW_MEMREF)&pendxfers);
+        DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_RESET, (TW_MEMREF)&pendxfers);
       }
   }
 
@@ -1501,13 +1844,7 @@ bool TwainApp::get_CAP(TW_CAPABILITY& _cap)
   _cap.ConType = TWON_DONTCARE16;
 
   // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_CAPABILITY,
-    MSG_GET,
-    (TW_MEMREF)&_cap);
+  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_GET, (TW_MEMREF)&_cap);
 
   switch(twrc)
   {
@@ -1547,13 +1884,7 @@ bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_INT16 _value)
   pVal->Item = _value;
 
   // capability structure is set, make the call to the source now
-  TW_INT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_CAPABILITY,
-    MSG_SET,
-    (TW_MEMREF)&(cap));
+  TW_INT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
 
   if(TWRC_FAILURE == twrc)
   {
@@ -1561,7 +1892,7 @@ bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_INT16 _value)
     bResult = false;
   }
 
-  _DSM_UnlockMemory((TW_MEMREF)pVal);
+  _DSM_UnlockMemory(cap.hContainer);
   _DSM_Free(cap.hContainer);
   return bResult;
 }
@@ -1585,13 +1916,7 @@ bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_UINT16 _value)
   pVal->Item = _value;
 
   // capability structure is set, make the call to the source now
-  TW_INT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_CAPABILITY,
-    MSG_SET,
-    (TW_MEMREF)&(cap));
+  TW_INT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
 
   if(TWRC_FAILURE == twrc)
   {
@@ -1599,7 +1924,7 @@ bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_UINT16 _value)
     bResult = false;
   }
 
-  _DSM_UnlockMemory((TW_MEMREF)pVal);
+  _DSM_UnlockMemory(cap.hContainer);
   _DSM_Free(cap.hContainer);
   return bResult;
 }
@@ -1625,13 +1950,7 @@ bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValue)
   pVal->Item = *_pValue;
 
   // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_CAPABILITY,
-    MSG_SET,
-    (TW_MEMREF)&(cap));
+  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
 
   if(TWRC_FAILURE == twrc)
   {
@@ -1639,7 +1958,7 @@ bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValue)
     bResult = false;
   }
 
-  _DSM_UnlockMemory((TW_MEMREF)pVal);
+  _DSM_UnlockMemory(cap.hContainer);
   _DSM_Free(cap.hContainer);
 
   return bResult;
@@ -1685,7 +2004,7 @@ void TwainApp::set_ICAP_UNITS(const TW_UINT16 _val)
         get_CAP(m_ICAP_XRESOLUTION);
         get_CAP(m_ICAP_YRESOLUTION);
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_UNITS.hContainer);
     }
   }
 
@@ -1709,7 +2028,7 @@ void TwainApp::set_ICAP_PIXELTYPE(const TW_UINT16 _pt)
       {
         cout << "Capability successfully set!" << endl;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_PIXELTYPE.hContainer);
     }
   }
 
@@ -1798,20 +2117,14 @@ void TwainApp::set_ICAP_FRAMES(const pTW_FRAME _pFrame)
   pVal->Item = *_pFrame;
 
   // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_CAPABILITY,
-    MSG_SET,
-    (TW_MEMREF)&(cap));
+  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
 
   if(TWRC_FAILURE == twrc)
   {
     printError(m_pDataSource, "Could not set capability");
   }
 
-  _DSM_UnlockMemory((TW_MEMREF)pVal);
+  _DSM_UnlockMemory(cap.hContainer);
   _DSM_Free(cap.hContainer);
 
   // now that we have set it, re-get it to ensure it was set
@@ -1831,7 +2144,7 @@ void TwainApp::set_ICAP_FRAMES(const pTW_FRAME _pFrame)
       {
         cout << "Capability successfully set!" << endl;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_FRAMES.hContainer);
     }
   }
 
@@ -1925,20 +2238,14 @@ void TwainApp::set_ICAP_BITDEPTH(const TW_UINT16 _nVal)
   ((TW_UINT16*)(&pVal->ItemList))[0] = _nVal;
 
   // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = _DSM_Entry(
-    &m_MyInfo,
-    m_pDataSource,
-    DG_CONTROL,
-    DAT_CAPABILITY,
-    MSG_SET,
-    (TW_MEMREF)&(cap));
+  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
 
   if(TWRC_FAILURE == twrc)
   {
     printError(m_pDataSource, "Could not set capability");
   }
 
-  _DSM_UnlockMemory((TW_MEMREF)pVal);
+  _DSM_UnlockMemory(cap.hContainer);
   _DSM_Free(cap.hContainer);
 
   return;
@@ -1960,7 +2267,7 @@ bool TwainApp::getICAP_UNITS(TW_UINT16& _val)
         _val = ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_UNITS.hContainer);
     }
     else if(TWON_ONEVALUE == m_ICAP_UNITS.ConType)
     {
@@ -1971,7 +2278,7 @@ bool TwainApp::getICAP_UNITS(TW_UINT16& _val)
         _val = (TW_UINT16)(pCapPT->Item);
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_UNITS.hContainer);
     }
   }
 
@@ -1993,7 +2300,7 @@ bool TwainApp::getCAP_XFERCOUNT(TW_INT16& _val)
       _val = pCap->Item;
       bret = true;
     }
-    _DSM_UnlockMemory((TW_MEMREF)pCap);
+    _DSM_UnlockMemory(m_CAP_XFERCOUNT.hContainer);
   }
 
   return bret;
@@ -2015,7 +2322,7 @@ bool TwainApp::getICAP_XFERMECH(TW_UINT16& _val)
         _val = ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_XFERMECH.hContainer);
     }
     else if(TWON_ONEVALUE == m_ICAP_XFERMECH.ConType)
     {
@@ -2026,7 +2333,7 @@ bool TwainApp::getICAP_XFERMECH(TW_UINT16& _val)
         _val = (TW_UINT16)(pCapPT->Item);
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_XFERMECH.hContainer);
     }
   }
 
@@ -2049,7 +2356,7 @@ bool TwainApp::getICAP_PIXELTYPE(TW_UINT16& _val)
         _val = ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_PIXELTYPE.hContainer);
     }
     else if(TWON_ONEVALUE == m_ICAP_PIXELTYPE.ConType)
     {
@@ -2060,7 +2367,7 @@ bool TwainApp::getICAP_PIXELTYPE(TW_UINT16& _val)
         _val = (TW_UINT16)(pCapPT->Item);
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_PIXELTYPE.hContainer);
     }
   }
 
@@ -2083,7 +2390,7 @@ bool TwainApp::getICAP_BITDEPTH(TW_UINT16& _val)
         _val = ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_BITDEPTH.hContainer);
     }
     else if(TWON_ONEVALUE == m_ICAP_BITDEPTH.ConType)
     {
@@ -2094,7 +2401,7 @@ bool TwainApp::getICAP_BITDEPTH(TW_UINT16& _val)
         _val = (TW_UINT16)(pCapPT->Item);
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_BITDEPTH.hContainer);
     }
   }
 
@@ -2116,7 +2423,7 @@ bool TwainApp::getICAP_IMAGEFILEFORMAT(TW_UINT16& _val)
         _val = ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_IMAGEFILEFORMAT.hContainer);
     }
     else if(TWON_ONEVALUE == m_ICAP_IMAGEFILEFORMAT.ConType)
     {
@@ -2127,7 +2434,7 @@ bool TwainApp::getICAP_IMAGEFILEFORMAT(TW_UINT16& _val)
         _val = (TW_UINT16)(pCapPT->Item);
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_IMAGEFILEFORMAT.hContainer);
     }
   }
 
@@ -2149,7 +2456,7 @@ bool TwainApp::getICAP_COMPRESSION(TW_UINT16& _val)
         _val = ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_COMPRESSION.hContainer);
     }
     else if(TWON_ONEVALUE == m_ICAP_COMPRESSION.ConType)
     {
@@ -2160,7 +2467,7 @@ bool TwainApp::getICAP_COMPRESSION(TW_UINT16& _val)
         _val = (TW_UINT16)(pCapPT->Item);
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_COMPRESSION.hContainer);
     }
   }
 
@@ -2183,7 +2490,7 @@ bool TwainApp::getICAP_XRESOLUTION(TW_FIX32& _xres)
         _xres = pCapPT->ItemList[pCapPT->CurrentIndex];
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_XRESOLUTION.hContainer);
     }
     else if(TWON_ONEVALUE == m_ICAP_XRESOLUTION.ConType)
     {
@@ -2194,7 +2501,7 @@ bool TwainApp::getICAP_XRESOLUTION(TW_FIX32& _xres)
         _xres = pCapPT->Item;
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_XRESOLUTION.hContainer);
     }
   }
   
@@ -2217,7 +2524,7 @@ bool TwainApp::getICAP_YRESOLUTION(TW_FIX32& _yres)
         _yres = pCapPT->ItemList[pCapPT->CurrentIndex];
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_YRESOLUTION.hContainer);
     }
     else if(TWON_ONEVALUE == m_ICAP_YRESOLUTION.ConType)
     {
@@ -2228,7 +2535,7 @@ bool TwainApp::getICAP_YRESOLUTION(TW_FIX32& _yres)
         _yres = pCapPT->Item;
         bret = true;
       }
-      _DSM_UnlockMemory((TW_MEMREF)pCapPT);
+      _DSM_UnlockMemory(m_ICAP_YRESOLUTION.hContainer);
     }
   }
   

@@ -31,8 +31,8 @@
 
 /**
  * @file DSMInterface.cpp
- * User interface for Twain Application
- * @author JFL Peripheral Solutions Inc.
+* Common defines and typedefs used for accessing DSM for Twain Applications.
+* @author TWAIN Working Group
  * @date October 2007
  */
 
@@ -47,6 +47,10 @@ using namespace std;
 
 // On Windows the official TWAINDSM.dll is signed.  this function can verify the signature.
 #ifdef TWH_CMP_MSC
+/**
+* verify the embedded signature in the DSM.
+* @param[in] pwszSourceFile the path to the DSM to verify.
+*/
 BOOL VerifyEmbeddedSignature(LPCWSTR pwszSourceFile);
 #endif
 
@@ -57,13 +61,11 @@ void*
 #endif
   gpDSM = 0;                    /**< global pointer to the DSM library */
 
-DSMENTRYPROC gpDSM_Entry = 0;   /**< global pointer to the DSM entry point */
+DSMENTRYPROC gpDSM_Entry    = 0;    /**< global pointer to the DSM entry point */
 
-TW_ENTRYPOINT g_DSM_Entry   = {0};
+TW_ENTRYPOINT g_DSM_Entry   = {0};  /**< global pointer to the TWAIN entry point structure */
 
 
-// windows has builtin functions to alloc/free/lock/unlock but on Unix they
-// are built into the DSM so they will have to be dlsym'd.
 #ifdef TWH_CMP_GNU
   #include <dlfcn.h>
 #endif
@@ -101,7 +103,7 @@ bool LoadDSMLib(char* _pszLibName)
   }
 #ifdef TWH_CMP_GNU
   char *error;
-#endif //TWH_CMP_MSC
+#endif //TWH_CMP_GNU
 
   if((gpDSM=LOADLIBRARY(_pszLibName)) != 0)
   {
@@ -132,14 +134,14 @@ bool LoadDSMLib(char* _pszLibName)
       cerr << "App - dlsym: " << error << endl;
       return false;
     }
-#endif //TWH_CMP_MSC
+#endif //TWH_CMP_GNU
   }
   else
   {
     cerr << "Error - Could not load DSM: " << _pszLibName << endl;
 #ifdef TWH_CMP_GNU
     cerr << "App - dlopen: " << dlerror() << endl;
-#endif //TWH_CMP_MSC
+#endif //TWH_CMP_GNU
     return false;
   }
 
@@ -179,45 +181,45 @@ TW_HANDLE _DSM_Alloc(TW_UINT32 _size)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-void _DSM_Free(TW_HANDLE _pPtr)
+void _DSM_Free(TW_HANDLE _hMemory)
 {
   if(g_DSM_Entry.DSM_MemFree)
   {
-    return g_DSM_Entry.DSM_MemFree(_pPtr);
+    return g_DSM_Entry.DSM_MemFree(_hMemory);
   }
 
 #ifdef TWH_CMP_MSC
-  ::GlobalFree(_pPtr);
+  ::GlobalFree(_hMemory);
 #endif
 
   return;
 }
 
 //////////////////////////////////////////////////////////////////////////////
-TW_MEMREF _DSM_LockMemory(TW_HANDLE _pMemory)
+TW_MEMREF _DSM_LockMemory(TW_HANDLE _hMemory)
 {
   if(g_DSM_Entry.DSM_MemLock)
   {
-    return g_DSM_Entry.DSM_MemLock(_pMemory);
+    return g_DSM_Entry.DSM_MemLock(_hMemory);
   }
 
 #ifdef TWH_CMP_MSC
-  return (TW_MEMREF)::GlobalLock(_pMemory);
+  return (TW_MEMREF)::GlobalLock(_hMemory);
 #endif
 
   return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////
-void _DSM_UnlockMemory(TW_MEMREF _pMemory)
+void _DSM_UnlockMemory(TW_HANDLE _hMemory)
 {
   if(g_DSM_Entry.DSM_MemUnlock)
   {
-    return g_DSM_Entry.DSM_MemUnlock(_pMemory);
+    return g_DSM_Entry.DSM_MemUnlock(_hMemory);
   }
 
 #ifdef TWH_CMP_MSC
-  ::GlobalUnlock(_pMemory);
+  ::GlobalUnlock(_hMemory);
 #endif
 
   return;
