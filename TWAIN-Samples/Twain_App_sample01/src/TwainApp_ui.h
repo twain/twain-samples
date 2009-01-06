@@ -53,77 +53,12 @@
 #include "CommonTWAIN.h"
 
 /**
-* Returns an error message that can be used when a cap is of an unexpected type.
-* @param[in] _unExpected the expected cap
-* @param[in] _unReceived the received cap
-* @return the error string
-*/
-string getErrorString_UnexpectedCap(const TW_UINT16 _unExpected, const TW_UINT16 _unReceived);
-
-/**
 * Returns an error message that can be used when a type is of an unexpected type.
 * @param[in] _unExpected the expected type
 * @param[in] _unReceived the received type
 * @return the error string
 */
 string getErrorString_UnexpectedType(const TW_UINT16 _unExpected, const TW_UINT16 _unReceived);
-
-/**
-* converts the integer CAP value into string form
-* @param[in] _unCap the cap
-* @return the equivalent cap string
-*/
-const char* convertICAP_toString(const TW_UINT16 _unCap);
-
-/**
-* converts the integer CAP transfer method into string form
-* @param[in] _unCap the cap
-* @param[in] _unItem the value
-* @return the equivalent string
-*/
-const char* convertICAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT16 _unItem);
-
-/**
-* converts the integer CAP transfer method into string form
-* @param[in] _unItem the value
-* @return the equivalent string
-*/
-const char* convertICAP_XFERMECH_toString(const TW_UINT16 _unItem);
-
-/**
-* converts the integer CAP unit into string form
-* @param[in] _unItem the value
-* @return the equivalent string
-*/
-const char* convertICAP_UNITS_toString(const TW_UINT16 _unItem);
-
-/**
-* converts the integer CAP Pixel type value into string form
-* @param[in] _unItem the value
-* @return the equivalent string
-*/
-const char* convertICAP_PIXELTYPE_toString(const TW_UINT16 _unItem);
-
-/**
-* converts the integer CAP Image File format type value into string form
-* @param[in] _unItem the value
-* @return the equivalent string
-*/
-const char* convertICAP_IMAGEFILEFORMAT_toString(const TW_UINT16 _unItem);
-
-/**
-* converts the integer CAP Compression type value into string form
-* @param[in] _unItem the value
-* @return the equivalent string
-*/
-const char* convertICAP_COMPRESSION_toString(const TW_UINT16 _unItem);
-
-/**
-* converts the integer TWTY value into string form
-* @param[in] _unItem the TWTY value
-* @return the equivalent string
-*/
-const char* convertTWTY_toString(const TW_UINT16 _unItem);
 
 /**
 * prints the main menu

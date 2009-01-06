@@ -1,3 +1,15 @@
+2009-01-06 JFL Peripheral Solutions jimw@jflinc.com
+
+    * Updated the TWAIN2 Sample Application to separate CMD and GUI implementations and 
+        create some more base classes to make it easier to derive more applications. 
+    * Updated the TWAIN2 Sample App GUI to display all capabilities supported, not just 
+        the 4 or 5 that were hardcoded.
+    * Updated the TWAIN2 Sample App GUI so Double clicking on any Enumeration will display 
+        all possible choices and allow changing it.
+    * Updated the TWAIN2 Sample App GUI so Changing any setting reloads all the current 
+        settings so the app is always up to date.
+
+
 2008-12-23 JFL Peripheral Solutions jimw@jflinc.com
 
     * Add Doxygen comments to the code

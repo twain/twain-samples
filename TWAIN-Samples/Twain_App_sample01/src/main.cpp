@@ -54,16 +54,16 @@ typedef union {
 #include <signal.h>
 
 #include "CommonTWAIN.h"
-#include "TwainApp.h"
+#include "TwainAppCMD.h"
 #include "TwainApp_ui.h"
 
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
 // Global Variables
-TW_UINT16   gDSMessage;           /**< global statis to indicate if we are waiting for DS */
-TwainApp   *gpTwainApplication;   /**< The main application */
-extern bool gUSE_CALLBACKS;       // defined in TwainApp.cpp
+TW_UINT16     gDSMessage;             /**< global statis to indicate if we are waiting for DS */
+TwainAppCMD  *gpTwainApplicationCMD;  /**< The main application */
+extern bool   gUSE_CALLBACKS;         // defined in TwainApp.cpp
 
 //////////////////////////////////////////////////////////////////////////////
 /** 
@@ -89,7 +89,7 @@ void negotiate_CAP(const pTW_CAPABILITY _pCap)
   // before working with another one.  
   // -Another method of doing this is to let the DS worry about the state
   // of the caps instead of keeping a copy in the app like I'm doing.
-  gpTwainApplication->initCaps();
+  gpTwainApplicationCMD->initCaps();
 
   while(1)
   {
@@ -171,28 +171,28 @@ void negotiate_CAP(const pTW_CAPABILITY _pCap)
           switch(_pCap->Cap)
           {
             case ICAP_PIXELTYPE:
-              gpTwainApplication->set_ICAP_PIXELTYPE(valUInt16);
+              gpTwainApplicationCMD->set_ICAP_PIXELTYPE(valUInt16);
             break;
 
             case ICAP_BITDEPTH:
-              gpTwainApplication->set_ICAP_BITDEPTH(valUInt16);
+              gpTwainApplicationCMD->set_ICAP_BITDEPTH(valUInt16);
             break;
 
             case ICAP_UNITS:
-              gpTwainApplication->set_ICAP_UNITS(valUInt16);
+              gpTwainApplicationCMD->set_ICAP_UNITS(valUInt16);
             break;
             
             case ICAP_XFERMECH:
-              gpTwainApplication->set_ICAP_XFERMECH(valUInt16);
+              gpTwainApplicationCMD->set_ICAP_XFERMECH(valUInt16);
             break;
           
             case ICAP_XRESOLUTION:
             case ICAP_YRESOLUTION:
-              gpTwainApplication->set_ICAP_RESOLUTION(_pCap->Cap, pValFix32);
+              gpTwainApplicationCMD->set_ICAP_RESOLUTION(_pCap->Cap, pValFix32);
             break;
 
             case ICAP_FRAMES:
-              gpTwainApplication->set_ICAP_FRAMES(pValFrame);
+              gpTwainApplicationCMD->set_ICAP_FRAMES(pValFrame);
             break;
 
             default:
@@ -220,7 +220,7 @@ void negotiate_CAP(const pTW_CAPABILITY _pCap)
 void negotiateCaps()
 {
   // If the app is not in state 4, don't even bother showing this menu.
-  if(gpTwainApplication->m_DSMState < 4)
+  if(gpTwainApplicationCMD->m_DSMState < 4)
   {
     cerr << "\nNeed to open a source first\n" << endl;
     return;
@@ -247,31 +247,31 @@ void negotiateCaps()
     }
     else if("1" == input)
     {
-      negotiate_CAP(&(gpTwainApplication->m_ICAP_XFERMECH));
+      negotiate_CAP(&(gpTwainApplicationCMD->m_ICAP_XFERMECH));
     }
     else if("2" == input)
     {
-      negotiate_CAP(&(gpTwainApplication->m_ICAP_PIXELTYPE));
+      negotiate_CAP(&(gpTwainApplicationCMD->m_ICAP_PIXELTYPE));
     }
     else if("3" == input)
     {
-      negotiate_CAP(&(gpTwainApplication->m_ICAP_BITDEPTH));
+      negotiate_CAP(&(gpTwainApplicationCMD->m_ICAP_BITDEPTH));
     }
     else if("4" == input)
     {
-      negotiate_CAP(&(gpTwainApplication->m_ICAP_XRESOLUTION));
+      negotiate_CAP(&(gpTwainApplicationCMD->m_ICAP_XRESOLUTION));
     }
     else if("5" == input)
     {
-      negotiate_CAP(&(gpTwainApplication->m_ICAP_YRESOLUTION));
+      negotiate_CAP(&(gpTwainApplicationCMD->m_ICAP_YRESOLUTION));
     }
     else if("6" == input)
     {
-      negotiate_CAP(&(gpTwainApplication->m_ICAP_FRAMES));
+      negotiate_CAP(&(gpTwainApplicationCMD->m_ICAP_FRAMES));
     }
     else if("7" == input)
     {
-      negotiate_CAP(&(gpTwainApplication->m_ICAP_UNITS));
+      negotiate_CAP(&(gpTwainApplicationCMD->m_ICAP_UNITS));
     }
     else
     {
@@ -297,7 +297,7 @@ void EnableDS()
   // caps, only get ops.
   // -The scan will not start until the source calls the callback function
   // that was registered earlier.
-  if(!gpTwainApplication->enableDS())
+  if(!gpTwainApplicationCMD->enableDS(FALSE))
   {
     return;
   }
@@ -319,8 +319,8 @@ void EnableDS()
     twEvent.pEvent = (TW_MEMREF)&Msg;
     twEvent.TWMessage = MSG_NULL;
     TW_UINT16  twRC = TWRC_NOTDSEVENT;
-    twRC = _DSM_Entry( gpTwainApplication->getAppIdentity(),
-                gpTwainApplication->getDataSource(),
+    twRC = _DSM_Entry( gpTwainApplicationCMD->getAppIdentity(),
+                gpTwainApplicationCMD->getDataSource(),
                 DG_CONTROL,
                 DAT_EVENT,
                 MSG_PROCESSEVENT,
@@ -356,14 +356,14 @@ void EnableDS()
   if(gDSMessage == MSG_XFERREADY)
   {
     // move to state 6 as a result of the data source. We can start a scan now.
-    gpTwainApplication->m_DSMState = 6;
+    gpTwainApplicationCMD->m_DSMState = 6;
 
-    gpTwainApplication->startScan();
+    gpTwainApplicationCMD->startScan();
   }
 
   // Scan is done, disable the ds, thus moving us back to state 4 where we
   // can negotiate caps again.
-  gpTwainApplication->disableDS();
+  gpTwainApplicationCMD->disableDS();
 
   return;
 }
@@ -393,7 +393,7 @@ DSMCallback(pTW_IDENTITY _pOrigin,
   // we are only waiting for callbacks from our datasource, so validate
   // that the originator.
   if(0 == _pOrigin ||
-     _pOrigin->Id != gpTwainApplication->getDataSource()->Id)
+     _pOrigin->Id != gpTwainApplicationCMD->getDataSource()->Id)
   {
     return TWRC_FAILURE;
   }
@@ -428,8 +428,8 @@ int main(int argc, char *argv[])
 {
   int ret = EXIT_SUCCESS;
 
-  // Instantiate the TWAIN application class
-  gpTwainApplication = new TwainApp;
+  // Instantiate the TWAIN application CMD class
+  gpTwainApplicationCMD = new TwainAppCMD;
 
   // setup a signal handler for SIGINT that will allow the program to stop
   signal(SIGINT, &onSigINT);
@@ -455,31 +455,31 @@ int main(int argc, char *argv[])
     }
     else if("cdsm" == input)
     {
-      gpTwainApplication->connectDSM();
+      gpTwainApplicationCMD->connectDSM();
     }
     else if("xdsm" == input)
     {
-      gpTwainApplication->disconnectDSM();
+      gpTwainApplicationCMD->disconnectDSM();
     }
     else if("lds" == input)
     {
-      gpTwainApplication->printAvailableDataSources();
+      gpTwainApplicationCMD->printAvailableDataSources();
     }
     else if("pds" == input.substr(0,3))
     {
-      gpTwainApplication->printIdentityStruct(atoi(input.substr(3,input.length()-3).c_str()));
+      gpTwainApplicationCMD->printIdentityStruct(atoi(input.substr(3,input.length()-3).c_str()));
     }
     else if("cds" == input.substr(0,3))
     {
-      gpTwainApplication->loadDS(atoi(input.substr(3,input.length()-3).c_str()));
+      gpTwainApplicationCMD->loadDS(atoi(input.substr(3,input.length()-3).c_str()));
     }
     else if("xds" == input)
     {
-      gpTwainApplication->unloadDS();
+      gpTwainApplicationCMD->unloadDS();
     }
     else if("caps" == input)
     {
-      if(gpTwainApplication->m_DSMState < 3)
+      if(gpTwainApplicationCMD->m_DSMState < 3)
       {
         cout << "\nYou need to select a source first!" << endl;
       }
@@ -500,9 +500,9 @@ int main(int argc, char *argv[])
     }
   }
 
-  gpTwainApplication->exit();
-  delete gpTwainApplication;
-  gpTwainApplication = 0;
+  gpTwainApplicationCMD->exit();
+  delete gpTwainApplicationCMD;
+  gpTwainApplicationCMD = 0;
 
   return ret;
 }

@@ -47,7 +47,7 @@
   #endif
 #endif
 
-#include "main.h"
+//#include "main.h"
 #include "twain.h"
 
 /**

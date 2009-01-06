@@ -39,7 +39,7 @@
 #ifdef _WINDOWS
   #include "stdafx.h"
 #endif
-#include "Common.h"
+#include "CommonTWAIN.h"
 #include "DSMInterface.h"
 
 #include <iostream>

@@ -44,6 +44,8 @@
 
 #include "CommonTWAIN.h"
 
+class CTW_Array_Dlg;
+
 /**
 * Main dialalog window for applicaiton
 */
@@ -62,7 +64,8 @@ public:
   protected:
   virtual void DoDataExchange(CDataExchange* pDX);// DDX/DDV support
   void ListCaps();
-
+  int  GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg);
+  void StartScan();
 
 // Implementation
 protected:
@@ -89,5 +92,5 @@ public:
   CString  m_sStc_ImageInfo;
   CString  m_sStc_ExtImageInfo;
   CListBox m_lst_Caps;
-
+  BOOL     m_bShowUI;
 };

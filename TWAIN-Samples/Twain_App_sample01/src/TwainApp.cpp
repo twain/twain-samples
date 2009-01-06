@@ -53,7 +53,7 @@
 
 #include "TwainApp.h"
 #include "CTiffWriter.h"
-#include "TwainApp_ui.h"
+#include "TwainString.h"
 
 using namespace std;
 
@@ -84,6 +84,31 @@ bool operator== (const TW_FIX32& _fix1, const TW_FIX32& _fix2)
          (_fix1.Frac == _fix2.Frac));
 }
 
+
+void PrintCMDMessage(const char* const pStr, ...)
+{
+  char buffer[200];
+
+  va_list valist;
+  va_start(valist, pStr);
+  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP) && (TWNDS_CMP_VERSION >= 1400)
+    _vsnprintf_s(buffer, 200, 200, pStr, valist);
+  #elif (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
+    _vsnprintf(buffer, 200, pStr, valist);
+  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
+    vsnprintf(buffer, 200, pStr, valist);
+  #else
+    #error Sorry, we do not recognize this system...
+  #endif
+  va_end(valist);
+
+#ifdef _WINDOWS
+  TRACE(buffer);
+#else
+  cout << buffer;
+#endif
+}
+
 //////////////////////////////////////////////////////////////////////////////
 /**
 * Output error messages for Free Image Format.
@@ -92,9 +117,7 @@ bool operator== (const TW_FIX32& _fix1, const TW_FIX32& _fix2)
 */
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message)
 {
-  cout << "\n*** ";
-  cout << FreeImage_GetFormatFromFIF(fif) << " Format" << endl;
-  cout << message << " ***" << endl;
+  PrintCMDMessage("\n*** %s Format\n%s ***\n", FreeImage_GetFormatFromFIF(fif), message);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -199,13 +222,14 @@ void TwainApp::connectDSM()
 {
   if(m_DSMState > 3)
   {
-    cout << "The DSM has already been opened, close it first" << endl;
+    PrintCMDMessage("The DSM has already been opened, close it first\n");
     return;
   }
 
   if(!LoadDSMLib(kTWAIN_DS_DIR kTWAIN_DSM_DLL_NAME))
   {
-    cerr << "The DSM could not be opened. Please ensure that it is installed into a directory that is in the library path: " << kTWAIN_DS_DIR kTWAIN_DSM_DLL_NAME << endl;
+    printError(0, "The DSM could not be opened. Please ensure that it is installed into a directory that is in the library path:");
+    printError(0, kTWAIN_DS_DIR kTWAIN_DSM_DLL_NAME);
     return;
   }
   else
@@ -223,7 +247,7 @@ void TwainApp::connectDSM()
     MSG_OPENDSM,
     (TW_MEMREF)&m_Parent)))
   {
-    cout << "DG_CONTROL / DAT_PARENT / MSG_OPENDSM Failed: " << ret << endl;
+    PrintCMDMessage("DG_CONTROL / DAT_PARENT / MSG_OPENDSM Failed: %u\n", ret);
     return;
   }
 
@@ -240,12 +264,12 @@ void TwainApp::connectDSM()
                                 MSG_GET,
                                 (pTW_ENTRYPOINT)&g_DSM_Entry)))
     {
-      cout << "DG_CONTROL / DAT_ENTRYPOINT / MSG_GET Failed: " << ret << endl;
+      PrintCMDMessage("DG_CONTROL / DAT_ENTRYPOINT / MSG_GET Failed: %d\n", ret);
       return;
     }
   }
 
-  cout << "Successfully opened the DSM" << endl;
+  PrintCMDMessage("Successfully opened the DSM\n");
   m_DSMState = 3;
 
   // get list of available sources
@@ -260,7 +284,7 @@ void TwainApp::disconnectDSM()
 {
   if(m_DSMState < 3)
   {
-    cout << "The DSM has not been opened, open it first" << endl;
+    PrintCMDMessage("The DSM has not been opened, open it first\n");
   }
 
   TW_UINT16 ret = _DSM_Entry(
@@ -273,7 +297,7 @@ void TwainApp::disconnectDSM()
 
   if(TWRC_SUCCESS == ret)
   {
-    cout << "Successfully closed the DSM" << endl;
+    PrintCMDMessage("Successfully closed the DSM\n");
     m_DSMState = 2;
   }
   else
@@ -284,53 +308,7 @@ void TwainApp::disconnectDSM()
   return;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::printIdentStruct(const TW_IDENTITY& _ident)
-{
-  cout << "\n"
-    << "Id: " << _ident.Id << "\n"
-    << "Version: " << _ident.Version.MajorNum << "." << _ident.Version.MinorNum << "\n"
-    << "SupportedGroups: " << _ident.SupportedGroups << "\n"
-    << "Manufacturer: " << _ident.Manufacturer << "\n"
-    << "ProductFamily: " << _ident.ProductFamily << "\n"
-    << "ProductName: " << _ident.ProductName << "\n"
-    << endl;
 
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::printIdentityStruct(const TW_UINT32 _identityID)
-{
-  for(unsigned int x = 0; x < m_DataSources.size(); ++x)
-  {
-    if(_identityID == m_DataSources[x].Id)
-    {
-      printIdentStruct(m_DataSources[x]);
-      break;
-    }
-  }
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::printAvailableDataSources()
-{
-  if(m_DSMState < 3)
-  {
-    cout << "The DSM has not been opened yet, please open it first" << endl;
-    return;
-  }
-
-  // print the Id and name of each available source
-  for(unsigned int x = 0; x < m_DataSources.size(); ++x)
-  {
-    cout << m_DataSources[x].Id << ". " << m_DataSources[x].ProductName << " by " << m_DataSources[x].Manufacturer << endl;
-  }
-
-  return;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 void TwainApp::loadDS(const TW_UINT32 _dsID)
@@ -338,12 +316,12 @@ void TwainApp::loadDS(const TW_UINT32 _dsID)
   // The application must be in state 3 to open a Data Source.
   if(m_DSMState < 3)
   {
-    cout << "The DSM needs to be opened first." << endl;
+    PrintCMDMessage("The DSM needs to be opened first.\n");
     return;
   }
   else if(m_DSMState > 3)
   {
-    cout << "A source has already been opened, please close it first" << endl;
+    PrintCMDMessage("A source has already been opened, please close it first\n");
     return;
   }
 
@@ -361,7 +339,7 @@ void TwainApp::loadDS(const TW_UINT32 _dsID)
 
   if(0 == m_pDataSource)
   {
-    cout << "Data source with id: [" << _dsID << "] can not be found" << endl;
+    PrintCMDMessage("Data source with id: [%u] can not be found\n", _dsID);
     return;
   }
 
@@ -380,18 +358,15 @@ void TwainApp::loadDS(const TW_UINT32 _dsID)
   switch (twrc)
   {
   case TWRC_SUCCESS:
-    cout << "Data source successfully opened!" << endl;
+    PrintCMDMessage("Data source successfully opened!\n");
     // Transition application to state 4
     m_DSMState = 4;
-
-    // get all the initial capabilities of this source
-    initCaps();
 
     callback.CallBackProc = (TW_MEMREF)DSMCallback;    
 
     if(TWRC_SUCCESS != (twrc = DSM_Entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF)&callback)))
     {
-      cout << "DG_CONTROL / DAT_CALLBACK / MSG_REGISTER_CALLBACK Failed: " << twrc << endl;
+      PrintCMDMessage("DG_CONTROL / DAT_CALLBACK / MSG_REGISTER_CALLBACK Failed: %u\n", twrc);
     }
     else
     {
@@ -414,7 +389,7 @@ void TwainApp::unloadDS()
 {
   if(m_DSMState < 4)
   {
-    cout << "You need to open a data source first." << endl;
+    PrintCMDMessage("You need to open a data source first.\n");
     return;
   }
 
@@ -430,7 +405,7 @@ void TwainApp::unloadDS()
   switch (twrc)
   {
   case TWRC_SUCCESS:
-    cout << "Data source successfully closed" << endl;
+    PrintCMDMessage("Data source successfully closed\n");
 
     // Transition application to state 3
     m_DSMState = 3;
@@ -453,7 +428,7 @@ void TwainApp::getSources()
 {
   if(m_DSMState < 3)
   {
-    cout << "You need to open the DSM first." << endl;
+    PrintCMDMessage("You need to open the DSM first.\n");
     return;
   }
 
@@ -529,7 +504,7 @@ pTW_IDENTITY TwainApp::getDefaultDataSource()
 {
   if(m_DSMState < 3)
   {
-    cout << "You need to open the DSM first." << endl;
+    PrintCMDMessage("You need to open the DSM first.\n");
     return NULL;
   }
 
@@ -565,6 +540,23 @@ void TwainApp::printError(pTW_IDENTITY _pdestID, const string& _errorMsg)
 {
   TW_INT16 c;
 
+#ifdef _WINDOWS
+  TRACE("app: ");
+
+  if(_errorMsg.length() > 0)
+  {
+    TRACE(_errorMsg.c_str());
+  }
+  else
+  {
+    TRACE("An error has occurred.");
+  }
+
+  if(TWRC_SUCCESS == getTWCC(_pdestID, c))
+  {
+    TRACE(" The condition code is: %u", c);
+  }
+#else
   cerr << "app: ";
 
   if(_errorMsg.length() > 0)
@@ -580,57 +572,11 @@ void TwainApp::printError(pTW_IDENTITY _pdestID, const string& _errorMsg)
   {
     cerr << " The condition code is: " << c << endl;
   }
+#endif
 
   return;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::initCaps()
-{
-  if(m_DSMState < 3)
-  {
-    cout << "The DSM needs to be opened first." << endl;
-    return;
-  }
-  else if(m_DSMState < 4)
-  {
-    cout << "A Data Source needs to be opened first." << endl;
-    return;
-  }
-
-  // get the default pixel type
-  m_CAP_XFERCOUNT.Cap = CAP_XFERCOUNT;
-  get_CAP(m_CAP_XFERCOUNT);
-
-  m_ICAP_PIXELTYPE.Cap = ICAP_PIXELTYPE;
-  get_CAP(m_ICAP_PIXELTYPE);
-
-  m_ICAP_XFERMECH.Cap = ICAP_XFERMECH;
-  get_CAP(m_ICAP_XFERMECH);
-  
-  m_ICAP_IMAGEFILEFORMAT.Cap = ICAP_IMAGEFILEFORMAT;
-  get_CAP(m_ICAP_IMAGEFILEFORMAT);
-    
-  m_ICAP_COMPRESSION.Cap = ICAP_COMPRESSION;
-  get_CAP(m_ICAP_COMPRESSION);
-    
-  m_ICAP_UNITS.Cap = ICAP_UNITS;
-  get_CAP(m_ICAP_UNITS);
-
-  m_ICAP_BITDEPTH.Cap = ICAP_BITDEPTH;
-  get_CAP(m_ICAP_BITDEPTH);
-
-  m_ICAP_XRESOLUTION.Cap = ICAP_XRESOLUTION;
-  get_CAP(m_ICAP_XRESOLUTION);
-
-  m_ICAP_YRESOLUTION.Cap = ICAP_YRESOLUTION;
-  get_CAP(m_ICAP_YRESOLUTION);
-
-  m_ICAP_FRAMES.Cap = ICAP_FRAMES;
-  get_CAP(m_ICAP_FRAMES);
-
-  return;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 TW_UINT16 TwainApp::getTWCC(pTW_IDENTITY _pdestID, TW_INT16& _cc)
@@ -655,17 +601,17 @@ TW_UINT16 TwainApp::getTWCC(pTW_IDENTITY _pdestID, TW_INT16& _cc)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-bool TwainApp::enableDS()
+bool TwainApp::enableDS(BOOL bShowUI)
 {
   bool bret = true;
 
   if(m_DSMState < 4)
   {
-    cout << "You need to open the data source first." << endl;
+    PrintCMDMessage("You need to open the data source first.\n");
     return false;
   }
 
-  m_ui.ShowUI = TRUE;
+  m_ui.ShowUI = bShowUI;
   m_ui.ModalUI = TRUE;
   m_ui.hParent = 0;
   m_DSMState = 5;
@@ -695,7 +641,7 @@ void TwainApp::disableDS()
 {
   if(m_DSMState < 5)
   {
-    cout << "You need to enable the data source first." << endl;
+    PrintCMDMessage("You need to enable the data source first.\n");
     return;
   }
 
@@ -713,39 +659,6 @@ void TwainApp::disableDS()
   return;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::startScan()
-{
-  if(m_DSMState != 6)
-  {
-    cerr << "A scan cannot be initiated unless we are in state 6" << endl;
-    return;
-  }
-
-  TW_UINT16 mech;
-  if(!getICAP_XFERMECH(mech))
-  {
-    cerr << "Error: could not get the transfer mechanism" << endl;
-    return;
-  }
-
-  switch (mech)
-  {
-  case TWSX_NATIVE:
-    initiateTransfer_Native();
-    break;
-
-  case TWSX_FILE:
-    initiateTransfer_File();
-    break;
-
-  case TWSX_MEMORY:
-    initiateTransfer_Memory();
-    break;
-  }
-
-  return;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 bool TwainApp::updateIMAGEINFO()
@@ -754,7 +667,7 @@ bool TwainApp::updateIMAGEINFO()
   memset(&m_ImageInfo, 0, sizeof(m_ImageInfo));
 
   // get the image details
-  cout << "app: Getting the image info..." << endl;
+  PrintCMDMessage("app: Getting the image info...\n");
   TW_UINT16 twrc = DSM_Entry( DG_IMAGE, DAT_IMAGEINFO, MSG_GET, (TW_MEMREF)&(m_ImageInfo));
 
   if(TWRC_SUCCESS != twrc)
@@ -767,7 +680,7 @@ bool TwainApp::updateIMAGEINFO()
 //////////////////////////////////////////////////////////////////////////////
 void TwainApp::initiateTransfer_Native()
 {
-  cout << "app: Starting a TWSX_NATIVE transfer..." << endl;
+  PrintCMDMessage("app: Starting a TWSX_NATIVE transfer...\n");
 
   TW_STR255 szOutFileName;
   bool      bPendingXfers = true;
@@ -785,7 +698,7 @@ void TwainApp::initiateTransfer_Native()
 
     TW_MEMREF hImg = 0;
 
-    cout << "app: Starting the transfer..." << endl;
+    PrintCMDMessage("app: Starting the transfer...\n");
     twrc = DSM_Entry( DG_IMAGE, DAT_IMAGENATIVEXFER, MSG_GET, (TW_MEMREF)&hImg);
 
     if(TWRC_XFERDONE == twrc)
@@ -797,7 +710,7 @@ void TwainApp::initiateTransfer_Native()
 
       if(0 == pDIB)
       {
-        cerr << "App: Unable to lock memory, transfer failed" << endl;
+        printError(m_pDataSource, "App: Unable to lock memory, transfer failed");
         break;
       }
 
@@ -856,10 +769,9 @@ void TwainApp::initiateTransfer_Native()
         fclose(pFile);
         pFile = 0;
 
+        PrintCMDMessage("app: File \"%s\" saved...\n", szOutFileName);
 #ifdef _WINDOWS
         ShellExecute(m_Parent, "open", szOutFileName, NULL, NULL, SW_SHOWNORMAL);
-#else
-         cout << "app: File \"" << szOutFileName << "\" saved..." << endl;
 #endif
       }
 
@@ -870,7 +782,7 @@ void TwainApp::initiateTransfer_Native()
       updateEXIMAGEINFO();
 
       // see if there are any more transfers to do
-      cout << "app: Checking to see if there are more images to transfer..." << endl;
+      PrintCMDMessage("app: Checking to see if there are more images to transfer...\n");
       TW_PENDINGXFERS pendxfers;
       memset( &pendxfers, 0, sizeof(pendxfers) );
 
@@ -878,7 +790,7 @@ void TwainApp::initiateTransfer_Native()
 
       if(TWRC_SUCCESS == twrc)
       {
-        cout << "app: Remaining images to transfer: " << pendxfers.Count << endl;
+        PrintCMDMessage("app: Remaining images to transfer: %u\n", pendxfers.Count);
 
         if(0 == pendxfers.Count)
         {
@@ -909,7 +821,7 @@ void TwainApp::initiateTransfer_Native()
   // to transfer more images
   if(bPendingXfers == true)
   {
-      cout << "app: Stop any transfer we may have started but could not finish..." << endl;
+      PrintCMDMessage("app: Stop any transfer we may have started but could not finish...\n");
       TW_PENDINGXFERS pendxfers;
       memset( &pendxfers, 0, sizeof(pendxfers) );
 
@@ -927,7 +839,7 @@ void TwainApp::initiateTransfer_Native()
   // adjust our state now that the scanning session is done
   m_DSMState = 5;
 
-  cout << "app: DONE!" << endl;
+  PrintCMDMessage("app: DONE!\n");
 
   return;
 }
@@ -944,13 +856,7 @@ void TwainApp::updateEXIMAGEINFO()
     exImgInfo.Info[0].CondCode = 0;
     
     TW_UINT16 twrc          = TWRC_SUCCESS;
-    twrc =     _DSM_Entry(
-      &m_MyInfo,
-      m_pDataSource,
-      DG_IMAGE,
-      DAT_EXTIMAGEINFO,
-      MSG_GET,
-      (TW_MEMREF)&exImgInfo);
+    twrc =     DSM_Entry(DG_IMAGE, DAT_EXTIMAGEINFO, MSG_GET, (TW_MEMREF)&exImgInfo);
     twrc = 0;
     if(twrc!= TWRC_SUCCESS)
     {
@@ -1045,13 +951,7 @@ void TwainApp::updateEXIMAGEINFO()
     pexImgInfo->Info[cur_info].ItemType = 0;
     cur_info++;      
 
-    twrc =     _DSM_Entry(
-      &m_MyInfo,
-      m_pDataSource,
-      DG_IMAGE,
-      DAT_EXTIMAGEINFO,
-      MSG_GET,
-      (TW_MEMREF)pexImgInfo);
+    twrc =     DSM_Entry(DG_IMAGE, DAT_EXTIMAGEINFO, MSG_GET, (TW_MEMREF)pexImgInfo);
     twrc = 0;
     if(twrc!= TWRC_SUCCESS)
     {
@@ -1060,7 +960,7 @@ void TwainApp::updateEXIMAGEINFO()
     m_strExImageInfo = "";
     for(int nIndex = 0; nIndex < num_infos; nIndex++)
     {
-      m_strExImageInfo +=GetExtImageInfoName(pexImgInfo->Info[nIndex].InfoID);
+      m_strExImageInfo +=convertExtImageInfoName_toString(pexImgInfo->Info[nIndex].InfoID);
       m_strExImageInfo +="\t";
       if(TWRC_SUCCESS==pexImgInfo->Info[nIndex].CondCode)
       {
@@ -1117,292 +1017,11 @@ void TwainApp::updateEXIMAGEINFO()
   return;
 }
 
-string TwainApp::GetExtImageInfoName(int InfoID)
-{
-  string text;
-
-  switch(InfoID)
-  {
-  case TWEI_BARCODEX:
-    text = "TWEI_BARCODEX:";
-    break;
-
-  case TWEI_BARCODEY:
-    text = "TWEI_BARCODEY:";
-    break;
-
-	case TWEI_BARCODETEXT:
-    text = "TWEI_BARCODETEXT:";
-    break;
-
-	case TWEI_BARCODETYPE:
-    text = "TWEI_BARCODETYPE:";
-    break;
-
-	case TWEI_DESHADETOP:
-    text = "TWEI_DESHADETOP:";
-    break;
-
-	case TWEI_DESHADELEFT:
-    text = "TWEI_DESHADELEFT:";
-    break;
-
-	case TWEI_DESHADEHEIGHT:
-    text = "TWEI_DESHADEHEIGHT:";
-    break;
-
-	case TWEI_DESHADEWIDTH:
-    text = "TWEI_DESHADEWIDTH:";
-    break;
-
-	case TWEI_DESHADESIZE:
-    text = "TWEI_DESHADESIZE:";
-    break;
-
-	case TWEI_SPECKLESREMOVED:
-    text = "TWEI_SPECKLESREMOVED:";
-    break;
-
-	case TWEI_HORZLINEXCOORD:
-    text = "TWEI_HORZLINEXCOORD:";
-    break;
-
-	case TWEI_HORZLINEYCOORD:
-    text = "TWEI_HORZLINEYCOORD:";
-    break;
-
-	case TWEI_HORZLINELENGTH:
-    text = "TWEI_HORZLINELENGTH:";
-    break;
-
-	case TWEI_HORZLINETHICKNESS:
-    text = "TWEI_HORZLINETHICKNESS:";
-    break;
-
-	case TWEI_VERTLINEXCOORD:
-    text = "TWEI_VERTLINEXCOORD:";
-    break;
-
-	case TWEI_VERTLINEYCOORD:
-    text = "TWEI_VERTLINEYCOORD:";
-    break;
-
-	case TWEI_VERTLINELENGTH:
-    text = "TWEI_VERTLINELENGTH:";
-    break;
-
-	case TWEI_VERTLINETHICKNESS:
-    text = "TWEI_VERTLINETHICKNESS:";
-    break;
-
-	case TWEI_PATCHCODE:
-    text = "TWEI_PATCHCODE:";
-    break;
-
-	case TWEI_ENDORSEDTEXT:
-    text = "TWEI_ENDORSEDTEXT:";
-    break;
-
-	case TWEI_FORMCONFIDENCE:
-    text = "TWEI_FORMCONFIDENCE:";
-    break;
-
-	case TWEI_FORMTEMPLATEMATCH:
-    text = "TWEI_FORMTEMPLATEMATCH:";
-    break;
-
-	case TWEI_FORMTEMPLATEPAGEMATCH:
-    text = "TWEI_FORMTEMPLATEPAGEMATCH:";
-    break;
-
-	case TWEI_FORMHORZDOCOFFSET:
-    text = "TWEI_FORMHORZDOCOFFSET:";
-    break;
-
-	case TWEI_FORMVERTDOCOFFSET:
-    text = "TWEI_FORMVERTDOCOFFSET:";
-    break;
-
-	case TWEI_BARCODECOUNT:
-    text = "TWEI_BARCODECOUNT:";
-    break;
-
-	case TWEI_BARCODECONFIDENCE:
-    text = "TWEI_BARCODECONFIDENCE:";
-    break;
-
-	case TWEI_BARCODEROTATION:
-    text = "TWEI_BARCODEROTATION:";
-    break;
-
-	case TWEI_BARCODETEXTLENGTH:
-    text = "TWEI_BARCODETEXTLENGTH:";
-    break;
-
-	case TWEI_DESHADECOUNT:
-    text = "TWEI_DESHADECOUNT:";
-    break;
-
-	case TWEI_DESHADEBLACKCOUNTOLD:
-    text = "TWEI_DESHADEBLACKCOUNTOLD:";
-    break;
-
-	case TWEI_DESHADEBLACKCOUNTNEW:
-    text = "TWEI_DESHADEBLACKCOUNTNEW:";
-    break;
-
-	case TWEI_DESHADEBLACKRLMIN:
-    text = "TWEI_DESHADEBLACKRLMIN:";
-    break;
-
-	case TWEI_DESHADEBLACKRLMAX:
-    text = "TWEI_DESHADEBLACKRLMAX:";
-    break;
-
-	case TWEI_DESHADEWHITECOUNTOLD:
-    text = "TWEI_DESHADEWHITECOUNTOLD:";
-    break;
-
-	case TWEI_DESHADEWHITECOUNTNEW:
-    text = "TWEI_DESHADEWHITECOUNTNEW:";
-    break;
-
-	case TWEI_DESHADEWHITERLMIN:
-    text = "TWEI_DESHADEWHITERLMIN:";
-    break;
-
-	case TWEI_DESHADEWHITERLAVE:
-    text = "TWEI_DESHADEWHITERLAVE:";
-    break;
-
-	case TWEI_DESHADEWHITERLMAX:
-    text = "TWEI_DESHADEWHITERLMAX:";
-    break;
-
-	case TWEI_BLACKSPECKLESREMOVED:
-    text = "TWEI_BLACKSPECKLESREMOVED:";
-    break;
-
-	case TWEI_WHITESPECKLESREMOVED:
-    text = "TWEI_WHITESPECKLESREMOVED:";
-    break;
-
-	case TWEI_HORZLINECOUNT:
-    text = "TWEI_HORZLINECOUNT:";
-    break;
-
-	case TWEI_VERTLINECOUNT:
-    text = "TWEI_VERTLINECOUNT:";
-    break;
-
-	case TWEI_DESKEWSTATUS:
-    text = "TWEI_DESKEWSTATUS:";
-    break;
-
-	case TWEI_SKEWORIGINALANGLE:
-    text = "TWEI_SKEWORIGINALANGLE:";
-    break;
-
-	case TWEI_SKEWFINALANGLE:
-    text = "TWEI_SKEWFINALANGLE:";
-    break;
-
-	case TWEI_SKEWCONFIDENCE:
-    text = "TWEI_SKEWCONFIDENCE:";
-    break;
-
-	case TWEI_SKEWWINDOWX1:
-    text = "TWEI_SKEWWINDOWX1:";
-    break;
-
-	case TWEI_SKEWWINDOWY1:
-    text = "TWEI_SKEWWINDOWY1:";
-    break;
-
-	case TWEI_SKEWWINDOWX2:
-    text = "TWEI_SKEWWINDOWX2:";
-    break;
-
-	case TWEI_SKEWWINDOWY2:
-    text = "TWEI_SKEWWINDOWY2:";
-    break;
-
-	case TWEI_SKEWWINDOWX3:
-    text = "TWEI_SKEWWINDOWX3:";
-    break;
-
-	case TWEI_SKEWWINDOWY3:
-    text = "TWEI_SKEWWINDOWY3:";
-    break;
-
-	case TWEI_SKEWWINDOWX4:
-    text = "TWEI_SKEWWINDOWX4:";
-    break;
-
-	case TWEI_SKEWWINDOWY4:
-    text = "TWEI_SKEWWINDOWY4:";
-    break;
-
-	case TWEI_BOOKNAME:
-    text = "TWEI_BOOKNAME:";
-    break;
-
-	case TWEI_CHAPTERNUMBER:
-    text = "TWEI_CHAPTERNUMBER:";
-    break;
-
-	case TWEI_DOCUMENTNUMBER:
-    text = "TWEI_DOCUMENTNUMBER:";
-    break;
-
-	case TWEI_PAGENUMBER:
-    text = "TWEI_PAGENUMBER:";
-    break;
-
-	case TWEI_CAMERA:
-    text = "TWEI_CAMERA:";
-    break;
-
-	case TWEI_FRAMENUMBER:
-    text = "TWEI_FRAMENUMBER:";
-    break;
-
-	case TWEI_FRAME:
-    text = "TWEI_FRAME:";
-    break;
-
-	case TWEI_PIXELFLAVOR:
-    text = "TWEI_PIXELFLAVOR:";
-    break;
-
-	case TWEI_PAGESIDE:
-    text = "TWEI_PAGESIDE:";
-    break;
-
-	case TWEI_MAGDATA:
-    text = "TWEI_MAGDATA:";
-    break;
-
-	case TWEI_MAGTYPE:
-    text = "TWEI_MAGTYPE:";
-    break;
-
-  default:
-    {
-      char chTemp[256];
-      sprintf_s(chTemp,256,"ExtImageInfo ID 0x:4X",InfoID);
-      text = chTemp;
-    }
-    break;
-  }
-
-  return text;
-}
 
 //////////////////////////////////////////////////////////////////////////////
-void TwainApp::initiateTransfer_File()
+void TwainApp::initiateTransfer_File(TW_UINT16 fileformat /*= TWFF_TIFF*/)
 {
-  cout << "app: Starting a TWSX_FILE transfer..." << endl;
+  PrintCMDMessage("app: Starting a TWSX_FILE transfer...\n");
 
   // start the transfer
   bool      bPendingXfers = true;
@@ -1421,19 +1040,13 @@ void TwainApp::initiateTransfer_File()
     TW_SETUPFILEXFER filexfer;
     memset(&filexfer, 0, sizeof(filexfer));
 
-    TW_UINT16 fileformat = TWFF_TIFF;
-    if(!getICAP_IMAGEFILEFORMAT(fileformat))
-    {
-      // Default back to TIFF
-      fileformat = TWFF_TIFF;
-    }
     const char * pExt = convertICAP_IMAGEFILEFORMAT_toString(fileformat);
 
     SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "FROM_SCANNER_%06dF%s", m_nXferNum, pExt);
 
     filexfer.Format = fileformat;
 
-    cout << "app: Sending file transfer details..." << endl;
+    PrintCMDMessage("app: Sending file transfer details...\n");
     twrc = DSM_Entry( DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, (TW_MEMREF)&(filexfer));
 
     if(TWRC_SUCCESS != twrc)
@@ -1442,7 +1055,7 @@ void TwainApp::initiateTransfer_File()
       break;
     }
 
-    cout << "app: Starting file transfer..." << endl;
+    PrintCMDMessage("app: Starting file transfer...\n");
     twrc = DSM_Entry( DG_IMAGE, DAT_IMAGEFILEXFER, MSG_GET, 0);
 
     if(TWRC_XFERDONE == twrc)
@@ -1450,13 +1063,12 @@ void TwainApp::initiateTransfer_File()
       // Findout where the file was actualy saved
       twrc = DSM_Entry( DG_CONTROL, DAT_SETUPFILEXFER, MSG_GET, (TW_MEMREF)&(filexfer));
 
+      PrintCMDMessage("app: File \"%s\" saved...\n", filexfer.FileName);
 #ifdef _WINDOWS
-        ShellExecute(m_Parent, "open", filexfer.FileName, NULL, NULL, SW_SHOWNORMAL);
-#else
-         cout << "app: File \"" << filexfer.FileName << "\" saved..." << endl;
+      ShellExecute(m_Parent, "open", filexfer.FileName, NULL, NULL, SW_SHOWNORMAL);
 #endif
       // see if there are any more transfers to do
-      cout << "app: Checking to see if there are more images to transfer..." << endl;
+      PrintCMDMessage("app: Checking to see if there are more images to transfer...\n");
       TW_PENDINGXFERS pendxfers;
       memset(&pendxfers, 0, sizeof(pendxfers));
 
@@ -1464,7 +1076,7 @@ void TwainApp::initiateTransfer_File()
 
       if(TWRC_SUCCESS == twrc)
       {
-        cout << "app: Remaining images to transfer: " << pendxfers.Count << endl;
+        PrintCMDMessage("app: Remaining images to transfer: %u\n", pendxfers.Count);
 
         if(0 == pendxfers.Count)
         {
@@ -1495,7 +1107,7 @@ void TwainApp::initiateTransfer_File()
   // to transfer more images
   if(bPendingXfers == true)
   {
-      cout << "app: Stop any transfer we may have started but could not finish..." << endl;
+      PrintCMDMessage("app: Stop any transfer we may have started but could not finish...\n");
       TW_PENDINGXFERS pendxfers;
       memset( &pendxfers, 0, sizeof(pendxfers) );
       twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
@@ -1511,7 +1123,7 @@ void TwainApp::initiateTransfer_File()
   // adjust our state now that the scanning session is done
   m_DSMState = 5;
 
-  cout << "app: DONE!" << endl;
+  PrintCMDMessage("app: DONE!\n");
 
   return;
 }
@@ -1519,7 +1131,7 @@ void TwainApp::initiateTransfer_File()
 //////////////////////////////////////////////////////////////////////////////
 void TwainApp::initiateTransfer_Memory()
 {
-  cout << "app: Starting a TWSX_MEMORY transfer..." << endl;
+  PrintCMDMessage("app: Starting a TWSX_MEMORY transfer...\n");
 
   // For memory transfers, the FreeImage library will not be used, instead a
   // tiff will be progressively written. This method was chosen because it
@@ -1547,7 +1159,7 @@ void TwainApp::initiateTransfer_Memory()
     SSNPRINTF(szOutFileName, sizeof(szOutFileName), sizeof(szOutFileName), "FROM_SCANNER_%06dM.tif", m_nXferNum);
 
     // get the buffer sizes that the source wants to use
-    cout << "app: getting the buffer sizes..." << endl;
+    PrintCMDMessage("app: getting the buffer sizes...\n");
     memset(&SourcesBufferSizes, 0, sizeof(SourcesBufferSizes));
 
     twrc = DSM_Entry( DG_CONTROL, DAT_SETUPMEMXFER, MSG_GET, (TW_MEMREF)&(SourcesBufferSizes));
@@ -1593,7 +1205,7 @@ void TwainApp::initiateTransfer_Memory()
     int nBytePerRow = (((m_ImageInfo.ImageWidth * m_ImageInfo.BitsPerPixel)+7)/8);
 
     // now that the memory has been setup, get the data from the scanner
-    cout << "app: starting the memory transfer..." << endl;
+    PrintCMDMessage("app: starting the memory transfer...\n");
     while(1)
     {
       // reset the xfer buffer
@@ -1622,13 +1234,9 @@ void TwainApp::initiateTransfer_Memory()
             m_ImageInfo.ImageLength,
             m_ImageInfo.BitsPerPixel,
             nBytePerRow);
-
-          TW_FIX32 res;
-          getICAP_XRESOLUTION(res);
-          pTifImg->setXResolution(res.Whole, 1);
-
-          getICAP_YRESOLUTION(res);
-          pTifImg->setYResolution(res.Whole, 1);
+          
+          pTifImg->setXResolution(m_ImageInfo.XResolution.Whole, 1);
+          pTifImg->setYResolution(m_ImageInfo.YResolution.Whole, 1);
 
           pTifImg->writeImageHeader();
         }
@@ -1651,12 +1259,10 @@ void TwainApp::initiateTransfer_Memory()
             pTifImg = 0;
           }
 
+          PrintCMDMessage("app: File \"%s\" saved...\n", szOutFileName);
 #ifdef _WINDOWS
           ShellExecute(m_Parent, "open", szOutFileName, NULL, NULL, SW_SHOWNORMAL);
-#else
-          cout << "app: File \"" << szOutFileName << "\" saved..." << endl;
 #endif
-
           break;
         }
       }
@@ -1689,7 +1295,7 @@ void TwainApp::initiateTransfer_Memory()
     }
 
     // The transfer is done. Tell the source
-    cout << "app: Checking to see if there are more images to transfer..." << endl;
+    PrintCMDMessage("app: Checking to see if there are more images to transfer...\n");
     TW_PENDINGXFERS pendxfers;
     memset( &pendxfers, 0, sizeof(pendxfers) );
 
@@ -1697,7 +1303,7 @@ void TwainApp::initiateTransfer_Memory()
 
     if(TWRC_SUCCESS == twrc)
     {
-      cout << "app: Remaining images to transfer: " << pendxfers.Count << endl;
+      PrintCMDMessage("app: Remaining images to transfer: %u\n", pendxfers.Count);
       if(0 == pendxfers.Count)
       {
         // nothing left to transfer, finished.
@@ -1717,7 +1323,7 @@ void TwainApp::initiateTransfer_Memory()
   // to transfer more images
   if(bPendingXfers == true)
   {
-      cout << "app: Stop any transfer we may have started but could not finish..." << endl;
+      PrintCMDMessage("app: Stop any transfer we may have started but could not finish...\n");
       TW_PENDINGXFERS pendxfers;
       memset( &pendxfers, 0, sizeof(pendxfers) );
       twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
@@ -1733,7 +1339,7 @@ void TwainApp::initiateTransfer_Memory()
   // adjust our state now that the scanning session is done
   m_DSMState = 5;
 
-  cout << "app: DONE!" << endl;
+  PrintCMDMessage("app: DONE!\n");
 
   return;
 }
@@ -1741,22 +1347,13 @@ void TwainApp::initiateTransfer_Memory()
 //////////////////////////////////////////////////////////////////////////////
 FIBITMAP* TwainApp::createDIB()
 {
-  TW_UINT16 nbd;
-
-  if(!getICAP_PIXELTYPE(nbd))
-  {
-    cerr << "Error: could not figure out bitdepth to be used." << endl;
-    assert(0);
-    return 0;
-  }
-
   FIBITMAP *pDIB = FreeImage_Allocate(m_ImageInfo.ImageWidth,
     m_ImageInfo.ImageLength,
     24);
 
   if(0 == pDIB)
   {
-    cout << "app: Error creating image structure in memory!" << endl;
+    PrintCMDMessage("app: Error creating image structure in memory!\n");
     assert(0);
     return 0;
   }
@@ -1764,23 +1361,23 @@ FIBITMAP* TwainApp::createDIB()
   // Adjust dib to currently set capabilities. If the cap specs a 24 bit image,
   // there is no need to do anything since it was created as 24 bit to begin
   // with.
-  if(nbd != TWPT_RGB)
+  if(m_ImageInfo.SamplesPerPixel != 3)// !=RGB
   {
     FIBITMAP *pdib = 0;
-    switch(nbd)
+    switch(m_ImageInfo.SamplesPerPixel)
     {
-    case TWPT_BW:
+    case 1: //TWPT_BW
       pdib = FreeImage_Threshold(pDIB, 128);
       break;
 
-    case TWPT_GRAY:
+    case 2: //TWPT_GRAY
       pdib = FreeImage_ConvertTo8Bits(pDIB);
       break;
     }
 
     if(0 == pdib)
     {
-      cerr << "Error: Could not setup in memory image structure" << endl;
+      printError(0, "Error: Could not setup in memory image structure");
       assert(0);
       return 0;
     }
@@ -1826,7 +1423,7 @@ bool TwainApp::get_CAP(TW_CAPABILITY& _cap)
 {
   if(m_DSMState < 4)
   {
-    cout << "You need to open a data source first." << endl;
+    PrintCMDMessage("You need to open a data source first.\n");
     return false;
   }
 
@@ -1865,46 +1462,47 @@ bool TwainApp::get_CAP(TW_CAPABILITY& _cap)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_INT16 _value)
+TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_INT16 _value)
 {
-  bool  bResult = true;
-  TW_CAPABILITY cap;
-  cap.Cap     = Cap;
-  cap.ConType = TWON_ONEVALUE;
+  TW_INT16        twrc = TWRC_FAILURE;
+  TW_CAPABILITY   cap;
 
-  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_INT16));
+  cap.Cap         = Cap;
+  cap.ConType     = TWON_ONEVALUE;
+  cap.hContainer  = _DSM_Alloc(sizeof(TW_ONEVALUE_INT16));
   if(0 == cap.hContainer)
   {
     printError(0, "Error allocating memory");
-    return false;
+    return twrc;
   }
+
   pTW_ONEVALUE_INT16 pVal = (pTW_ONEVALUE_INT16)_DSM_LockMemory(cap.hContainer);
 
-  pVal->ItemType = TWTY_INT16;
-  pVal->Item = _value;
+  pVal->ItemType  = TWTY_INT16;
+  pVal->Item      = _value;
 
-  // capability structure is set, make the call to the source now
-  TW_INT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
+  // capability structure is initilized, make the call to the source now
+  twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
 
-  if(TWRC_FAILURE == twrc)
+  if(TWRC_SUCCESS != twrc)
   {
     printError(m_pDataSource, "Could not set capability");
-    bResult = false;
   }
 
   _DSM_UnlockMemory(cap.hContainer);
   _DSM_Free(cap.hContainer);
-  return bResult;
+  return twrc;
 }
 
-bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_UINT16 _value)
+//////////////////////////////////////////////////////////////////////////////
+TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_UINT16 _value)
 {
-  bool  bResult = true;
-  TW_CAPABILITY cap;
-  cap.Cap     = Cap;
-  cap.ConType = TWON_ONEVALUE;
+  TW_INT16        twrc = TWRC_FAILURE;
+  TW_CAPABILITY   cap;
 
-  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_UINT16));
+  cap.Cap         = Cap;
+  cap.ConType     = TWON_ONEVALUE;
+  cap.hContainer  = _DSM_Alloc(sizeof(TW_ONEVALUE_UINT16));
   if(0 == cap.hContainer)
   {
     printError(0, "Error allocating memory");
@@ -1912,32 +1510,31 @@ bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_UINT16 _value)
   }
   pTW_ONEVALUE_UINT16 pVal = (pTW_ONEVALUE_UINT16)_DSM_LockMemory(cap.hContainer);
 
-  pVal->ItemType = TWTY_UINT16;
-  pVal->Item = _value;
+  pVal->ItemType  = TWTY_UINT16;
+  pVal->Item      = _value;
 
   // capability structure is set, make the call to the source now
-  TW_INT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
-
-  if(TWRC_FAILURE == twrc)
+  twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
+  if(TWRC_SUCCESS != twrc)
   {
     printError(m_pDataSource, "Could not set capability");
-    bResult = false;
   }
 
   _DSM_UnlockMemory(cap.hContainer);
   _DSM_Free(cap.hContainer);
-  return bResult;
+  return twrc;
 }
 
 
-bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValue)
+//////////////////////////////////////////////////////////////////////////////
+TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValue)
 {
-  bool  bResult = true;
-  TW_CAPABILITY cap;
-  cap.Cap = Cap;
-  cap.ConType = TWON_ONEVALUE;
+  TW_INT16        twrc = TWRC_FAILURE;
+  TW_CAPABILITY   cap;
 
-  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_FIX32));
+  cap.Cap         = Cap;
+  cap.ConType     = TWON_ONEVALUE;
+  cap.hContainer  = _DSM_Alloc(sizeof(TW_ONEVALUE_FIX32));
   if(0 == cap.hContainer)
   {
     printError(0, "Error allocating memory");
@@ -1947,179 +1544,44 @@ bool TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValue)
   pTW_ONEVALUE_FIX32 pVal = (pTW_ONEVALUE_FIX32)_DSM_LockMemory(cap.hContainer);
 
   pVal->ItemType = TWTY_FIX32;
-  pVal->Item = *_pValue;
+  pVal->Item     = *_pValue;
 
   // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
-
-  if(TWRC_FAILURE == twrc)
+  twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
+  if(TWRC_SUCCESS != twrc)
   {
     printError(m_pDataSource, "Could not set capability");
-    bResult = false;
   }
 
   _DSM_UnlockMemory(cap.hContainer);
   _DSM_Free(cap.hContainer);
 
-  return bResult;
+  return twrc;
 }
 
 //////////////////////////////////////////////////////////////////////////////
-void TwainApp::set_CAP_XFERCOUNT(const TW_INT16 _count)
+TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FRAME _pValue)
 {
-  set_CapabilityOneValue(CAP_XFERCOUNT, _count);
+  TW_INT16        twrc = TWRC_FAILURE;
+  TW_CAPABILITY   cap;
 
-  // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_CAP_XFERCOUNT))
-  {
-    TW_INT16 count;
-    if(getCAP_XFERCOUNT(count) &&
-      count == _count)
-    {
-      cout << "Capability successfully set!" << endl;
-    }
-  }
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::set_ICAP_UNITS(const TW_UINT16 _val)
-{
-  set_CapabilityOneValue(ICAP_UNITS, _val);
-
-  // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_UNITS))
-  {
-    if(TWON_ENUMERATION == m_ICAP_UNITS.ConType &&
-      0 != m_ICAP_UNITS.hContainer)
-    {
-      pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(m_ICAP_UNITS.hContainer);
-
-      if(_val == pCapPT->ItemList[pCapPT->CurrentIndex])
-      {
-        cout << "Capability successfully set!" << endl;
-
-        // successfully setting this cap means that we have to re-obtain the X/Y resolutions as well
-        get_CAP(m_ICAP_XRESOLUTION);
-        get_CAP(m_ICAP_YRESOLUTION);
-      }
-      _DSM_UnlockMemory(m_ICAP_UNITS.hContainer);
-    }
-  }
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::set_ICAP_PIXELTYPE(const TW_UINT16 _pt)
-{
-  set_CapabilityOneValue(ICAP_PIXELTYPE, _pt);
-
-  // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_PIXELTYPE))
-  {
-    if(TWON_ENUMERATION == m_ICAP_PIXELTYPE.ConType &&
-      0 != m_ICAP_PIXELTYPE.hContainer)
-    {
-      pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(m_ICAP_PIXELTYPE.hContainer);
-
-      if(_pt == ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex])
-      {
-        cout << "Capability successfully set!" << endl;
-      }
-      _DSM_UnlockMemory(m_ICAP_PIXELTYPE.hContainer);
-    }
-  }
-
-  // The ICAP_BITDEPTH is dependant on this cap so set it to match. This app
-  // only supports 1 bit depth per color.
-  switch(_pt)
-  {
-  case TWPT_BW:
-    set_ICAP_BITDEPTH(1);
-    break;
-
-  case TWPT_GRAY:
-    set_ICAP_BITDEPTH(8);
-    break;
-
-  case TWPT_RGB:
-    set_ICAP_BITDEPTH(24);
-    break;
-  }
-
-  get_CAP(m_ICAP_BITDEPTH);
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::set_ICAP_RESOLUTION(const TW_UINT16 _ICAP, const pTW_FIX32 _pVal)
-{
-  if((ICAP_XRESOLUTION != _ICAP) &&
-     (ICAP_YRESOLUTION != _ICAP))
-  {
-    cerr << "Invalid resolution passed in! Resolution set failed." << endl;
-    return;
-  }
-
-  set_CapabilityOneValue(_ICAP, _pVal);
-
-  // Get the new RESOLUTION caps values to see if the set was successfull.
-  get_CAP(m_ICAP_XRESOLUTION);
-  get_CAP(m_ICAP_YRESOLUTION);
-
-  pTW_CAPABILITY pCapRes = 0;
-
-  if(ICAP_XRESOLUTION == _ICAP)
-  {
-    pCapRes = &m_ICAP_XRESOLUTION;
-  }
-  else
-  {
-    pCapRes = &m_ICAP_YRESOLUTION;
-  }
-  
-  // check ICAP_XRESOLUTION
-  if(TWON_ENUMERATION == pCapRes->ConType &&
-    0 != pCapRes->hContainer)
-  {
-    pTW_ENUMERATION_FIX32 pdat = (pTW_ENUMERATION_FIX32)pCapRes->hContainer;
-
-    if(TWTY_FIX32 == pdat->ItemType &&
-      _pVal->Whole == pdat->ItemList[pdat->CurrentIndex].Whole &&
-      _pVal->Frac == pdat->ItemList[pdat->CurrentIndex].Frac)
-    {
-      cout << "Resolution successfully set!" << endl;
-    }
-  }
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::set_ICAP_FRAMES(const pTW_FRAME _pFrame)
-{
-  TW_CAPABILITY cap;
-  cap.Cap = ICAP_FRAMES;
-  cap.ConType = TWON_ONEVALUE;
-
-  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ONEVALUE_FRAME));
+  cap.Cap         = Cap;
+  cap.ConType     = TWON_ONEVALUE;
+  cap.hContainer  = _DSM_Alloc(sizeof(TW_ONEVALUE_FRAME));
   if(0 == cap.hContainer)
   {
     printError(0, "Error allocating memory");
-    return;
+    return false;
   }
 
   pTW_ONEVALUE_FRAME pVal = (pTW_ONEVALUE_FRAME)_DSM_LockMemory(cap.hContainer);
 
   pVal->ItemType = TWTY_FRAME;
-  pVal->Item = *_pFrame;
+  pVal->Item     = *_pValue;
 
   // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
-
-  if(TWRC_FAILURE == twrc)
+  twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
+  if(TWRC_SUCCESS != twrc)
   {
     printError(m_pDataSource, "Could not set capability");
   }
@@ -2127,421 +1589,7 @@ void TwainApp::set_ICAP_FRAMES(const pTW_FRAME _pFrame)
   _DSM_UnlockMemory(cap.hContainer);
   _DSM_Free(cap.hContainer);
 
-  // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_FRAMES))
-  {
-    if(TWON_ENUMERATION == m_ICAP_FRAMES.ConType &&
-      0 != m_ICAP_FRAMES.hContainer)
-    {
-      pTW_ENUMERATION_FRAME pCapPT = (pTW_ENUMERATION_FRAME)_DSM_LockMemory(m_ICAP_FRAMES.hContainer);
-      
-      pTW_FRAME ptframe = &(((pTW_FRAME)(&pCapPT->ItemList))[pCapPT->CurrentIndex]);
-
-      if( (_pFrame->Bottom == ptframe->Bottom) &&
-          (_pFrame->Top == ptframe->Top) &&
-          (_pFrame->Left == ptframe->Left) &&
-          (_pFrame->Right == ptframe->Right))
-      {
-        cout << "Capability successfully set!" << endl;
-      }
-      _DSM_UnlockMemory(m_ICAP_FRAMES.hContainer);
-    }
-  }
-
-  return;
+  return twrc;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::set_ICAP_XFERMECH(const TW_UINT16 _mech)
-{
-  set_CapabilityOneValue(ICAP_XFERMECH, _mech);
-
-  // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_XFERMECH))
-  {
-    TW_UINT16 mech;
-    if(getICAP_XFERMECH(mech) &&
-      mech == _mech)
-    {
-      cout << "Capability successfully set!" << endl;
-    }
-  }
-
-  // Update compression and FileFormat after xfer is set
-  get_CAP(m_ICAP_COMPRESSION);
-  get_CAP(m_ICAP_IMAGEFILEFORMAT);
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::set_ICAP_IMAGEFILEFORMAT(const TW_UINT16 _fileformat)
-{
-  set_CapabilityOneValue(ICAP_IMAGEFILEFORMAT, _fileformat);
-
-  // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_IMAGEFILEFORMAT))
-  {
-    TW_UINT16 fileformat;
-    if(getICAP_IMAGEFILEFORMAT(fileformat) &&
-      fileformat == _fileformat)
-    {
-      cout << "Capability successfully set!" << endl;
-    }
-  }
-
-  // Update compression after xfer is set
-  get_CAP(m_ICAP_COMPRESSION);
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::set_ICAP_COMPRESSION(const TW_UINT16 _comp)
-{
-  set_CapabilityOneValue(ICAP_COMPRESSION, _comp);
-
-  // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_COMPRESSION))
-  {
-    TW_UINT16 comp;
-    if(getICAP_COMPRESSION(comp) &&
-      comp == _comp)
-    {
-      cout << "Capability successfully set!" << endl;
-    }
-  }
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-void TwainApp::set_ICAP_BITDEPTH(const TW_UINT16 _nVal)
-{
-  TW_CAPABILITY cap;
-  cap.Cap = ICAP_BITDEPTH;
-  cap.ConType = TWON_ENUMERATION;
-
-  cap.hContainer = (TW_HANDLE)_DSM_Alloc(sizeof(TW_ENUMERATION) + (sizeof(TW_UINT16)));
-  if(0 == cap.hContainer)
-  {
-    printError(0, "Error allocating memory");
-    return;
-  }
-
-  pTW_ENUMERATION pVal = (pTW_ENUMERATION)_DSM_LockMemory(cap.hContainer);
-
-  pVal->ItemType = TWTY_UINT16;
-  pVal->NumItems = 1;
-  pVal->CurrentIndex = 0;
-  pVal->DefaultIndex = 0;
-  ((TW_UINT16*)(&pVal->ItemList))[0] = _nVal;
-
-  // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
-
-  if(TWRC_FAILURE == twrc)
-  {
-    printError(m_pDataSource, "Could not set capability");
-  }
-
-  _DSM_UnlockMemory(cap.hContainer);
-  _DSM_Free(cap.hContainer);
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-bool TwainApp::getICAP_UNITS(TW_UINT16& _val)
-{
-  bool bret = false;
-
-  if(0 != m_ICAP_UNITS.hContainer)
-  {
-    if(TWON_ENUMERATION == m_ICAP_UNITS.ConType)
-    {
-      pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(m_ICAP_UNITS.hContainer);
-
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        _val = ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_UNITS.hContainer);
-    }
-    else if(TWON_ONEVALUE == m_ICAP_UNITS.ConType)
-    {
-      pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(m_ICAP_UNITS.hContainer);
-      
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        _val = (TW_UINT16)(pCapPT->Item);
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_UNITS.hContainer);
-    }
-  }
-
-  return bret;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-bool TwainApp::getCAP_XFERCOUNT(TW_INT16& _val)
-{
-  bool bret = false;
-
-  if(TWON_ONEVALUE == m_CAP_XFERCOUNT.ConType &&
-    0 != m_CAP_XFERCOUNT.hContainer)
-  {
-    pTW_ONEVALUE_INT16 pCap = (pTW_ONEVALUE_INT16)_DSM_LockMemory(m_CAP_XFERCOUNT.hContainer);
-
-    if(TWTY_INT16 == pCap->ItemType)
-    {
-      _val = pCap->Item;
-      bret = true;
-    }
-    _DSM_UnlockMemory(m_CAP_XFERCOUNT.hContainer);
-  }
-
-  return bret;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-bool TwainApp::getICAP_XFERMECH(TW_UINT16& _val)
-{
-  bool bret = false;
-
-  if(0 != m_ICAP_XFERMECH.hContainer)
-  {
-    if(TWON_ENUMERATION == m_ICAP_XFERMECH.ConType)
-    {
-      pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(m_ICAP_XFERMECH.hContainer);
-
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        _val = ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_XFERMECH.hContainer);
-    }
-    else if(TWON_ONEVALUE == m_ICAP_XFERMECH.ConType)
-    {
-      pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(m_ICAP_XFERMECH.hContainer);
-      
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        _val = (TW_UINT16)(pCapPT->Item);
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_XFERMECH.hContainer);
-    }
-  }
-
-  return bret;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-bool TwainApp::getICAP_PIXELTYPE(TW_UINT16& _val)
-{
-  bool bret = false;
-
-  if(0 != m_ICAP_PIXELTYPE.hContainer)
-  {
-    if(TWON_ENUMERATION == m_ICAP_PIXELTYPE.ConType)
-    {
-      pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(m_ICAP_PIXELTYPE.hContainer);
-
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        _val = ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_PIXELTYPE.hContainer);
-    }
-    else if(TWON_ONEVALUE == m_ICAP_PIXELTYPE.ConType)
-    {
-      pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(m_ICAP_PIXELTYPE.hContainer);
-      
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        _val = (TW_UINT16)(pCapPT->Item);
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_PIXELTYPE.hContainer);
-    }
-  }
-
-  return bret;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-bool TwainApp::getICAP_BITDEPTH(TW_UINT16& _val)
-{
-  bool bret = false;
-
-  if(0 != m_ICAP_BITDEPTH.hContainer)
-  {
-    if(TWON_ENUMERATION == m_ICAP_BITDEPTH.ConType)
-    {
-      pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(m_ICAP_BITDEPTH.hContainer);
-
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        _val = ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_BITDEPTH.hContainer);
-    }
-    else if(TWON_ONEVALUE == m_ICAP_BITDEPTH.ConType)
-    {
-      pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(m_ICAP_BITDEPTH.hContainer);
-      
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        _val = (TW_UINT16)(pCapPT->Item);
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_BITDEPTH.hContainer);
-    }
-  }
-
-  return bret;
-}
-
-bool TwainApp::getICAP_IMAGEFILEFORMAT(TW_UINT16& _val)
-{
-  bool bret = false;
-
-  if(0 != m_ICAP_IMAGEFILEFORMAT.hContainer)
-  {
-    if(TWON_ENUMERATION == m_ICAP_IMAGEFILEFORMAT.ConType)
-    {
-      pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(m_ICAP_IMAGEFILEFORMAT.hContainer);
-
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        _val = ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_IMAGEFILEFORMAT.hContainer);
-    }
-    else if(TWON_ONEVALUE == m_ICAP_IMAGEFILEFORMAT.ConType)
-    {
-      pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(m_ICAP_IMAGEFILEFORMAT.hContainer);
-      
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        _val = (TW_UINT16)(pCapPT->Item);
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_IMAGEFILEFORMAT.hContainer);
-    }
-  }
-
-  return bret;
-}
-
-bool TwainApp::getICAP_COMPRESSION(TW_UINT16& _val)
-{
-  bool bret = false;
-
-  if(0 != m_ICAP_COMPRESSION.hContainer)
-  {
-    if(TWON_ENUMERATION == m_ICAP_COMPRESSION.ConType)
-    {
-      pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(m_ICAP_COMPRESSION.hContainer);
-
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        _val = ((TW_UINT16*)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_COMPRESSION.hContainer);
-    }
-    else if(TWON_ONEVALUE == m_ICAP_COMPRESSION.ConType)
-    {
-      pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(m_ICAP_COMPRESSION.hContainer);
-      
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        _val = (TW_UINT16)(pCapPT->Item);
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_COMPRESSION.hContainer);
-    }
-  }
-
-  return bret;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-bool TwainApp::getICAP_XRESOLUTION(TW_FIX32& _xres)
-{
-  bool bret = false;
-
-  if(0 != m_ICAP_XRESOLUTION.hContainer)
-  {
-    if(TWON_ENUMERATION == m_ICAP_XRESOLUTION.ConType)
-    {
-      pTW_ENUMERATION_FIX32 pCapPT = (pTW_ENUMERATION_FIX32)_DSM_LockMemory(m_ICAP_XRESOLUTION.hContainer);
-
-      if(TWTY_FIX32 == pCapPT->ItemType)
-      {
-        _xres = pCapPT->ItemList[pCapPT->CurrentIndex];
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_XRESOLUTION.hContainer);
-    }
-    else if(TWON_ONEVALUE == m_ICAP_XRESOLUTION.ConType)
-    {
-      pTW_ONEVALUE_FIX32 pCapPT = (pTW_ONEVALUE_FIX32)_DSM_LockMemory(m_ICAP_XRESOLUTION.hContainer);
-      
-      if(TWTY_FIX32 == pCapPT->ItemType)
-      {
-        _xres = pCapPT->Item;
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_XRESOLUTION.hContainer);
-    }
-  }
-  
-  return bret;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-bool TwainApp::getICAP_YRESOLUTION(TW_FIX32& _yres)
-{
-  bool bret = false;
-
-  if(0 != m_ICAP_YRESOLUTION.hContainer)
-  {
-    if(TWON_ENUMERATION == m_ICAP_YRESOLUTION.ConType)
-    {
-      pTW_ENUMERATION_FIX32 pCapPT = (pTW_ENUMERATION_FIX32)_DSM_LockMemory(m_ICAP_YRESOLUTION.hContainer);
-
-      if(TWTY_FIX32 == pCapPT->ItemType)
-      {
-        _yres = pCapPT->ItemList[pCapPT->CurrentIndex];
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_YRESOLUTION.hContainer);
-    }
-    else if(TWON_ONEVALUE == m_ICAP_YRESOLUTION.ConType)
-    {
-      pTW_ONEVALUE_FIX32 pCapPT = (pTW_ONEVALUE_FIX32)_DSM_LockMemory(m_ICAP_YRESOLUTION.hContainer);
-      
-      if(TWTY_FIX32 == pCapPT->ItemType)
-      {
-        _yres = pCapPT->Item;
-        bret = true;
-      }
-      _DSM_UnlockMemory(m_ICAP_YRESOLUTION.hContainer);
-    }
-  }
-  
-  return bret;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
 
