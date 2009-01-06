@@ -220,6 +220,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\TwainAppCMD.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\TwainString.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\VerifySignature.cpp"
 				>
 			</File>
@@ -259,6 +267,14 @@
 			</File>
 			<File
 				RelativePath="..\src\TwainApp_ui.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TwainAppCMD.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\TwainString.h"
 				>
 			</File>
 		</Filter>

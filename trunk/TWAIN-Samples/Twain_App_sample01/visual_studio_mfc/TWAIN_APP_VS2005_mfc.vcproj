@@ -531,7 +531,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\src\TwainApp_ui.cpp"
+				RelativePath="..\..\common\TwainString.cpp"
 				>
 			</File>
 			<File
@@ -589,7 +589,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\TwainApp_ui.h"
+				RelativePath="..\..\common\TwainString.h"
 				>
 			</File>
 		</Filter>

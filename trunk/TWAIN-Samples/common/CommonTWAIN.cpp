@@ -38,6 +38,12 @@
 */
 #include "CommonTWAIN.h"
 
+extern TW_HANDLE _DSM_Alloc(TW_UINT32 _size);
+extern TW_MEMREF _DSM_LockMemory(TW_HANDLE _hMemory);
+extern void _DSM_UnlockMemory(TW_HANDLE _hMemory);
+extern void _DSM_Free(TW_HANDLE _hMemory);
+
+
 //////////////////////////////////////////////////////////////////////////////
 TW_FIX32 FloatToFIX32 (float floater)
 {
@@ -57,3 +63,343 @@ float FIX32ToFloat(const TW_FIX32& _fix32)
 
 
 //////////////////////////////////////////////////////////////////////////////
+bool getcurrent(TW_CAPABILITY *pCap, TW_INT16& val)
+{
+  bool bret = false;
+
+  if(0 != pCap->hContainer)
+  {
+    if(TWON_ENUMERATION == pCap->ConType)
+    {
+      pTW_ENUMERATION_INT16 pCapPT = (pTW_ENUMERATION_INT16)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_INT16 == pCapPT->ItemType)
+      {
+        val = pCapPT->ItemList[pCapPT->CurrentIndex];
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+    else if(TWON_ONEVALUE == pCap->ConType)
+    {
+      pTW_ONEVALUE_INT16 pCapPT = (pTW_ONEVALUE_INT16)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_INT16 == pCapPT->ItemType)
+      {
+        val = pCapPT->Item;
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
+
+  return bret;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+bool getcurrent(TW_CAPABILITY *pCap, TW_INT32& val)
+{
+  bool bret = false;
+
+  if(0 != pCap->hContainer)
+  {
+    if(TWON_ENUMERATION == pCap->ConType)
+    {
+      pTW_ENUMERATION_INT32 pCapPT = (pTW_ENUMERATION_INT32)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_INT32 == pCapPT->ItemType)
+      {
+        val = pCapPT->ItemList[pCapPT->CurrentIndex];
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+    else if(TWON_ONEVALUE == pCap->ConType)
+    {
+      pTW_ONEVALUE_INT32 pCapPT = (pTW_ONEVALUE_INT32)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_INT32 == pCapPT->ItemType)
+      {
+        val = pCapPT->Item;
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
+
+  return bret;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+bool getcurrent(TW_CAPABILITY *pCap, TW_UINT16& val)
+{
+  bool bret = false;
+
+  if(0 != pCap->hContainer)
+  {
+    if(TWON_ENUMERATION == pCap->ConType)
+    {
+      pTW_ENUMERATION_UINT16 pCapPT = (pTW_ENUMERATION_UINT16)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_UINT16 == pCapPT->ItemType)
+      {
+        val = pCapPT->ItemList[pCapPT->CurrentIndex];
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+    else if(TWON_ONEVALUE == pCap->ConType)
+    {
+      pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(pCap->hContainer);
+      
+      if(TWTY_UINT16 == pCapPT->ItemType)
+      {
+        val = (TW_UINT16)(pCapPT->Item);
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
+
+  return bret;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+bool getcurrent(TW_CAPABILITY *pCap, TW_UINT32& val)
+{
+  bool bret = false;
+
+  if(0 != pCap->hContainer)
+  {
+    if(TWON_ENUMERATION == pCap->ConType)
+    {
+      pTW_ENUMERATION_UINT32 pCapPT = (pTW_ENUMERATION_UINT32)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_UINT32 == pCapPT->ItemType)
+      {
+        val = pCapPT->ItemList[pCapPT->CurrentIndex];
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+    else if(TWON_ONEVALUE == pCap->ConType)
+    {
+      pTW_ONEVALUE_UINT32 pCapPT = (pTW_ONEVALUE_UINT32)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_UINT32 == pCapPT->ItemType)
+      {
+        val = pCapPT->Item;
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
+
+  return bret;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+bool getcurrent(TW_CAPABILITY *pCap, TW_STR32& val)
+{
+  bool bret = false;
+
+  if(0 != pCap->hContainer)
+  {
+    if(TWON_ENUMERATION == pCap->ConType)
+    {
+      pTW_ENUMERATION_STR32 pCapPT = (pTW_ENUMERATION_STR32)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_STR32 == pCapPT->ItemType)
+      {
+        SSTRCPY(val, sizeof(val),pCapPT->ItemList[pCapPT->CurrentIndex]);
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+    else if(TWON_ONEVALUE == pCap->ConType)
+    {
+      pTW_ONEVALUE_STR32 pCapPT = (pTW_ONEVALUE_STR32)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_STR32 == pCapPT->ItemType)
+      {
+        SSTRCPY(val, sizeof(val), pCapPT->Item);
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
+
+  return bret;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+bool getcurrent(TW_CAPABILITY *pCap, TW_STR64& val)
+{
+  bool bret = false;
+
+  if(0 != pCap->hContainer)
+  {
+    if(TWON_ENUMERATION == pCap->ConType)
+    {
+      pTW_ENUMERATION_STR64 pCapPT = (pTW_ENUMERATION_STR64)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_STR64 == pCapPT->ItemType)
+      {
+        SSTRCPY(val, sizeof(val),pCapPT->ItemList[pCapPT->CurrentIndex]);
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+    else if(TWON_ONEVALUE == pCap->ConType)
+    {
+      pTW_ONEVALUE_STR64 pCapPT = (pTW_ONEVALUE_STR64)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_STR64 == pCapPT->ItemType)
+      {
+        SSTRCPY(val, sizeof(val), pCapPT->Item);
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
+
+  return bret;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+bool getcurrent(TW_CAPABILITY *pCap, TW_STR128& val)
+{
+  bool bret = false;
+
+  if(0 != pCap->hContainer)
+  {
+    if(TWON_ENUMERATION == pCap->ConType)
+    {
+      pTW_ENUMERATION_STR128 pCapPT = (pTW_ENUMERATION_STR128)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_STR128 == pCapPT->ItemType)
+      {
+        SSTRCPY(val, sizeof(val),pCapPT->ItemList[pCapPT->CurrentIndex]);
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+    else if(TWON_ONEVALUE == pCap->ConType)
+    {
+      pTW_ONEVALUE_STR128 pCapPT = (pTW_ONEVALUE_STR128)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_STR128 == pCapPT->ItemType)
+      {
+        SSTRCPY(val, sizeof(val), pCapPT->Item);
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
+
+  return bret;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+bool getcurrent(TW_CAPABILITY *pCap, TW_STR255& val)
+{
+  bool bret = false;
+
+  if(0 != pCap->hContainer)
+  {
+    if(TWON_ENUMERATION == pCap->ConType)
+    {
+      pTW_ENUMERATION_STR255 pCapPT = (pTW_ENUMERATION_STR255)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_STR255 == pCapPT->ItemType)
+      {
+        SSTRCPY(val, sizeof(val),pCapPT->ItemList[pCapPT->CurrentIndex]);
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+    else if(TWON_ONEVALUE == pCap->ConType)
+    {
+      pTW_ONEVALUE_STR255 pCapPT = (pTW_ONEVALUE_STR255)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_STR255 == pCapPT->ItemType)
+      {
+        SSTRCPY(val, sizeof(val), pCapPT->Item);
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
+
+  return bret;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+bool getcurrent(TW_CAPABILITY *pCap, TW_FIX32& val)
+{
+  bool bret = false;
+
+  if(0 != pCap->hContainer)
+  {
+    if(TWON_ENUMERATION == pCap->ConType)
+    {
+      pTW_ENUMERATION_FIX32 pCapPT = (pTW_ENUMERATION_FIX32)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_FIX32 == pCapPT->ItemType)
+      {
+        val = pCapPT->ItemList[pCapPT->CurrentIndex];
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+    else if(TWON_ONEVALUE == pCap->ConType)
+    {
+      pTW_ONEVALUE_FIX32 pCapPT = (pTW_ONEVALUE_FIX32)_DSM_LockMemory(pCap->hContainer);
+      
+      if(TWTY_FIX32 == pCapPT->ItemType)
+      {
+        val = pCapPT->Item;
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
+  
+  return bret;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+bool getcurrent(TW_CAPABILITY *pCap, TW_FRAME& frame)
+{
+  bool bret = false;
+
+  if(0 != pCap->hContainer)
+  {
+    if(TWON_ENUMERATION == pCap->ConType)
+    {
+      pTW_ENUMERATION_FRAME pCapPT = (pTW_ENUMERATION_FRAME)_DSM_LockMemory(pCap->hContainer);
+
+      if(TWTY_FRAME == pCapPT->ItemType)
+      {
+        frame = pCapPT->ItemList[pCapPT->CurrentIndex];
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+    else if(TWON_ONEVALUE == pCap->ConType)
+    {
+      pTW_ONEVALUE_FRAME pCapPT = (pTW_ONEVALUE_FRAME)_DSM_LockMemory(pCap->hContainer);
+      
+      if(TWTY_FRAME == pCapPT->ItemType)
+      {
+        frame = pCapPT->Item;
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
+  
+  return bret;
+}
+

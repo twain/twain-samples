@@ -95,6 +95,13 @@ using namespace std;
 bool operator== (const TW_FIX32& _fix1, const TW_FIX32& _fix2);
 
 /**
+* Output CMD messages.  In CMD app used for prompt.  In GUI app used by debugger
+* @param[in] pStr the message to display
+* @param[in] ... additional varibles
+*/
+void PrintCMDMessage(const char* const pStr, ...);
+
+/**
 * The Main Application Class.
 */
 class TwainApp
@@ -142,7 +149,7 @@ public:
 * Initialize the Apps identity so the DSM can uniquely identify it.
 * @param[out] _identity a structure that will get filled with Applications details
 */
-  void fillIdentity(TW_IDENTITY& _identity);
+  virtual void fillIdentity(TW_IDENTITY& _identity);
 
 /**
 * Exit application clean up everything.
@@ -168,62 +175,31 @@ public:
   void getSources();
 
 /**
-* Print a list of Data Sources.  Prints to stdout a quick list of the 
-* Data Sources the app knows about.
-*/
-  void printAvailableDataSources();
-
-/**
-* Prints an identity structure that uniquely identifies an Application 
-* or Data Source out in detail to stdout.
-* @param[in] _ident the TW_IDENTITY structure to print
-*/
-  void printIdentStruct(const TW_IDENTITY& _ident);
-
-/**
-* Goes through the list of known identity structures and prints the one
-* with an ID that matches the passed in id.
-* @param[in] _identityID The ID of the identity structure to print
-*/
-  void printIdentityStruct(const TW_UINT32 _identityID);
-
-/**
 * Try to load a Data Source.  Loads the data source with the ID passed in. 
 * To open a Data Source the DSM must be in state 3 (Open).  If successful 
 * moves the app to state 4
 * @param[in] _dsID the ID of the datasource to load
 */
-  void loadDS(const TW_UINT32 _dsID);
+  virtual void loadDS(const TW_UINT32 _dsID);
 
 /**
 * Unloads the currently loaded datasource.  If successful moves the 
 * app to state 3.
 */
-  void unloadDS();
-
-/**
-* Initialize default capabilities.
-* Negotiates the default capabilities with the currently opened data source.
-*/
-  void initCaps();
+  virtual void unloadDS();
 
 /**
 * Request the acquisition of data from the currently opened source.  If 
 * successful moves app to state 5.
+* @param[in] bShowUI true to show UI false to enable without UI
 * @return true if successfully enabled DS.
 */
-  bool enableDS();
+  virtual bool enableDS(BOOL bShowUI);
 
 /**
 * Tries to disable the sources UI.  If successful moves app to state 4
 */
-  void disableDS();
-
-/**
-* Tries to starts the scanning process.  Must be in state 6 to start.  
-* If successfully finishes scan moves app to state 5.
-*/
-  void startScan();
+  virtual void disableDS();
 
 /**
 * Starts the scanning process using native mode.  Data will be transfered 
@@ -235,7 +211,7 @@ public:
 * Starts the scanning process using file mode.  Data will be transfered 
 * via a file.
 */
-  void initiateTransfer_File();
+  void initiateTransfer_File(TW_UINT16 fileformat = TWFF_TIFF);
 
 /**
 * Starts the scanning process using the memory strip mode.  Data will be transfered 
@@ -244,28 +220,36 @@ public:
   void initiateTransfer_Memory();
 
 /**
-* Try to sets a OneValue Capability to the value passed
+* Try to sets a OneValue Capability of type TW_INT16 to the value passed
 * @param[in] Cap the capability to update to set
 * @param[in] _value the value to set
-* @return true if successful
+* @return a valid TWRC_xxxx return code.
 */
-  bool set_CapabilityOneValue(TW_UINT16 Cap, const TW_INT16 _value);
+  TW_UINT16 set_CapabilityOneValue(TW_UINT16 Cap, const TW_INT16 _value);
 
 /**
-* Try to sets a OneValue Capability to the value passed
+* Try to sets a OneValue Capability of type TW_UINT16 to the value passed
 * @param[in] Cap the capability to update to set
 * @param[in] _value the value to set
-* @return true if successful
+* @return a valid TWRC_xxxx return code.
 */
-  bool set_CapabilityOneValue(TW_UINT16 Cap, const TW_UINT16 _value);
+  TW_UINT16 set_CapabilityOneValue(TW_UINT16 Cap, const TW_UINT16 _value);
 
 /**
-* Try to sets a OneValue Capability to the value passed
+* Try to sets a OneValue Capability of type TW_FIX32 to the value passed
 * @param[in] Cap the capability to update to set
 * @param[in] _pValue the value to set
-* @return true if successful
+* @return a valid TWRC_xxxx return code.
 */
-  bool set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValue);
+  TW_UINT16 set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValue);
+
+/**
+* Try to sets a OneValue Capability of type TW_FRAME to the value passed
+* @param[in] Cap the capability to update to set
+* @param[in] _pValue the value to set
+* @return a valid TWRC_xxxx return code.
+*/
+  TW_UINT16 set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FRAME _pValue);
 
 /**
 * Gets the capability.
@@ -274,110 +258,6 @@ public:
 * @return true if the cap was successfully retrieved.
 */
   bool get_CAP(TW_CAPABILITY& _cap);
-
-/**
-* Sets the CAP_XFERCOUNT capability
-* @param[in] _count the value to set
-*/
-  void set_CAP_XFERCOUNT(const TW_INT16 _count);
-  
-/**
-* Sets the ICAP_UNITS capability
-* @param[in] _val the value to set
-*/
-  void set_ICAP_UNITS(const TW_UINT16 _val);
-
-/**
-* Sets the ICAP_PIXELTYPE capability
-* @param[in] _pt the value to set
-*/
-  void set_ICAP_PIXELTYPE(const TW_UINT16 _pt);
-
-/**
-* Sets the ICAP_RESOLUTION specified in _Cap
-* @param[in] _Cap the RESOLUTION cap to set, either ICAP_XRESOLUTION or ICAP_YRESOLUTION
-* @param[in] _pVal the value to set the cap to.
-*/
-  void set_ICAP_RESOLUTION(const TW_UINT16 _Cap, const pTW_FIX32 _pVal);
-
-/**
-* Sets the ICAP_XFERMECH capability
-* @param[in] _mech the mechanism to use. (TWSX_NATIVE, TWSX_FILE, TWSX_MEMORY)
-*/
-  void set_ICAP_XFERMECH(const TW_UINT16 _mech);
-
-/**
-* Sets the ICAP_IMAGEFILEFORMAT capability
-* @param[in] _fileformat the compression to use. (TWFF_TIFF, TWFF_PICT, TWFF_BMP, TWFF_XBM, TWFF_JFIF, TWFF_FPX, TWFF_TIFFMULTI, TWFF_PNG, TWFF_SPIFF, TWFF_EXIF)
-*/
-  void set_ICAP_IMAGEFILEFORMAT(const TW_UINT16 _fileformat);
-
-/**
-* Sets the ICAP_COMPRESSION capability
-* @param[in] _comp the compression to use. (TWCP_NONE, TWCP_PACKBITS, TWCP_GROUP4, TWCP_JPEG, ...)
-*/
-  void set_ICAP_COMPRESSION(const TW_UINT16 _comp);
-
-/**
-* Sets the ICAP_FRAMES capability
-* @param[in] _pFrame the frame data to set
-*/
-  void set_ICAP_FRAMES(const pTW_FRAME _pFrame);
-
-/**
-* Sets the ICAP_BITDEPTH capability using a TW_ENUMERATION struct.
-* @param[in] _nVal the bit depth to set
-*/
-  void set_ICAP_BITDEPTH(const TW_UINT16 _nVal);
-
-/**
-* Gets the current setting for the ICAP_UNITS cap
-* @param[out] _val set to the caps value
-* @return true on succes
-*/
-  bool getICAP_UNITS(TW_UINT16& _val);
-
-/**
-* Gets the current setting for the CAP_XFERCOUNT cap
-* @param[out] _val set to the caps value
-* @return true on succes
-*/
-  bool getCAP_XFERCOUNT(TW_INT16& _val);
-
-/**
-* Gets the current setting for the ICAP_XFERMECH cap
-* @param[out] _val a TW_UINT16 holding the current transfer method (TWSX_NATIVE, etc...)
-* @return true on succes
-*/
-  bool getICAP_XFERMECH(TW_UINT16& _val);
-
-/**
-* Gets the current setting for the ICAP_IMAGEFILEFORMAT cap
-* @param[out] _val a TW_UINT16 holding the current compression method (TWFF_TIFF, TWFF_PICT, TWFF_BMP, TWFF_XBM, TWFF_JFIF, TWFF_FPX, TWFF_TIFFMULTI, TWFF_PNG, TWFF_SPIFF, TWFF_EXIF)
-* @return true on succes
-*/
-  bool getICAP_IMAGEFILEFORMAT(TW_UINT16& _val);
-
-/**
-* Gets the current setting for the ICAP_COMPRESSION cap
-* @param[out] _val a TW_UINT16 holding the current compression method (TWCP_NONE, TWCP_PACKBITS, TWCP_GROUP4, TWCP_JPEG, ...)
-* @return true on succes
-*/
-  bool getICAP_COMPRESSION(TW_UINT16& _val);
-
-/**
-* Gets the current setting for the ICAP_PIXELTYPE cap
-* @param[out] _val a TW_UINT16 holding the current pixel type (TWPT_BW, etc...)
-* @return true on succes
-*/
-  bool getICAP_PIXELTYPE(TW_UINT16& _val);
-
-/**
-* Gets the current setting for the ICAP_BITDEPTH cap
-* @param[out] _val a TW_UINT16 holding the current bit depth
-* @return true on succes
-*/
-  bool getICAP_BITDEPTH(TW_UINT16& _val);
 
 /**
 * Returns a pointer to the applications identity structure.
@@ -397,20 +277,6 @@ public:
 * @return a TW_IDENTITY pointer to the default.
 */
   pTW_IDENTITY getDefaultDataSource(void);
-
-/**
-* Gets the current setting for the ICAP_XRESOLUTION cap
-* @param[out] _xres a TW_FIX32 holding the current x resolution
-* @return true on succes
-*/
-  bool getICAP_XRESOLUTION(TW_FIX32& _xres);
-
-/**
-* Gets the current setting for the ICAP_YRESOLUTION cap
-* @param[out] _yres a TW_FIX32 holding the current y resolution
-* @return true on succes
-*/
-  bool getICAP_YRESOLUTION(TW_FIX32& _yres);
 
 /**
 * Gets the imageinfo of the currently transfered image
@@ -436,27 +302,6 @@ public:
 */
   void updateEXIMAGEINFO();
 
-/**
-* retrieve the extended image info name for a given Info ID for the current image
-* @param[in] InfoID the id to retrieve the info of
-* @return string of the extended image info
-*/
-  string GetExtImageInfoName(int InfoID);
-
-  ////////////////
-  // CAPABILITIES
-
-  TW_CAPABILITY   m_CAP_XFERCOUNT;        /**< Number of images the application is willing to accept this session. */
-  TW_CAPABILITY   m_ICAP_XFERMECH;        /**< Transfer mechanism - used to learn options and set-up for upcoming transfer. */
-  TW_CAPABILITY   m_ICAP_IMAGEFILEFORMAT; /**< File format saved when using File Xfer Mechanism. */
-  TW_CAPABILITY   m_ICAP_COMPRESSION;     /**< Compression method used for upcoming transfer. */
-  TW_CAPABILITY   m_ICAP_UNITS;           /**< Unit of measure (inches, centimeters, etc). */
-  TW_CAPABILITY   m_ICAP_PIXELTYPE;       /**< The type of pixel data (B/W, gray, color, etc). */
-  TW_CAPABILITY   m_ICAP_BITDEPTH;        /**< Pixel bit depth for Current value of ICAP_PIXELTYPE. */
-  TW_CAPABILITY   m_ICAP_XRESOLUTION;     /**< Current/Available optical resolutions for x-axis. */
-  TW_CAPABILITY   m_ICAP_YRESOLUTION;     /**< Current/Available optical resolutions for y-axis */
-  TW_CAPABILITY   m_ICAP_FRAMES;          /**< Size and location of frames on page. */
-
   int             m_DSMState;             /**< The current TWAIN state of the dsm (2-7) */
 
 protected:
@@ -470,7 +315,7 @@ protected:
   HWND                m_Parent;               /**< Handle to Window to recieve window messages. */
   TW_IDENTITY         m_MyInfo;               /**< Identity structure with this applications identity details */
   pTW_IDENTITY        m_pDataSource;          /**< Pointer of Identity structure to current loaded data souce */
-  vector<TW_IDENTITY> m_DataSources;        /**< Store a list of available data sources located by DSM */
+  vector<TW_IDENTITY> m_DataSources;          /**< Store a list of available data sources located by DSM */
 
   TW_IMAGEINFO        m_ImageInfo;            /**< Detailed image info retrieved from the DS */
   pTW_EXTIMAGEINFO    m_pExtImageInfo;        /**< Detailed extended image info retrieved from the DS */

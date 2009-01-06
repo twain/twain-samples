@@ -44,7 +44,7 @@
 #include "twain.h"
 #include "..\src\twainapp.h"
 #include "..\src\dsminterface.h"
-#include "..\src\TwainApp_ui.h"
+#include "TwainString.h"
 #include ".\TW_Array_Dlg.h"
 
 #ifdef _DEBUG
