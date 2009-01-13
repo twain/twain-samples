@@ -44,7 +44,6 @@
 #ifdef _WINDOWS
   #include "stdafx.h"
 #endif
-#include "main.h"
 
 #include <iostream>
 #include <cstdlib>
@@ -311,6 +310,88 @@ void TwainApp::disconnectDSM()
 
 
 //////////////////////////////////////////////////////////////////////////////
+TW_IDENTITY _gSource; /**< used to store the source that is return by getDefaultDataSource */
+//////////////////////////////////////////////////////////////////////////////
+pTW_IDENTITY TwainApp::getDefaultDataSource()
+{
+  if(m_DSMState < 3)
+  {
+    cout << "You need to open the DSM first." << endl;
+    return NULL;
+  }
+
+  // get default
+
+  memset(&_gSource, 0, sizeof(TW_IDENTITY));
+
+  TW_UINT16 twrc;
+
+  twrc = _DSM_Entry(
+    &m_MyInfo,
+    0,
+    DG_CONTROL,
+    DAT_IDENTITY,
+    MSG_GETDEFAULT,
+    (TW_MEMREF) &_gSource);
+
+  switch (twrc)
+  {
+    case TWRC_SUCCESS:
+      break;
+
+    case TWRC_FAILURE:
+      printError(0, "Failed to get the data source info!");
+      break;
+  }
+
+  return &_gSource;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+pTW_IDENTITY TwainApp::selectDefaultDataSource()
+{
+  if(m_DSMState < 3)
+  {
+    PrintCMDMessage("You need to open the DSM first.\n");
+    return NULL;
+  }
+
+  // get default
+
+  memset(&_gSource, 0, sizeof(TW_IDENTITY));
+
+  TW_UINT16 twrc;
+
+  twrc = _DSM_Entry(
+    &m_MyInfo,
+    0,
+    DG_CONTROL,
+    DAT_IDENTITY,
+    MSG_USERSELECT,
+    (TW_MEMREF) &_gSource);
+
+  switch (twrc)
+  {
+    case TWRC_SUCCESS:
+      break;
+
+    case TWRC_CANCEL:
+      printError(0, "Canceled select data source!");
+      return NULL;
+      break;
+
+    case TWRC_FAILURE:
+      printError(0, "Failed to select the data source!");
+      return NULL;
+      break;
+  }
+
+  return &_gSource;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 void TwainApp::loadDS(const TW_UINT32 _dsID)
 {
   // The application must be in state 3 to open a Data Source.
@@ -325,22 +406,31 @@ void TwainApp::loadDS(const TW_UINT32 _dsID)
     return;
   }
 
-  // first find the data source with id = _dsID
-  m_pDataSource = 0;
-  unsigned int x = 0;
-  for(; x < m_DataSources.size(); ++x)
+  if(_dsID > 0)
   {
-    if(_dsID == m_DataSources[x].Id)
+    // first find the data source with id = _dsID
+    m_pDataSource = 0;
+    unsigned int x = 0;
+    for(; x < m_DataSources.size(); ++x)
     {
-      m_pDataSource = &(m_DataSources[x]);
-      break;
+      if(_dsID == m_DataSources[x].Id)
+      {
+        m_pDataSource = &(m_DataSources[x]);
+        break;
+      }
+    }
+
+    if(0 == m_pDataSource)
+    {
+      PrintCMDMessage("Data source with id: [%u] can not be found\n", _dsID);
+      return;
     }
   }
-
-  if(0 == m_pDataSource)
+  else
   {
-    PrintCMDMessage("Data source with id: [%u] can not be found\n", _dsID);
-    return;
+    //Open the default
+      memset(&_gSource, 0, sizeof(TW_IDENTITY));
+      m_pDataSource = &_gSource;
   }
 
   TW_CALLBACK callback = {0};
@@ -498,42 +588,6 @@ void TwainApp::getSources()
   return;
 }
 
-TW_IDENTITY Source; /**< used to store the source that is return by getDefaultDataSource */
-//////////////////////////////////////////////////////////////////////////////
-pTW_IDENTITY TwainApp::getDefaultDataSource()
-{
-  if(m_DSMState < 3)
-  {
-    PrintCMDMessage("You need to open the DSM first.\n");
-    return NULL;
-  }
-
-  // get default
-
-  memset(&Source, 0, sizeof(TW_IDENTITY));
-
-  TW_UINT16 twrc;
-
-  twrc = _DSM_Entry(
-    &m_MyInfo,
-    0,
-    DG_CONTROL,
-    DAT_IDENTITY,
-    MSG_GETDEFAULT,
-    (TW_MEMREF) &Source);
-
-  switch (twrc)
-  {
-    case TWRC_SUCCESS:
-      break;
-
-    case TWRC_FAILURE:
-      printError(0, "Failed to get the data source info!");
-      break;
-  }
-
-  return &Source;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 void TwainApp::printError(pTW_IDENTITY _pdestID, const string& _errorMsg)

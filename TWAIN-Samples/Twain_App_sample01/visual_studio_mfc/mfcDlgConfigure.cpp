@@ -590,7 +590,7 @@ void Cmfc32DlgConfigure::OnBnClickedScan()
           break;
 
         default:
-          cerr << "\nError - Unknown message in MSG_PROCESSEVENT loop\n" << endl;
+          TRACE("\nError - Unknown message in MSG_PROCESSEVENT loop\n");
           break;
       }
     }
