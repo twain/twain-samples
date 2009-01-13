@@ -72,7 +72,6 @@
   #endif
 #endif
 
-#include "main.h"
 #include <string>
 #include <vector>
 
@@ -278,6 +277,11 @@ public:
 */
   pTW_IDENTITY getDefaultDataSource(void);
 
+/**
+* Display the Select Source Dialog and returns a pointer to the selected data source.
+* @return a TW_IDENTITY pointer.  NULL if no source selected.
+*/
+pTW_IDENTITY selectDefaultDataSource(void);
 /**
 * Gets the imageinfo of the currently transfered image
 * @return pointer to the image info
