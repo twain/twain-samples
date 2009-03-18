@@ -230,10 +230,10 @@ void TwainAppCMD::startScan()
 //////////////////////////////////////////////////////////////////////////////
 void TwainAppCMD::set_CAP_XFERCOUNT(const TW_INT16 _count)
 {
-  set_CapabilityOneValue(CAP_XFERCOUNT, _count);
+  set_CapabilityOneValue(CAP_XFERCOUNT, _count, TWTY_INT16);
 
   // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_CAP_XFERCOUNT))
+  if(TWCC_SUCCESS==get_CAP(m_CAP_XFERCOUNT))
   {
     TW_INT16 count;
     if(getCAP_XFERCOUNT(count) &&
@@ -249,10 +249,10 @@ void TwainAppCMD::set_CAP_XFERCOUNT(const TW_INT16 _count)
 //////////////////////////////////////////////////////////////////////////////
 void TwainAppCMD::set_ICAP_UNITS(const TW_UINT16 _val)
 {
-  set_CapabilityOneValue(ICAP_UNITS, _val);
+  set_CapabilityOneValue(ICAP_UNITS, _val, TWTY_UINT16);
 
   // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_UNITS))
+  if(TWCC_SUCCESS==get_CAP(m_ICAP_UNITS))
   {
     if(TWON_ENUMERATION == m_ICAP_UNITS.ConType &&
       0 != m_ICAP_UNITS.hContainer)
@@ -277,10 +277,10 @@ void TwainAppCMD::set_ICAP_UNITS(const TW_UINT16 _val)
 //////////////////////////////////////////////////////////////////////////////
 void TwainAppCMD::set_ICAP_PIXELTYPE(const TW_UINT16 _pt)
 {
-  set_CapabilityOneValue(ICAP_PIXELTYPE, _pt);
+  set_CapabilityOneValue(ICAP_PIXELTYPE, _pt, TWTY_UINT16);
 
   // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_PIXELTYPE))
+  if(TWCC_SUCCESS==get_CAP(m_ICAP_PIXELTYPE))
   {
     if(TWON_ENUMERATION == m_ICAP_PIXELTYPE.ConType &&
       0 != m_ICAP_PIXELTYPE.hContainer)
@@ -350,7 +350,7 @@ void TwainAppCMD::set_ICAP_FRAMES(const pTW_FRAME _pFrame)
   set_CapabilityOneValue(ICAP_FRAMES, _pFrame);
 
   // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_FRAMES))
+  if(TWCC_SUCCESS==get_CAP(m_ICAP_FRAMES))
   {
     if(TWON_ENUMERATION == m_ICAP_FRAMES.ConType &&
       0 != m_ICAP_FRAMES.hContainer)
@@ -376,10 +376,10 @@ void TwainAppCMD::set_ICAP_FRAMES(const pTW_FRAME _pFrame)
 //////////////////////////////////////////////////////////////////////////////
 void TwainAppCMD::set_ICAP_XFERMECH(const TW_UINT16 _mech)
 {
-  set_CapabilityOneValue(ICAP_XFERMECH, _mech);
+  set_CapabilityOneValue(ICAP_XFERMECH, _mech, TWTY_UINT16);
 
   // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_XFERMECH))
+  if(TWCC_SUCCESS==get_CAP(m_ICAP_XFERMECH))
   {
     TW_UINT16 mech;
     if(getICAP_XFERMECH(mech) &&
@@ -399,10 +399,10 @@ void TwainAppCMD::set_ICAP_XFERMECH(const TW_UINT16 _mech)
 //////////////////////////////////////////////////////////////////////////////
 void TwainAppCMD::set_ICAP_IMAGEFILEFORMAT(const TW_UINT16 _fileformat)
 {
-  set_CapabilityOneValue(ICAP_IMAGEFILEFORMAT, _fileformat);
+  set_CapabilityOneValue(ICAP_IMAGEFILEFORMAT, _fileformat, TWTY_UINT16);
 
   // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_IMAGEFILEFORMAT))
+  if(TWCC_SUCCESS==get_CAP(m_ICAP_IMAGEFILEFORMAT))
   {
     TW_UINT16 fileformat;
     if(getICAP_IMAGEFILEFORMAT(fileformat) &&
@@ -421,10 +421,10 @@ void TwainAppCMD::set_ICAP_IMAGEFILEFORMAT(const TW_UINT16 _fileformat)
 //////////////////////////////////////////////////////////////////////////////
 void TwainAppCMD::set_ICAP_COMPRESSION(const TW_UINT16 _comp)
 {
-  set_CapabilityOneValue(ICAP_COMPRESSION, _comp);
+  set_CapabilityOneValue(ICAP_COMPRESSION, _comp, TWTY_UINT16);
 
   // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_COMPRESSION))
+  if(TWCC_SUCCESS==get_CAP(m_ICAP_COMPRESSION))
   {
     TW_UINT16 comp;
     if(getICAP_COMPRESSION(comp) &&
@@ -440,10 +440,10 @@ void TwainAppCMD::set_ICAP_COMPRESSION(const TW_UINT16 _comp)
 //////////////////////////////////////////////////////////////////////////////
 void TwainAppCMD::set_ICAP_BITDEPTH(const TW_UINT16 _nVal)
 {
-  set_CapabilityOneValue(ICAP_BITDEPTH, _nVal);
+  set_CapabilityOneValue(ICAP_BITDEPTH, _nVal, TWTY_UINT16);
 
   // now that we have set it, re-get it to ensure it was set
-  if(get_CAP(m_ICAP_BITDEPTH))
+  if(TWCC_SUCCESS==get_CAP(m_ICAP_BITDEPTH))
   {
     TW_UINT16 val;
     if(getICAP_BITDEPTH(val) &&

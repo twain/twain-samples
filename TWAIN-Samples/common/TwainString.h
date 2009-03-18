@@ -55,7 +55,7 @@
 * @param[in] _unCap the cap
 * @return the equivalent cap string
 */
-const char* convertICAP_toString(const TW_UINT16 _unCap);
+const char* convertCAP_toString(const TW_UINT16 _unCap);
 
 /**
 * converts the integer CAP transfer method into string form
@@ -63,7 +63,7 @@ const char* convertICAP_toString(const TW_UINT16 _unCap);
 * @param[in] _unItem the value
 * @return the equivalent string
 */
-const char* convertICAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT16 _unItem);
+const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT16 _unItem);
 
 /**
 * converts the integer CAP transfer method into string form
@@ -114,5 +114,25 @@ const char* convertTWTY_toString(const TW_UINT16 _unItem);
 */
 const char* convertExtImageInfoName_toString(int InfoID);
 
+/**
+* retrieve the extended image info value for a given Info
+* @param[in] ImgInfo the TW_INFO to retrieve the extended image info of
+* @return string of the extended image info value
+*/
+const char* convertExtImageInfoItem_toString(TW_INFO &ImgInfo);
+
+/**
+* converts the TWAIN Return Code into string form
+* @param[in] _unItem the value
+* @return the equivalent string
+*/
+const char* convertReturnCode_toString(const TW_UINT16 _unItem);
+
+/**
+* converts the TWAIN Condition Code into string form
+* @param[in] _unItem the value
+* @return the equivalent string
+*/
+const char* convertConditionCode_toString(const TW_UINT16 _unItem);
 
 #endif // __TWAINSTRING_H__

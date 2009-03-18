@@ -106,10 +106,10 @@ TW_UINT16 FAR PASCAL DSMCallback(pTW_IDENTITY _pOrigin,
 
 Cmfc32DlgConfigure::Cmfc32DlgConfigure(CWnd* pParent, int nIndex)
   : CDialog(Cmfc32DlgConfigure::IDD, pParent)
-  , m_sStc_DS(_T(""))
+  ,m_sStc_DS(_T(""))
   ,m_sStc_ImageInfo(_T(""))
   ,m_sStc_ExtImageInfo(_T(""))
-  , m_bShowUI(FALSE)
+  ,m_bShowUI(FALSE)
 {
   m_nIndex = nIndex;
   m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -260,7 +260,17 @@ void Cmfc32DlgConfigure::ListCaps()
       // get the capability that is supported
       Cap.Cap         = pCapSupCaps->ItemList[i];
       Cap.hContainer  = 0;
-      if(g_pTWAINApp->get_CAP(Cap))
+
+      name = convertCAP_toString(Cap.Cap);
+      sz = pDC->GetTextExtent(name);
+      if (sz.cx > dx)
+      {
+        dx = sz.cx;
+      }
+
+      TW_UINT16 CondCode = g_pTWAINApp->get_CAP(Cap);
+
+      if(CondCode==TWCC_SUCCESS)
       {
         if( Cap.ConType == TWON_ENUMERATION 
          || Cap.ConType == TWON_ONEVALUE )
@@ -271,12 +281,6 @@ void Cmfc32DlgConfigure::ListCaps()
             TW_UINT16 type = pCap->ItemType;
             _DSM_UnlockMemory(Cap.hContainer);
 
-            name = convertICAP_toString(Cap.Cap);
-            sz = pDC->GetTextExtent(name);
-            if (sz.cx > dx)
-            {
-              dx = sz.cx;
-            }
 
             switch(type)
             {
@@ -284,14 +288,14 @@ void Cmfc32DlgConfigure::ListCaps()
               {
                 TW_UINT16 uVal;
                 getcurrent(&Cap, uVal);
-                value = convertICAP_Item_toString(Cap.Cap, uVal);
+                value = convertCAP_Item_toString(Cap.Cap, uVal);
                 break;
               }
               case TWTY_INT16:
               {
                 TW_INT16 Val;
                 getcurrent(&Cap, Val);
-                value = convertICAP_Item_toString(Cap.Cap, Val);
+                value = convertCAP_Item_toString(Cap.Cap, Val);
                 break;
               }
               case TWTY_FIX32:
@@ -358,6 +362,16 @@ void Cmfc32DlgConfigure::ListCaps()
           }
         }
       }
+      else
+      {
+        value = convertConditionCode_toString(CondCode);
+        str.Format("%s:\t<<%s>>", name, value);
+        int index = m_lst_Caps.InsertString( -1,  str );
+        if(LB_ERR != index)
+        {
+          m_lst_Caps.SetItemData( index, Cap.Cap );
+        }
+      }
     }
   }
 
@@ -409,7 +423,7 @@ void Cmfc32DlgConfigure::OnLbnDblclkCaps()
     // get the capability that is supported
     Cap.Cap         = nCap;
     Cap.hContainer  = 0;
-    if(g_pTWAINApp->get_CAP(Cap))
+    if(TWCC_SUCCESS==g_pTWAINApp->get_CAP(Cap))
     {
       if( Cap.ConType == TWON_ENUMERATION 
          || Cap.ConType == TWON_ONEVALUE )
@@ -422,7 +436,7 @@ void Cmfc32DlgConfigure::OnLbnDblclkCaps()
             TW_INT16 Val;
             getcurrent(&Cap, Val);
             Val = Val == -1? 1: -1;// flop
-            g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, Val);
+            g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, Val, TWTY_INT16);
             bChange = true;
             break;
           }
@@ -432,6 +446,7 @@ void Cmfc32DlgConfigure::OnLbnDblclkCaps()
             if( IDOK == GetUpdateValue(&Cap, &Dlg) )
             {
               TW_UINT16 type = TWTY_UINT16;
+              TW_INT16  twrc = TWRC_FAILURE;
 
               pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(Cap.hContainer);
               if(pCap)
@@ -441,21 +456,31 @@ void Cmfc32DlgConfigure::OnLbnDblclkCaps()
 
                 switch(type)
                 {
+                  case TWTY_INT8:
+                  case TWTY_INT16:
+                  case TWTY_INT32:
+                  case TWTY_UINT8:
                   case TWTY_UINT16:
+                  case TWTY_UINT32:
+                  case TWTY_BOOL:
                   {
-                    g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, (TW_UINT16)Dlg.m_SelectionData);
+                    twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, (TW_UINT16)Dlg.m_SelectionData, type);
                     break;
                   }
 
                   case TWTY_FIX32:
                   {
                     TW_FIX32 TWfix32 = FloatToFIX32( (float)(Dlg.m_SelectionData/100.0));
-                    g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, &TWfix32);
+                    twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, &TWfix32);
                     break;
                   }
                 }
-              bChange = true;
-            }
+
+                if(twrc == TWRC_SUCCESS || twrc == TWRC_CHECKSTATUS)
+                {
+                  bChange = true;
+                }
+              }
             }
             break;
           }
@@ -491,7 +516,7 @@ int Cmfc32DlgConfigure::GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg
             pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(pCap->hContainer);
             CString         str;
 
-            pDlg->m_Str_Name = convertICAP_toString(pCap->Cap);;
+            pDlg->m_Str_Name = convertCAP_toString(pCap->Cap);;
 
             switch(pCapPT->ItemType)
             {
@@ -499,7 +524,7 @@ int Cmfc32DlgConfigure::GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg
               {
                 for(TW_UINT32 x=0; x<pCapPT->NumItems; ++x)
                 {
-                  str   = convertICAP_Item_toString(pCap->Cap, ((pTW_UINT16)(&pCapPT->ItemList))[x]);
+                  str   = convertCAP_Item_toString(pCap->Cap, ((pTW_UINT16)(&pCapPT->ItemList))[x]);
                   pDlg->m_itemString.Add(str);
                   pDlg->m_itemData.Add(((pTW_UINT16)(&pCapPT->ItemList))[x]);
                 }
@@ -529,8 +554,24 @@ int Cmfc32DlgConfigure::GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg
         break;
 
         case TWON_ONEVALUE:
-          /** TODO: add TWON_ONEVALUE */
-          break;
+        {
+          pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(pCap->hContainer);
+          switch(pCapPT->ItemType)
+          {
+            case TWTY_BOOL:
+            {
+              pDlg->m_SelectionData = pCapPT->Item? FALSE:TRUE;
+              nResponse = IDOK;
+
+            }
+            break;
+
+            default:
+            break;
+          }
+          _DSM_UnlockMemory(pCap->hContainer);
+        }
+        break;
       }
     }
   return nResponse;
@@ -540,7 +581,7 @@ void Cmfc32DlgConfigure::OnBnClickedScan()
 {
   gDSMessage = 0;
 
-  UpdateData(false);
+  UpdateData(true);
 
   // -Enable the data source. This puts us in state 5 which means that we
   // have to wait for the data source to tell us to move to state 6 and
@@ -629,7 +670,7 @@ void Cmfc32DlgConfigure::StartScan()
   Cap.Cap = ICAP_XFERMECH;
   Cap.hContainer = 0;
 
-  if( !g_pTWAINApp->get_CAP(Cap)
+  if( TWCC_SUCCESS!=g_pTWAINApp->get_CAP(Cap)
     ||!getcurrent(&Cap, mech) )
   {
       TRACE("Error: could not get the transfer mechanism");
@@ -653,7 +694,7 @@ void Cmfc32DlgConfigure::StartScan()
       Cap.Cap = ICAP_IMAGEFILEFORMAT;
       Cap.hContainer = 0;
 
-      if(g_pTWAINApp->get_CAP(Cap))
+      if(TWCC_SUCCESS==g_pTWAINApp->get_CAP(Cap))
       {
         getcurrent(&Cap, fileformat);
       }

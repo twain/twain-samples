@@ -42,8 +42,13 @@
 
 #include "TwainString.h"
 
+extern TW_HANDLE _DSM_Alloc(TW_UINT32 _size);
+extern void _DSM_Free(TW_HANDLE _hMemory);
+extern TW_MEMREF _DSM_LockMemory(TW_HANDLE _hMemory);
+extern void _DSM_UnlockMemory(TW_HANDLE _hMemory);
+
 /** the size of the temp buffer */
-#define TEMPBUFSIZE 255
+#define TEMPBUFSIZE 1024
 
 /**
 * return a temp buffer from an array.  Rotating through the queue.
@@ -63,7 +68,7 @@ char * nextTempBuffer()
 
 
 //////////////////////////////////////////////////////////////////////////////
-const char* convertICAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT16 _unItem)
+const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT16 _unItem)
 {
   const char* pszString = "Unknown capability";
 
@@ -111,7 +116,7 @@ const char* convertICAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT16 _u
 
 
 //////////////////////////////////////////////////////////////////////////////
-const char* convertICAP_toString(const TW_UINT16 _unCap)
+const char* convertCAP_toString(const TW_UINT16 _unCap)
 {
   const char* text;
 
@@ -620,17 +625,17 @@ const char* convertICAP_toString(const TW_UINT16 _unCap)
   default:
     {
       char * buff = nextTempBuffer();
-      if(_unCap < 0x8000)
+      if(_unCap < CAP_CUSTOMBASE)
       {
-        SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown capability CAP 0x:4X", _unCap);
+        SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown CAP 0x:%4X", _unCap);
       }
-      else if (_unCap > 0x8000)
+      else if (_unCap > CAP_CUSTOMBASE)
       {
-        SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Custom capability CAP 0x:4X", _unCap);
+        SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Custom CAP 0x:%4X", _unCap);
       }
-      else // ==
+      else // == CAP_CUSTOMBASE
       {
-        SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Invalid capability CAP 0x:4X", _unCap);
+        SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Invalid CAP 0x:%4X", _unCap);
       }
       text = buff;
     }
@@ -663,7 +668,7 @@ const char* convertICAP_XFERMECH_toString(const TW_UINT16 _unItem)
   default:
     {
       char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWSX 0x:4X", _unItem);
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWSX 0x:%4X", _unItem);
       text = buff;
     }
     break;
@@ -706,7 +711,7 @@ const char* convertICAP_UNITS_toString(const TW_UINT16 _unItem)
   default:
     {
       char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWUN 0x:4X", _unItem);
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWUN 0x:%4X", _unItem);
       text = buff;
     }
     break;
@@ -785,7 +790,7 @@ const char* convertTWTY_toString(const TW_UINT16 _unItem)
   default:
     {
       char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWTY 0x:4X", _unItem);
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWTY 0x:%4X", _unItem);
       text = buff;
     }
     break;
@@ -840,7 +845,7 @@ const char* convertICAP_PIXELTYPE_toString(const TW_UINT16 _unItem)
   default:
     {
       char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPT 0x:4X", _unItem);
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPT 0x:%4X", _unItem);
       text = buff;
     }
     break;
@@ -873,7 +878,7 @@ const char* convertICAP_IMAGEFILEFORMAT_toString(const TW_UINT16 _unItem)
     break;
 
   case TWFF_JFIF:
-    text = ".jfif";
+    text = ".jpeg";
     break;
 
   case TWFF_FPX:
@@ -899,7 +904,7 @@ const char* convertICAP_IMAGEFILEFORMAT_toString(const TW_UINT16 _unItem)
   default:
     {
       char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFF 0x:4X", _unItem);
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFF 0x:%4X", _unItem);
       text = buff;
     }
     break;
@@ -970,7 +975,7 @@ const char* convertICAP_COMPRESSION_toString(const TW_UINT16 _unItem)
   default:
     {
       char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWCP 0x:4X", _unItem);
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWCP 0x:%4X", _unItem);
       text = buff;
     }
     break;
@@ -997,7 +1002,7 @@ const char* convertICAP_PIXELFLAVOR_toString(const TW_UINT16 _unItem)
   default:
     {
       char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPF 0x:4X", _unItem);
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPF 0x:%4X", _unItem);
       text = buff;
     }
     break;
@@ -1282,7 +1287,304 @@ const char* convertExtImageInfoName_toString(int InfoID)
   default:
     {
       char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "ExtImageInfo ID 0x:4X",InfoID);
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "ExtImageInfo ID 0x:%4X",InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+const char* convertExtImageInfoItem_toString(TW_INFO &ImgInfo)
+{
+   char * buff = nextTempBuffer();
+
+   if(TWRC_SUCCESS == ImgInfo.CondCode)
+   {
+      switch(ImgInfo.ItemType)
+      {
+       case TWTY_INT8:
+       case TWTY_INT16:
+       case TWTY_INT32:
+       case TWTY_UINT8:
+       case TWTY_UINT32:
+       case TWTY_UINT16:
+       case TWTY_BOOL:
+         // If the size of the data is larger than 4 bytes (regardless of 32bit or 64bit OS) then the data
+         // is no longer an array of data but a handle to the data.
+         // If the data does fit inside then it is possible to have an array of data.
+         if(getTWTYsize(ImgInfo.ItemType)*ImgInfo.NumItems <= sizeof(TW_UINT32))
+         {
+            char * pTemp = buff;
+
+            for( int nItem=0; nItem<ImgInfo.NumItems; nItem++)
+            {
+               switch(ImgInfo.ItemType)
+               {
+                case TWTY_INT8:
+                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_INT8*)&ImgInfo.Item)[nItem]);
+                  break;
+
+                case TWTY_INT16:
+                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_INT16*)&ImgInfo.Item)[nItem]);
+                  break;
+
+                case TWTY_INT32:
+                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_INT32*)&ImgInfo.Item)[nItem]);
+                  break;
+
+                case TWTY_UINT8:
+                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_UINT8*)&ImgInfo.Item)[nItem]);
+                  break;
+
+                case TWTY_UINT32:
+                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_UINT32*)&ImgInfo.Item)[nItem]);
+                  break;
+
+                case TWTY_UINT16:
+                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_UINT16*)&ImgInfo.Item)[nItem]);
+                  break;
+
+                case TWTY_BOOL:
+                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_BOOL*)&ImgInfo.Item)[nItem]);
+                  break;
+               }
+               pTemp += strlen(pTemp);
+            }
+         }
+         else
+         {
+            //Did not fit into the INT32
+            SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "todo");
+         }
+         break;
+
+       case TWTY_STR32:
+       case TWTY_STR64:
+       case TWTY_STR128:
+       case TWTY_STR255:
+       case TWTY_STR1024:
+         {
+         char *chTest = (char *)_DSM_LockMemory((TW_HANDLE)ImgInfo.Item);
+
+         SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "%s", chTest);
+
+         _DSM_UnlockMemory((TW_HANDLE)ImgInfo.Item);
+         _DSM_Free((TW_HANDLE)ImgInfo.Item);
+         }
+         break;
+
+       case TWTY_FRAME:
+         {
+         TW_FRAME *pFrame = (TW_FRAME *)_DSM_LockMemory((TW_HANDLE)ImgInfo.Item);
+
+         SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "\r\n\tLeft\t%0.2f\r\n\tTop\t%.2f\r\n\tRight\t%.2f\r\n\tBottom\t%.2f",
+                   FIX32ToFloat(pFrame->Left), FIX32ToFloat(pFrame->Top),
+                   FIX32ToFloat(pFrame->Right), FIX32ToFloat(pFrame->Bottom));
+
+         _DSM_UnlockMemory((TW_HANDLE)ImgInfo.Item);
+         _DSM_Free((TW_HANDLE)ImgInfo.Item);
+         }
+         break;
+
+       default:
+          SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unsupporetd Type 0x:%4X", ImgInfo.ItemType);
+         break;
+      }
+   }
+   else if(TWRC_INFONOTSUPPORTED == ImgInfo.CondCode)
+   {
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unsupporetd");
+   }
+   else if(TWRC_DATANOTAVAILABLE == ImgInfo.CondCode)
+   {
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Data Not Available");
+   }
+   else
+   {
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "unknown failure %d", ImgInfo.CondCode);
+   }
+
+   return buff;
+}
+
+const char* convertReturnCode_toString(const TW_UINT16 _unItem)
+{
+  const char* text;
+
+  switch(_unItem)
+  {
+  case TWRC_SUCCESS:
+    text = "TWRC_SUCCESS";
+    break;
+
+  case TWRC_FAILURE:
+    text = "TWRC_FAILURE";
+    break;
+
+  case TWRC_CHECKSTATUS:
+    text = "TWRC_CHECKSTATUS";
+    break;
+
+  case TWRC_CANCEL:
+    text = "TWRC_CANCEL";
+    break;
+
+  case TWRC_DSEVENT:
+    text = "TWRC_DSEVENT";
+    break;
+
+  case TWRC_NOTDSEVENT:
+    text = "TWRC_NOTDSEVENT";
+    break;
+
+  case TWRC_XFERDONE:
+    text = "TWRC_XFERDONE";
+    break;
+
+  case TWRC_ENDOFLIST:
+    text = "TWRC_ENDOFLIST";
+    break;
+
+  case TWRC_INFONOTSUPPORTED:
+    text = "TWRC_INFONOTSUPPORTED";
+    break;
+
+  case TWRC_DATANOTAVAILABLE:
+    text = "TWRC_DATANOTAVAILABLE";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "ReturnCode 0x:%4X",_unItem);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+const char* convertConditionCode_toString(const TW_UINT16 _unItem)
+{
+  const char* text;
+
+  switch(_unItem)
+  {
+  case TWCC_SUCCESS:
+    text = "TWCC_SUCCESS";
+    break;
+
+  case TWCC_BUMMER:
+    text = "TWCC_BUMMER";
+    break;
+
+  case TWCC_LOWMEMORY:
+    text = "TWCC_LOWMEMORY";
+    break;
+
+  case TWCC_NODS:
+    text = "TWCC_NODS";
+    break;
+
+  case TWCC_MAXCONNECTIONS:
+    text = "TWCC_MAXCONNECTIONS";
+    break;
+
+  case TWCC_OPERATIONERROR:
+    text = "TWCC_OPERATIONERROR";
+    break;
+
+  case TWCC_BADCAP:
+    text = "TWCC_BADCAP";
+    break;
+
+  case TWCC_BADPROTOCOL:
+    text = "TWCC_BADPROTOCOL";
+    break;
+
+  case TWCC_BADVALUE:
+    text = "TWCC_BADVALUE";
+    break;
+
+  case TWCC_SEQERROR:
+    text = "TWCC_SEQERROR";
+    break;
+
+  case TWCC_BADDEST:
+    text = "TWCC_BADDEST";
+    break;
+
+  case TWCC_CAPUNSUPPORTED:
+    text = "TWCC_CAPUNSUPPORTED";
+    break;
+
+  case TWCC_CAPBADOPERATION:
+    text = "TWCC_CAPBADOPERATION";
+    break;
+
+  case TWCC_CAPSEQERROR:
+    text = "TWCC_CAPSEQERROR";
+    break;
+
+  case TWCC_DENIED:
+    text = "TWCC_DENIED";
+    break;
+
+  case TWCC_FILEEXISTS:
+    text = "TWCC_FILEEXISTS";
+    break;
+
+  case TWCC_FILENOTFOUND:
+    text = "TWCC_FILENOTFOUND";
+    break;
+
+  case TWCC_NOTEMPTY:
+    text = "TWCC_NOTEMPTY";
+    break;
+
+  case TWCC_PAPERJAM:
+    text = "TWCC_PAPERJAM";
+    break;
+
+  case TWCC_PAPERDOUBLEFEED:
+    text = "TWCC_PAPERDOUBLEFEED";
+    break;
+
+  case TWCC_FILEWRITEERROR:
+    text = "TWCC_FILEWRITEERROR";
+    break;
+
+  case TWCC_CHECKDEVICEONLINE:
+    text = "TWCC_CHECKDEVICEONLINE";
+    break;
+
+  case TWCC_INTERLOCK:
+    text = "TWCC_INTERLOCK";
+    break;
+
+  case TWCC_DAMAGEDCORNER:
+    text = "TWCC_DAMAGEDCORNER";
+    break;
+
+  case TWCC_FOCUSERROR:
+    text = "TWCC_FOCUSERROR";
+    break;
+
+  case TWCC_DOCTOOLIGHT:
+    text = "TWCC_DOCTOOLIGHT";
+    break;
+
+  case TWCC_DOCTOODARK:
+    text = "TWCC_DOCTOODARK";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "ConditionCode 0x:%4X",_unItem);
       text = buff;
     }
     break;
