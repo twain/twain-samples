@@ -112,14 +112,14 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE _pCap)
 
   cout
     << "\n"
-    << convertICAP_toString(_unCap) << "\n"
+    << convertCAP_toString(_unCap) << "\n"
     << "--------------\n"
     << "Showing supported types. * indicates current setting.\n\n"
     << "q - done\n";
   
   if(TWTY_UINT16 == _pCap->ItemType)
   {
-    cout << "1 - " << convertICAP_Item_toString(_unCap, TW_UINT16(_pCap->Item)) << "*" << endl;
+    cout << "1 - " << convertCAP_Item_toString(_unCap, TW_UINT16(_pCap->Item)) << "*" << endl;
   }
   else// if(TWTY_UINT16 != _pCap->ItemType)
   {
@@ -139,7 +139,7 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION _pCap)
 
   cout
     << "\n"
-    << convertICAP_toString(_unCap) << "\n"
+    << convertCAP_toString(_unCap) << "\n"
     << "--------------\n"
     << "Showing supported types. * indicates current setting.\n\n"
     << "q - done\n";
@@ -149,7 +149,7 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION _pCap)
     switch(_pCap->ItemType)
     {
       case TWTY_UINT16:
-        cout << x << " - " << convertICAP_Item_toString(_unCap, ((pTW_UINT16)(&_pCap->ItemList))[x]);
+        cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_UINT16)(&_pCap->ItemList))[x]);
         break;
 
       default:
@@ -181,7 +181,7 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE_FIX32 _pCap)
 
   cout 
     << "\n"
-    << convertICAP_toString(_unCap) << "\n"
+    << convertCAP_toString(_unCap) << "\n"
     << "--------------\n"
     << "Showing supported types. * indicates current setting.\n\n"
     << "q - done\n";
@@ -208,7 +208,7 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION_FIX32 _pCap)
 
   cout 
     << "\n"
-    << convertICAP_toString(_unCap) << "\n"
+    << convertCAP_toString(_unCap) << "\n"
     << "--------------\n"
     << "Showing supported types. * indicates current setting.\n\n"
     << "q - done\n";
@@ -249,7 +249,7 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE_FRAME _pCap)
 
   cout
     << "\n"
-    << convertICAP_toString(_unCap) << "\n"
+    << convertCAP_toString(_unCap) << "\n"
     << "--------------\n"
     << "Showing supported types. * indicates current setting.\n\n"
     << "q - done\n";
@@ -285,7 +285,7 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION_FRAME _pCap)
 
   cout
     << "\n"
-    << convertICAP_toString(_unCap) << "\n"
+    << convertCAP_toString(_unCap) << "\n"
     << "--------------\n"
     << "Showing supported types. * indicates current setting.\n\n"
     << "q - done\n";

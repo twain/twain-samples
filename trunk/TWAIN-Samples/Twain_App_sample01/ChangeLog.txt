@@ -1,3 +1,10 @@
+2009-03-16 JFL Peripheral Solutions jimw@jflinc.com
+
+    * Display bool Capabilities correctly. 
+    * Double clicking on a bool capability to atempt to set it to the opposit.
+    * Fix bugs in Extended Image Info
+    * Fix bug with scanning with UI
+        
 2009-01-06 JFL Peripheral Solutions jimw@jflinc.com
 
     * Updated the TWAIN2 Sample Application to separate CMD and GUI implementations and 

@@ -590,9 +590,9 @@ void TwainApp::getSources()
 
 
 //////////////////////////////////////////////////////////////////////////////
-void TwainApp::printError(pTW_IDENTITY _pdestID, const string& _errorMsg)
+TW_INT16 TwainApp::printError(pTW_IDENTITY _pdestID, const string& _errorMsg)
 {
-  TW_INT16 c;
+  TW_INT16 c = TWCC_SUCCESS;
 
 #ifdef _WINDOWS
   TRACE("app: ");
@@ -608,7 +608,11 @@ void TwainApp::printError(pTW_IDENTITY _pdestID, const string& _errorMsg)
 
   if(TWRC_SUCCESS == getTWCC(_pdestID, c))
   {
-    TRACE(" The condition code is: %u", c);
+    TRACE(" The condition code is: %s\n", convertConditionCode_toString(c));
+  }
+  else
+  {
+    TRACE("\n");
   }
 #else
   cerr << "app: ";
@@ -624,11 +628,11 @@ void TwainApp::printError(pTW_IDENTITY _pdestID, const string& _errorMsg)
 
   if(TWRC_SUCCESS == getTWCC(_pdestID, c))
   {
-    cerr << " The condition code is: " << c << endl;
+    cerr << " The condition code is: " << convertConditionCode_toString(c) << endl;
   }
 #endif
 
-  return;
+  return c;
 }
 
 
@@ -941,69 +945,26 @@ void TwainApp::updateEXIMAGEINFO()
     {
       for(UINT nCount = 0; nCount < exImgInfo.Info[0].Item; nCount++)
       {
-        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODETYPE;
-        pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
-        cur_info++;
-        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODETEXTLENGTH;
-        pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
-        cur_info++;
-        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODETEXT;
-        pexImgInfo->Info[cur_info].ItemType = 0;
-        cur_info++;
-        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODEX;
-        pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
-        cur_info++;
-        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODEY;
-        pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
-        cur_info++;
-        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODEROTATION;
-        pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
-        cur_info++;
-        pexImgInfo->Info[cur_info].InfoID = TWEI_BARCODECONFIDENCE;
-        pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
-        cur_info++;      
+        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODETYPE;
+        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODETEXTLENGTH;
+        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODETEXT;
+        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODEX;
+        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODEY;
+        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODEROTATION;
+        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODECONFIDENCE;
       }
     }
 
-    pexImgInfo->Info[cur_info].InfoID = TWEI_BOOKNAME;
-    pexImgInfo->Info[cur_info].ItemType = 0;
-    cur_info++;      
-
-    pexImgInfo->Info[cur_info].InfoID = TWEI_CHAPTERNUMBER;
-    pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
-    cur_info++;      
-
-    pexImgInfo->Info[cur_info].InfoID = TWEI_DOCUMENTNUMBER;
-    pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
-    cur_info++;      
-
-    pexImgInfo->Info[cur_info].InfoID = TWEI_PAGENUMBER;
-    pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
-    cur_info++;      
-
-    pexImgInfo->Info[cur_info].InfoID = TWEI_PAGESIDE;
-    pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
-    cur_info++;      
-
-    pexImgInfo->Info[cur_info].InfoID = TWEI_CAMERA;
-    pexImgInfo->Info[cur_info].ItemType = 0;
-    cur_info++;      
-
-    pexImgInfo->Info[cur_info].InfoID = TWEI_FRAMENUMBER;
-    pexImgInfo->Info[cur_info].ItemType = TWTY_UINT32;
-    cur_info++;      
-
-    pexImgInfo->Info[cur_info].InfoID = TWEI_FRAME;
-    pexImgInfo->Info[cur_info].ItemType = 0;
-    cur_info++;      
-
-    pexImgInfo->Info[cur_info].InfoID = TWEI_MAGTYPE;
-    pexImgInfo->Info[cur_info].ItemType = TWTY_UINT16;
-    cur_info++;      
-
-    pexImgInfo->Info[cur_info].InfoID = TWEI_MAGDATA;
-    pexImgInfo->Info[cur_info].ItemType = 0;
-    cur_info++;      
+    pexImgInfo->Info[cur_info++].InfoID = TWEI_BOOKNAME;
+    pexImgInfo->Info[cur_info++].InfoID = TWEI_CHAPTERNUMBER;
+    pexImgInfo->Info[cur_info++].InfoID = TWEI_DOCUMENTNUMBER;
+    pexImgInfo->Info[cur_info++].InfoID = TWEI_PAGENUMBER;
+    pexImgInfo->Info[cur_info++].InfoID = TWEI_PAGESIDE;
+    pexImgInfo->Info[cur_info++].InfoID = TWEI_CAMERA;
+    pexImgInfo->Info[cur_info++].InfoID = TWEI_FRAMENUMBER;
+    pexImgInfo->Info[cur_info++].InfoID = TWEI_FRAME;
+    pexImgInfo->Info[cur_info++].InfoID = TWEI_MAGTYPE;
+    pexImgInfo->Info[cur_info++].InfoID = TWEI_MAGDATA;
 
     twrc =     DSM_Entry(DG_IMAGE, DAT_EXTIMAGEINFO, MSG_GET, (TW_MEMREF)pexImgInfo);
     twrc = 0;
@@ -1011,56 +972,19 @@ void TwainApp::updateEXIMAGEINFO()
     {
       return;
     }
+
     m_strExImageInfo = "";
     for(int nIndex = 0; nIndex < num_infos; nIndex++)
     {
-      m_strExImageInfo +=convertExtImageInfoName_toString(pexImgInfo->Info[nIndex].InfoID);
-      m_strExImageInfo +="\t";
-      if(TWRC_SUCCESS==pexImgInfo->Info[nIndex].CondCode)
-      {
-        char chTemp[1024];
-        switch(pexImgInfo->Info[nIndex].ItemType)
-        {
-          case TWTY_UINT32:
-          case TWTY_UINT16:
-            sprintf_s(chTemp,1024,"%d",pexImgInfo->Info[nIndex].Item);
-            break;
-          case TWTY_STR32:
-          case TWTY_STR64:
-          case TWTY_STR128:
-          case TWTY_STR255:
-          case TWTY_STR1024:
-            {
-            char *chTest = (char *)_DSM_LockMemory((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
-
-            sprintf_s(chTemp,1024,"%s",chTest);
-            _DSM_UnlockMemory((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
-            _DSM_Free((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
-            }
-            break;
-          case TWTY_FRAME:
-            {
-            TW_FRAME *pFrame = (TW_FRAME *)_DSM_LockMemory((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
-
-            sprintf_s(chTemp,1024,"\r\n\tLeft\t%0.2f\r\n\tTop\t%.2f\r\n\tRight\t%.2f\r\n\tBottom\t%.2f",
-                      FIX32ToFloat(pFrame->Left),FIX32ToFloat(pFrame->Top),
-                      FIX32ToFloat(pFrame->Right),FIX32ToFloat(pFrame->Bottom));
-            _DSM_UnlockMemory((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
-            _DSM_Free((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
-            }
-            break;
-          default:
-            sprintf_s(chTemp,1024,"Unsupporetd type");
-            break;
-        }
-        m_strExImageInfo +=chTemp;
-      }
-      else
-      {
-        m_strExImageInfo +="Unsupported";
-      }
-      m_strExImageInfo +="\r\n";
+       if(pexImgInfo->Info[nIndex].CondCode != TWRC_INFONOTSUPPORTED)
+       {
+         m_strExImageInfo += convertExtImageInfoName_toString(pexImgInfo->Info[nIndex].InfoID);
+         m_strExImageInfo += "\t";
+         m_strExImageInfo += convertExtImageInfoItem_toString(pexImgInfo->Info[nIndex]);
+         m_strExImageInfo +="\r\n";
+       }
     }
+
     _DSM_UnlockMemory(hexInfo);
     _DSM_Free(hexInfo);
   }
@@ -1473,15 +1397,15 @@ pTW_IDENTITY TwainApp::getDataSource(TW_INT16 _index /*= -1*/) const
 }
 
 //////////////////////////////////////////////////////////////////////////////
-bool TwainApp::get_CAP(TW_CAPABILITY& _cap)
+TW_INT16 TwainApp::get_CAP(TW_CAPABILITY& _cap)
 {
   if(m_DSMState < 4)
   {
     PrintCMDMessage("You need to open a data source first.\n");
-    return false;
+    return TWCC_SEQERROR;
   }
 
-  bool bret = false;
+  TW_INT16 CondCode = TWCC_SUCCESS;
 
   // Check if this capability structure has memory already alloc'd.
   // If it does, free that memory before the call else we'll have a memory
@@ -1499,72 +1423,36 @@ bool TwainApp::get_CAP(TW_CAPABILITY& _cap)
 
   switch(twrc)
   {
-  case TWRC_SUCCESS:
-    bret = true;
-    break;
-
   case TWRC_FAILURE:
     string strErr = "Failed to get the capability: [";
-    strErr += (char)(_cap.Cap);
+    strErr += convertCAP_toString(_cap.Cap);
     strErr += "]";
     
-    printError(m_pDataSource, strErr);
+    CondCode = printError(m_pDataSource, strErr);
     break;
   }
 
-  return bret;
+  return CondCode;
 }
 
+
 //////////////////////////////////////////////////////////////////////////////
-TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_INT16 _value)
+TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const int _value, TW_UINT16 _type)
 {
   TW_INT16        twrc = TWRC_FAILURE;
   TW_CAPABILITY   cap;
-
+         
   cap.Cap         = Cap;
   cap.ConType     = TWON_ONEVALUE;
-  cap.hContainer  = _DSM_Alloc(sizeof(TW_ONEVALUE_INT16));
-  if(0 == cap.hContainer)
-  {
-    printError(0, "Error allocating memory");
-    return twrc;
-  }
-
-  pTW_ONEVALUE_INT16 pVal = (pTW_ONEVALUE_INT16)_DSM_LockMemory(cap.hContainer);
-
-  pVal->ItemType  = TWTY_INT16;
-  pVal->Item      = _value;
-
-  // capability structure is initilized, make the call to the source now
-  twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
-
-  if(TWRC_SUCCESS != twrc)
-  {
-    printError(m_pDataSource, "Could not set capability");
-  }
-
-  _DSM_UnlockMemory(cap.hContainer);
-  _DSM_Free(cap.hContainer);
-  return twrc;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_UINT16 _value)
-{
-  TW_INT16        twrc = TWRC_FAILURE;
-  TW_CAPABILITY   cap;
-
-  cap.Cap         = Cap;
-  cap.ConType     = TWON_ONEVALUE;
-  cap.hContainer  = _DSM_Alloc(sizeof(TW_ONEVALUE_UINT16));
+  cap.hContainer  = _DSM_Alloc(sizeof(TW_ONEVALUE_UINT32));// Largest int size
   if(0 == cap.hContainer)
   {
     printError(0, "Error allocating memory");
     return false;
   }
-  pTW_ONEVALUE_UINT16 pVal = (pTW_ONEVALUE_UINT16)_DSM_LockMemory(cap.hContainer);
+  pTW_ONEVALUE_UINT32 pVal = (pTW_ONEVALUE_UINT32)_DSM_LockMemory(cap.hContainer);
 
-  pVal->ItemType  = TWTY_UINT16;
+  pVal->ItemType  = _type;
   pVal->Item      = _value;
 
   // capability structure is set, make the call to the source now
@@ -1578,7 +1466,6 @@ TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const TW_UINT16 _value
   _DSM_Free(cap.hContainer);
   return twrc;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////
 TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValue)

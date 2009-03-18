@@ -158,6 +158,11 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_UINT16& val)
         val = (TW_UINT16)(pCapPT->Item);
         bret = true;
       }
+      else if(TWTY_BOOL == pCapPT->ItemType)
+      {
+        val = (TW_BOOL)(pCapPT->Item);
+        bret = true;
+      }
       _DSM_UnlockMemory(pCap->hContainer);
     }
   }
@@ -403,3 +408,61 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_FRAME& frame)
   return bret;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+int getTWTYsize(TW_UINT16  ItemType)
+{
+  int TypeSize = 0;
+
+  switch(ItemType)
+  {
+  case TWTY_INT8:
+    TypeSize = sizeof(TW_INT8);
+    break;
+  case TWTY_INT16:
+    TypeSize = sizeof(TW_INT16);
+    break;
+  case TWTY_INT32:
+    TypeSize = sizeof(TW_INT32);
+    break;
+  case TWTY_UINT8:
+    TypeSize = sizeof(TW_UINT8);
+    break;
+  case TWTY_UINT16:
+    TypeSize = sizeof(TW_UINT16);
+    break;
+  case TWTY_UINT32:
+    TypeSize = sizeof(TW_UINT32);
+    break;
+  case TWTY_BOOL:
+    TypeSize = sizeof(TW_BOOL);
+    break;
+  case TWTY_FIX32:
+    TypeSize = sizeof(TW_FIX32);
+    break;
+  case TWTY_FRAME:
+    TypeSize = sizeof(TW_FRAME);
+    break;
+  case TWTY_STR32:
+    TypeSize = sizeof(TW_STR32);
+    break;
+  case TWTY_STR64:
+    TypeSize = sizeof(TW_STR64);
+    break;
+  case TWTY_STR128:
+    TypeSize = sizeof(TW_STR128);
+    break;
+  case TWTY_STR255:
+    TypeSize = sizeof(TW_STR255);
+    break;
+  case TWTY_STR1024:
+    TypeSize = sizeof(TW_STR1024);
+    break;
+  case TWTY_UNI512:
+    TypeSize = sizeof(TW_UNI512);
+    break;
+
+  default:
+    break;
+  }
+  return TypeSize;
+}

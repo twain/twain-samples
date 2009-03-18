@@ -132,8 +132,9 @@ public:
 *            anything else is a source.
 * @param[in] _errorMsg the error message to display. If empty a standard message
 *            is displayed
+* @return a valid TWCC_xxxx condition code
 */
-  void printError(pTW_IDENTITY _pdestID = 0, const string& _errorMsg = "");
+  TW_INT16 printError(pTW_IDENTITY _pdestID = 0, const string& _errorMsg = "");
 
 /**
 * Retrieves the condition code from the DSM.
@@ -222,17 +223,11 @@ public:
 * Try to sets a OneValue Capability of type TW_INT16 to the value passed
 * @param[in] Cap the capability to update to set
 * @param[in] _value the value to set
+* @param[in] _type the TWAIN Type to set
 * @return a valid TWRC_xxxx return code.
 */
-  TW_UINT16 set_CapabilityOneValue(TW_UINT16 Cap, const TW_INT16 _value);
+  TW_UINT16 set_CapabilityOneValue(TW_UINT16 Cap, const int _value, TW_UINT16 _type);
 
-/**
-* Try to sets a OneValue Capability of type TW_UINT16 to the value passed
-* @param[in] Cap the capability to update to set
-* @param[in] _value the value to set
-* @return a valid TWRC_xxxx return code.
-*/
-  TW_UINT16 set_CapabilityOneValue(TW_UINT16 Cap, const TW_UINT16 _value);
 
 /**
 * Try to sets a OneValue Capability of type TW_FIX32 to the value passed
@@ -254,9 +249,9 @@ public:
 * Gets the capability.
 * @param[in,out] _cap the capability struct to fill. _cap.Cap needs to be
 * filled with the capability to retrieve.
-* @return true if the cap was successfully retrieved.
+* @return a valid TWCC_xxxx condition code
 */
-  bool get_CAP(TW_CAPABILITY& _cap);
+  TW_INT16 get_CAP(TW_CAPABILITY& _cap);
 
 /**
 * Returns a pointer to the applications identity structure.

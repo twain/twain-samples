@@ -522,7 +522,12 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_FIX32& val);
 */
 bool getcurrent(TW_CAPABILITY *pCap, TW_FRAME& val);
 
-
+/**
+* Get the size of TWAIN type
+* @param[in] ItemType the TWAIN type to return the size for
+* @return the size of the type returned
+*/
+int getTWTYsize(TW_UINT16  ItemType);
 
 #endif // __COMMONTWAIN_H__
 
