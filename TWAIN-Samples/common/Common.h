@@ -242,12 +242,12 @@
 /**
 * Determine the number of bytes needed for one line.
 */
-#define BYTES_PERLINE(width, bpp) ((((width)*(bpp))+7)/8)
+#define BYTES_PERLINE(width, bpp) ((((int)(width)*(bpp))+7)/8)
 
 /**
 * Determine the number of bytes needed rouned up to 4 byte alignment.
 */
-#define BYTES_PERLINE_ALIGN4(width, bpp) (((((width)*(bpp))+31)/32)*4)
+#define BYTES_PERLINE_ALIGN4(width, bpp) (((((int)(width)*(bpp))+31)/32)*4)
 
 
 #endif // __COMMON_H__

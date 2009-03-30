@@ -1,7 +1,7 @@
 2009-03-16 JFL Peripheral Solutions jimw@jflinc.com
 
     * Display bool Capabilities correctly. 
-    * Double clicking on a bool capability to atempt to set it to the opposit.
+    * Double clicking on a bool capability to attempt to set it to the opposite
     * Fix bugs in Extended Image Info
     * Fix bug with scanning with UI
         
