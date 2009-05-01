@@ -903,6 +903,34 @@ void TwainApp::initiateTransfer_Native()
 }
 void TwainApp::updateEXIMAGEINFO()
 {
+  int TableBarCodeExtImgInfo[] = { 
+         TWEI_BARCODETYPE, 
+         TWEI_BARCODETEXTLENGTH,
+         TWEI_BARCODETEXT, 
+         TWEI_BARCODEX, 
+         TWEI_BARCODEY, 
+         TWEI_BARCODEROTATION, 
+         TWEI_BARCODECONFIDENCE };
+  int TableOtherExtImgInfo[] = {
+         TWEI_PIXELFLAVOR, 
+         TWEI_ENDORSEDTEXT, 
+         TWEI_BOOKNAME,
+         TWEI_CHAPTERNUMBER, 
+         TWEI_DOCUMENTNUMBER, 
+         TWEI_PAGENUMBER, 
+         TWEI_PAGESIDE, 
+         TWEI_CAMERA, 
+         TWEI_FRAMENUMBER, 
+         TWEI_FRAME,
+         TWEI_MAGTYPE, 
+         TWEI_MAGDATA };
+
+  int       num_BarInfos    = sizeof(TableBarCodeExtImgInfo) / sizeof(TableBarCodeExtImgInfo[0]);
+  int       num_OtherInfos  = sizeof(TableOtherExtImgInfo) / sizeof(TableOtherExtImgInfo[0]);
+  TW_UINT16 twrc            = TWRC_SUCCESS;
+
+  m_strExImageInfo = "";
+
   try
   {
     TW_EXTIMAGEINFO exImgInfo;
@@ -913,68 +941,50 @@ void TwainApp::updateEXIMAGEINFO()
     exImgInfo.Info[0].Item = 0;
     exImgInfo.Info[0].CondCode = 0;
     
-    TW_UINT16 twrc          = TWRC_SUCCESS;
-    twrc =     DSM_Entry(DG_IMAGE, DAT_EXTIMAGEINFO, MSG_GET, (TW_MEMREF)&exImgInfo);
-    twrc = 0;
+    twrc = DSM_Entry(DG_IMAGE, DAT_EXTIMAGEINFO, MSG_GET, (TW_MEMREF)&exImgInfo);
     if(twrc!= TWRC_SUCCESS)
     {
+      m_strExImageInfo = "Not Supported";
       return;
     }
 
-/** 
-* @def NUMBER_INFOS   
-*   Number of extended image infos to retrieve.
-* @def BARCODE_INFOS  
-*   Number of extended image info for each barcode to retrieve.
-*/
-#define NUMBER_INFOS 10
-#define BARCODE_INFOS 6
-    int num_infos = NUMBER_INFOS;
-    int cur_info = 0;
+    int cur_Info  = 0;
+    int num_Infos = num_OtherInfos;
+
     if(TWRC_SUCCESS==exImgInfo.Info[0].CondCode)
     {
-      num_infos += (BARCODE_INFOS * (TW_UINT32)exImgInfo.Info[0].Item);
+      num_Infos += (num_BarInfos * (TW_UINT32)exImgInfo.Info[0].Item);
     }
 
-    TW_HANDLE hexInfo = _DSM_Alloc(sizeof(TW_EXTIMAGEINFO)+sizeof(TW_INFO)*(num_infos-1));
+    TW_HANDLE hexInfo = _DSM_Alloc(sizeof(TW_EXTIMAGEINFO)+sizeof(TW_INFO)*(num_Infos-1));
     TW_EXTIMAGEINFO *pexImgInfo = (TW_EXTIMAGEINFO*) _DSM_LockMemory(hexInfo);
-    memset(pexImgInfo, 0,sizeof(TW_EXTIMAGEINFO)+sizeof(TW_INFO)*(num_infos-1));
-    pexImgInfo->NumInfos = num_infos;
+    memset(pexImgInfo, 0,sizeof(TW_EXTIMAGEINFO)+sizeof(TW_INFO)*(num_Infos-1));
+    pexImgInfo->NumInfos = num_Infos;
 
     if(TWRC_SUCCESS==exImgInfo.Info[0].CondCode)
     {
-      for(UINT nCount = 0; nCount < exImgInfo.Info[0].Item; nCount++)
+      for(UINT nCount = 0; nCount < (UINT)exImgInfo.Info[0].Item; nCount++)
       {
-        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODETYPE;
-        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODETEXTLENGTH;
-        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODETEXT;
-        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODEX;
-        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODEY;
-        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODEROTATION;
-        pexImgInfo->Info[cur_info++].InfoID = TWEI_BARCODECONFIDENCE;
+        for (int nBarItem = 0; nBarItem < num_BarInfos; nBarItem++)
+        {
+          pexImgInfo->Info[cur_Info++].InfoID = TableBarCodeExtImgInfo[nBarItem];
+        }
       }
     }
 
-    pexImgInfo->Info[cur_info++].InfoID = TWEI_BOOKNAME;
-    pexImgInfo->Info[cur_info++].InfoID = TWEI_CHAPTERNUMBER;
-    pexImgInfo->Info[cur_info++].InfoID = TWEI_DOCUMENTNUMBER;
-    pexImgInfo->Info[cur_info++].InfoID = TWEI_PAGENUMBER;
-    pexImgInfo->Info[cur_info++].InfoID = TWEI_PAGESIDE;
-    pexImgInfo->Info[cur_info++].InfoID = TWEI_CAMERA;
-    pexImgInfo->Info[cur_info++].InfoID = TWEI_FRAMENUMBER;
-    pexImgInfo->Info[cur_info++].InfoID = TWEI_FRAME;
-    pexImgInfo->Info[cur_info++].InfoID = TWEI_MAGTYPE;
-    pexImgInfo->Info[cur_info++].InfoID = TWEI_MAGDATA;
+    for (int nItem = 0; nItem < num_OtherInfos; nItem++)
+    {
+      pexImgInfo->Info[cur_Info++].InfoID = TableOtherExtImgInfo[nItem];
+    }
 
-    twrc =     DSM_Entry(DG_IMAGE, DAT_EXTIMAGEINFO, MSG_GET, (TW_MEMREF)pexImgInfo);
-    twrc = 0;
+    twrc = DSM_Entry(DG_IMAGE, DAT_EXTIMAGEINFO, MSG_GET, (TW_MEMREF)pexImgInfo);
     if(twrc!= TWRC_SUCCESS)
     {
+      m_strExImageInfo = "Not Supported";
       return;
     }
 
-    m_strExImageInfo = "";
-    for(int nIndex = 0; nIndex < num_infos; nIndex++)
+    for(int nIndex = 0; nIndex < num_Infos; nIndex++)
     {
        if(pexImgInfo->Info[nIndex].CondCode != TWRC_INFONOTSUPPORTED)
        {
@@ -982,6 +992,12 @@ void TwainApp::updateEXIMAGEINFO()
          m_strExImageInfo += "\t";
          m_strExImageInfo += convertExtImageInfoItem_toString(pexImgInfo->Info[nIndex]);
          m_strExImageInfo +="\r\n";
+       }
+
+       // We have no more use for the item so free the one that are handles
+       if( getTWTYsize(pexImgInfo->Info[nIndex].ItemType)*pexImgInfo->Info[nIndex].NumItems > sizeof(TW_UINT32) )
+       {
+         _DSM_Free((TW_HANDLE)pexImgInfo->Info[nIndex].Item);
        }
     }
 
@@ -1045,6 +1061,9 @@ void TwainApp::initiateTransfer_File(TW_UINT16 fileformat /*= TWFF_TIFF*/)
 #ifdef _WINDOWS
       ShellExecute(m_Parent, "open", filexfer.FileName, NULL, NULL, SW_SHOWNORMAL);
 #endif
+      
+      updateEXIMAGEINFO();
+
       // see if there are any more transfers to do
       PrintCMDMessage("app: Checking to see if there are more images to transfer...\n");
       TW_PENDINGXFERS pendxfers;
@@ -1241,6 +1260,7 @@ void TwainApp::initiateTransfer_Memory()
 #ifdef _WINDOWS
           ShellExecute(m_Parent, "open", szOutFileName, NULL, NULL, SW_SHOWNORMAL);
 #endif
+          updateEXIMAGEINFO();
           break;
         }
       }

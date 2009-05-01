@@ -384,6 +384,12 @@ void Cmfc32DlgConfigure::ListCaps()
     m_lst_Caps.SetTabStops((dx*4) / LOWORD(::GetDialogBaseUnits()));
   }
 
+  CEdit *pWnd = (CEdit*)GetDlgItem(IDC_EXTIMAGEINFO);
+  if(pWnd)
+  {
+    pWnd->SetTabStops(100);
+  }
+
 cleanup:
   if(pCapSupCaps)
   {

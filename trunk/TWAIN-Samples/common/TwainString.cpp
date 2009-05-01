@@ -63,6 +63,7 @@ char * nextTempBuffer()
   {
     nTempBuffer = 0;
   }
+  szTempBuffer[nTempBuffer][0] = '\0';
   return szTempBuffer[nTempBuffer];
 }
 
@@ -94,6 +95,10 @@ const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT16 _un
       pszString = convertICAP_PIXELTYPE_toString(_unItem);
       break;
 
+    case ICAP_PIXELFLAVOR:
+      pszString = convertICAP_PIXELFLAVOR_toString(_unItem);
+      break;
+
     case ICAP_BITDEPTH:
       {
       char *buff = nextTempBuffer();
@@ -108,6 +113,21 @@ const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT16 _un
       SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "%u [0x%x]", _unItem, _unItem);
       pszString = buff;
       }
+      break;
+  }
+
+  return pszString;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+const char* convertEI_Item_toString(const TW_UINT16 _unEI, const TW_UINT32 _unItem)
+{
+  const char* pszString = NULL;
+
+  switch(_unEI)
+  {
+    case TWEI_PIXELFLAVOR:
+      pszString = convertICAP_PIXELFLAVOR_toString((TW_UINT16)_unItem);
       break;
   }
 
@@ -1316,47 +1336,132 @@ const char* convertExtImageInfoItem_toString(TW_INFO &ImgInfo)
          // If the data does fit inside then it is possible to have an array of data.
          if(getTWTYsize(ImgInfo.ItemType)*ImgInfo.NumItems <= sizeof(TW_UINT32))
          {
-            char * pTemp = buff;
+            char        *pTemp    = buff;
+            const char  *pItem    = NULL;
+            int          TempSize = TEMPBUFSIZE;
 
             for( int nItem=0; nItem<ImgInfo.NumItems; nItem++)
             {
                switch(ImgInfo.ItemType)
                {
                 case TWTY_INT8:
-                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_INT8*)&ImgInfo.Item)[nItem]);
+                  SSNPRINTF(pTemp, TempSize, TempSize, "%d ", ((TW_INT8*)&ImgInfo.Item)[nItem]);
                   break;
 
                 case TWTY_INT16:
-                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_INT16*)&ImgInfo.Item)[nItem]);
+                  SSNPRINTF(pTemp, TempSize, TempSize, "%d ", ((TW_INT16*)&ImgInfo.Item)[nItem]);
                   break;
 
                 case TWTY_INT32:
-                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_INT32*)&ImgInfo.Item)[nItem]);
+                  SSNPRINTF(pTemp, TempSize, TempSize, "%d ", ((TW_INT32*)&ImgInfo.Item)[nItem]);
                   break;
 
                 case TWTY_UINT8:
-                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_UINT8*)&ImgInfo.Item)[nItem]);
+                  SSNPRINTF(pTemp, TempSize, TempSize, "%u ", ((TW_UINT8*)&ImgInfo.Item)[nItem]);
                   break;
 
                 case TWTY_UINT32:
-                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_UINT32*)&ImgInfo.Item)[nItem]);
+                  pItem = convertEI_Item_toString(ImgInfo.InfoID, ((TW_UINT32*)&ImgInfo.Item)[nItem]);
+                  if(pItem)
+                  {
+                    SSNPRINTF(pTemp, TempSize, TempSize, "%s ", pItem);
+                  }
+                  else
+                  {
+                    SSNPRINTF(pTemp, TempSize, TempSize, "%u ", ((TW_UINT32*)&ImgInfo.Item)[nItem]);
+                  }
                   break;
 
                 case TWTY_UINT16:
-                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_UINT16*)&ImgInfo.Item)[nItem]);
+                  pItem = convertEI_Item_toString(ImgInfo.InfoID, ((TW_UINT16*)&ImgInfo.Item)[nItem]);
+                  if(pItem)
+                  {
+                    SSNPRINTF(pTemp, TempSize, TempSize, "%s ", pItem);
+                  }
+                  else
+                  {
+                    SSNPRINTF(pTemp, TempSize, TempSize, "%u ", ((TW_UINT16*)&ImgInfo.Item)[nItem]);
+                  }
                   break;
 
                 case TWTY_BOOL:
-                  SSNPRINTF(pTemp, TEMPBUFSIZE, TEMPBUFSIZE, "%d ", ((TW_BOOL*)&ImgInfo.Item)[nItem]);
+                  SSNPRINTF(pTemp, TempSize, TempSize, "%s ", ((TW_BOOL*)&ImgInfo.Item)[nItem]? "True" : "False");
                   break;
                }
+               TempSize -= (int)strlen(pTemp);
                pTemp += strlen(pTemp);
+               if(TempSize <= 0)
+               {
+                  break;
+               }
             }
          }
          else
          {
             //Did not fit into the INT32
-            SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "todo");
+            char        *pTemp    = buff;
+            const char  *pItem    = NULL;
+            int          TempSize = TEMPBUFSIZE;
+
+            BYTE * pBData = (BYTE *)_DSM_LockMemory((TW_HANDLE)ImgInfo.Item);
+
+            for( int nItem=0; nItem<ImgInfo.NumItems; nItem++)
+            {
+               switch(ImgInfo.ItemType)
+               {
+                case TWTY_INT8:
+                  SSNPRINTF(pTemp, TempSize, TempSize, "%d ", ((TW_INT8*)pBData)[nItem]);
+                  break;
+
+                case TWTY_INT16:
+                  SSNPRINTF(pTemp, TempSize, TempSize, "%d ", ((TW_INT16*)pBData)[nItem]);
+                  break;
+
+                case TWTY_INT32:
+                  SSNPRINTF(pTemp, TempSize, TempSize, "%d ", ((TW_INT32*)pBData)[nItem]);
+                  break;
+
+                case TWTY_UINT8:
+                  SSNPRINTF(pTemp, TempSize, TempSize, "%u ", ((TW_UINT8*)pBData)[nItem]);
+                  break;
+
+                case TWTY_UINT32:
+                  pItem = convertEI_Item_toString(ImgInfo.InfoID, ((TW_UINT32*)pBData)[nItem]);
+                  if(pItem)
+                  {
+                    SSNPRINTF(pTemp, TempSize, TempSize, "%s ", pItem);
+                  }
+                  else
+                  {
+                    SSNPRINTF(pTemp, TempSize, TempSize, "%u ", ((TW_UINT32*)pBData)[nItem]);
+                  }
+                  break;
+
+                case TWTY_UINT16:
+                  pItem = convertEI_Item_toString(ImgInfo.InfoID, ((TW_UINT16*)pBData)[nItem]);
+                  if(pItem)
+                  {
+                    SSNPRINTF(pTemp, TempSize, TempSize, "%s ", pItem);
+                  }
+                  else
+                  {
+                    SSNPRINTF(pTemp, TempSize, TempSize, "%u ", ((TW_UINT16*)pBData)[nItem]);
+                  }
+                  break;
+
+                case TWTY_BOOL:
+                  SSNPRINTF(pTemp, TempSize, TempSize, "%s ", ((TW_BOOL*)pBData)[nItem]? "True" : "False");
+                  break;
+               }
+               TempSize -= (int)strlen(pTemp);
+               pTemp += strlen(pTemp);
+               if(TempSize <= 0)
+               {
+                  break;
+               }
+            }
+
+             _DSM_UnlockMemory((TW_HANDLE)ImgInfo.Item);
          }
          break;
 
@@ -1368,10 +1473,9 @@ const char* convertExtImageInfoItem_toString(TW_INFO &ImgInfo)
          {
          char *chTest = (char *)_DSM_LockMemory((TW_HANDLE)ImgInfo.Item);
 
-         SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "%s", chTest);
+         SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "%.*s", getTWTYsize(ImgInfo.ItemType), chTest);
 
          _DSM_UnlockMemory((TW_HANDLE)ImgInfo.Item);
-         _DSM_Free((TW_HANDLE)ImgInfo.Item);
          }
          break;
 
@@ -1379,12 +1483,11 @@ const char* convertExtImageInfoItem_toString(TW_INFO &ImgInfo)
          {
          TW_FRAME *pFrame = (TW_FRAME *)_DSM_LockMemory((TW_HANDLE)ImgInfo.Item);
 
-         SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "\r\n\tLeft\t%0.2f\r\n\tTop\t%.2f\r\n\tRight\t%.2f\r\n\tBottom\t%.2f",
+         SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "%0.2f  %.2f  %.2f  %.2f",
                    FIX32ToFloat(pFrame->Left), FIX32ToFloat(pFrame->Top),
                    FIX32ToFloat(pFrame->Right), FIX32ToFloat(pFrame->Bottom));
 
          _DSM_UnlockMemory((TW_HANDLE)ImgInfo.Item);
-         _DSM_Free((TW_HANDLE)ImgInfo.Item);
          }
          break;
 
