@@ -67,6 +67,14 @@ const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT16 _un
 
 /**
 * converts the integer CAP transfer method into string form
+* @param[in] _unEI the ExtendedImageInfo
+* @param[in] _unItem the value
+* @return the equivalent string, or NULL if not found
+*/
+const char* convertEI_Item_toString(const TW_UINT16 _unEI, const TW_UINT32 _unItem);
+
+/**
+* converts the integer CAP transfer method into string form
 * @param[in] _unItem the value
 * @return the equivalent string
 */
@@ -85,6 +93,13 @@ const char* convertICAP_UNITS_toString(const TW_UINT16 _unItem);
 * @return the equivalent string
 */
 const char* convertICAP_PIXELTYPE_toString(const TW_UINT16 _unItem);
+
+/**
+* converts the integer CAP Pixel flavor value into string form
+* @param[in] _unItem the value
+* @return the equivalent string
+*/
+const char* convertICAP_PIXELFLAVOR_toString(const TW_UINT16 _unItem);
 
 /**
 * converts the integer CAP Image File format type value into string form

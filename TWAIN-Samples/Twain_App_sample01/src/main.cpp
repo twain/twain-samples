@@ -345,8 +345,10 @@ void EnableDS()
     }
     if(twRC!=TWRC_DSEVENT)
 	  {   
-		  TranslateMessage ((LPMSG)&Msg);
+#ifdef TWH_CMP_MSC
+      TranslateMessage ((LPMSG)&Msg);
 		  DispatchMessage ((LPMSG)&Msg);
+#endif
 	  }
   }
 
