@@ -355,66 +355,6 @@ typedef struct {
    TW_FRAME   ItemList[1];                         /**< Array of TW_FRAME structures starts here */
 } TW_ENUMERATION_FRAME, FAR * pTW_ENUMERATION_FRAME;/**< Pointer to TW_ENUMERATION that holds a TW_FRAME item */
 
-/**
-* TW_RANGE that holds a TW_INT16 item
-*/
-typedef struct {
-   TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_INT16 */
-   TW_INT16   MinValue;                            /**< Starting value in the range */
-   TW_INT16   MaxValue;                            /**< Final value in the range */
-   TW_INT16   StepSize;                            /**< Increment from MinValue to MaxValue */
-   TW_INT16   DefaultValue;                        /**< Power-up value */
-   TW_INT16   CurrentValue;                        /**< The value that is currently in effect */
-} TW_RANGE_INT16, FAR * pTW_RANGE_INT16;           /**< Pointer to TW_RANGE that holds a range for TW_INT16 items */
-
-/**
-* TW_RANGE that holds a TW_INT32 item
-*/
-typedef struct {
-   TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_INT32 */
-   TW_INT32   MinValue;                            /**< Starting value in the range */
-   TW_INT32   MaxValue;                            /**< Final value in the range */
-   TW_INT32   StepSize;                            /**< Increment from MinValue to MaxValue */
-   TW_INT32   DefaultValue;                        /**< Power-up value */
-   TW_INT32   CurrentValue;                        /**< The value that is currently in effect */
-} TW_RANGE_INT32, FAR * pTW_RANGE_INT32;           /**< Pointer to TW_RANGE that holds a range for TW_INT32 items */
-
-/**
-* TW_RANGE that holds a TW_UINT16 item
-*/
-typedef struct {
-   TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_UINT16 */
-   TW_UINT16  MinValue;                            /**< Starting value in the range */
-   TW_UINT16  MaxValue;                            /**< Final value in the range */
-   TW_UINT16  StepSize;                            /**< Increment from MinValue to MaxValue */
-   TW_UINT16  DefaultValue;                        /**< Power-up value */
-   TW_UINT16  CurrentValue;                        /**< The value that is currently in effect */
-} TW_RANGE_UINT16, FAR * pTW_RANGE_UINT16;         /**< Pointer to TW_RANGE that holds a range for TW_UINT16 items */
-
-/**
-* TW_RANGE that holds a TW_UINT32 item
-*/
-typedef struct {
-   TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_UINT32 */
-   TW_UINT32  MinValue;                            /**< Starting value in the range */
-   TW_UINT32  MaxValue;                            /**< Final value in the range */
-   TW_UINT32  StepSize;                            /**< Increment from MinValue to MaxValue */
-   TW_UINT32  DefaultValue;                        /**< Power-up value */
-   TW_UINT32  CurrentValue;                        /**< The value that is currently in effect */
-} TW_RANGE_UINT32, FAR * pTW_RANGE_UINT32;         /**< Pointer to TW_RANGE that holds a range for TW_UINT32 items */
-
-/**
-* TW_RANGE that holds a TW_FIX32 item
-*/
-typedef struct {
-   TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_FIX32 */
-   TW_FIX32   MinValue;                            /**< Starting value in the range */
-   TW_FIX32   MaxValue;                            /**< Final value in the range */
-   TW_FIX32   StepSize;                            /**< Increment from MinValue to MaxValue */
-   TW_FIX32   DefaultValue;                        /**< Power-up value */
-   TW_FIX32   CurrentValue;                        /**< The value that is currently in effect */
-} TW_RANGE_FIX32, FAR * pTW_RANGE_FIX32;           /**< Pointer to TW_RANGE that holds a range for TW_FIX32 items */
-
 
 #ifdef TWH_CMP_MSC
 #pragma pack (pop, before_twain)
