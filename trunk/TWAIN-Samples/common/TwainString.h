@@ -61,9 +61,10 @@ const char* convertCAP_toString(const TW_UINT16 _unCap);
 * converts the integer CAP transfer method into string form
 * @param[in] _unCap the cap
 * @param[in] _unItem the value
+* @param[in] _unType the TWAIN Type of the item
 * @return the equivalent string
 */
-const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT16 _unItem);
+const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT32 _unItem, const TW_UINT16 _unType);
 
 /**
 * converts the integer CAP transfer method into string form

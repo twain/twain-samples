@@ -1,3 +1,10 @@
+2009-05-12 JFL Peripheral Solutions jimw@jflinc.com
+
+    * Simplified the method to get the current value in CommonTWAIN. 
+    * Expanded convertCAP_Item_toString to take into account the Type
+    * Simplified print_ICAP to eliminate many overloaded functions.  
+    * Expand print_ICAP to handle more TWAIN types.
+        
 2009-03-16 JFL Peripheral Solutions jimw@jflinc.com
 
     * Display bool Capabilities correctly. 

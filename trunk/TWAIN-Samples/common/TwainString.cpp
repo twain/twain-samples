@@ -69,34 +69,34 @@ char * nextTempBuffer()
 
 
 //////////////////////////////////////////////////////////////////////////////
-const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT16 _unItem)
+const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT32 _unItem, const TW_UINT16 _unType)
 {
   const char* pszString = "Unknown capability";
 
   switch(_unCap)
   {
     case ICAP_XFERMECH:
-      pszString = convertICAP_XFERMECH_toString(_unItem);
+      pszString = convertICAP_XFERMECH_toString((TW_UINT16)_unItem);
       break;
 
     case ICAP_IMAGEFILEFORMAT:
-      pszString = convertICAP_IMAGEFILEFORMAT_toString(_unItem);
+      pszString = convertICAP_IMAGEFILEFORMAT_toString((TW_UINT16)_unItem);
       break;
 
     case ICAP_COMPRESSION:
-      pszString = convertICAP_COMPRESSION_toString(_unItem);
+      pszString = convertICAP_COMPRESSION_toString((TW_UINT16)_unItem);
       break;
 
     case ICAP_UNITS:
-      pszString = convertICAP_UNITS_toString(_unItem);
+      pszString = convertICAP_UNITS_toString((TW_UINT16)_unItem);
       break;
 
     case ICAP_PIXELTYPE:
-      pszString = convertICAP_PIXELTYPE_toString(_unItem);
+      pszString = convertICAP_PIXELTYPE_toString((TW_UINT16)_unItem);
       break;
 
     case ICAP_PIXELFLAVOR:
-      pszString = convertICAP_PIXELFLAVOR_toString(_unItem);
+      pszString = convertICAP_PIXELFLAVOR_toString((TW_UINT16)_unItem);
       break;
 
     case ICAP_BITDEPTH:
@@ -110,7 +110,24 @@ const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT16 _un
     default:
       {
       char *buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "%u [0x%x]", _unItem, _unItem);
+      switch(_unType)
+      {
+        case TWTY_UINT8:
+        case TWTY_UINT16:
+        case TWTY_UINT32:
+          SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "%u [0x%x]", _unItem, _unItem);
+          break;
+
+        case TWTY_INT8:
+        case TWTY_INT16:
+        case TWTY_INT32:
+          SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "%d", _unItem);
+          break;
+
+        case TWTY_BOOL:
+          SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "%s", (TW_BOOL)_unItem? "True" : "False");
+          break;
+      }
       pszString = buff;
       }
       break;

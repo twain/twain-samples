@@ -63,114 +63,6 @@ float FIX32ToFloat(const TW_FIX32& _fix32)
 
 
 //////////////////////////////////////////////////////////////////////////////
-bool getcurrent(TW_CAPABILITY *pCap, TW_INT16& val)
-{
-  bool bret = false;
-
-  if(0 != pCap->hContainer)
-  {
-    if(TWON_ENUMERATION == pCap->ConType)
-    {
-      pTW_ENUMERATION_INT16 pCapPT = (pTW_ENUMERATION_INT16)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_INT16 == pCapPT->ItemType)
-      {
-        val = pCapPT->ItemList[pCapPT->CurrentIndex];
-        bret = true;
-      }
-      _DSM_UnlockMemory(pCap->hContainer);
-    }
-    else if(TWON_ONEVALUE == pCap->ConType)
-    {
-      pTW_ONEVALUE_INT16 pCapPT = (pTW_ONEVALUE_INT16)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_INT16 == pCapPT->ItemType)
-      {
-        val = pCapPT->Item;
-        bret = true;
-      }
-      _DSM_UnlockMemory(pCap->hContainer);
-    }
-  }
-
-  return bret;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-bool getcurrent(TW_CAPABILITY *pCap, TW_INT32& val)
-{
-  bool bret = false;
-
-  if(0 != pCap->hContainer)
-  {
-    if(TWON_ENUMERATION == pCap->ConType)
-    {
-      pTW_ENUMERATION_INT32 pCapPT = (pTW_ENUMERATION_INT32)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_INT32 == pCapPT->ItemType)
-      {
-        val = pCapPT->ItemList[pCapPT->CurrentIndex];
-        bret = true;
-      }
-      _DSM_UnlockMemory(pCap->hContainer);
-    }
-    else if(TWON_ONEVALUE == pCap->ConType)
-    {
-      pTW_ONEVALUE_INT32 pCapPT = (pTW_ONEVALUE_INT32)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_INT32 == pCapPT->ItemType)
-      {
-        val = pCapPT->Item;
-        bret = true;
-      }
-      _DSM_UnlockMemory(pCap->hContainer);
-    }
-  }
-
-  return bret;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-bool getcurrent(TW_CAPABILITY *pCap, TW_UINT16& val)
-{
-  bool bret = false;
-
-  if(0 != pCap->hContainer)
-  {
-    if(TWON_ENUMERATION == pCap->ConType)
-    {
-      pTW_ENUMERATION_UINT16 pCapPT = (pTW_ENUMERATION_UINT16)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        val = pCapPT->ItemList[pCapPT->CurrentIndex];
-        bret = true;
-      }
-      _DSM_UnlockMemory(pCap->hContainer);
-    }
-    else if(TWON_ONEVALUE == pCap->ConType)
-    {
-      pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(pCap->hContainer);
-      
-      if(TWTY_UINT16 == pCapPT->ItemType)
-      {
-        val = (TW_UINT16)(pCapPT->Item);
-        bret = true;
-      }
-      else if(TWTY_BOOL == pCapPT->ItemType)
-      {
-        val = (TW_BOOL)(pCapPT->Item);
-        bret = true;
-      }
-      _DSM_UnlockMemory(pCap->hContainer);
-    }
-  }
-
-  return bret;
-}
-
-//////////////////////////////////////////////////////////////////////////////
 bool getcurrent(TW_CAPABILITY *pCap, TW_UINT32& val)
 {
   bool bret = false;
@@ -179,24 +71,52 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_UINT32& val)
   {
     if(TWON_ENUMERATION == pCap->ConType)
     {
-      pTW_ENUMERATION_UINT32 pCapPT = (pTW_ENUMERATION_UINT32)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_UINT32 == pCapPT->ItemType)
+      pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(pCap->hContainer);
+      switch(pCapPT->ItemType)
       {
-        val = pCapPT->ItemList[pCapPT->CurrentIndex];
+      case TWTY_INT32:
+        val = (TW_INT32)((pTW_INT32)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
         bret = true;
+        break;
+
+      case TWTY_UINT32:
+        val = (TW_INT32)((pTW_UINT32)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
+        bret = true;
+        break;
+
+      case TWTY_INT16:
+        val = (TW_INT32)((pTW_INT16)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
+        bret = true;
+        break;
+
+      case TWTY_UINT16:
+        val = (TW_INT32)((pTW_UINT16)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
+        bret = true;
+        break;
+
+      case TWTY_INT8:
+        val = (TW_INT32)((pTW_INT8)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
+        bret = true;
+        break;
+
+      case TWTY_UINT8:
+        val = (TW_INT32)((pTW_UINT8)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
+        bret = true;
+        break;
+
+      case TWTY_BOOL:
+        val = (TW_INT32)((pTW_BOOL)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
+        bret = true;
+        break;
+
       }
       _DSM_UnlockMemory(pCap->hContainer);
     }
     else if(TWON_ONEVALUE == pCap->ConType)
     {
-      pTW_ONEVALUE_UINT32 pCapPT = (pTW_ONEVALUE_UINT32)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_UINT32 == pCapPT->ItemType)
-      {
-        val = pCapPT->Item;
-        bret = true;
-      }
+      pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(pCap->hContainer);
+      val = pCapPT->Item;
+      bret = true;
       _DSM_UnlockMemory(pCap->hContainer);
     }
   }
@@ -204,8 +124,9 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_UINT32& val)
   return bret;
 }
 
+
 //////////////////////////////////////////////////////////////////////////////
-bool getcurrent(TW_CAPABILITY *pCap, TW_STR32& val)
+bool getcurrent(TW_CAPABILITY *pCap, string& val)
 {
   bool bret = false;
 
@@ -213,23 +134,88 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_STR32& val)
   {
     if(TWON_ENUMERATION == pCap->ConType)
     {
-      pTW_ENUMERATION_STR32 pCapPT = (pTW_ENUMERATION_STR32)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_STR32 == pCapPT->ItemType)
+      pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(pCap->hContainer);
+      switch(pCapPT->ItemType)
       {
-        SSTRCPY(val, sizeof(val),pCapPT->ItemList[pCapPT->CurrentIndex]);
-        bret = true;
+      case TWTY_STR32:
+        {
+          pTW_STR32 pStr = &((pTW_STR32)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
+          pStr[32] = 0;
+          val = pStr;
+          bret = true;
+        }
+        break;
+
+      case TWTY_STR64:
+        {
+          pTW_STR64 pStr = &((pTW_STR64)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
+          pStr[64] = 0;
+          val = pStr;
+          bret = true;
+        }
+        break;
+
+      case TWTY_STR128:
+        {
+          pTW_STR128 pStr = &((pTW_STR128)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
+          pStr[128] = 0;
+          val = pStr;
+          bret = true;
+        }
+        break;
+
+      case TWTY_STR255:
+        {
+          pTW_STR255 pStr = &((pTW_STR255)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
+          pStr[255] = 0;
+          val = pStr;
+          bret = true;
+        }
+        break;
       }
       _DSM_UnlockMemory(pCap->hContainer);
     }
     else if(TWON_ONEVALUE == pCap->ConType)
     {
-      pTW_ONEVALUE_STR32 pCapPT = (pTW_ONEVALUE_STR32)_DSM_LockMemory(pCap->hContainer);
+      pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(pCap->hContainer);
 
-      if(TWTY_STR32 == pCapPT->ItemType)
+      switch(pCapPT->ItemType)
       {
-        SSTRCPY(val, sizeof(val), pCapPT->Item);
-        bret = true;
+      case TWTY_STR32:
+        {
+          pTW_STR32 pStr = ((pTW_STR32)(&pCapPT->Item));
+          pStr[32] = 0;
+          val = pStr;
+          bret = true;
+        }
+        break;
+
+      case TWTY_STR64:
+        {
+          pTW_STR64 pStr = ((pTW_STR64)(&pCapPT->Item));
+          pStr[64] = 0;
+          val = pStr;
+          bret = true;
+        }
+        break;
+
+      case TWTY_STR128:
+        {
+          pTW_STR128 pStr = ((pTW_STR128)(&pCapPT->Item));
+          pStr[128] = 0;
+          val = pStr;
+          bret = true;
+        }
+        break;
+
+      case TWTY_STR255:
+        {
+          pTW_STR255 pStr = ((pTW_STR255)(&pCapPT->Item));
+          pStr[255] = 0;
+          val = pStr;
+          bret = true;
+        }
+        break;
       }
       _DSM_UnlockMemory(pCap->hContainer);
     }
@@ -237,108 +223,7 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_STR32& val)
 
   return bret;
 }
-
 //////////////////////////////////////////////////////////////////////////////
-bool getcurrent(TW_CAPABILITY *pCap, TW_STR64& val)
-{
-  bool bret = false;
-
-  if(0 != pCap->hContainer)
-  {
-    if(TWON_ENUMERATION == pCap->ConType)
-    {
-      pTW_ENUMERATION_STR64 pCapPT = (pTW_ENUMERATION_STR64)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_STR64 == pCapPT->ItemType)
-      {
-        SSTRCPY(val, sizeof(val),pCapPT->ItemList[pCapPT->CurrentIndex]);
-        bret = true;
-      }
-      _DSM_UnlockMemory(pCap->hContainer);
-    }
-    else if(TWON_ONEVALUE == pCap->ConType)
-    {
-      pTW_ONEVALUE_STR64 pCapPT = (pTW_ONEVALUE_STR64)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_STR64 == pCapPT->ItemType)
-      {
-        SSTRCPY(val, sizeof(val), pCapPT->Item);
-        bret = true;
-      }
-      _DSM_UnlockMemory(pCap->hContainer);
-    }
-  }
-
-  return bret;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-bool getcurrent(TW_CAPABILITY *pCap, TW_STR128& val)
-{
-  bool bret = false;
-
-  if(0 != pCap->hContainer)
-  {
-    if(TWON_ENUMERATION == pCap->ConType)
-    {
-      pTW_ENUMERATION_STR128 pCapPT = (pTW_ENUMERATION_STR128)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_STR128 == pCapPT->ItemType)
-      {
-        SSTRCPY(val, sizeof(val),pCapPT->ItemList[pCapPT->CurrentIndex]);
-        bret = true;
-      }
-      _DSM_UnlockMemory(pCap->hContainer);
-    }
-    else if(TWON_ONEVALUE == pCap->ConType)
-    {
-      pTW_ONEVALUE_STR128 pCapPT = (pTW_ONEVALUE_STR128)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_STR128 == pCapPT->ItemType)
-      {
-        SSTRCPY(val, sizeof(val), pCapPT->Item);
-        bret = true;
-      }
-      _DSM_UnlockMemory(pCap->hContainer);
-    }
-  }
-
-  return bret;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-bool getcurrent(TW_CAPABILITY *pCap, TW_STR255& val)
-{
-  bool bret = false;
-
-  if(0 != pCap->hContainer)
-  {
-    if(TWON_ENUMERATION == pCap->ConType)
-    {
-      pTW_ENUMERATION_STR255 pCapPT = (pTW_ENUMERATION_STR255)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_STR255 == pCapPT->ItemType)
-      {
-        SSTRCPY(val, sizeof(val),pCapPT->ItemList[pCapPT->CurrentIndex]);
-        bret = true;
-      }
-      _DSM_UnlockMemory(pCap->hContainer);
-    }
-    else if(TWON_ONEVALUE == pCap->ConType)
-    {
-      pTW_ONEVALUE_STR255 pCapPT = (pTW_ONEVALUE_STR255)_DSM_LockMemory(pCap->hContainer);
-
-      if(TWTY_STR255 == pCapPT->ItemType)
-      {
-        SSTRCPY(val, sizeof(val), pCapPT->Item);
-        bret = true;
-      }
-      _DSM_UnlockMemory(pCap->hContainer);
-    }
-  }
-
-  return bret;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 bool getcurrent(TW_CAPABILITY *pCap, TW_FIX32& val)

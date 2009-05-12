@@ -85,37 +85,4 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE _pCap);
 */
 void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION _pCap);
 
-
-/**
-* @overload void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE_FIX32 _pCap)
-* prints the ICAP_xxxxx menu for type TW_ONEVALUE_FIX32
-* @param[in] _unCap The cap to print
-* @param[in] _pCap pointer to a TW_ONEVALUE_FIX32 structure holding the res values
-*/
-void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE_FIX32 _pCap);
-
-/**
-* @overload void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION_FIX32 _pCap)
-* prints the ICAP_xxxxx menu for type TW_ENUMERATION_FIX32
-* @param[in] _unCap The cap to print
-* @param[in] _pCap pointer to a TW_ENUMERATION_FIX32 structure holding the res values
-*/
-void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION_FIX32 _pCap);
-
-/**
-* @overload void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION_FRAME _pCap)
-* prints the ICAP_xxxxx menu for type TW_ENUMERATION_FRAME
-* @param[in] _unCap The cap to print
-* @param[in] _pCap pointer to a TW_ENUMERATION_FRAME structure holding the caps values
-*/
-void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION_FRAME _pCap);
-
-/**
-* @overload void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE_FRAME _pCap)
-* prints the ICAP_xxxxx menu for type TW_ONEVALUE_FRAME
-* @param[in] _unCap The cap to print
-* @param[in] _pCap pointer to a TW_ONEVALUE_FRAME structure holding the caps values
-*/
-void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE_FRAME _pCap);
-
 #endif // __TWAINAPP_UI_H__
