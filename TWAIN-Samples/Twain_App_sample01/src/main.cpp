@@ -101,37 +101,11 @@ void negotiate_CAP(const pTW_CAPABILITY _pCap)
       // print the caps current value
       if(TWON_ENUMERATION == _pCap->ConType)
       {
-        switch(((pTW_ENUMERATION)pVal)->ItemType)
-        {
-          case TWTY_UINT16:
-            print_ICAP(_pCap->Cap, (pTW_ENUMERATION)(pVal));
-          break;
-
-          case TWTY_FIX32:
-            print_ICAP(_pCap->Cap, (pTW_ENUMERATION_FIX32)(pVal));
-          break;
-          
-          case TWTY_FRAME:
-            print_ICAP(_pCap->Cap, (pTW_ENUMERATION_FRAME)(pVal));
-          break;
-        }
+        print_ICAP(_pCap->Cap, (pTW_ENUMERATION)(pVal));
       }
       else // TWON_ONEVALUE
       {
-        switch(((pTW_ONEVALUE)pVal)->ItemType)
-        {
-          case TWTY_UINT16:
-            print_ICAP(_pCap->Cap, (pTW_ONEVALUE)(pVal));
-          break;
-          
-          case TWTY_FIX32:
-            print_ICAP(_pCap->Cap, (pTW_ONEVALUE_FIX32)(pVal));
-          break;
-          
-          case TWTY_FRAME:
-            print_ICAP(_pCap->Cap, (pTW_ONEVALUE_FRAME)(pVal));
-          break;
-        }
+        print_ICAP(_pCap->Cap, (pTW_ONEVALUE)(pVal));
       }
 
       cout << "\nset cap# > ";

@@ -36,11 +36,13 @@
 * @date April 2007
 */
 
-#include "Common.h"
-
 #ifndef __COMMONTWAIN_H__
 #define __COMMONTWAIN_H__
 
+#include "Common.h"
+
+#include <string>
+using namespace std;
 
 /**
 * @def kTWAIN_DSM_DLL_NAME
@@ -91,46 +93,6 @@ float FIX32ToFloat(const TW_FIX32& _fix32);
 // Enumeration   x           x                    x       x       x                     x                        x      x
 // Range                     x      x             x       x                                                      x      
 
-
-/**
-* TW_ONEVALUE that holds a TW_BOOL item
-*/
-typedef struct {
-   TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_BOOL */
-   TW_BOOL    Item;                                /**< TW_BOOL value being passed */
-} TW_ONEVALUE_BOOL, FAR * pTW_ONEVALUE_BOOL;       /**< Pointer to TW_ONEVALUE that holds a TW_BOOL item */
-
-/**
-* TW_ONEVALUE that holds a TW_INT16 item
-*/
-typedef struct {
-   TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_INT16 */
-   TW_INT16   Item;                                /**< TW_INT16 value being passed */
-} TW_ONEVALUE_INT16, FAR * pTW_ONEVALUE_INT16;     /**< Pointer to TW_ONEVALUE that holds a TW_INT16 item */
-
-/**
-* TW_ONEVALUE that holds a TW_INT32 item
-*/
-typedef struct {
-   TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_INT32 */
-   TW_INT32   Item;                                /**< TW_INT32 value being passed */
-} TW_ONEVALUE_INT32, FAR * pTW_ONEVALUE_INT32;     /**< Pointer to TW_ONEVALUE that holds a TW_INT32 item */
-
-/**
-* TW_ONEVALUE that holds a TW_UINT16 item
-*/
-typedef struct {
-   TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_UINT16 */
-   TW_UINT16  Item;                                /**< TW_UINT16 value being passed */
-} TW_ONEVALUE_UINT16, FAR * pTW_ONEVALUE_UINT16;   /**< Pointer to TW_ONEVALUE that holds a TW_UINT16 item */
-
-/**
-* TW_ONEVALUE that holds a TW_UINT32 item
-*/
-typedef struct {
-   TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_UINT32 */
-   TW_UINT32  Item;                                /**< TW_UINT32 value being passed */
-} TW_ONEVALUE_UINT32, FAR * pTW_ONEVALUE_UINT32;   /**< Pointer to TW_ONEVALUE that holds a TW_UINT32 item */
 
 /**
 * TW_ONEVALUE that holds a TW_STR32 item
@@ -319,7 +281,7 @@ typedef struct {
    TW_UINT32  NumItems;                            /**< How many items in ItemList */
    TW_UINT32  CurrentIndex;                        /**< Current value is in ItemList[CurrentIndex] */
    TW_UINT32  DefaultIndex;                        /**< Powerup value is in ItemList[DefaultIndex] */
-   TW_STR128   ItemList[1];                         /**< Array of ItemType values starts here       */
+   TW_STR128  ItemList[1];                         /**< Array of ItemType values starts here       */
 } TW_ENUMERATION_STR128, FAR * pTW_ENUMERATION_STR128;/**< Pointer to TW_ENUMERATION that holds an array TW_STR32 items */
 
 /**
@@ -382,29 +344,6 @@ typedef struct tagBITMAPFILEHEADER
 #pragma pack() // reset
 #endif // TWH_CMP_GNU
 
-/**
-* Get the current value from a Capability as a TW_INT16.
-* @param[in] pCap a pointer to the capability to retrieve the current value
-* @param[out] val the value retrieved from the capability
-* @return ture if successful
-*/
-bool getcurrent(TW_CAPABILITY *pCap, TW_INT16& val);
-
-/**
-* Get the current value from a Capability as a TW_INT32.
-* @param[in] pCap a pointer to the capability to retrieve the current value
-* @param[out] val the value retrieved from the capability
-* @return ture if successful
-*/
-bool getcurrent(TW_CAPABILITY *pCap, TW_INT32& val);
-
-/**
-* Get the current value from a Capability as a TW_UINT16.
-* @param[in] pCap a pointer to the capability to retrieve the current value
-* @param[out] val the value retrieved from the capability
-* @return ture if successful
-*/
-bool getcurrent(TW_CAPABILITY *pCap, TW_UINT16& val);
 
 /**
 * Get the current value from a Capability as a TW_UINT32.
@@ -415,36 +354,13 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_UINT16& val);
 bool getcurrent(TW_CAPABILITY *pCap, TW_UINT32& val);
 
 /**
-* Get the current value from a Capability as a TW_STR32.
+* Get the current value from a Capability as a string for capabilities of 
+* types TWTY_STR32, TWTY_STR64, TWTY_STR128, and TWTY_STR256
 * @param[in] pCap a pointer to the capability to retrieve the current value
 * @param[out] val the value retrieved from the capability
 * @return ture if successful
 */
-bool getcurrent(TW_CAPABILITY *pCap, TW_STR32& val);
-
-/**
-* Get the current value from a Capability as a TW_STR64.
-* @param[in] pCap a pointer to the capability to retrieve the current value
-* @param[out] val the value retrieved from the capability
-* @return ture if successful
-*/
-bool getcurrent(TW_CAPABILITY *pCap, TW_STR64& val);
-
-/**
-* Get the current value from a Capability as a TW_STR128.
-* @param[in] pCap a pointer to the capability to retrieve the current value
-* @param[out] val the value retrieved from the capability
-* @return ture if successful
-*/
-bool getcurrent(TW_CAPABILITY *pCap, TW_STR128& val);
-
-/**
-* Get the current value from a Capability as a TW_STR255.
-* @param[in] pCap a pointer to the capability to retrieve the current value
-* @param[out] val the value retrieved from the capability
-* @return ture if successful
-*/
-bool getcurrent(TW_CAPABILITY *pCap, TW_STR255& val);
+bool getcurrent(TW_CAPABILITY *pCap, string& val);
 
 /**
 * Get the current value from a Capability as a TW_FIX32.

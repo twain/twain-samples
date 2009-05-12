@@ -1464,13 +1464,13 @@ TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const int _value, TW_U
          
   cap.Cap         = Cap;
   cap.ConType     = TWON_ONEVALUE;
-  cap.hContainer  = _DSM_Alloc(sizeof(TW_ONEVALUE_UINT32));// Largest int size
+  cap.hContainer  = _DSM_Alloc(sizeof(TW_ONEVALUE));// Largest int size
   if(0 == cap.hContainer)
   {
     printError(0, "Error allocating memory");
     return false;
   }
-  pTW_ONEVALUE_UINT32 pVal = (pTW_ONEVALUE_UINT32)_DSM_LockMemory(cap.hContainer);
+  pTW_ONEVALUE pVal = (pTW_ONEVALUE)_DSM_LockMemory(cap.hContainer);
 
   pVal->ItemType  = _type;
   pVal->Item      = _value;

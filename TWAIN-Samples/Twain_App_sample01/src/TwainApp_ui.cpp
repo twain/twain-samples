@@ -49,13 +49,12 @@ using namespace std;
 
 
 //////////////////////////////////////////////////////////////////////////////
-string getErrorString_UnexpectedType(const TW_UINT16 _unExpected, const TW_UINT16 _unReceived)
+string getErrorString_UnexpectedType(const TW_UINT16 _unReceived)
 {
   ostringstream errMsg;  
   
   errMsg 
     << "The type is an unexpected value. "
-    << "Expecting " << convertTWTY_toString(_unExpected)
     << " got " << convertTWTY_toString(_unReceived);  
   
   return errMsg.str();
@@ -117,15 +116,74 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE _pCap)
     << "Showing supported types. * indicates current setting.\n\n"
     << "q - done\n";
   
-  if(TWTY_UINT16 == _pCap->ItemType)
+  switch(_pCap->ItemType)
   {
-    cout << "1 - " << convertCAP_Item_toString(_unCap, TW_UINT16(_pCap->Item)) << "*" << endl;
+    case TWTY_FIX32:
+    {
+      pTW_FIX32 pFix32 = (pTW_FIX32)&_pCap->Item;
+      cout << "1 - " << pFix32->Whole << "." << pFix32->Frac << "*\n" << endl;
+    }
+    break;
+
+    case TWTY_FRAME:
+    {
+      pTW_FRAME pframe = (pTW_FRAME)&_pCap->Item;
+
+      cout
+        << "1 - Frame Data:*\n"
+        << "\tLeft,\tTop,\tRight,\tBottom\n" 
+        << "\t" << FIX32ToFloat(pframe->Left) << ",\t"
+        << FIX32ToFloat(pframe->Top) << ",\t"
+        << FIX32ToFloat(pframe->Right) << ",\t"
+        << FIX32ToFloat(pframe->Bottom) << "\n"
+        << "\n"
+        << endl;
+    }
+    break;
+
+    case TWTY_INT8:
+    case TWTY_INT16:
+    case TWTY_INT32:
+    case TWTY_UINT8:
+    case TWTY_UINT16:
+    case TWTY_UINT32:
+    case TWTY_BOOL:
+    {
+      cout << "1 - " << convertCAP_Item_toString(_unCap, _pCap->Item, _pCap->ItemType) << "*" << endl;
+    }
+    break;
+
+    case TWTY_STR32:
+    {
+      cout << "1 - " << (pTW_STR32)&_pCap->ItemType << "*" << endl;
+    }
+    break;
+
+    case TWTY_STR64:
+    {
+      cout << "1 - " << (pTW_STR64)&_pCap->ItemType << "*" << endl;
+    }
+    break;
+
+    case TWTY_STR128:
+    {
+      cout << "1 - " << (pTW_STR128)&_pCap->ItemType << "*" << endl;
+    }
+    break;
+
+    case TWTY_STR255:
+    {
+      cout << "1 - " << (pTW_STR255)&_pCap->ItemType << "*" << endl;
+    }
+    break;
+
+    default:
+    {
+      cerr << getErrorString_UnexpectedType(_pCap->ItemType) << endl;
+    }
+    break;
+
   }
-  else// if(TWTY_UINT16 != _pCap->ItemType)
-  {
-    cerr << getErrorString_UnexpectedType(TWTY_UINT16, _pCap->ItemType) << endl;
-  }
-  
   return;
 }
 
@@ -148,12 +206,89 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION _pCap)
   {
     switch(_pCap->ItemType)
     {
-      case TWTY_UINT16:
-        cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_UINT16)(&_pCap->ItemList))[x]);
+      case TWTY_UINT32:
+        {
+          cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_UINT32)(&_pCap->ItemList))[x], _pCap->ItemType);
+        }
         break;
 
+      case TWTY_INT32:
+        {
+          cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_INT32)(&_pCap->ItemList))[x], _pCap->ItemType);
+        }
+        break;
+
+      case TWTY_UINT16:
+        {
+          cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_UINT16)(&_pCap->ItemList))[x], _pCap->ItemType);
+        }
+        break;
+
+      case TWTY_INT16:
+        {
+          cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_INT16)(&_pCap->ItemList))[x], _pCap->ItemType);
+        }
+        break;
+
+      case TWTY_UINT8:
+        {
+          cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_UINT8)(&_pCap->ItemList))[x], _pCap->ItemType);
+        }
+        break;
+
+      case TWTY_INT8:
+        {
+          cout << x << " - " << convertCAP_Item_toString(_unCap, ((pTW_INT8)(&_pCap->ItemList))[x], _pCap->ItemType);
+        }
+        break;
+
+      case TWTY_FIX32:
+        {
+          cout << x << " - " << ((pTW_FIX32)(&_pCap->ItemList))[x].Whole << "." << (int)( ( ((pTW_FIX32)(&_pCap->ItemList))[x].Frac/65536.0 + .0005 )*1000 );
+        }
+        break;
+
+      case TWTY_FRAME:
+        {
+          pTW_FRAME pframe = &((pTW_FRAME)(&_pCap->ItemList))[x];
+          cout << x << " - Frame Data:\n"
+               << "\tLeft,\tTop,\tRight,\tBottom\n" 
+               << "\t" << FIX32ToFloat(pframe->Left) << ",\t"
+               << FIX32ToFloat(pframe->Top) << ",\t"
+               << FIX32ToFloat(pframe->Right) << ",\t"
+               << FIX32ToFloat(pframe->Bottom) ;
+        }
+        break;
+
+      case TWTY_STR32:
+        {
+          cout << "1 - " << &((pTW_STR32)(&_pCap->ItemList))[x];
+        }
+        break;
+
+      case TWTY_STR64:
+        {
+          cout << "1 - " << &((pTW_STR64)(&_pCap->ItemList))[x];
+        }
+        break;
+
+      case TWTY_STR128:
+        {
+          cout << "1 - " << &((pTW_STR128)(&_pCap->ItemList))[x];
+        }
+        break;
+
+      case TWTY_STR255:
+        {
+          cout << "1 - " << &((pTW_STR255)(&_pCap->ItemList))[x];
+        }
+        break;
+
+
       default:
-        cerr << getErrorString_UnexpectedType(TWTY_UINT16, _pCap->ItemType) << endl;
+        {
+          cerr << getErrorString_UnexpectedType(_pCap->ItemType) << endl;
+        }
         break;
     }
 
@@ -168,159 +303,4 @@ void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION _pCap)
   cout << endl;
   return;
 }
-
-
-
-//////////////////////////////////////////////////////////////////////////////
-void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE_FIX32 _pCap)
-{
-  if(0 == _pCap)
-  {
-    return;
-  }
-
-  cout 
-    << "\n"
-    << convertCAP_toString(_unCap) << "\n"
-    << "--------------\n"
-    << "Showing supported types. * indicates current setting.\n\n"
-    << "q - done\n";
-
-  if(TWTY_FIX32 == _pCap->ItemType)
-  {
-    cout << "1 - " << _pCap->Item.Whole << "." << _pCap->Item.Frac << "*\n" << endl;
-  }
-  else //if(TWTY_FIX32 != _pCap->ItemType)
-  {
-    cerr << getErrorString_UnexpectedType(TWTY_FIX32, _pCap->ItemType) << endl;
-  }
-  
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION_FIX32 _pCap)
-{
-  if(0 == _pCap)
-  {
-    return;
-  }
-
-  cout 
-    << "\n"
-    << convertCAP_toString(_unCap) << "\n"
-    << "--------------\n"
-    << "Showing supported types. * indicates current setting.\n\n"
-    << "q - done\n";
-
-  if(TWTY_FIX32 == _pCap->ItemType)
-  {
-    for(TW_UINT32 x = 0; x < _pCap->NumItems; ++x)
-    {
-      cout << x << " - ";
-
-      cout
-        << _pCap->ItemList[x].Whole << "." << _pCap->ItemList[x].Frac;
-
-      if(x == _pCap->CurrentIndex)
-      {
-        cout << "*";
-      }
-
-      cout << "\n";
-    }
-    cout << endl;
-  }
-  else //if(TWTY_FIX32 != _pCap->ItemType)
-  {
-    cerr << getErrorString_UnexpectedType(TWTY_FIX32, _pCap->ItemType) << endl;
-  }
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-void print_ICAP(const TW_UINT16 _unCap, pTW_ONEVALUE_FRAME _pCap)
-{
-  if(0 == _pCap)
-  {
-    return;
-  }
-
-  cout
-    << "\n"
-    << convertCAP_toString(_unCap) << "\n"
-    << "--------------\n"
-    << "Showing supported types. * indicates current setting.\n\n"
-    << "q - done\n";
-
-  if(TWTY_FRAME != _pCap->ItemType)
-  {
-    cerr << getErrorString_UnexpectedType(TWTY_FRAME, _pCap->ItemType) << endl;
-    return;
-  }
-
-  pTW_FRAME pframe = &(_pCap->Item);
-
-  cout
-    << "1 - Frame Data:*\n"
-    << "\tLeft,\tTop,\tRight,\tBottom\n" 
-    << "\t" << FIX32ToFloat(pframe->Left) << ",\t"
-    << FIX32ToFloat(pframe->Top) << ",\t"
-    << FIX32ToFloat(pframe->Right) << ",\t"
-    << FIX32ToFloat(pframe->Bottom) << "\n"
-    << "\n"
-    << endl;
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-void print_ICAP(const TW_UINT16 _unCap, pTW_ENUMERATION_FRAME _pCap)
-{
-  if(0 == _pCap)
-  {
-    return;
-  }
-
-  cout
-    << "\n"
-    << convertCAP_toString(_unCap) << "\n"
-    << "--------------\n"
-    << "Showing supported types. * indicates current setting.\n\n"
-    << "q - done\n";
-
-  if(TWTY_FRAME != _pCap->ItemType)
-  {
-    cerr << getErrorString_UnexpectedType(TWTY_FRAME, _pCap->ItemType) << endl;
-    return;
-  }
-
-  pTW_FRAME pframe = 0;
-
-  for(TW_UINT32 x = 0; x < _pCap->NumItems; ++x)
-  {
-    pframe = &((_pCap->ItemList)[x]);
-
-    cout 
-      << x << " - Frame Data:";
-
-    if(x == _pCap->CurrentIndex)
-    {
-      cout << "*";
-    }
-      
-    cout << "\n" 
-      << "\tLeft,\tTop,\tRight,\tBottom\n" 
-      << "\t" << FIX32ToFloat(pframe->Left) << ",\t"
-      << FIX32ToFloat(pframe->Top) << ",\t"
-      << FIX32ToFloat(pframe->Right) << ",\t"
-      << FIX32ToFloat(pframe->Bottom) << "\n"
-      << "\n";
-  }
-  cout << endl;
-
-  return;
-}
-
 //////////////////////////////////////////////////////////////////////////////

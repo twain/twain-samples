@@ -357,7 +357,7 @@ void TwainAppCMD::set_ICAP_FRAMES(const pTW_FRAME _pFrame)
     {
       pTW_ENUMERATION_FRAME pCapPT = (pTW_ENUMERATION_FRAME)_DSM_LockMemory(m_ICAP_FRAMES.hContainer);
       
-      pTW_FRAME ptframe = &(((pTW_FRAME)(&pCapPT->ItemList))[pCapPT->CurrentIndex]);
+      pTW_FRAME ptframe = &pCapPT->ItemList[pCapPT->CurrentIndex];
 
       if( (_pFrame->Bottom == ptframe->Bottom) &&
           (_pFrame->Top == ptframe->Top) &&
@@ -459,37 +459,58 @@ void TwainAppCMD::set_ICAP_BITDEPTH(const TW_UINT16 _nVal)
 //////////////////////////////////////////////////////////////////////////////
 bool TwainAppCMD::getICAP_UNITS(TW_UINT16& _val)
 {
-  return getcurrent(&m_ICAP_UNITS, _val);
+  TW_UINT32 val;
+  bool rtn = getcurrent(&m_ICAP_UNITS, val);
+  _val = (TW_UINT16)val;
+  return rtn;
 }
 
 bool TwainAppCMD::getCAP_XFERCOUNT(TW_INT16& _val)
 {
-  return getcurrent(&m_CAP_XFERCOUNT, _val);
+  TW_UINT32 val;
+  bool rtn = getcurrent(&m_CAP_XFERCOUNT, val);
+  _val = (TW_UINT16)val;
+  return rtn;
 }
 
 bool TwainAppCMD::getICAP_XFERMECH(TW_UINT16& _val)
 {
-  return getcurrent(&m_ICAP_XFERMECH, _val);
+  TW_UINT32 val;
+  bool rtn = getcurrent(&m_ICAP_XFERMECH, val);
+  _val = (TW_UINT16)val;
+  return rtn;
 }
 
 bool TwainAppCMD::getICAP_PIXELTYPE(TW_UINT16& _val)
 {
-  return getcurrent(&m_ICAP_PIXELTYPE, _val);
+  TW_UINT32 val;
+  bool rtn = getcurrent(&m_ICAP_PIXELTYPE, val);
+  _val = (TW_UINT16)val;
+  return rtn;
 }
 
 bool TwainAppCMD::getICAP_BITDEPTH(TW_UINT16& _val)
 {
-  return getcurrent(&m_ICAP_BITDEPTH, _val);
+  TW_UINT32 val;
+  bool rtn = getcurrent(&m_ICAP_BITDEPTH, val);
+  _val = (TW_UINT16)val;
+  return rtn;
 }
 
 bool TwainAppCMD::getICAP_IMAGEFILEFORMAT(TW_UINT16& _val)
 {
-  return getcurrent(&m_ICAP_IMAGEFILEFORMAT, _val);
+  TW_UINT32 val;
+  bool rtn = getcurrent(&m_ICAP_IMAGEFILEFORMAT, val);
+  _val = (TW_UINT16)val;
+  return rtn;
 }
 
 bool TwainAppCMD::getICAP_COMPRESSION(TW_UINT16& _val)
 {
-  return getcurrent(&m_ICAP_COMPRESSION, _val);
+  TW_UINT32 val;
+  bool rtn = getcurrent(&m_ICAP_COMPRESSION, val);
+  _val = (TW_UINT16)val;
+  return rtn;
 }
 
 bool TwainAppCMD::getICAP_XRESOLUTION(TW_FIX32& _xres)

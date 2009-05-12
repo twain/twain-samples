@@ -284,67 +284,48 @@ void Cmfc32DlgConfigure::ListCaps()
 
             switch(type)
             {
-              case TWTY_UINT16:
-              {
-                TW_UINT16 uVal;
-                getcurrent(&Cap, uVal);
-                value = convertCAP_Item_toString(Cap.Cap, uVal);
-                break;
-              }
+              case TWTY_INT8:
+              case TWTY_UINT8:
               case TWTY_INT16:
-              {
-                TW_INT16 Val;
-                getcurrent(&Cap, Val);
-                value = convertCAP_Item_toString(Cap.Cap, Val);
-                break;
-              }
-              case TWTY_FIX32:
-              {
-                TW_FIX32 fVal;
-                getcurrent(&Cap, fVal);
-                value.Format("%d",  fVal.Whole);
-                break;
-              }
+              case TWTY_UINT16:
+              case TWTY_INT32:
+              case TWTY_UINT32:
               case TWTY_BOOL:
               {
-                TW_BOOL Val;
-                getcurrent(&Cap, Val);
-                value = Val?"true":"false";
+                TW_UINT32 uVal;
+                getcurrent(&Cap, uVal);
+                value = convertCAP_Item_toString(Cap.Cap, uVal, type);
                 break;
               }
+
               case TWTY_STR32:
-              {
-                TW_STR32 sVal;
-                getcurrent(&Cap, sVal);
-                value = sVal;
-                break;
-              }
               case TWTY_STR64:
-              {
-                TW_STR64 sVal;
-                getcurrent(&Cap, sVal);
-                value = sVal;
-                break;
-              }
               case TWTY_STR128:
-              {
-                TW_STR128 sVal;
-                getcurrent(&Cap, sVal);
-                value = sVal;
-                break;
-              }
               case TWTY_STR255:
               {
-                TW_STR255 sVal;
+                string sVal;
                 getcurrent(&Cap, sVal);
-                value = sVal;
+                value = sVal.c_str();
                 break;
               }
+
+              case TWTY_FIX32:
+              {
+                TW_FIX32 fix32;
+                getcurrent(&Cap, fix32);
+                value.Format("%d.%d", fix32.Whole, (int)((fix32.Frac/65536.0 + .0005)*1000) );
+                break;
+              }
+
               case TWTY_FRAME:
               {
                 TW_FRAME frame;
                 getcurrent(&Cap, frame);
-                value.Format("%d  %d  %d  %d", frame.Left.Whole, frame.Right.Whole, frame.Top.Whole, frame.Bottom.Whole);
+                value.Format( "%d.%d  %d.%d  %d.%d  %d.%d", 
+                     frame.Left.Whole,   (int)((frame.Left.Frac/65536.0 + .0005)*1000),
+                     frame.Right.Whole,  (int)((frame.Right.Frac/65536.0 + .0005)*1000),
+                     frame.Top.Whole,    (int)((frame.Top.Frac/65536.0 + .0005)*1000),
+                     frame.Bottom.Whole, (int)((frame.Bottom.Frac/65536.0 + .0005)*1000) );
                 break;
               }
               default:
@@ -439,9 +420,9 @@ void Cmfc32DlgConfigure::OnLbnDblclkCaps()
         {
           case CAP_XFERCOUNT:
           {
-            TW_INT16 Val;
+            TW_UINT32 Val;
             getcurrent(&Cap, Val);
-            Val = Val == -1? 1: -1;// flop
+            Val = (TW_INT16)Val == -1? 1: -1;// flop
             g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, Val, TWTY_INT16);
             bChange = true;
             break;
@@ -530,7 +511,7 @@ int Cmfc32DlgConfigure::GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg
               {
                 for(TW_UINT32 x=0; x<pCapPT->NumItems; ++x)
                 {
-                  str   = convertCAP_Item_toString(pCap->Cap, ((pTW_UINT16)(&pCapPT->ItemList))[x]);
+                  str   = convertCAP_Item_toString(pCap->Cap, ((pTW_UINT16)(&pCapPT->ItemList))[x], pCapPT->ItemType);
                   pDlg->m_itemString.Add(str);
                   pDlg->m_itemData.Add(((pTW_UINT16)(&pCapPT->ItemList))[x]);
                 }
@@ -670,7 +651,7 @@ void Cmfc32DlgConfigure::OnBnClickedScan()
 
 void Cmfc32DlgConfigure::StartScan()
 {
-  TW_UINT16       mech;
+  TW_UINT32       mech;
   TW_CAPABILITY   Cap;
 
   Cap.Cap = ICAP_XFERMECH;
@@ -688,7 +669,7 @@ void Cmfc32DlgConfigure::StartScan()
    _DSM_Free(Cap.hContainer);
   }
 
-  switch (mech)
+  switch ( (TW_UINT16)mech )
   {
   case TWSX_NATIVE:
     g_pTWAINApp->initiateTransfer_Native();
@@ -696,7 +677,7 @@ void Cmfc32DlgConfigure::StartScan()
 
   case TWSX_FILE:
     {
-      TW_UINT16 fileformat = TWFF_TIFF;
+      TW_UINT32 fileformat = TWFF_TIFF;
       Cap.Cap = ICAP_IMAGEFILEFORMAT;
       Cap.hContainer = 0;
 
@@ -710,7 +691,7 @@ void Cmfc32DlgConfigure::StartScan()
        _DSM_Free(Cap.hContainer);
       }
 
-      g_pTWAINApp->initiateTransfer_File(fileformat);
+      g_pTWAINApp->initiateTransfer_File((TW_UINT16)fileformat);
     }
     break;
 
