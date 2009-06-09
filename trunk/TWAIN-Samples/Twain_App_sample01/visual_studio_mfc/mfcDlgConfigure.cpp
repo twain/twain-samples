@@ -40,8 +40,6 @@
 #include "mfc.h"
 #include "mfcDlgConfigure.h"
 
-#include "CommonTWAIN.h"
-#include "..\src\twainapp.h"
 #include "..\src\dsminterface.h"
 #include "TwainString.h"
 #include ".\TW_Array_Dlg.h"
@@ -56,7 +54,6 @@
 */
 TwainApp *g_pTWAINApp = NULL;
 extern bool gUSE_CALLBACKS;    // defined in TwainApp.cpp
-TW_UINT16   gDSMessage;        /**< global statis to indicate if we are waiting for DS */
 
 //////////////////////////////////////////////////////////////////////////////
 /**
@@ -73,30 +70,35 @@ TW_UINT16 FAR PASCAL DSMCallback(pTW_IDENTITY _pOrigin,
             TW_UINT16    _MSG,
             TW_MEMREF    _pData)
 {
-  TW_UINT16 twrc = TWRC_SUCCESS;
+  TW_UINT16 twrc      = TWRC_FAILURE;
+  // _pData stores the RefCon from the when the callback was registered
+  // RefCon is a TW_INT32 and can not store a pointer for 64bit
 
   // we are only waiting for callbacks from our datasource, so validate
   // that the originator.
-  if( 0 == _pOrigin ||
-      _pOrigin->Id != g_pTWAINApp->getDataSource()->Id )
+  if( 0 != _pOrigin 
+   && 0 != g_pTWAINApp
+   && g_pTWAINApp->getDataSource()
+   && _pOrigin->Id == g_pTWAINApp->getDataSource()->Id )
   {
-    return TWRC_FAILURE;
-  }
-  
-  switch (_MSG)
-  {
-    case MSG_XFERREADY:
-    case MSG_CLOSEDSREQ:
-    case MSG_CLOSEDSOK:
-    case MSG_NULL:
-      gDSMessage = _MSG;
-      break;
+    switch (_MSG)
+    {
+      case MSG_XFERREADY:
+      case MSG_CLOSEDSREQ:
+      case MSG_CLOSEDSOK:
+      case MSG_NULL:
+        g_pTWAINApp->m_DSMessage = _MSG;
+        twrc = TWRC_SUCCESS;
+        break;
 
-    default:
-      TRACE("Error - Unknown message in callback routine");
-      twrc = TWRC_FAILURE;
-      break;
+      default:
+        TRACE("Error - Unknown message in callback routine");
+        g_pTWAINApp->m_DSMessage = MSG_NULL;
+        twrc = TWRC_FAILURE;
+        break;
+    }
   }
+
   return twrc;
 }
 
@@ -228,6 +230,7 @@ void Cmfc32DlgConfigure::ListCaps()
   TW_UINT32         nCount = 0;
   TW_CAPABILITY     CapSupportedCaps;
   pTW_ARRAY_UINT16  pCapSupCaps = 0;
+  pTW_IDENTITY      pID = g_pTWAINApp->getDataSource();
 
   m_lst_Caps.ResetContent();
 
@@ -255,11 +258,14 @@ void Cmfc32DlgConfigure::ListCaps()
     // we are not listing these CAPABILITIES
     if(pCapSupCaps->ItemList[i] != CAP_SUPPORTEDCAPS)
     {
-      TW_CAPABILITY     Cap;
+      TW_UINT32       QS        = 0;
+      bool            bReadOnly = false;
+      TW_CAPABILITY   Cap       = {0};
 
       // get the capability that is supported
       Cap.Cap         = pCapSupCaps->ItemList[i];
       Cap.hContainer  = 0;
+      Cap.ConType     = TWON_DONTCARE16;
 
       name = convertCAP_toString(Cap.Cap);
       sz = pDC->GetTextExtent(name);
@@ -269,6 +275,7 @@ void Cmfc32DlgConfigure::ListCaps()
       }
 
       TW_UINT16 CondCode = g_pTWAINApp->get_CAP(Cap);
+      g_pTWAINApp->QuerySupport_CAP(Cap.Cap, QS);
 
       if(CondCode==TWCC_SUCCESS)
       {
@@ -280,7 +287,6 @@ void Cmfc32DlgConfigure::ListCaps()
           {
             TW_UINT16 type = pCap->ItemType;
             _DSM_UnlockMemory(Cap.hContainer);
-
 
             switch(type)
             {
@@ -334,7 +340,8 @@ void Cmfc32DlgConfigure::ListCaps()
                 break;
               }
             }
-            str.Format("%s:\t%s", name, value);
+            bReadOnly = ( QS && !(QS & TWQC_SET) )? true : false;
+            str.Format("%s:\t%s %c", name, value, bReadOnly?'r':' ');
             int index = m_lst_Caps.InsertString( -1,  str );
             if(LB_ERR != index)
             {
@@ -507,7 +514,13 @@ int Cmfc32DlgConfigure::GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg
 
             switch(pCapPT->ItemType)
             {
+              case TWTY_INT8:
+              case TWTY_INT16:
+              case TWTY_INT32:
+              case TWTY_UINT8:
               case TWTY_UINT16:
+              case TWTY_UINT32:
+              case TWTY_BOOL:
               {
                 for(TW_UINT32 x=0; x<pCapPT->NumItems; ++x)
                 {
@@ -518,6 +531,23 @@ int Cmfc32DlgConfigure::GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg
                 pDlg->m_SelectionData = (DWORD)((pTW_UINT16)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
               }
               break;
+
+              case TWTY_STR32:
+              case TWTY_STR64:
+              case TWTY_STR128:
+              case TWTY_STR255:
+              {
+                string sVal;
+                for(TW_UINT32 x=0; x<pCapPT->NumItems; ++x)
+                {
+                  getcurrent(pCap, sVal);
+                  str = sVal.c_str();
+                  pDlg->m_itemString.Add(str);
+                  pDlg->m_itemData.Add(x);
+                }
+                pDlg->m_SelectionData = pCapPT->CurrentIndex;
+                break;
+              }
 
               case TWTY_FIX32:
               {
@@ -549,7 +579,6 @@ int Cmfc32DlgConfigure::GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg
             {
               pDlg->m_SelectionData = pCapPT->Item? FALSE:TRUE;
               nResponse = IDOK;
-
             }
             break;
 
@@ -566,7 +595,7 @@ int Cmfc32DlgConfigure::GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg
 
 void Cmfc32DlgConfigure::OnBnClickedScan()
 {
-  gDSMessage = 0;
+  g_pTWAINApp->m_DSMessage = (TW_UINT16)-1;
 
   UpdateData(true);
 
@@ -582,7 +611,7 @@ void Cmfc32DlgConfigure::OnBnClickedScan()
   }
 
   // now we have to wait until we hear something back from the DS.
-  while(!gDSMessage)
+  while((TW_UINT16)-1 == g_pTWAINApp->m_DSMessage)
   {
 
     // If we are using callbacks, there is nothing to do here except sleep
@@ -614,7 +643,7 @@ void Cmfc32DlgConfigure::OnBnClickedScan()
         case MSG_CLOSEDSREQ:
         case MSG_CLOSEDSOK:
         case MSG_NULL:
-          gDSMessage = twEvent.TWMessage;
+          g_pTWAINApp->m_DSMessage = twEvent.TWMessage;
           break;
 
         default:
@@ -632,7 +661,7 @@ void Cmfc32DlgConfigure::OnBnClickedScan()
   // At this point the source has sent us a callback saying that it is ready to
   // transfer the image.
 
-  if(gDSMessage == MSG_XFERREADY)
+  if(g_pTWAINApp->m_DSMessage == MSG_XFERREADY)
   {
     // move to state 6 as a result of the data source. We can start a scan now.
     g_pTWAINApp->m_DSMState = 6;
@@ -672,7 +701,7 @@ void Cmfc32DlgConfigure::StartScan()
   switch ( (TW_UINT16)mech )
   {
   case TWSX_NATIVE:
-    g_pTWAINApp->initiateTransfer_Native();
+   g_pTWAINApp->initiateTransfer_Native();
     break;
 
   case TWSX_FILE:

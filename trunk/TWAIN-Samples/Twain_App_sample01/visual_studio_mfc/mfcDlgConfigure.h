@@ -43,6 +43,7 @@
 #endif
 
 #include "CommonTWAIN.h"
+#include "..\src\twainapp.h"
 
 class CTW_Array_Dlg;
 
@@ -69,8 +70,8 @@ public:
 
 // Implementation
 protected:
-  HICON m_hIcon;
-  int   m_nIndex;
+  HICON     m_hIcon;
+  int       m_nIndex;
 
   // Generated message map functions
   virtual BOOL OnInitDialog();

@@ -254,6 +254,14 @@ public:
   TW_INT16 get_CAP(TW_CAPABILITY& _cap);
 
 /**
+* Query Support messages of the capability.
+* @param[in] _cap the capability id to lookup.
+* @param[out] _QS the Query Support of the cap
+* @return a valid TWRC_xxxx return code
+*/
+  TW_INT16 QuerySupport_CAP(TW_UINT16 _cap, TW_UINT32 &_QS);
+
+/**
 * Returns a pointer to the applications identity structure.
 * @return a TW_IDENTITY pointer to the applications identity struct.
 */
@@ -302,6 +310,7 @@ pTW_IDENTITY selectDefaultDataSource(void);
   void updateEXIMAGEINFO();
 
   int             m_DSMState;             /**< The current TWAIN state of the dsm (2-7) */
+  TW_UINT16       m_DSMessage;            /**< Statis to indicate if we are waiting for DS */
 
 protected:
 /**

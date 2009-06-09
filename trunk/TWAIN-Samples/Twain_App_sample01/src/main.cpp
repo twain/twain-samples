@@ -61,7 +61,6 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
 // Global Variables
-TW_UINT16     gDSMessage;             /**< global statis to indicate if we are waiting for DS */
 TwainAppCMD  *gpTwainApplicationCMD;  /**< The main application */
 extern bool   gUSE_CALLBACKS;         // defined in TwainApp.cpp
 
@@ -263,7 +262,7 @@ void negotiateCaps()
 */
 void EnableDS()
 {
-  gDSMessage = 0;
+  gpTwainApplicationCMD->m_DSMessage = 0;
 
   // -Enable the data source. This puts us in state 5 which means that we
   // have to wait for the data source to tell us to move to state 6 and
@@ -277,7 +276,7 @@ void EnableDS()
   }
 
   // now we have to wait until we hear something back from the DS.
-  while(!gDSMessage)
+  while(!gpTwainApplicationCMD->m_DSMessage)
   {
 
     // If we are using callbacks, there is nothing to do here except sleep
@@ -309,7 +308,7 @@ void EnableDS()
         case MSG_CLOSEDSREQ:
         case MSG_CLOSEDSOK:
         case MSG_NULL:
-          gDSMessage = twEvent.TWMessage;
+          gpTwainApplicationCMD->m_DSMessage = twEvent.TWMessage;
           break;
 
         default:
@@ -329,7 +328,7 @@ void EnableDS()
   // At this point the source has sent us a callback saying that it is ready to
   // transfer the image.
 
-  if(gDSMessage == MSG_XFERREADY)
+  if(gpTwainApplicationCMD->m_DSMessage == MSG_XFERREADY)
   {
     // move to state 6 as a result of the data source. We can start a scan now.
     gpTwainApplicationCMD->m_DSMState = 6;
@@ -379,7 +378,7 @@ DSMCallback(pTW_IDENTITY _pOrigin,
     case MSG_CLOSEDSREQ:
     case MSG_CLOSEDSOK:
     case MSG_NULL:
-      gDSMessage = _MSG;
+      gpTwainApplicationCMD->m_DSMessage = _MSG;
       break;
 
     default:

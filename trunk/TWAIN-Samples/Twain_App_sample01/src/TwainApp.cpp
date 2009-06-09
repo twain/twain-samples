@@ -124,6 +124,7 @@ TwainApp::TwainApp(HWND parent /*=NULL*/)
 : m_DSMState(1)
 , m_pDataSource(NULL)
 , m_pExtImageInfo(NULL)
+, m_DSMessage(-1)
 {
   // fill our identity structure
   fillIdentity(m_MyInfo);
@@ -227,8 +228,8 @@ void TwainApp::connectDSM()
 
   if(!LoadDSMLib(kTWAIN_DS_DIR kTWAIN_DSM_DLL_NAME))
   {
-    printError(0, "The DSM could not be opened. Please ensure that it is installed into a directory that is in the library path:");
-    printError(0, kTWAIN_DS_DIR kTWAIN_DSM_DLL_NAME);
+    PrintCMDMessage("The DSM could not be opened. Please ensure that it is installed into a directory that is in the library path:");
+    PrintCMDMessage(kTWAIN_DS_DIR kTWAIN_DSM_DLL_NAME);
     return;
   }
   else
@@ -452,7 +453,14 @@ void TwainApp::loadDS(const TW_UINT32 _dsID)
     // Transition application to state 4
     m_DSMState = 4;
 
-    callback.CallBackProc = (TW_MEMREF)DSMCallback;    
+    callback.CallBackProc = (TW_MEMREF)DSMCallback;
+    /* RefCon, On 32bit Could be used to store a pointer to this class to help 
+       passing the message on to be processed.  But RefCon is too small to store
+       a pointer on 64bit.  For 64bit RefCon could storing an index to some 
+       global memory array.  But if there is only one instance of the Application 
+       Class connecting to the DSM then the single global pointer to the 
+       application class can be used, and the RefCon can be ignored as we do here. */
+    callback.RefCon       = 0; 
 
     if(TWRC_SUCCESS != (twrc = DSM_Entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF)&callback)))
     {
@@ -1455,6 +1463,49 @@ TW_INT16 TwainApp::get_CAP(TW_CAPABILITY& _cap)
   return CondCode;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+TW_INT16 TwainApp::QuerySupport_CAP(TW_UINT16 _cap, TW_UINT32 &_QS)
+{
+  if(m_DSMState < 4)
+  {
+    PrintCMDMessage("You need to open a data source first.\n");
+    return TWCC_SEQERROR;
+  }
+  TW_CAPABILITY   cap = {0};
+  cap.Cap         = _cap;
+  cap.hContainer  = 0;
+  cap.ConType     = TWON_ONEVALUE;
+  _QS             = 0;
+
+  // capability structure is set, make the call to the source now
+  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_QUERYSUPPORT, (TW_MEMREF)&cap);
+
+  switch(twrc)
+  {
+  case TWRC_FAILURE:
+  default:
+    {
+      string strErr = "Failed to querry support the capability: [";
+      strErr += convertCAP_toString(_cap);
+      strErr += "]";
+      
+      printError(m_pDataSource, strErr);
+    }
+    break;
+
+  case TWRC_SUCCESS:
+    if(cap.ConType == TWON_ONEVALUE)
+    {
+      pTW_ONEVALUE pVal = (pTW_ONEVALUE)_DSM_LockMemory(cap.hContainer);
+      _QS = pVal->Item;
+     _DSM_UnlockMemory(cap.hContainer);
+    }
+    _DSM_Free(cap.hContainer);
+    break;
+  }
+
+  return twrc;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const int _value, TW_UINT16 _type)
