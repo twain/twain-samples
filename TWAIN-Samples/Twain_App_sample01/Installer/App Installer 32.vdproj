@@ -284,7 +284,7 @@
         "PackageCode" = "8:{1090F921-EB08-42DD-8073-49B148783447}"
         "UpgradeCode" = "8:{3093BF18-1ADD-4A3C-AE32-8F818163DFAF}"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
         "ProductVersion" = "8:2.0.7"
