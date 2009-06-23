@@ -270,7 +270,11 @@ void EnableDS()
   // caps, only get ops.
   // -The scan will not start until the source calls the callback function
   // that was registered earlier.
-  if(!gpTwainApplicationCMD->enableDS(FALSE))
+#if defined(WIN32) | defined(WIN64)
+  if(!gpTwainApplicationCMD->enableDS(GetDesktopWindow(), FALSE))
+#else
+  if(!gpTwainApplicationCMD->enableDS(0, FALSE))
+#endif
   {
     return;
   }

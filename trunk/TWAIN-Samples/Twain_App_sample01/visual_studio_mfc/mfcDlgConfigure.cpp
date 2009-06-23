@@ -605,7 +605,7 @@ void Cmfc32DlgConfigure::OnBnClickedScan()
   // caps, only get ops.
   // -The scan will not start until the source calls the callback function
   // that was registered earlier.
-  if( !g_pTWAINApp->enableDS(m_bShowUI) )
+  if( !g_pTWAINApp->enableDS(GetSafeHwnd(), m_bShowUI) )
   {
     return;
   }
