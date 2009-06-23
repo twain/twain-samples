@@ -191,10 +191,11 @@ public:
 /**
 * Request the acquisition of data from the currently opened source.  If 
 * successful moves app to state 5.
+* @param[in] hWnd the handle to the window
 * @param[in] bShowUI true to show UI false to enable without UI
 * @return true if successfully enabled DS.
 */
-  virtual bool enableDS(BOOL bShowUI);
+  virtual bool enableDS(TW_HANDLE hWnd, BOOL bShowUI);
 
 /**
 * Tries to disable the sources UI.  If successful moves app to state 4

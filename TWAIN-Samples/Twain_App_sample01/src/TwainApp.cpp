@@ -667,7 +667,7 @@ TW_UINT16 TwainApp::getTWCC(pTW_IDENTITY _pdestID, TW_INT16& _cc)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-bool TwainApp::enableDS(BOOL bShowUI)
+bool TwainApp::enableDS(TW_HANDLE hWnd, BOOL bShowUI)
 {
   bool bret = true;
 
@@ -679,7 +679,7 @@ bool TwainApp::enableDS(BOOL bShowUI)
 
   m_ui.ShowUI = bShowUI;
   m_ui.ModalUI = TRUE;
-  m_ui.hParent = 0;
+  m_ui.hParent = hWnd;
   m_DSMState = 5;
 
   TW_UINT16 twrc = DSM_Entry(DG_CONTROL, DAT_USERINTERFACE, MSG_ENABLEDS, (TW_MEMREF)&(m_ui));
