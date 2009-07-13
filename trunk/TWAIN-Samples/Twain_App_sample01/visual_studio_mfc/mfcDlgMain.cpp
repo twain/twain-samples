@@ -230,7 +230,7 @@ void Cmfc32DlgMain::PopulateDSList()
 
     while( NULL != (pID = _pTWAINApp->getDataSource(i)) )
     {
-      index = m_lst_DS.InsertString( -1, pID->ProductName );
+      index = m_lst_DS.AddString( pID->ProductName );
       if(LB_ERR == index)
       {
         break;
