@@ -36,10 +36,6 @@
  * @date Dec 2008
  */
 
-#ifdef _WINDOWS
-  #include "stdafx.h"
-#endif
-
 #include "TwainString.h"
 
 extern TW_HANDLE _DSM_Alloc(TW_UINT32 _size);
@@ -75,29 +71,29 @@ const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT32 _un
 
   switch(_unCap)
   {
-    case ICAP_XFERMECH:
-      pszString = convertICAP_XFERMECH_toString((TW_UINT16)_unItem);
+    case CAP_ALARMS:
+      pszString = convertCAP_ALARMS_toString((TW_UINT16)_unItem);
       break;
 
-    case ICAP_IMAGEFILEFORMAT:
-      pszString = convertICAP_IMAGEFILEFORMAT_toString((TW_UINT16)_unItem);
+    case ICAP_AUTOSIZE:
+      pszString = convertICAP_AUTOSIZE_toString((TW_UINT16)_unItem);
       break;
 
     case ICAP_COMPRESSION:
       pszString = convertICAP_COMPRESSION_toString((TW_UINT16)_unItem);
       break;
 
-    case ICAP_UNITS:
-      pszString = convertICAP_UNITS_toString((TW_UINT16)_unItem);
+    case ICAP_BARCODESEARCHMODE:
+      pszString = convertICAP_BARCODESEARCHMODE_toString((TW_UINT16)_unItem);
       break;
 
-    case ICAP_PIXELTYPE:
-      pszString = convertICAP_PIXELTYPE_toString((TW_UINT16)_unItem);
+    case ICAP_BITORDER:
+      pszString = convertICAP_BITORDER_toString((TW_UINT16)_unItem);
       break;
 
-    case ICAP_PIXELFLAVOR:
-      pszString = convertICAP_PIXELFLAVOR_toString((TW_UINT16)_unItem);
-      break;
+//    case ICAP_AUTODISCARDBLANKPAGES:
+//      pszString = convertICAP_AUTODISCARDBLANKPAGES_toString((TW_UINT16)_unItem);
+//      break;
 
     case ICAP_BITDEPTH:
       {
@@ -105,6 +101,142 @@ const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT32 _un
       SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "%u", _unItem);
       pszString = buff;
       }
+      break;
+
+    case ICAP_BITDEPTHREDUCTION:
+      pszString = convertICAP_BITDEPTHREDUCTION_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_SUPPORTEDBARCODETYPES:
+      pszString = convertICAP_SUPPORTEDBARCODETYPES_toString((TW_UINT16)_unItem);
+      break;
+
+    case CAP_CAMERASIDE:
+      pszString = convertCAP_CAMERASIDE_toString((TW_UINT16)_unItem);
+      break;
+
+    case CAP_CLEARBUFFERS:
+      pszString = convertCAP_CLEARBUFFERS_toString((TW_UINT16)_unItem);
+      break;
+
+    case CAP_DEVICEEVENT:
+      pszString = convertCAP_DEVICEEVENT_toString((TW_UINT16)_unItem);
+      break;
+
+    case CAP_DUPLEX:
+      pszString = convertCAP_DUPLEX_toString((TW_UINT16)_unItem);
+      break;
+
+    case CAP_FEEDERALIGNMENT:
+      pszString = convertCAP_FEEDERALIGNMENT_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_FEEDERTYPE:
+      pszString = convertICAP_FEEDERTYPE_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_IMAGEFILEFORMAT:
+      pszString = convertICAP_IMAGEFILEFORMAT_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_FLASHUSED2:
+      pszString = convertICAP_FLASHUSED2_toString((TW_UINT16)_unItem);
+      break;
+
+    case CAP_FEEDERORDER:
+      pszString = convertCAP_FEEDERORDER_toString((TW_UINT16)_unItem);
+      break;
+
+    case CAP_FEEDERPOCKET:
+      pszString = convertCAP_FEEDERPOCKET_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_FLIPROTATION:
+      pszString = convertICAP_FLIPROTATION_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_FILTER:
+      pszString = convertICAP_FILTER_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_ICCPROFILE:
+      pszString = convertICAP_ICCPROFILE_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_IMAGEFILTER:
+      pszString = convertICAP_IMAGEFILTER_toString((TW_UINT16)_unItem);
+      break;
+
+//    case ICAP_IMAGEMERGE:
+//      pszString = convertICAP_IMAGEMERGE_toString((TW_UINT16)_unItem);
+//      break;
+
+    case CAP_JOBCONTROL:
+      pszString = convertCAP_JOBCONTROL_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_JPEGQUALITY:
+      pszString = convertICAP_JPEGQUALITY_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_LIGHTPATH:
+      pszString = convertICAP_LIGHTPATH_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_LIGHTSOURCE:
+      pszString = convertICAP_LIGHTSOURCE_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_NOISEFILTER:
+      pszString = convertICAP_NOISEFILTER_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_ORIENTATION:
+      pszString = convertICAP_ORIENTATION_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_OVERSCAN:
+      pszString = convertICAP_OVERSCAN_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_PLANARCHUNKY:
+      pszString = convertICAP_PLANARCHUNKY_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_PIXELFLAVOR:
+      pszString = convertICAP_PIXELFLAVOR_toString((TW_UINT16)_unItem);
+      break;
+
+    case CAP_PRINTERMODE:
+      pszString = convertCAP_PRINTERMODE_toString((TW_UINT16)_unItem);
+      break;
+
+    case CAP_PRINTER:
+      pszString = convertCAP_PRINTER_toString((TW_UINT16)_unItem);
+      break;
+
+    case CAP_POWERSUPPLY:
+      pszString = convertCAP_POWERSUPPLY_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_PIXELTYPE:
+      pszString = convertICAP_PIXELTYPE_toString((TW_UINT16)_unItem);
+      break;
+
+    case CAP_SEGMENTED:
+      pszString = convertCAP_SEGMENTED_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_SUPPORTEDSIZES:
+      pszString = convertICAP_SUPPORTEDSIZES_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_XFERMECH:
+      pszString = convertICAP_XFERMECH_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_UNITS:
+      pszString = convertICAP_UNITS_toString((TW_UINT16)_unItem);
       break;
 
     default:
@@ -143,8 +275,36 @@ const char* convertEI_Item_toString(const TW_UINT16 _unEI, const TW_UINT32 _unIt
 
   switch(_unEI)
   {
+    case TWEI_BARCODEROTATION:
+      pszString = convertTWEI_BARCODEROTATION_toString((TW_UINT16)_unItem);
+      break;
+
+    case TWEI_BARCODETYPE:
+      pszString = convertICAP_SUPPORTEDBARCODETYPES_toString((TW_UINT16)_unItem);
+      break;
+
+    case TWEI_PAGESIDE:
+      pszString = convertCAP_CAMERASIDE_toString((TW_UINT16)_unItem);
+      break;
+
+    case TWEI_DESKEWSTATUS:
+      pszString = convertTWEI_DESKEWSTATUS_toString((TW_UINT16)_unItem);
+      break;
+
+    case TWEI_FILESYSTEMSOURCE:
+      pszString = convertTWEI_FILESYSTEM_toString((TW_UINT16)_unItem);
+      break;
+
     case TWEI_PIXELFLAVOR:
       pszString = convertICAP_PIXELFLAVOR_toString((TW_UINT16)_unItem);
+      break;
+
+    case TWEI_MAGTYPE:
+      pszString = convertTWEI_MAGTYPE_toString((TW_UINT16)_unItem);
+      break;
+
+    case TWEI_PATCHCODE:
+      pszString = convertTWEI_PATCHCODE_toString((TW_UINT16)_unItem);
       break;
   }
 
@@ -373,6 +533,34 @@ const char* convertCAP_toString(const TW_UINT16 _unCap)
 
   case CAP_BATTERYPERCENTAGE:
     text = "CAP_BATTERYPERCENTAGE";
+    break;
+
+  case CAP_CAMERASIDE:
+    text = "CAP_CAMERASIDE";
+    break;
+
+  case CAP_SEGMENTED:
+    text = "CAP_SEGMENTED";
+    break;
+
+  case CAP_CAMERAENABLED:
+    text = "CAP_CAMERAENABLED";
+    break;
+
+  case CAP_CAMERAORDER:
+    text = "CAP_CAMERAORDER";
+    break;
+
+  case CAP_MICRENABLED:
+    text = "CAP_MICRENABLED";
+    break;
+
+  case CAP_FEEDERPREP:
+    text = "CAP_FEEDERPREP";
+    break;
+
+  case CAP_FEEDERPOCKET:
+    text = "CAP_FEEDERPOCKET";
     break;
 
   case ICAP_AUTOBRIGHT:
@@ -651,6 +839,18 @@ const char* convertCAP_toString(const TW_UINT16 _unCap)
     text = "ICAP_JPEGQUALITY";
     break;
 
+  case ICAP_FEEDERTYPE:
+    text = "ICAP_FEEDERTYPE";
+    break;
+
+  case ICAP_ICCPROFILE:
+    text = "ICAP_ICCPROFILE";
+    break;
+
+  case ICAP_AUTOSIZE:
+    text = "ICAP_AUTOSIZE";
+    break;
+
   case ACAP_AUDIOFILEFORMAT:
     text = "ACAP_AUDIOFILEFORMAT";
     break;
@@ -683,79 +883,6 @@ const char* convertCAP_toString(const TW_UINT16 _unCap)
 }
 
 
-//////////////////////////////////////////////////////////////////////////////
-const char* convertICAP_XFERMECH_toString(const TW_UINT16 _unItem)
-{
-  const char* text;
-
-  switch(_unItem)
-  {
-  case TWSX_NATIVE:
-    text = "Native";
-    break;
-
-  case TWSX_FILE:
-    text = "File";
-    break;
-
-  case TWSX_MEMORY:
-    text = "Memory";
-    break;
-
-  default:
-    {
-      char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWSX 0x:%4X", _unItem);
-      text = buff;
-    }
-    break;
-  }
-
-  return text;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-const char* convertICAP_UNITS_toString(const TW_UINT16 _unItem)
-{
-  const char* text;
-
-  switch(_unItem)
-  {
-  case TWUN_INCHES:
-    text = "Inches";
-    break;
-
-  case TWUN_CENTIMETERS:
-    text = "Centimeters";
-    break;
-
-  case TWUN_PICAS:
-    text = "Picas";
-    break;
-
-  case TWUN_POINTS:
-    text = "Points";
-    break;
-
-  case TWUN_TWIPS:
-    text = "Twips";
-    break;
-
-  case TWUN_PIXELS:
-    text = "Pixels";
-    break;
-
-  default:
-    {
-      char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWUN 0x:%4X", _unItem);
-      text = buff;
-    }
-    break;
-  }
-
-  return text;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 const char* convertTWTY_toString(const TW_UINT16 _unItem)
@@ -836,217 +963,7 @@ const char* convertTWTY_toString(const TW_UINT16 _unItem)
   return text;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-const char* convertICAP_PIXELTYPE_toString(const TW_UINT16 _unItem)
-{
-  const char* text;
 
-  switch(_unItem)
-  {
-  case TWPT_BW:
-    text = "BW";
-    break;
-
-  case TWPT_GRAY:
-    text = "GRAY";
-    break;
-
-  case TWPT_RGB:
-    text = "RGB";
-    break;
-
-  case TWPT_PALETTE:
-    text = "PALETTE";
-    break;
-
-  case TWPT_CMY:
-    text = "CMY";
-    break;
-
-  case TWPT_CMYK:
-    text = "CMYK";
-    break;
-
-  case TWPT_YUV:
-    text = "YUV";
-    break;
-
-  case TWPT_YUVK:
-    text = "YUVK";
-    break;
-
-  case TWPT_CIEXYZ:
-    text = "CIEXYZ";
-    break;
-
-  default:
-    {
-      char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPT 0x:%4X", _unItem);
-      text = buff;
-    }
-    break;
-  }
-
-  return text;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-const char* convertICAP_IMAGEFILEFORMAT_toString(const TW_UINT16 _unItem)
-{
-  const char* text;
-
-  switch(_unItem)
-  {
-  case TWFF_TIFF:
-    text = ".tiff";
-    break;
-
-  case TWFF_PICT:
-    text = ".pict";
-    break;
-
-  case TWFF_BMP:
-    text = ".bmp";
-    break;
-
-  case TWFF_XBM:
-    text = ".xbm";
-    break;
-
-  case TWFF_JFIF:
-    text = ".jpeg";
-    break;
-
-  case TWFF_FPX:
-    text = ".fpx";
-    break;
-
-  case TWFF_TIFFMULTI:
-    text = ".tiff";
-    break;
-
-  case TWFF_PNG:
-    text = ".png";
-    break;
-
-  case TWFF_SPIFF:
-    text = ".spiff";
-    break;
-
-  case TWFF_EXIF:
-    text = ".exif";
-    break;
-
-  default:
-    {
-      char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFF 0x:%4X", _unItem);
-      text = buff;
-    }
-    break;
-  }
-
-  return text;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-const char* convertICAP_COMPRESSION_toString(const TW_UINT16 _unItem)
-{
-  const char* text;
-
-  switch(_unItem)
-  {
-  case TWCP_NONE:
-    text = "TWCP_NONE";
-    break;
-
-  case TWCP_PACKBITS:
-    text = "PACKBITS";
-    break;
-
-  case TWCP_GROUP31D:
-    text = "GROUP31D";
-    break;
-
-  case TWCP_GROUP31DEOL:
-    text = "GROUP31DEOL";
-    break;
-
-  case TWCP_GROUP32D:
-    text = "GROUP32D";
-    break;
-
-  case TWCP_GROUP4:
-    text = "GROUP4";
-    break;
-
-  case TWCP_JPEG:
-    text = "JPEG";
-    break;
-
-  case TWCP_LZW:
-    text = "LZW";
-    break;
-
-  case TWCP_JBIG:
-    text = "JBIG";
-    break;
-
-  case TWCP_PNG:
-    text = "PNG";
-    break;
-
-  case TWCP_RLE4:
-    text = "RLE4";
-    break;
-
-  case TWCP_RLE8:
-    text = "RLE8";
-    break;
-
-  case TWCP_BITFIELDS:
-    text = "BITFIELDS";
-    break;
-
-  default:
-    {
-      char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWCP 0x:%4X", _unItem);
-      text = buff;
-    }
-    break;
-  }
-
-  return text;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-const char* convertICAP_PIXELFLAVOR_toString(const TW_UINT16 _unItem)
-{
-  const char* text;
-
-  switch(_unItem)
-  {
-  case TWPF_CHOCOLATE:
-    text = "Chocolate";
-    break;
-
-  case TWPF_VANILLA:
-    text = "Vanilla";
-    break;
-
-  default:
-    {
-      char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPF 0x:%4X", _unItem);
-      text = buff;
-    }
-    break;
-  }
-
-  return text;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 // Convert Extended Image Info Attributes to String
@@ -1332,6 +1249,2126 @@ const char* convertExtImageInfoName_toString(int InfoID)
 
   return text;
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_ALARMS values to String
+const char* convertCAP_ALARMS_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWAL_ALARM:
+    text = "Alarm";
+    break;
+
+	case TWAL_FEEDERERROR:
+    text = "Feeder Error";
+    break;
+
+	case TWAL_FEEDERWARNING:
+    text = "Feeder Warning";
+    break;
+
+	case TWAL_BARCODE:
+    text = "Barcode";
+    break;
+
+	case TWAL_DOUBLEFEED:
+    text = "Double Feed";
+    break;
+
+	case TWAL_JAM:
+    text = "Paper Jam";
+    break;
+
+	case TWAL_PATCHCODE:
+    text = "Patch Code";
+    break;
+
+	case TWAL_POWER:
+    text = "Power";
+    break;
+
+	case TWAL_SKEW:
+    text = "Skew";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWAL 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_AUTOSIZE values to String
+const char* convertICAP_AUTOSIZE_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWAS_NONE:
+    text = "None";
+    break;
+
+	case TWAS_AUTO:
+    text = "Auto";
+    break;
+
+	case TWAS_CURRENT:
+    text = "Current";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWAS 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert TWEI_BARCODEROTATION values to String
+const char* convertTWEI_BARCODEROTATION_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWBCOR_ROT0:
+    text = "Rotation 0 deg";
+    break;
+
+	case TWBCOR_ROT90:
+    text = "Rotation 90 deg";
+    break;
+
+	case TWBCOR_ROT180:
+    text = "Rotation 180 deg";
+    break;
+
+	case TWBCOR_ROT270:
+    text = "Rotation 270 deg";
+    break;
+
+	case TWBCOR_ROTX:
+    text = "Rotation x deg";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWBCOR 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_BARCODESEARCHMODE values to String
+const char* convertICAP_BARCODESEARCHMODE_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWBD_HORZ:
+    text = "Horizontal";
+    break;
+
+	case TWBD_VERT:
+    text = "Vertical";
+    break;
+
+	case TWBD_HORZVERT:
+    text = "Horz Vert";
+    break;
+
+	case TWBD_VERTHORZ:
+    text = "Vert Horz";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWBD 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_BITORDER values to String
+const char* convertICAP_BITORDER_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWBO_LSBFIRST:
+    text = "LSB first";
+    break;
+
+	case TWBO_MSBFIRST:
+    text = "MSB first";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWBO 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_AUTODISCARDBLANKPAGES values to String
+/*const char* convertICAP_AUTODISCARDBLANKPAGES_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWBP_DISABLE:
+    text = "Disable";
+    break;
+
+	case TWBP_AUTO:
+    text = "Auto";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWBP 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}*/
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_BITDEPTHREDUCTION values to String
+const char* convertICAP_BITDEPTHREDUCTION_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWBR_THRESHOLD:
+    text = "Threshold";
+    break;
+
+	case TWBR_HALFTONE:
+    text = "Halftone";
+    break;
+
+	case TWBR_CUSTHALFTONE:
+    text = "Custom Halftone";
+    break;
+
+	case TWBR_DIFFUSION:
+    text = "Diffusion";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWBR 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_SUPPORTEDBARCODETYPES and TWEI_BARCODETYPE values to String
+const char* convertICAP_SUPPORTEDBARCODETYPES_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWBT_3OF9:
+    text = "3of9";
+    break;
+
+	case TWBT_2OF5INTERLEAVED:
+    text = "2of5 interleaved";
+    break;
+
+	case TWBT_2OF5NONINTERLEAVED:
+    text = "2of5 noninterleaved";
+    break;
+
+	case TWBT_CODE93:
+    text = "code93";
+    break;
+
+	case TWBT_CODE128:
+    text = "code128";
+    break;
+
+	case TWBT_UCC128:
+    text = "UCC128";
+    break;
+
+	case TWBT_CODABAR:
+    text = "Codebar";
+    break;
+
+	case TWBT_UPCA:
+    text = "UPCA";
+    break;
+
+	case TWBT_UPCE:
+    text = "UPCE";
+    break;
+
+	case TWBT_EAN8:
+    text = "EAN8";
+    break;
+
+	case TWBT_EAN13:
+    text = "EAN13";
+    break;
+
+	case TWBT_POSTNET:
+    text = "POSTNET";
+    break;
+
+	case TWBT_PDF417:
+    text = "PDF417";
+    break;
+
+	case TWBT_2OF5INDUSTRIAL:
+    text = "2of5 industrial";
+    break;
+
+	case TWBT_2OF5MATRIX:
+    text = "2of5 matrix";
+    break;
+
+	case TWBT_2OF5DATALOGIC:
+    text = "2of5 datalogic";
+    break;
+
+	case TWBT_2OF5IATA:
+    text = "2of5 IATA";
+    break;
+
+	case TWBT_3OF9FULLASCII:
+    text = "3of9 fullASCII";
+    break;
+
+	case TWBT_CODABARWITHSTARTSTOP:
+    text = "Codabar with start stop";
+    break;
+
+	case TWBT_MAXICODE:
+    text = "MAXICODE";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWBT 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_COMPRESSION values to String
+const char* convertICAP_COMPRESSION_toString(const TW_UINT16 _unItem)
+{
+  const char* text;
+
+  switch(_unItem)
+  {
+  case TWCP_NONE:
+    text = "None";
+    break;
+
+  case TWCP_PACKBITS:
+    text = "PACKBITS";
+    break;
+
+  case TWCP_GROUP31D:
+    text = "GROUP31D";
+    break;
+
+  case TWCP_GROUP31DEOL:
+    text = "GROUP31DEOL";
+    break;
+
+  case TWCP_GROUP32D:
+    text = "GROUP32D";
+    break;
+
+  case TWCP_GROUP4:
+    text = "GROUP4";
+    break;
+
+  case TWCP_JPEG:
+    text = "JPEG";
+    break;
+
+  case TWCP_LZW:
+    text = "LZW";
+    break;
+
+  case TWCP_JBIG:
+    text = "JBIG";
+    break;
+
+  case TWCP_PNG:
+    text = "PNG";
+    break;
+
+  case TWCP_RLE4:
+    text = "RLE4";
+    break;
+
+  case TWCP_RLE8:
+    text = "RLE8";
+    break;
+
+  case TWCP_BITFIELDS:
+    text = "BITFIELDS";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWCP 0x:%4X", _unItem);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_CAMERASIDE and TWEI_PAGESIDE values to String
+const char* convertCAP_CAMERASIDE_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWCS_BOTH:
+    text = "Both";
+    break;
+
+	case TWCS_TOP:
+    text = "Top";
+    break;
+
+	case TWCS_BOTTOM:
+    text = "Bottom";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWCS 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_CLEARBUFFERS values to String
+const char* convertCAP_CLEARBUFFERS_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWCB_AUTO:
+    text = "Auto";
+    break;
+
+	case TWCB_CLEAR:
+    text = "Clear";
+    break;
+
+	case TWCB_NOCLEAR:
+    text = "No Clear";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWCB 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_DEVICEEVENT values to String
+const char* convertCAP_DEVICEEVENT_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWDE_CUSTOMEVENTS:
+    text = "Custom Events";
+    break;
+
+	case TWDE_CHECKAUTOMATICCAPTURE:
+    text = "Check Automatic Capture";
+    break;
+
+	case TWDE_CHECKBATTERY:
+    text = "Check Battery";
+    break;
+
+	case TWDE_CHECKDEVICEONLINE:
+    text = "Check Device Online";
+    break;
+
+	case TWDE_CHECKFLASH:
+    text = "Check Flash";
+    break;
+
+	case TWDE_CHECKPOWERSUPPLY:
+    text = "Check Power Supply";
+    break;
+
+	case TWDE_CHECKRESOLUTION:
+    text = "Check Resolution";
+    break;
+
+	case TWDE_DEVICEADDED:
+    text = "Device Added";
+    break;
+
+	case TWDE_DEVICEOFFLINE:
+    text = "Device Offline";
+    break;
+
+	case TWDE_DEVICEREADY:
+    text = "Device Ready";
+    break;
+
+	case TWDE_DEVICEREMOVED:
+    text = "Device Removed";
+    break;
+
+	case TWDE_IMAGECAPTURED:
+    text = "Image Captured";
+    break;
+
+	case TWDE_IMAGEDELETED:
+    text = "Image Deleted";
+    break;
+
+	case TWDE_PAPERDOUBLEFEED:
+    text = "Paper Doublefeed";
+    break;
+
+	case TWDE_PAPERJAM:
+    text = "Paperjam";
+    break;
+
+	case TWDE_LAMPFAILURE:
+    text = "Lamp Failure";
+    break;
+
+	case TWDE_POWERSAVE:
+    text = "Power Save";
+    break;
+
+	case TWDE_POWERSAVENOTIFY:
+    text = "Power Save Notify";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWDE 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert TWEI_DESKEWSTATUS values to String
+const char* convertTWEI_DESKEWSTATUS_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWDSK_SUCCESS:
+    text = "Success";
+    break;
+
+	case TWDSK_REPORTONLY:
+    text = "Report Only";
+    break;
+
+	case TWDSK_FAIL:
+    text = "Fail";
+    break;
+
+	case TWDSK_DISABLED:
+    text = "Disabled";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWDSK 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_DUPLEX values to String
+const char* convertCAP_DUPLEX_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWDX_NONE:
+    text = "None";
+    break;
+
+	case TWDX_1PASSDUPLEX:
+    text = "1 Pass Duplex";
+    break;
+
+	case TWDX_2PASSDUPLEX:
+    text = "2 Pass Duplex";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWDX 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_FEEDERALIGNMENT values to String
+const char* convertCAP_FEEDERALIGNMENT_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWFA_NONE:
+    text = "None";
+    break;
+
+	case TWFA_LEFT:
+    text = "Left";
+    break;
+
+	case TWFA_CENTER:
+    text = "Center";
+    break;
+
+	case TWFA_RIGHT:
+    text = "Right";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFA 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_FEEDERTYPE values to String
+const char* convertICAP_FEEDERTYPE_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWFE_GENERAL:
+    text = "General";
+    break;
+
+	case TWFE_PHOTO:
+    text = "Photo";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFE 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Cover ICAP_IMAGEFILEFORMAT values to String
+const char* convertICAP_IMAGEFILEFORMAT_toString(const TW_UINT16 _unItem)
+{
+  const char* text;
+
+  switch(_unItem)
+  {
+  case TWFF_TIFF:
+    text = ".tiff";
+    break;
+
+  case TWFF_PICT:
+    text = ".pict";
+    break;
+
+  case TWFF_BMP:
+    text = ".bmp";
+    break;
+
+  case TWFF_XBM:
+    text = ".xbm";
+    break;
+
+  case TWFF_JFIF:
+    text = ".jpeg";
+    break;
+
+  case TWFF_FPX:
+    text = ".fpx";
+    break;
+
+  case TWFF_TIFFMULTI:
+    text = ".tiff";
+    break;
+
+  case TWFF_PNG:
+    text = ".png";
+    break;
+
+  case TWFF_SPIFF:
+    text = ".spiff";
+    break;
+
+  case TWFF_EXIF:
+    text = ".exif";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFF 0x:%4X", _unItem);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_FLASHUSED2 values to String
+const char* convertICAP_FLASHUSED2_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWFL_NONE:
+    text = "None";
+    break;
+
+	case TWFL_OFF:
+    text = "Off";
+    break;
+
+	case TWFL_ON:
+    text = "On";
+    break;
+
+	case TWFL_AUTO:
+    text = "Auto";
+    break;
+
+	case TWFL_REDEYE:
+    text = "Redeye";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFL 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_FEEDERORDER values to String
+const char* convertCAP_FEEDERORDER_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWFO_FIRSTPAGEFIRST:
+    text = "First Page First";
+    break;
+
+	case TWFO_LASTPAGEFIRST:
+    text = "Last Page First";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFO 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_FEEDERPOCKET values to String
+const char* convertCAP_FEEDERPOCKET_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWFP_POCKETERROR:
+    text = "Pocket Error";
+    break;
+
+	case TWFP_POCKET1:
+    text = "Pocket 1";
+    break;
+
+	case TWFP_POCKET2:
+    text = "Pocket 2";
+    break;
+
+	case TWFP_POCKET3:
+    text = "Pocket 3";
+    break;
+
+	case TWFP_POCKET4:
+    text = "Pocket 4";
+    break;
+
+	case TWFP_POCKET5:
+    text = "Pocket 5";
+    break;
+
+	case TWFP_POCKET6:
+    text = "Pocket 6";
+    break;
+
+	case TWFP_POCKET7:
+    text = "Pocket 7";
+    break;
+
+	case TWFP_POCKET8:
+    text = "Pocket 8";
+    break;
+
+	case TWFP_POCKET9:
+    text = "Pocket 9";
+    break;
+
+	case TWFP_POCKET10:
+    text = "Pocket 10";
+    break;
+
+	case TWFP_POCKET11:
+    text = "Pocket 11";
+    break;
+
+	case TWFP_POCKET12:
+    text = "Pocket 12";
+    break;
+
+	case TWFP_POCKET13:
+    text = "Pocket 13";
+    break;
+
+	case TWFP_POCKET14:
+    text = "Pocket 14";
+    break;
+
+	case TWFP_POCKET15:
+    text = "Pocket 15";
+    break;
+
+	case TWFP_POCKET16:
+    text = "Pocket 16";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFP 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_FLIPROTATION values to String
+const char* convertICAP_FLIPROTATION_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWFR_BOOK:
+    text = "Book";
+    break;
+
+	case TWFR_FANFOLD:
+    text = "Fanfold";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFR 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_FILTER values to String
+const char* convertICAP_FILTER_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWFT_RED:
+    text = "Red";
+    break;
+
+	case TWFT_GREEN:
+    text = "Green";
+    break;
+
+	case TWFT_BLUE:
+    text = "Blue";
+    break;
+
+	case TWFT_NONE:
+    text = "None";
+    break;
+
+	case TWFT_WHITE:
+    text = "White";
+    break;
+
+	case TWFT_CYAN:
+    text = "Cyan";
+    break;
+
+	case TWFT_MAGENTA:
+    text = "Magenta";
+    break;
+
+	case TWFT_YELLOW:
+    text = "Yellow";
+    break;
+
+	case TWFT_BLACK:
+    text = "Black";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFT 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert TW_FILESYSTEM values to String
+const char* convertTWEI_FILESYSTEM_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWFY_CAMERA:
+    text = "Camera";
+    break;
+
+	case TWFY_CAMERATOP:
+    text = "Camera Top";
+    break;
+
+	case TWFY_CAMERABOTTOM:
+    text = "Camera Bottom";
+    break;
+
+	case TWFY_CAMERAPREVIEW:
+    text = "Camera Preview";
+    break;
+
+	case TWFY_DOMAIN:
+    text = "Domain";
+    break;
+
+	case TWFY_HOST:
+    text = "Host";
+    break;
+
+	case TWFY_DIRECTORY:
+    text = "Directory";
+    break;
+
+	case TWFY_IMAGE:
+    text = "Image";
+    break;
+
+	case TWFY_UNKNOWN:
+    text = "Unknown";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFY 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_ICCPROFILE values to String
+const char* convertICAP_ICCPROFILE_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWIC_NONE:
+    text = "None";
+    break;
+
+	case TWIC_LINK:
+    text = "Link";
+    break;
+
+	case TWIC_EMBED:
+    text = "Embed";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWIC 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_IMAGEFILTER values to String
+const char* convertICAP_IMAGEFILTER_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWIF_NONE:
+    text = "None";
+    break;
+
+	case TWIF_AUTO:
+    text = "Auto";
+    break;
+
+	case TWIF_LOWPASS:
+    text = "Low Pass";
+    break;
+
+	case TWIF_BANDPASS:
+    text = "Band Pass";
+    break;
+
+	case TWIF_HIGHPASS:
+    text = "High Pass";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWIF 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_IMAGEMERGE values to String
+/*const char* convertICAP_IMAGEMERGE_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWIM_NONE:
+    text = "None";
+    break;
+
+	case TWIM_FRONTONTOP:
+    text = "Front on Top";
+    break;
+
+	case TWIM_FRONTONBOTTOM:
+    text = "Front on Bottom";
+    break;
+
+	case TWIM_FRONTONLEFT:
+    text = "Front on Left";
+    break;
+
+	case TWIM_FRONTONRIGHT:
+    text = "Front on Right";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWIM 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}*/
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_JOBCONTROL values to String
+const char* convertCAP_JOBCONTROL_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWJC_NONE:
+    text = "None";
+    break;
+
+	case TWJC_JSIC:
+    text = "JSIC";
+    break;
+
+	case TWJC_JSIS:
+    text = "JSIS";
+    break;
+
+	case TWJC_JSXC:
+    text = "JSXC";
+    break;
+
+	case TWJC_JSXS:
+    text = "JSXS";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWJC 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_JPEGQUALITY values to String
+const char* convertICAP_JPEGQUALITY_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWJQ_UNKNOWN:
+    text = "Unknown";
+    break;
+
+	case TWJQ_LOW:
+    text = "Low";
+    break;
+
+	case TWJQ_MEDIUM:
+    text = "Medium";
+    break;
+
+	case TWJQ_HIGH:
+    text = "High";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWJQ 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_LIGHTPATH values to String
+const char* convertICAP_LIGHTPATH_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWLP_REFLECTIVE:
+    text = "Reflective";
+    break;
+
+	case TWLP_TRANSMISSIVE:
+    text = "Transmissive";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWLP 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_LIGHTSOURCE values to String
+const char* convertICAP_LIGHTSOURCE_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWLS_RED:
+    text = "Red";
+    break;
+
+	case TWLS_GREEN:
+    text = "Green";
+    break;
+
+	case TWLS_BLUE:
+    text = "Blue";
+    break;
+
+	case TWLS_NONE:
+    text = "None";
+    break;
+
+	case TWLS_WHITE:
+    text = "White";
+    break;
+
+	case TWLS_UV:
+    text = "UV";
+    break;
+
+	case TWLS_IR:
+    text = "IR";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWLS 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert TWEI_MAGTYPE values to String
+const char* convertTWEI_MAGTYPE_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWMD_MICR:
+    text = "MICR";
+    break;
+
+//	case TWMD_RAW:
+//    text = "RAW";
+//    break;
+
+//	case TWMD_INVALID:
+//    text = "Invalid";
+//    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWMD 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_NOISEFILTER values to String
+const char* convertICAP_NOISEFILTER_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWNF_NONE:
+    text = "None";
+    break;
+
+	case TWNF_AUTO:
+    text = "Auto";
+    break;
+
+	case TWNF_LONEPIXEL:
+    text = "Low Pixel";
+    break;
+
+	case TWNF_MAJORITYRULE:
+    text = "Majoriry Rule";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWNF 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_ORIENTATION values to String
+const char* convertICAP_ORIENTATION_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+//	case TWOR_ROT0:
+//    text = "";
+//    break;
+
+	case TWOR_ROT90:
+    text = "Orientation 90";
+    break;
+
+	case TWOR_ROT180:
+    text = "Orientation 180";
+    break;
+
+//	case TWOR_ROT270:
+//    text = "";
+//    break;
+
+	case TWOR_PORTRAIT:
+    text = "Portrait";
+    break;
+
+	case TWOR_LANDSCAPE:
+    text = "Landscape";
+    break;
+
+	case TWOR_AUTO:
+    text = "Auto";
+    break;
+
+	case TWOR_AUTOTEXT:
+    text = "Auto Text";
+    break;
+
+	case TWOR_AUTOPICTURE:
+    text = "Auto Picture";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWOR 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_OVERSCAN values to String
+const char* convertICAP_OVERSCAN_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWOV_NONE:
+    text = "None";
+    break;
+
+	case TWOV_AUTO:
+    text = "Auto";
+    break;
+
+	case TWOV_TOPBOTTOM:
+    text = "Top Bottom";
+    break;
+
+	case TWOV_LEFTRIGHT:
+    text = "Left Right";
+    break;
+
+	case TWOV_ALL:
+    text = "All";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWOV 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_PLANARCHUNKY values to String
+const char* convertICAP_PLANARCHUNKY_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWPC_CHUNKY:
+    text = "Chunky";
+    break;
+
+	case TWPC_PLANAR:
+    text = "Planar";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPC 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert TWEI_PATCHCODE values to String
+const char* convertTWEI_PATCHCODE_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWPCH_PATCH1:
+    text = "Patch 1";
+    break;
+
+	case TWPCH_PATCH2:
+    text = "Patch 2";
+    break;
+
+	case TWPCH_PATCH3:
+    text = "Patch 3";
+    break;
+
+	case TWPCH_PATCH4:
+    text = "Patch 4";
+    break;
+
+	case TWPCH_PATCH6:
+    text = "Patch 6";
+    break;
+
+	case TWPCH_PATCHT:
+    text = "Patch T";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPCH 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_PIXELFLAVOR values to String
+const char* convertICAP_PIXELFLAVOR_toString(const TW_UINT16 _unItem)
+{
+  const char* text;
+
+  switch(_unItem)
+  {
+  case TWPF_CHOCOLATE:
+    text = "Chocolate";
+    break;
+
+  case TWPF_VANILLA:
+    text = "Vanilla";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPF 0x:%4X", _unItem);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_PRINTERMODE values to String
+const char* convertCAP_PRINTERMODE_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWPM_SINGLESTRING:
+    text = "Single String";
+    break;
+
+	case TWPM_MULTISTRING:
+    text = "Multi String";
+    break;
+
+	case TWPM_COMPOUNDSTRING:
+    text = "Compound String";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPM 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_PRINTER values to String
+const char* convertCAP_PRINTER_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWPR_IMPRINTERTOPBEFORE:
+    text = "Imprinter Top Before";
+    break;
+
+	case TWPR_IMPRINTERTOPAFTER:
+    text = "Imprinter Top After";
+    break;
+
+	case TWPR_IMPRINTERBOTTOMBEFORE:
+    text = "Imprinter Bottom Before";
+    break;
+
+	case TWPR_IMPRINTERBOTTOMAFTER:
+    text = "Imprinter Bottom After";
+    break;
+
+	case TWPR_ENDORSERTOPBEFORE:
+    text = "Endorser Top Before";
+    break;
+
+	case TWPR_ENDORSERTOPAFTER:
+    text = "Endorser Top After";
+    break;
+
+	case TWPR_ENDORSERBOTTOMBEFORE:
+    text = "Endorser Bottom Before";
+    break;
+
+	case TWPR_ENDORSERBOTTOMAFTER:
+    text = "Endorser Bottom After";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPR 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_POWERSUPPLY values to String
+const char* convertCAP_POWERSUPPLY_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWPS_EXTERNAL:
+    text = "External";
+    break;
+
+	case TWPS_BATTERY:
+    text = "Battery";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPS 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_PIXELTYPE values to String
+const char* convertICAP_PIXELTYPE_toString(const TW_UINT16 _unItem)
+{
+  const char* text;
+
+  switch(_unItem)
+  {
+  case TWPT_BW:
+    text = "BW";
+    break;
+
+  case TWPT_GRAY:
+    text = "GRAY";
+    break;
+
+  case TWPT_RGB:
+    text = "RGB";
+    break;
+
+  case TWPT_PALETTE:
+    text = "PALETTE";
+    break;
+
+  case TWPT_CMY:
+    text = "CMY";
+    break;
+
+  case TWPT_CMYK:
+    text = "CMYK";
+    break;
+
+  case TWPT_YUV:
+    text = "YUV";
+    break;
+
+  case TWPT_YUVK:
+    text = "YUVK";
+    break;
+
+  case TWPT_CIEXYZ:
+    text = "CIEXYZ";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWPT 0x:%4X", _unItem);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert CAP_SEGMENTED values to String
+const char* convertCAP_SEGMENTED_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWSG_NONE:
+    text = "None";
+    break;
+
+	case TWSG_AUTO:
+    text = "Auto";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWSG 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert ICAP_SUPPORTEDSIZES values to String
+const char* convertICAP_SUPPORTEDSIZES_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWSS_NONE:
+    text = "None";
+    break;
+
+	case TWSS_A4:
+    text = "A4";
+    break;
+
+	case TWSS_JISB5:
+    text = "JIS B5";
+    break;
+
+	case TWSS_USLETTER:
+    text = "US Letter";
+    break;
+
+	case TWSS_USLEGAL:
+    text = "US Legal";
+    break;
+
+	case TWSS_A5:
+    text = "A5";
+    break;
+
+	case TWSS_ISOB4:
+    text = "ISO B4";
+    break;
+
+	case TWSS_ISOB6:
+    text = "ISO B6";
+    break;
+
+	case TWSS_USLEDGER:
+    text = "US Ledger";
+    break;
+
+	case TWSS_USEXECUTIVE:
+    text = "US Executive";
+    break;
+
+	case TWSS_A3:
+    text = "A3";
+    break;
+
+	case TWSS_ISOB3:
+    text = "ISO B3";
+    break;
+
+	case TWSS_A6:
+    text = "A6";
+    break;
+
+	case TWSS_C4:
+    text = "C4";
+    break;
+
+	case TWSS_C5:
+    text = "C5";
+    break;
+
+	case TWSS_C6:
+    text = "C6";
+    break;
+
+	case TWSS_4A0:
+    text = "4A0";
+    break;
+
+	case TWSS_2A0:
+    text = "2A0";
+    break;
+
+	case TWSS_A0:
+    text = "A0";
+    break;
+
+	case TWSS_A1:
+    text = "A1";
+    break;
+
+	case TWSS_A2:
+    text = "A2";
+    break;
+
+	case TWSS_A7:
+    text = "A7";
+    break;
+
+	case TWSS_A8:
+    text = "A8";
+    break;
+
+	case TWSS_A9:
+    text = "A9";
+    break;
+
+	case TWSS_A10:
+    text = "A10";
+    break;
+
+	case TWSS_ISOB0:
+    text = "ISO B0";
+    break;
+
+	case TWSS_ISOB1:
+    text = "ISO B1";
+    break;
+
+	case TWSS_ISOB2:
+    text = "ISO B2";
+    break;
+
+	case TWSS_ISOB5:
+    text = "ISO B5";
+    break;
+
+	case TWSS_ISOB7:
+    text = "ISO B7";
+    break;
+
+	case TWSS_ISOB8:
+    text = "ISO B8";
+    break;
+
+	case TWSS_ISOB9:
+    text = "ISO B9";
+    break;
+
+	case TWSS_ISOB10:
+    text = "ISO B10";
+    break;
+
+	case TWSS_JISB0:
+    text = "JIS B0";
+    break;
+
+	case TWSS_JISB1:
+    text = "JIS B1";
+    break;
+
+	case TWSS_JISB2:
+    text = "JIS B2";
+    break;
+
+	case TWSS_JISB3:
+    text = "JIS B3";
+    break;
+
+	case TWSS_JISB4:
+    text = "JIS B4";
+    break;
+
+	case TWSS_JISB6:
+    text = "JIS B6";
+    break;
+
+	case TWSS_JISB7:
+    text = "JIS B7";
+    break;
+
+	case TWSS_JISB8:
+    text = "JIS B8";
+    break;
+
+	case TWSS_JISB9:
+    text = "JIS B9";
+    break;
+
+	case TWSS_JISB10:
+    text = "JIS B10";
+    break;
+
+	case TWSS_C0:
+    text = "C0";
+    break;
+
+	case TWSS_C1:
+    text = "C1";
+    break;
+
+	case TWSS_C2:
+    text = "C2";
+    break;
+
+	case TWSS_C3:
+    text = "C3";
+    break;
+
+	case TWSS_C7:
+    text = "C7";
+    break;
+
+	case TWSS_C8:
+    text = "C8";
+    break;
+
+	case TWSS_C9:
+    text = "C9";
+    break;
+
+	case TWSS_C10:
+    text = "C10";
+    break;
+
+	case TWSS_USSTATEMENT:
+    text = "US Statement";
+    break;
+
+	case TWSS_BUSINESSCARD:
+    text = "Business Card";
+    break;
+
+//	case TWSS_MAXSIZE:
+//    text = "MAX size";
+//    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWSS 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Covert ICAP_XFERMECH values to String
+const char* convertICAP_XFERMECH_toString(const TW_UINT16 _unItem)
+{
+  const char* text;
+
+  switch(_unItem)
+  {
+  case TWSX_NATIVE:
+    text = "Native";
+    break;
+
+  case TWSX_FILE:
+    text = "File";
+    break;
+
+  case TWSX_MEMORY:
+    text = "Memory";
+    break;
+
+  case TWSX_MEMFILE:
+    text = "Memory of File";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWSX 0x:%4X", _unItem);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Covert ICAP_UNITS values to String
+const char* convertICAP_UNITS_toString(const TW_UINT16 _unItem)
+{
+  const char* text;
+
+  switch(_unItem)
+  {
+  case TWUN_INCHES:
+    text = "Inches";
+    break;
+
+  case TWUN_CENTIMETERS:
+    text = "Centimeters";
+    break;
+
+  case TWUN_PICAS:
+    text = "Picas";
+    break;
+
+  case TWUN_POINTS:
+    text = "Points";
+    break;
+
+  case TWUN_TWIPS:
+    text = "Twips";
+    break;
+
+  case TWUN_PIXELS:
+    text = "Pixels";
+    break;
+
+  case TWUN_MILLIMETERS:
+    text = "Millimeters";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWUN 0x:%4X", _unItem);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
 
 const char* convertExtImageInfoItem_toString(TW_INFO &ImgInfo)
 {

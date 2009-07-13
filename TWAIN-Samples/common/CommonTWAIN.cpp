@@ -140,7 +140,8 @@ bool getcurrent(TW_CAPABILITY *pCap, string& val)
       case TWTY_STR32:
         {
           pTW_STR32 pStr = &((pTW_STR32)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
-          pStr[32] = 0;
+          if(32 < strlen(pStr))
+            pStr[32] = 0;
           val = pStr;
           bret = true;
         }
@@ -149,7 +150,8 @@ bool getcurrent(TW_CAPABILITY *pCap, string& val)
       case TWTY_STR64:
         {
           pTW_STR64 pStr = &((pTW_STR64)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
-          pStr[64] = 0;
+          if(64 < strlen(pStr))
+            pStr[64] = 0;
           val = pStr;
           bret = true;
         }
@@ -158,7 +160,8 @@ bool getcurrent(TW_CAPABILITY *pCap, string& val)
       case TWTY_STR128:
         {
           pTW_STR128 pStr = &((pTW_STR128)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
-          pStr[128] = 0;
+          if(128 < strlen(pStr))
+            pStr[128] = 0;
           val = pStr;
           bret = true;
         }
@@ -167,7 +170,8 @@ bool getcurrent(TW_CAPABILITY *pCap, string& val)
       case TWTY_STR255:
         {
           pTW_STR255 pStr = &((pTW_STR255)(&pCapPT->ItemList))[pCapPT->CurrentIndex];
-          pStr[255] = 0;
+          if(255 < strlen(pStr))
+            pStr[255] = 0;
           val = pStr;
           bret = true;
         }
@@ -184,7 +188,8 @@ bool getcurrent(TW_CAPABILITY *pCap, string& val)
       case TWTY_STR32:
         {
           pTW_STR32 pStr = ((pTW_STR32)(&pCapPT->Item));
-          pStr[32] = 0;
+          if(32 < strlen(pStr))
+            pStr[32] = 0;
           val = pStr;
           bret = true;
         }
@@ -193,7 +198,8 @@ bool getcurrent(TW_CAPABILITY *pCap, string& val)
       case TWTY_STR64:
         {
           pTW_STR64 pStr = ((pTW_STR64)(&pCapPT->Item));
-          pStr[64] = 0;
+          if(64 < strlen(pStr))
+            pStr[64] = 0;
           val = pStr;
           bret = true;
         }
@@ -202,7 +208,8 @@ bool getcurrent(TW_CAPABILITY *pCap, string& val)
       case TWTY_STR128:
         {
           pTW_STR128 pStr = ((pTW_STR128)(&pCapPT->Item));
-          pStr[128] = 0;
+          if(128 < strlen(pStr))
+            pStr[128] = 0;
           val = pStr;
           bret = true;
         }
@@ -211,7 +218,8 @@ bool getcurrent(TW_CAPABILITY *pCap, string& val)
       case TWTY_STR255:
         {
           pTW_STR255 pStr = ((pTW_STR255)(&pCapPT->Item));
-          pStr[255] = 0;
+          if(255 < strlen(pStr))
+            pStr[255] = 0;
           val = pStr;
           bret = true;
         }
