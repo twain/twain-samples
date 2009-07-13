@@ -231,6 +231,7 @@ void Cmfc32DlgConfigure::ListCaps()
   TW_CAPABILITY     CapSupportedCaps;
   pTW_ARRAY_UINT16  pCapSupCaps = 0;
   pTW_IDENTITY      pID = g_pTWAINApp->getDataSource();
+  TW_UINT16         CondCode;
 
   m_lst_Caps.ResetContent();
 
@@ -274,7 +275,7 @@ void Cmfc32DlgConfigure::ListCaps()
         dx = sz.cx;
       }
 
-      TW_UINT16 CondCode = g_pTWAINApp->get_CAP(Cap);
+      CondCode = g_pTWAINApp->get_CAP(Cap);
       g_pTWAINApp->QuerySupport_CAP(Cap.Cap, QS);
 
       if(CondCode==TWCC_SUCCESS)
@@ -342,7 +343,7 @@ void Cmfc32DlgConfigure::ListCaps()
             }
             bReadOnly = ( QS && !(QS & TWQC_SET) )? true : false;
             str.Format("%s:\t%s %c", name, value, bReadOnly?'r':' ');
-            int index = m_lst_Caps.InsertString( -1,  str );
+            int index = m_lst_Caps.AddString( str );
             if(LB_ERR != index)
             {
               m_lst_Caps.SetItemData( index, Cap.Cap );
@@ -354,7 +355,7 @@ void Cmfc32DlgConfigure::ListCaps()
       {
         value = convertConditionCode_toString(CondCode);
         str.Format("%s:\t<<%s>>", name, value);
-        int index = m_lst_Caps.InsertString( -1,  str );
+        int index = m_lst_Caps.AddString( str );
         if(LB_ERR != index)
         {
           m_lst_Caps.SetItemData( index, Cap.Cap );
