@@ -15,6 +15,18 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_03A484364B244086B421050DD8C87720"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0A9CFF9D7F594CFD96116CF140C9A294"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5B6EB5FCCECA4AAA97BDF758779B4E0F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -33,6 +45,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_B5AE7B17767349588E922461CA8D0D51"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BB589989FC9B47B5974C7902B6ECE83C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_CB6B242DDDB34471BF3672CB5AFE183B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -40,6 +64,12 @@
         "Entry"
         {
         "MsmKey" = "8:_D8008696BEA742C79108F28E03E77C40"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E878C4528F7343FD9502C61E2C5F84FD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -99,6 +129,46 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_03A484364B244086B421050DD8C87720"
+            {
+            "SourcePath" = "8:..\\pub\\bin\\TWAIN_APP_CMD32.exe"
+            "TargetName" = "8:TWAIN_APP_CMD32.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_7D34CBF811C343498740A81C3F11A7F6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0A9CFF9D7F594CFD96116CF140C9A294"
+            {
+            "SourcePath" = "8:..\\pub\\bin\\TWAIN_App_mfc32.exe"
+            "TargetName" = "8:TWAIN_App_mfc32.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_7D34CBF811C343498740A81C3F11A7F6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5B6EB5FCCECA4AAA97BDF758779B4E0F"
             {
             "SourcePath" = "8:twain.ico"
@@ -159,12 +229,72 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B5AE7B17767349588E922461CA8D0D51"
+            {
+            "SourcePath" = "8:..\\pub\\bin\\TWAIN_APP_CMD64.exe"
+            "TargetName" = "8:TWAIN_APP_CMD64.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_2C719188AD024182B3FD36859474C25E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BB589989FC9B47B5974C7902B6ECE83C"
+            {
+            "SourcePath" = "8:..\\license.txt"
+            "TargetName" = "8:license.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_7D34CBF811C343498740A81C3F11A7F6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CB6B242DDDB34471BF3672CB5AFE183B"
             {
             "SourcePath" = "8:..\\pub\\bin\\TWAIN_App_mfc64.exe"
             "TargetName" = "8:TWAIN_App_mfc64.exe"
             "Tag" = "8:"
             "Folder" = "8:_2C719188AD024182B3FD36859474C25E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E878C4528F7343FD9502C61E2C5F84FD"
+            {
+            "SourcePath" = "8:..\\pub\\bin\\FreeImage.dll"
+            "TargetName" = "8:FreeImage.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_7D34CBF811C343498740A81C3F11A7F6"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -228,6 +358,18 @@
                 {
                 }
             }
+            "{994432C3-9487-495D-8656-3E829A8DBDDE}:_7D34CBF811C343498740A81C3F11A7F6"
+            {
+            "DefaultLocation" = "8:[ProgramFilesFolder][Manufacturer]\\[ProductName]"
+            "Name" = "8:App32 Folder"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:TARGET32DIR"
+                "Folders"
+                {
+                }
+            }
             "{1525181F-901A-416C-8A58-119130FE478E}:_9305675E3CCE487492E5F0F66A608AC3"
             {
             "Name" = "8:#1919"
@@ -253,23 +395,23 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:TWAIN 2.0 App 64bit Sample"
-        "ProductCode" = "8:{1D55F576-1DEE-4C64-8FDC-60B03C0184D9}"
-        "PackageCode" = "8:{33699473-FA0E-48F1-8D34-0829FE01B1E0}"
+        "ProductName" = "8:TWAIN 2.0 App Sample"
+        "ProductCode" = "8:{FE5C5CBA-6240-49AD-A0AF-01112C4EF212}"
+        "PackageCode" = "8:{F731D90A-5E25-4FDE-BBAB-29F3B8674E04}"
         "UpgradeCode" = "8:{2638B13B-6530-4442-A0A1-EBF207319E97}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:2.0.7"
+        "ProductVersion" = "8:2.0.8"
         "Manufacturer" = "8:TWAIN Working Group"
-        "ARPHELPTELEPHONE" = "8:http://www.twainforum.org/phpBB2/index.php"
+        "ARPHELPTELEPHONE" = "8:http://www.twainforum.org/"
         "ARPHELPLINK" = "8:http://sourceforge.net/projects/twain-samples/"
         "Title" = "8:App Installer 64"
         "Subject" = "8:"
         "ARPCONTACT" = "8:TWAIN Working Group"
-        "Keywords" = "8:TWAIN 2.0 App Sample 64bit"
-        "ARPCOMMENTS" = "8:Sample TWAIN 2.0 Application "
+        "Keywords" = "8:TWAIN 2.0 App Sample"
+        "ARPCOMMENTS" = "8:Sample TWAIN 2.0 Application 32bit and 64bit"
         "ARPURLINFOABOUT" = "8:http://twain.org"
         "ARPPRODUCTICON" = "8:_5B6EB5FCCECA4AAA97BDF758779B4E0F"
         "ARPIconIndex" = "3:0"
@@ -376,7 +518,7 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_559FC09994C9412187968AE4B0F52AC0"
             {
-            "Name" = "8:TWAIN2 Sample App"
+            "Name" = "8:TWAIN2 Sample GUI App"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -385,6 +527,20 @@
             "Target" = "8:_CB6B242DDDB34471BF3672CB5AFE183B"
             "Folder" = "8:_9305675E3CCE487492E5F0F66A608AC3"
             "WorkingFolder" = "8:_2C719188AD024182B3FD36859474C25E"
+            "Icon" = "8:_5B6EB5FCCECA4AAA97BDF758779B4E0F"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_A7AC65859A52454B9EE499E385955F26"
+            {
+            "Name" = "8:TWAIN2 Sample GUI App 32bit"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_0A9CFF9D7F594CFD96116CF140C9A294"
+            "Folder" = "8:_9305675E3CCE487492E5F0F66A608AC3"
+            "WorkingFolder" = "8:_7D34CBF811C343498740A81C3F11A7F6"
             "Icon" = "8:_5B6EB5FCCECA4AAA97BDF758779B4E0F"
             "Feature" = "8:"
             }

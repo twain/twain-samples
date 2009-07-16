@@ -21,12 +21,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_10F2B52B2DEA4238A02BA2685F94AE0C"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_172714424AD74D3AB1A20E6E6C9375E4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -34,6 +28,12 @@
         "Entry"
         {
         "MsmKey" = "8:_590E722908514F208D733D7E5F3CC950"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8D812188603E4E7EBED1DF7C2E55F691"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -125,10 +125,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_10F2B52B2DEA4238A02BA2685F94AE0C"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_590E722908514F208D733D7E5F3CC950"
             {
-            "SourcePath" = "8:..\\pub\\bin\\TWAIN_APP_CMD.exe"
-            "TargetName" = "8:TWAIN_APP_CMD.exe"
+            "SourcePath" = "8:..\\license.txt"
+            "TargetName" = "8:license.txt"
             "Tag" = "8:"
             "Folder" = "8:_96730F9B11A14CA78A60C4C3863A6FF7"
             "Condition" = "8:"
@@ -145,10 +145,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_590E722908514F208D733D7E5F3CC950"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8D812188603E4E7EBED1DF7C2E55F691"
             {
-            "SourcePath" = "8:..\\license.txt"
-            "TargetName" = "8:license.txt"
+            "SourcePath" = "8:..\\pub\\bin\\TWAIN_APP_CMD32.exe"
+            "TargetName" = "8:TWAIN_APP_CMD32.exe"
             "Tag" = "8:"
             "Folder" = "8:_96730F9B11A14CA78A60C4C3863A6FF7"
             "Condition" = "8:"
@@ -279,23 +279,23 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:TWAIN 2.0 App 32bit Sample"
-        "ProductCode" = "8:{173B90F7-ADCC-4198-A135-452145076408}"
-        "PackageCode" = "8:{1090F921-EB08-42DD-8073-49B148783447}"
+        "ProductName" = "8:TWAIN 2.0 App Sample"
+        "ProductCode" = "8:{065E4115-E89C-4A08-A15A-8309B81101CA}"
+        "PackageCode" = "8:{5FD23082-3DE8-4988-AD3F-F17732289E9A}"
         "UpgradeCode" = "8:{3093BF18-1ADD-4A3C-AE32-8F818163DFAF}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:2.0.7"
+        "ProductVersion" = "8:2.0.8"
         "Manufacturer" = "8:TWAIN Working Group"
-        "ARPHELPTELEPHONE" = "8:http://www.twainforum.org/phpBB2/index.php"
+        "ARPHELPTELEPHONE" = "8:http://www.twainforum.org/"
         "ARPHELPLINK" = "8:http://sourceforge.net/projects/twain-samples/"
         "Title" = "8:App Installer 32"
         "Subject" = "8:"
         "ARPCONTACT" = "8:TWAIN Working Group"
-        "Keywords" = "8:TWAIN 2.0 App Sample 32bit"
-        "ARPCOMMENTS" = "8:Sample TWAIN 2.0 Application "
+        "Keywords" = "8:TWAIN 2.0 App Sample"
+        "ARPCOMMENTS" = "8:Sample TWAIN 2.0 Application 32bit"
         "ARPURLINFOABOUT" = "8:http://twain.org"
         "ARPPRODUCTICON" = "8:_08699E2E1EFE422DBB6F4BDE4BAEA4D5"
         "ARPIconIndex" = "3:0"

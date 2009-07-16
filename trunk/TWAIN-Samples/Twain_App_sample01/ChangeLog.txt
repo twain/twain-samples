@@ -1,3 +1,11 @@
+2009-07-16 JFL Peripheral Solutions jimw@jflinc.com
+
+    * Update installer to use newest DSM merge module
+    * Pass the Windows handle to EnableDS if we have it
+    * Sort the list of DS and enumerations
+    * Add many strings to dispay known capabilities and enumerations values.
+    * Update 64bit Windows installer to install both 32bit and 64bit App
+
 2009-05-12 JFL Peripheral Solutions jimw@jflinc.com
 
     * Mark read only caps with a 'r' 
