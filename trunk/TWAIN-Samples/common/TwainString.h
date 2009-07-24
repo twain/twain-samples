@@ -104,6 +104,13 @@ const char* convertICAP_PIXELFLAVOR_toString(const TW_UINT16 _unItem);
 const char* convertICAP_IMAGEFILEFORMAT_toString(const TW_UINT16 _unItem);
 
 /**
+* converts the integer CAP Image File format type value into .xxx extention string form
+* @param[in] _unItem the value
+* @return the equivalent string
+*/
+const char* convertICAP_IMAGEFILEFORMAT_toExt(const TW_UINT16 _unItem);
+
+/**
 * converts the integer CAP Compression type value into string form
 * @param[in] _unItem the value
 * @return the equivalent string
