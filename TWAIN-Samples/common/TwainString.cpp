@@ -1976,6 +1976,90 @@ const char* convertICAP_IMAGEFILEFORMAT_toString(const TW_UINT16 _unItem)
   switch(_unItem)
   {
   case TWFF_TIFF:
+    text = "tiff";
+    break;
+
+  case TWFF_PICT:
+    text = "pict";
+    break;
+
+  case TWFF_BMP:
+    text = "bmp";
+    break;
+
+  case TWFF_XBM:
+    text = "xbm";
+    break;
+
+  case TWFF_JFIF:
+    text = "jpeg";
+    break;
+
+  case TWFF_FPX:
+    text = "fpx";
+    break;
+
+  case TWFF_TIFFMULTI:
+    text = "multi image tiff";
+    break;
+
+  case TWFF_PNG:
+    text = "png";
+    break;
+
+  case TWFF_SPIFF:
+    text = "spiff";
+    break;
+
+  case TWFF_EXIF:
+    text = "exif";
+    break;
+
+  case TWFF_PDF:
+    text = "PDF";
+    break;
+
+  case TWFF_JP2:
+    text = "JP2";
+    break;
+
+  case TWFF_JPN:
+    text = "JPN";
+    break;
+
+  case TWFF_JPX:
+    text = "JPX";
+    break;
+
+  case TWFF_DEJAVU:
+    text = "DEJAVU";
+    break;
+
+  case TWFF_PDFA:
+    text = "PDF-A";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFF 0x:%4X", _unItem);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Cover ICAP_IMAGEFILEFORMAT values to String
+const char* convertICAP_IMAGEFILEFORMAT_toExt(const TW_UINT16 _unItem)
+{
+  const char* text;
+
+  switch(_unItem)
+  {
+  case TWFF_TIFF:
     text = ".tiff";
     break;
 
@@ -2013,6 +2097,30 @@ const char* convertICAP_IMAGEFILEFORMAT_toString(const TW_UINT16 _unItem)
 
   case TWFF_EXIF:
     text = ".exif";
+    break;
+
+  case TWFF_PDF:
+    text = ".pdf";
+    break;
+
+  case TWFF_JP2:
+    text = ".jp2";
+    break;
+
+  case TWFF_JPN:
+    text = ".jpn";
+    break;
+
+  case TWFF_JPX:
+    text = ".jpx";
+    break;
+
+  case TWFF_DEJAVU:
+    text = ".dejavu";
+    break;
+
+  case TWFF_PDFA:
+    text = ".pdf";
     break;
 
   default:

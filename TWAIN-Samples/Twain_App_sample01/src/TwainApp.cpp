@@ -1042,7 +1042,7 @@ void TwainApp::initiateTransfer_File(TW_UINT16 fileformat /*= TWFF_TIFF*/)
     TW_SETUPFILEXFER filexfer;
     memset(&filexfer, 0, sizeof(filexfer));
 
-    const char * pExt = convertICAP_IMAGEFILEFORMAT_toString(fileformat);
+    const char * pExt = convertICAP_IMAGEFILEFORMAT_toExt(fileformat);
 
     SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "FROM_SCANNER_%06dF%s", m_nXferNum, pExt);
 

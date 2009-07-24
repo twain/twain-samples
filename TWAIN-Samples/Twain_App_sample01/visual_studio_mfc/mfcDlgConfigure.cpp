@@ -355,7 +355,7 @@ void Cmfc32DlgConfigure::ListCaps()
       {
         value = convertConditionCode_toString(CondCode);
         str.Format("%s:\t<<%s>>", name, value);
-        int index = m_lst_Caps.AddString( str );
+        int index = m_lst_Caps.InsertString(-1, str );
         if(LB_ERR != index)
         {
           m_lst_Caps.SetItemData( index, Cap.Cap );
@@ -373,10 +373,19 @@ void Cmfc32DlgConfigure::ListCaps()
     m_lst_Caps.SetTabStops((dx*4) / LOWORD(::GetDialogBaseUnits()));
   }
 
-  CEdit *pWnd = (CEdit*)GetDlgItem(IDC_EXTIMAGEINFO);
+  CEdit *pWnd = NULL;
+
+  pWnd = (CEdit*)GetDlgItem(IDC_EXTIMAGEINFO);
   if(pWnd)
   {
-    pWnd->SetTabStops(100);
+    pWnd->SetTabStops(94);
+  }
+
+  pWnd = (CEdit*)GetDlgItem(IDC_IMAGEINFO);
+  if(pWnd)
+  {
+    INT   TabStops[3] = {35, 95, 145};
+    pWnd->SetTabStops(3, TabStops);
   }
 
 cleanup:
@@ -746,13 +755,13 @@ void Cmfc32DlgConfigure::UpdateImageInfo()
   pTW_IMAGEINFO pII = g_pTWAINApp->getIMAGEINFO();
   m_sStc_ImageInfo.Format( 
                           "Width: \t%d \tBitsPerPixel: \t%d\r\n"
-                          "Length:\t%d \tPlanar:       \t%d\r\n"
-                          "Res x: \t%d \tPixelType:    \t%d\r\n"
-                          "Res y: \t%d \tCompression:  \t%d\r\n",
+                          "Length:\t%d \tPlanar:       \t%s\r\n"
+                          "Res x: \t%d \tPixelType:    \t%s\r\n"
+                          "Res y: \t%d \tCompression:  \t%s\r\n",
                           pII->ImageWidth,  pII->BitsPerPixel, 
-                          pII->ImageLength, pII->Planar,
-                          pII->XResolution, pII->PixelType, 
-                          pII->YResolution, pII->Compression  );
+                          pII->ImageLength, convertICAP_PLANARCHUNKY_toString(pII->Planar),
+                          pII->XResolution, convertICAP_PIXELTYPE_toString(pII->PixelType), 
+                          pII->YResolution, convertICAP_COMPRESSION_toString(pII->Compression) );
   // \tBitsPerSample:\t%d\r\n"pII->BitsPerSample,
   UpdateData(false);
 }
