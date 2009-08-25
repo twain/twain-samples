@@ -972,6 +972,57 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(pTW_CAPABILITY _pCap)
       }
       break;
     }
+    case CAP_FEEDERENABLED:
+      if(TWON_ONEVALUE == _pCap->ConType)
+      {
+        TW_ONEVALUE *pCap = (TW_ONEVALUE*)_DSM_LockMemory(_pCap->hContainer);
+
+        if(!pCap || pCap->ItemType != TWTY_BOOL || pCap->Item==0)
+        {
+          twrc = TWRC_FAILURE;
+        }
+        _DSM_UnlockMemory(_pCap->hContainer);
+      }
+      else
+      {
+        setConditionCode(TWCC_CAPBADOPERATION);
+        twrc = TWRC_FAILURE;
+      }
+      break;
+    case CAP_AUTOFEED:
+      if(TWON_ONEVALUE == _pCap->ConType)
+      {
+        TW_ONEVALUE *pCap = (TW_ONEVALUE*)_DSM_LockMemory(_pCap->hContainer);
+
+        if(!pCap || pCap->ItemType != TWTY_BOOL || pCap->Item==0)
+        {
+          twrc = TWRC_FAILURE;
+        }
+        _DSM_UnlockMemory(_pCap->hContainer);
+      }
+      else
+      {
+        setConditionCode(TWCC_CAPBADOPERATION);
+        twrc = TWRC_FAILURE;
+      }
+      break;    
+    case ICAP_MAXFRAMES:
+      if(TWON_ONEVALUE == _pCap->ConType)
+      {
+        TW_ONEVALUE *pCap = (TW_ONEVALUE*)_DSM_LockMemory(_pCap->hContainer);
+
+        if(!pCap || pCap->ItemType != TWTY_UINT16 || pCap->Item!=1)
+        {
+          twrc = TWRC_FAILURE;
+        }
+        _DSM_UnlockMemory(_pCap->hContainer);
+      }
+      else
+      {
+        setConditionCode(TWCC_CAPBADOPERATION);
+        twrc = TWRC_FAILURE;
+      }
+      break;    
     default:
     break;
   }
@@ -1122,12 +1173,12 @@ bool CTWAINDS_Base::ConstrainFrameToScanner(InternalFrame& _frame)
     _frame.nLeft = 0;
     bChanged = true;
   }
-  if(pPhysicalWidth && true == pPhysicalWidth->GetCurrent(fMaxValue) && (int)fMaxValue < _frame.nRight)
+  if(pPhysicalWidth && true == pPhysicalWidth->GetCurrent(fMaxValue) && (int)fMaxValue*1000 < _frame.nRight)
   {
     _frame.nRight = (int)fMaxValue;
     bChanged = true;
   }
-  if(pMinWidth && true == pMinWidth->GetCurrent(fMinValue) && (int)fMinValue > _frame.nRight-_frame.nLeft)
+  if(pMinWidth && true == pMinWidth->GetCurrent(fMinValue) && (int)fMinValue*1000 > _frame.nRight-_frame.nLeft)
   {
     _frame.nLeft  = max( 0, _frame.nLeft - ((int)fMinValue - (_frame.nRight-_frame.nLeft)) );
     _frame.nRight = _frame.nLeft + max((int)fMinValue, _frame.nRight-_frame.nLeft);
@@ -1140,12 +1191,12 @@ bool CTWAINDS_Base::ConstrainFrameToScanner(InternalFrame& _frame)
     _frame.nTop = 0;
     bChanged = true;
   }
-  if(pPhysicalHeight && true == pPhysicalHeight->GetCurrent(fMaxValue) && (int)fMaxValue < _frame.nBottom)
+  if(pPhysicalHeight && true == pPhysicalHeight->GetCurrent(fMaxValue) && (int)fMaxValue*1000 < _frame.nBottom)
   {
     _frame.nBottom = (int)fMaxValue;
     bChanged = true;
   }
-  if(pMinHeight && true == pMinHeight->GetCurrent(fMinValue) && (int)fMinValue > _frame.nBottom-_frame.nTop)
+  if(pMinHeight && true == pMinHeight->GetCurrent(fMinValue) && (int)fMinValue*1000 > _frame.nBottom-_frame.nTop)
   {
     _frame.nTop  = max( 0, _frame.nTop - ((int)fMinValue - (_frame.nBottom-_frame.nTop)) );
     _frame.nBottom = _frame.nTop + max((int)fMinValue, _frame.nBottom-_frame.nTop);

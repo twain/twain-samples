@@ -110,6 +110,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   m_IndependantCapMap[CAP_SUPPORTEDCAPS] = new CTWAINContainerInt(CAP_SUPPORTEDCAPS, TWTY_UINT16, TWON_ARRAY, TWQC_GETS);
   if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_SUPPORTEDCAPS]))
    || !pnCap->Add(CAP_DEVICEONLINE)
+   || !pnCap->Add(CAP_INDICATORS)
    || !pnCap->Add(CAP_PAPERDETECTABLE)
    || !pnCap->Add(CAP_FEEDERENABLED)
    || !pnCap->Add(CAP_FEEDERLOADED)
@@ -269,7 +270,16 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
-  m_IndependantCapMap[ICAP_MAXFRAMES] = new CTWAINContainerInt(ICAP_MAXFRAMES, TWTY_UINT16, TWON_ONEVALUE, TWQC_GETS);
+  m_IndependantCapMap[CAP_INDICATORS] = new CTWAINContainerInt(CAP_DEVICEONLINE, TWTY_BOOL, TWON_ONEVALUE, TWQC_ALL);
+  if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_INDICATORS]))
+   || !pnCap->Add(FALSE, true))
+  {
+    cerr << "Could not create CAP_INDICATORS" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+
+  m_IndependantCapMap[ICAP_MAXFRAMES] = new CTWAINContainerInt(ICAP_MAXFRAMES, TWTY_UINT16, TWON_ONEVALUE, TWQC_ALL);
   if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[ICAP_MAXFRAMES]))
    || !pnCap->Add(1, true) )
   {
@@ -278,7 +288,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
-  m_IndependantCapMap[CAP_FEEDERENABLED] = new CTWAINContainerInt(CAP_FEEDERENABLED, TWTY_BOOL, TWON_ONEVALUE, TWQC_GETS);
+  m_IndependantCapMap[CAP_FEEDERENABLED] = new CTWAINContainerInt(CAP_FEEDERENABLED, TWTY_BOOL, TWON_ONEVALUE, TWQC_ALL);
   /// @todo to add support for flatbed set to TWQC_ALL and add False as posible value.
   if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_FEEDERENABLED]))
    || !pnCap->Add(TRUE, true) )
@@ -298,7 +308,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
-  m_IndependantCapMap[CAP_AUTOFEED] = new CTWAINContainerInt(CAP_AUTOFEED, TWTY_BOOL, TWON_ONEVALUE, TWQC_GETS);
+  m_IndependantCapMap[CAP_AUTOFEED] = new CTWAINContainerInt(CAP_AUTOFEED, TWTY_BOOL, TWON_ONEVALUE, TWQC_ALL);
   if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_AUTOFEED]))
    || !pnCap->Add(TRUE, true)
    || !pnCap->Add(FALSE) )
@@ -381,7 +391,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   //  ConvertUnits(29.7f, TWUN_CENTIMETERS, TWUN_INCHES, 1000);
   //  ConvertUnits(21.0f, TWUN_CENTIMETERS, TWUN_INCHES, 1000);
   if( NULL == (m_ICAP_UNIT_Dependant[ICAP_PHYSICALWIDTH] = new CTWAINContainerFix32(ICAP_PHYSICALWIDTH, TWTY_FIX32, TWON_ONEVALUE, TWQC_GETS))
-   || !m_ICAP_UNIT_Dependant[ICAP_PHYSICALWIDTH]->Add(8500, true) )
+   || !m_ICAP_UNIT_Dependant[ICAP_PHYSICALWIDTH]->Add(8.5, true) )
   {
     cerr << "Could not create ICAP_PHYSICALWIDTH" << endl;
     setConditionCode(TWCC_LOWMEMORY);
@@ -389,7 +399,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   }
 
   if( NULL == (m_ICAP_UNIT_Dependant[ICAP_PHYSICALHEIGHT] = new CTWAINContainerFix32(ICAP_PHYSICALHEIGHT, TWTY_FIX32, TWON_ONEVALUE, TWQC_GETS))
-   || !m_ICAP_UNIT_Dependant[ICAP_PHYSICALHEIGHT]->Add(14000, true) )
+   || !m_ICAP_UNIT_Dependant[ICAP_PHYSICALHEIGHT]->Add(14.0, true) )
   {
     cerr << "Could not create ICAP_PHYSICALHEIGHT" << endl;
     setConditionCode(TWCC_LOWMEMORY);
@@ -1069,6 +1079,17 @@ CTWAINContainer* CTWAINDS_FreeImage::findCapability(const TW_UINT16 _unCap)
 
     case ICAP_BITDEPTH:
       pRet = getICAP_BITDEPTH();
+    break;
+
+    case CAP_INDICATORS:
+      {
+        CTWAINContainerInt *pIntCon = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_INDICATORS]);
+        if( NULL != pIntCon )
+        {
+          pIntCon->SetCurrent(FALSE );
+          pRet = pIntCon;
+        }
+      }
     break;
 
     case CAP_DEVICEONLINE:
