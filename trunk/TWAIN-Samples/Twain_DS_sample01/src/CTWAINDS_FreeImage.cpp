@@ -241,8 +241,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
 
   m_IndependantCapMap[ICAP_PIXELFLAVOR] = new CTWAINContainerInt(ICAP_PIXELFLAVOR, TWTY_UINT16, TWON_ENUMERATION);
   if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[ICAP_PIXELFLAVOR]))
-   || !pnCap->Add(TWPF_CHOCOLATE, true)
-   || !pnCap->Add(TWPF_VANILLA) )
+   || !pnCap->Add(TWPF_CHOCOLATE, true))
   {
     cerr << "Could not create ICAP_PIXELFLAVOR" << endl;
     setConditionCode(TWCC_LOWMEMORY);
