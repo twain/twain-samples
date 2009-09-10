@@ -989,23 +989,6 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(pTW_CAPABILITY _pCap)
         twrc = TWRC_FAILURE;
       }
       break;
-    case CAP_AUTOFEED:
-      if(TWON_ONEVALUE == _pCap->ConType)
-      {
-        TW_ONEVALUE *pCap = (TW_ONEVALUE*)_DSM_LockMemory(_pCap->hContainer);
-
-        if(!pCap || pCap->ItemType != TWTY_BOOL || pCap->Item==0)
-        {
-          twrc = TWRC_FAILURE;
-        }
-        _DSM_UnlockMemory(_pCap->hContainer);
-      }
-      else
-      {
-        setConditionCode(TWCC_CAPBADOPERATION);
-        twrc = TWRC_FAILURE;
-      }
-      break;    
     case ICAP_MAXFRAMES:
       if(TWON_ONEVALUE == _pCap->ConType)
       {

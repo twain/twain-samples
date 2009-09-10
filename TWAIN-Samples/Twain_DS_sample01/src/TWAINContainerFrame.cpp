@@ -483,6 +483,11 @@ TW_INT16 CTWAINContainerFrame::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
 
     _DSM_UnlockMemory(_pCap->hContainer);
   }
+  else //bad container type
+  {
+    twrc = TWRC_FAILURE;
+    Condition = TWCC_BADVALUE;
+  }
 
   return twrc;
 }
@@ -586,14 +591,14 @@ bool CTWAINContainerFrame::SetCurrent(const int _nLeft, const int _nTop, const i
 
 bool CTWAINContainerFrame::SetCurrent(const InternalFrame& _frame)
 {
-  bool bret = true;
-
-  if((m_nCurrent = getIndexForValue(_frame)) < 0)
+  int nIdx = getIndexForValue(_frame);
+  if(nIdx < 0)
   {
-    bret = false;
+    return false;
   }
 
-  return bret;
+  m_nCurrent = nIdx;
+  return true;
 }
 
 int CTWAINContainerFrame::getIndexForValue(const InternalFrame& _frame)

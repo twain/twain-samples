@@ -49,7 +49,7 @@
 class CTWAINDS_FreeImage : public CTWAINDS_Base
 {
 public:
-  CTWAINDS_FreeImage();
+  CTWAINDS_FreeImage(TW_IDENTITY AppID);
   ~CTWAINDS_FreeImage();
 
   /**
@@ -196,6 +196,7 @@ protected:
   TWAINCapabilitiesMap_int    m_BitDepthMap;             /**< Capability for various Bit Depths */
   TWAINCapabilitiesMap_FIX32  m_ICAP_UNIT_Dependant;     /**< Capability for any Fix32 based TWAIN container */
   CTWAINContainerFrame       *m_pICAP_FRAMES;            /**< capabiltiy for a FRAMES based containor */
+  TW_IDENTITY m_AppID;
 };
 
 

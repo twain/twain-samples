@@ -90,8 +90,9 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
 };
 
 //////////////////////////////////////////////////////////////////////////////
-CTWAINDS_FreeImage::CTWAINDS_FreeImage()
+CTWAINDS_FreeImage::CTWAINDS_FreeImage(TW_IDENTITY AppID)
 {
+  m_AppID = AppID;
   // Setup our identity
   fillIdentityStructure(*getIdentity());
   return;
@@ -106,6 +107,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
 
   // setup the supported independant caps
   CTWAINContainerInt* pnCap = 0;
+  CTWAINContainerBool* pbCap = 0;
 
   m_IndependantCapMap[CAP_SUPPORTEDCAPS] = new CTWAINContainerInt(CAP_SUPPORTEDCAPS, TWTY_UINT16, TWON_ARRAY, TWQC_GETS);
   if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_SUPPORTEDCAPS]))
@@ -197,11 +199,11 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
-  m_IndependantCapMap[CAP_UICONTROLLABLE] = new CTWAINContainerInt(CAP_UICONTROLLABLE, TWTY_BOOL, TWON_ONEVALUE, TWQC_GETS);
-  if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_UICONTROLLABLE]))
+  m_IndependantCapMap[CAP_UICONTROLLABLE] = new CTWAINContainerBool(CAP_UICONTROLLABLE, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_GETS);
+  if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_UICONTROLLABLE]))
   /// @todo add UI
   // || !pnCap->Add(TRUE, true)
-   || !pnCap->Add(FALSE, true) )
+   || !pbCap->Add(FALSE, true) )
   {
     cerr << "Could not create CAP_UICONTROLLABLE" << endl;
     setConditionCode(TWCC_LOWMEMORY);
@@ -259,19 +261,19 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
-  m_IndependantCapMap[CAP_DEVICEONLINE] = new CTWAINContainerInt(CAP_DEVICEONLINE, TWTY_BOOL, TWON_ONEVALUE, TWQC_GETS);
-  if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_DEVICEONLINE]))
-   || !pnCap->Add(TRUE, true)
-   || !pnCap->Add(FALSE) )
+  m_IndependantCapMap[CAP_DEVICEONLINE] = new CTWAINContainerBool(CAP_DEVICEONLINE, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_GETS);
+  if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_DEVICEONLINE]))
+   || !pbCap->Add(TRUE, true)
+   || !pbCap->Add(FALSE) )
   {
     cerr << "Could not create CAP_DEVICEONLINE" << endl;
     setConditionCode(TWCC_LOWMEMORY);
     return TWRC_FAILURE;
   }
 
-  m_IndependantCapMap[CAP_INDICATORS] = new CTWAINContainerInt(CAP_DEVICEONLINE, TWTY_BOOL, TWON_ONEVALUE, TWQC_ALL);
-  if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_INDICATORS]))
-   || !pnCap->Add(FALSE, true))
+  m_IndependantCapMap[CAP_INDICATORS] = new CTWAINContainerBool(CAP_INDICATORS, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_ALL);
+  if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_INDICATORS]))
+   || !pbCap->Add(FALSE, true))
   {
     cerr << "Could not create CAP_INDICATORS" << endl;
     setConditionCode(TWCC_LOWMEMORY);
@@ -287,39 +289,39 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
-  m_IndependantCapMap[CAP_FEEDERENABLED] = new CTWAINContainerInt(CAP_FEEDERENABLED, TWTY_BOOL, TWON_ONEVALUE, TWQC_ALL);
+  m_IndependantCapMap[CAP_FEEDERENABLED] = new CTWAINContainerBool(CAP_FEEDERENABLED, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_ALL);
   /// @todo to add support for flatbed set to TWQC_ALL and add False as posible value.
-  if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_FEEDERENABLED]))
-   || !pnCap->Add(TRUE, true) )
+  if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_FEEDERENABLED]))
+   || !pbCap->Add(TRUE, true) )
   {
     cerr << "Could not create CAP_FEEDERENABLED" << endl;
     setConditionCode(TWCC_LOWMEMORY);
     return TWRC_FAILURE;
   }
 
-  m_IndependantCapMap[CAP_FEEDERLOADED] = new CTWAINContainerInt(CAP_FEEDERLOADED, TWTY_BOOL, TWON_ONEVALUE, TWQC_GETS);
-  if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_FEEDERLOADED]))
-   || !pnCap->Add(TRUE)
-   || !pnCap->Add(FALSE, true) )
+  m_IndependantCapMap[CAP_FEEDERLOADED] = new CTWAINContainerBool(CAP_FEEDERLOADED, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_GETS);
+  if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_FEEDERLOADED]))
+   || !pbCap->Add(TRUE)
+   || !pbCap->Add(FALSE, true) )
   {
     cerr << "Could not create CAP_FEEDERLOADED" << endl;
     setConditionCode(TWCC_LOWMEMORY);
     return TWRC_FAILURE;
   }
 
-  m_IndependantCapMap[CAP_AUTOFEED] = new CTWAINContainerInt(CAP_AUTOFEED, TWTY_BOOL, TWON_ONEVALUE, TWQC_ALL);
-  if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_AUTOFEED]))
-   || !pnCap->Add(TRUE, true)
-   || !pnCap->Add(FALSE) )
+  m_IndependantCapMap[CAP_AUTOFEED] = new CTWAINContainerBool(CAP_AUTOFEED, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_ALL);
+  if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_AUTOFEED]))
+   || !pbCap->Add(TRUE, true)
+   || !pbCap->Add(FALSE) )
   {
     cerr << "Could not create CAP_AUTOFEED" << endl;
     setConditionCode(TWCC_LOWMEMORY);
     return TWRC_FAILURE;
   }
   
-  m_IndependantCapMap[CAP_PAPERDETECTABLE] = new CTWAINContainerInt(CAP_PAPERDETECTABLE, TWTY_BOOL, TWON_ONEVALUE, TWQC_GETS);
-  if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_PAPERDETECTABLE]))
-   || !pnCap->Add(TRUE, true) )
+  m_IndependantCapMap[CAP_PAPERDETECTABLE] = new CTWAINContainerBool(CAP_PAPERDETECTABLE, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_GETS);
+  if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_PAPERDETECTABLE]))
+   || !pbCap->Add(TRUE, true) )
   {
     cerr << "Could not create CAP_PAPERDETECTABLE" << endl;
     setConditionCode(TWCC_LOWMEMORY);
@@ -883,11 +885,11 @@ TW_INT16 CTWAINDS_FreeImage::endXfer(pTW_PENDINGXFERS _pXfers)
   if(0 != m_Xfers.Count)
   {
     // Check to see if autofeed is turned on if so automaticly go get next image.
-    CTWAINContainerInt *pnCap = dynamic_cast<CTWAINContainerInt*>(findCapability(CAP_AUTOFEED));
-    BOOL bAutoFeed = FALSE;
-    if(pnCap)
+    CTWAINContainerBool *pbCap = dynamic_cast<CTWAINContainerBool*>(findCapability(CAP_AUTOFEED));
+    bool bAutoFeed = FALSE;
+    if(pbCap)
     {
-      pnCap->GetCurrent(bAutoFeed);
+      pbCap->GetCurrent(bAutoFeed);
     }
     if(bAutoFeed)
     {
@@ -899,9 +901,9 @@ TW_INT16 CTWAINDS_FreeImage::endXfer(pTW_PENDINGXFERS _pXfers)
         setConditionCode(TWCC_BUMMER);
         twrc = TWRC_FAILURE;
       }
-
-      m_CurrentState = dsState_XferReady;
     }
+
+    m_CurrentState = dsState_XferReady;
   }
   else
   {
@@ -1082,33 +1084,33 @@ CTWAINContainer* CTWAINDS_FreeImage::findCapability(const TW_UINT16 _unCap)
 
     case CAP_INDICATORS:
       {
-        CTWAINContainerInt *pIntCon = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_INDICATORS]);
-        if( NULL != pIntCon )
+        CTWAINContainerBool *pBoolCon = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_INDICATORS]);
+        if( NULL != pBoolCon )
         {
-          pIntCon->SetCurrent(FALSE );
-          pRet = pIntCon;
+          pBoolCon->SetCurrent(FALSE );
+          pRet = pBoolCon;
         }
       }
     break;
 
     case CAP_DEVICEONLINE:
       {
-        CTWAINContainerInt *pIntCon = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_DEVICEONLINE]);
-        if( NULL != pIntCon )
+        CTWAINContainerBool *pBoolCon = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_DEVICEONLINE]);
+        if( NULL != pBoolCon )
         {
-          pIntCon->SetCurrent( m_Scanner.getDeviceOnline()?TRUE:FALSE );
-          pRet = pIntCon;
+          pBoolCon->SetCurrent( m_Scanner.getDeviceOnline()?TRUE:FALSE );
+          pRet = pBoolCon;
         }
       }
     break;
 
     case CAP_FEEDERLOADED:
       {
-        CTWAINContainerInt *pIntCon = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_FEEDERLOADED]);
-        if( NULL != pIntCon )
+        CTWAINContainerBool *pBoolCon = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_FEEDERLOADED]);
+        if( NULL != pBoolCon )
         {
-          pIntCon->SetCurrent( m_Scanner.isFeederLoaded()?TRUE:FALSE );
-          pRet = pIntCon;
+          pBoolCon->SetCurrent( m_Scanner.isFeederLoaded()?TRUE:FALSE );
+          pRet = pBoolCon;
         }
       }
     break;

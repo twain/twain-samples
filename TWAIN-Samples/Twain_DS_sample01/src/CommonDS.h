@@ -53,6 +53,7 @@
 #include "TWAINContainer.h"
 #include "TWAINContainerInt.h"
 #include "TWAINContainerFix32.h"
+#include "TWAINContainerBool.h"
 #include "TWAINContainerFrame.h"
 #include "CTiffWriter.h"
 

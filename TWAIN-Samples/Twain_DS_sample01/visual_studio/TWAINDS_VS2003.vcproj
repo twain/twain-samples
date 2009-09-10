@@ -51,7 +51,8 @@
 				Name="VCPostBuildEventTool"
 				Description="Copy Application to pub\bin directory"
 				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot;
-copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;"/>
+copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
@@ -106,7 +107,8 @@ copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(Proj
 				Name="VCPostBuildEventTool"
 				Description="Copy Application to pub\bin directory"
 				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot;
-copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;"/>
+copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
@@ -162,6 +164,9 @@ copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(Proj
 				RelativePath="..\src\TWAINContainer.cpp">
 			</File>
 			<File
+				RelativePath="..\src\TWAINContainerBool.cpp">
+			</File>
+			<File
 				RelativePath="..\src\TWAINContainerFix32.cpp">
 			</File>
 			<File
@@ -207,6 +212,9 @@ copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(Proj
 			</File>
 			<File
 				RelativePath="..\src\TWAINContainer.h">
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerBool.h">
 			</File>
 			<File
 				RelativePath="..\src\TWAINContainerFix32.h">
