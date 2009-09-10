@@ -37,13 +37,20 @@
 */
 
 #include "CTWAINDS_Sample1.h"
-
+#include <list>
 //////////////////////////////////////////////////////////////////////////////
 // Globals
 /**
 * gloabal pointer of the Data Source, for access to the main DS_Entry.
 */
-CTWAINDS_Base* g_pTWAINLayer = 0;
+typedef struct _DS_inst
+{
+  TW_IDENTITY AppId;
+  CTWAINDS_Base *pDS; 
+}DS_inst;
+
+typedef list<DS_inst> lstDS;
+lstDS g_lstDS;
 
 #ifdef TWH_CMP_MSC
   /** 
@@ -66,8 +73,21 @@ DS_Entry( pTW_IDENTITY _pOrigin,
           TW_UINT16    _MSG,
           TW_MEMREF    _pData)
 {
+  CTWAINDS_Base* pTWAINLayer = 0;
+
+  if(_pOrigin)
+  {
+    lstDS::iterator llIter=g_lstDS.begin();
+    for(;llIter!=g_lstDS.end();llIter++)
+    {
+      if((*llIter).AppId.Id==_pOrigin->Id)
+      {
+        pTWAINLayer=(*llIter).pDS;
+      }
+    }
+  }
   // Curently we are not open
-  if( 0 == g_pTWAINLayer )
+  if( 0 == pTWAINLayer )
   {
     // Special case DSM can request to get identity information about 
     // DS before it is open.  In this special case, where the DS is not
@@ -90,18 +110,23 @@ DS_Entry( pTW_IDENTITY _pOrigin,
     }
 
     // Open the DS
-    g_pTWAINLayer = new CTWAINDS_FreeImage();
-    if( NULL == g_pTWAINLayer 
-     || TWRC_SUCCESS != g_pTWAINLayer->Initialize())
+    pTWAINLayer = new CTWAINDS_FreeImage(*_pOrigin);
+    if( NULL == pTWAINLayer 
+     || TWRC_SUCCESS != pTWAINLayer->Initialize())
     {
       // Failed to create the DS 
       //setConditionCode(TWCC_LOWMEMORY);
       return TWRC_FAILURE;
     }
+    DS_inst _DS;
+    _DS.pDS = pTWAINLayer;
+    _DS.AppId = *_pOrigin;
+    g_lstDS.push_back(_DS);
+
   }
 
   // If we were not open before, we are now, so continue with the TWAIN call
-  TW_INT16 result = g_pTWAINLayer->DS_Entry(_pOrigin, _DG, _DAT, _MSG, _pData);
+  TW_INT16 result = pTWAINLayer->DS_Entry(_pOrigin, _DG, _DAT, _MSG, _pData);
 
   /**
   * Special case - free memory if closing DS 
@@ -110,10 +135,19 @@ DS_Entry( pTW_IDENTITY _pOrigin,
   */
   if( TWRC_SUCCESS == result && 
       DG_CONTROL == _DG && DAT_IDENTITY == _DAT && MSG_CLOSEDS == _MSG &&
-      NULL != g_pTWAINLayer )
+      NULL != pTWAINLayer )
   {
-    delete g_pTWAINLayer;
-    g_pTWAINLayer = 0;
+    lstDS::iterator llIter=g_lstDS.begin();
+    for(;llIter!=g_lstDS.end();)
+    {
+      if((*llIter).AppId.Id==_pOrigin->Id)
+      {
+        delete  (*llIter).pDS;
+        llIter = g_lstDS.erase(llIter);
+        continue;
+      }
+      llIter++;
+    }
   }
 
   return result;
@@ -142,6 +176,7 @@ BOOL WINAPI DllMain(HINSTANCE _hmodule,
       g_hinstance = _hmodule;
       break;
     case DLL_PROCESS_DETACH:
+      unLoadDSMLib();
       g_hinstance = 0;
       break;
   }

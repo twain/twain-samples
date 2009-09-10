@@ -99,7 +99,29 @@ TW_UINT16 _DSM_Entry( pTW_IDENTITY _pOrigin,
       // This should only happen if not being called by the DSM2
       // Other words only on Windows with an older DSM
       // So we load the old dll
-      if((0 == gpDSM) && !LoadDSMLib("TWAIN_32.dll"))
+	    char DSMName[MAX_PATH];
+
+	    memset(DSMName, 0, MAX_PATH*sizeof(char));
+
+      if(GetWindowsDirectory (DSMName, MAX_PATH)==0)
+      {
+        DSMName[0]=0;
+      }
+#if (TWNDS_CMP_VERSION >= 1400)
+	    if (DSMName[strlen(DSMName)-1] != '\\')
+	    {
+		    strcat_s(DSMName,MAX_PATH, "\\");
+	    }		
+	    strcat_s (DSMName,MAX_PATH, "TWAIN_32.dll");
+#else
+	    if (DSMName[strlen(DSMName)-1] != '\\')
+	    {
+		    strcat(DSMName, "\\");
+	    }		
+	    strcat(DSMName, "TWAIN_32.dll");
+#endif
+
+      if((0 == gpDSM) && !LoadDSMLib(DSMName))
       {
         cerr << "Could not load the DSM" << endl;
         return TWRC_FAILURE;

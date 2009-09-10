@@ -80,7 +80,7 @@ TW_HANDLE CTWAINContainerInt::GetContainer(const TW_UINT16 _unMsg)
 
     if(TWON_ENUMERATION == m_unGetType)
     {
-      hContainer = _DSM_Alloc(sizeof(TW_ENUMERATION) + (unSize * m_listInts.size()));
+      hContainer = _DSM_Alloc(sizeof(TW_ENUMERATION) -1 + (unSize * m_listInts.size()));
 
       if(0 != hContainer)
       {
@@ -116,7 +116,7 @@ TW_HANDLE CTWAINContainerInt::GetContainer(const TW_UINT16 _unMsg)
     }
     else if(TWON_ARRAY == m_unGetType)
     {
-      hContainer = _DSM_Alloc(sizeof(TW_ARRAY) + (unSize * m_listInts.size()));
+      hContainer = _DSM_Alloc(sizeof(TW_ARRAY)-1 + (unSize * m_listInts.size()));
 
       if(0 != hContainer)
       {
@@ -366,6 +366,11 @@ TW_INT16 CTWAINContainerInt::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
 
     _DSM_UnlockMemory(_pCap->hContainer);
   }
+  else //bad container type
+  {
+    twrc = TWRC_FAILURE;
+    Condition = TWCC_BADVALUE;
+  }
 
   return twrc;
 }
@@ -441,14 +446,14 @@ bool CTWAINContainerInt::Add(int _nAdd, bool _bDefault /*= false*/)
 
 bool CTWAINContainerInt::SetCurrent(int _nCurr)
 {
-  bool bret = true;
-
-  if((m_nCurrent = getIndexForValue(_nCurr)) < 0)
+  int nIdx = getIndexForValue(_nCurr);
+  if(nIdx < 0)
   {
-    bret = false;
+    return false;
   }
 
-  return bret;
+  m_nCurrent = nIdx;
+  return true;
 }
 
 int CTWAINContainerInt::getIndexForValue(const int _nVal)

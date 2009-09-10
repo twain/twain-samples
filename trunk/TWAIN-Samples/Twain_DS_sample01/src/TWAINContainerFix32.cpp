@@ -285,6 +285,11 @@ TW_INT16 CTWAINContainerFix32::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
 
     _DSM_UnlockMemory(_pCap->hContainer);
   }
+  else //bad container type
+  {
+    twrc = TWRC_FAILURE;
+    Condition = TWCC_BADVALUE;
+  }
 
   return twrc;
 }
@@ -349,14 +354,14 @@ bool CTWAINContainerFix32::Add(const float _flAdd, bool _bDefault /*= false*/)
 
 bool CTWAINContainerFix32::SetCurrent(float _flCurr)
 {
-  bool bret = true;
-
-  if((m_nCurrent = getIndexForValue(_flCurr)) < 0)
+  int nIdx = getIndexForValue(_flCurr);
+  if(nIdx < 0)
   {
-    bret = false;
+    return false;
   }
 
-  return bret;
+  m_nCurrent = nIdx;
+  return true;
 }
 
 int CTWAINContainerFix32::getIndexForValue(const float _flVal)
