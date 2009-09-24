@@ -65,11 +65,11 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
 {
   0,                                  // TW_UINT32  Id;               Unique number.  In Windows, application hWnd
   {                                       // TW_VERSION Version;          Identifies the piece of code
-    1,                                    // TW_UINT16  MajorNum;         Major revision number of the software
-    0,                                    // TW_UINT16  MinorNum;         Incremental revision number of the software
+    2,                                    // TW_UINT16  MajorNum;         Major revision number of the software
+    1,                                    // TW_UINT16  MinorNum;         Incremental revision number of the software
     TWLG_ENGLISH,                         // TW_UINT16  Language;         e.g. TWLG_SWISSFRENCH
     TWCY_USA,                             // TW_UINT16  Country;          e.g. TWCY_SWITZERLAND
-    "1.0 sample"                          // TW_STR32   Info;             e.g. "1.0b3 Beta release"
+    "2.1 sample"                          // TW_STR32   Info;             e.g. "1.0b3 Beta release"
 #ifdef _DEBUG
     " debug"
 #else
