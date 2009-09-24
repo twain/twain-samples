@@ -1140,8 +1140,11 @@ TW_INT16 CTWAINDS_Base::updatePostDependencies(TW_UINT16 MSG, TW_UINT16 Cap)
 bool CTWAINDS_Base::ConstrainFrameToScanner(InternalFrame& _frame)
 {
   bool bChanged = false;
-  float fMaxValue;
-  float fMinValue;
+  int nMaxHValue = 0x7FFFFFFF; //max frame size fit in InternalFrame
+  int nMinHValue = 0;
+  int nMaxWValue = 0x7FFFFFFF; //max frame size fit in InternalFrame
+  int nMinWValue = 0;
+  float fTemp;
 
   // ICAP_PHYSICALWIDTH and ICAP_PHYSICALHEIGHT are required Caps while
   // ICAP_MINIMUMWIDTH and ICAP_MINIMUMHEIGHT are not required caps.
@@ -1149,6 +1152,35 @@ bool CTWAINDS_Base::ConstrainFrameToScanner(InternalFrame& _frame)
   CTWAINContainerFix32* pPhysicalHeight = dynamic_cast<CTWAINContainerFix32*>(findCapability(ICAP_PHYSICALHEIGHT));
   CTWAINContainerFix32* pMinWidth       = dynamic_cast<CTWAINContainerFix32*>(findCapability(ICAP_MINIMUMWIDTH));
   CTWAINContainerFix32* pMinHeight      = dynamic_cast<CTWAINContainerFix32*>(findCapability(ICAP_MINIMUMHEIGHT));
+  
+  if(pPhysicalWidth)
+  {
+    if(pPhysicalWidth->GetCurrent(fTemp))
+    {
+      nMaxWValue = (int)(fTemp*1000.0);
+    }
+  }
+  if(pPhysicalHeight)
+  {
+    if(pPhysicalHeight->GetCurrent(fTemp))
+    {
+      nMaxHValue = (int)(fTemp*1000.0);
+    }
+  }
+  if(pMinWidth)
+  {
+    if(pMinWidth->GetCurrent(fTemp))
+    {
+      nMinWValue = (int)(fTemp*1000.0);
+    }
+  }
+  if(pMinHeight)
+  {
+    if(pMinHeight->GetCurrent(fTemp))
+    {
+      nMinHValue = (int)(fTemp*1000.0);
+    }
+  }
 
   // Constrain the width
   if(_frame.nLeft < 0)
@@ -1156,15 +1188,22 @@ bool CTWAINDS_Base::ConstrainFrameToScanner(InternalFrame& _frame)
     _frame.nLeft = 0;
     bChanged = true;
   }
-  if(pPhysicalWidth && true == pPhysicalWidth->GetCurrent(fMaxValue) && (int)fMaxValue*1000 < _frame.nRight)
+  if(_frame.nRight <= 0 || _frame.nRight > nMaxWValue)
   {
-    _frame.nRight = (int)fMaxValue;
+    _frame.nRight = nMaxWValue;
     bChanged = true;
   }
-  if(pMinWidth && true == pMinWidth->GetCurrent(fMinValue) && (int)fMinValue*1000 > _frame.nRight-_frame.nLeft)
+  if(_frame.nLeft >= _frame.nRight)
   {
-    _frame.nLeft  = max( 0, _frame.nLeft - ((int)fMinValue - (_frame.nRight-_frame.nLeft)) );
-    _frame.nRight = _frame.nLeft + max((int)fMinValue, _frame.nRight-_frame.nLeft);
+    _frame.nLeft = 0;
+    _frame.nRight = nMaxWValue;
+    bChanged = true;
+  }
+
+  if((_frame.nRight-_frame.nLeft) < nMinWValue)
+  {
+    _frame.nLeft  = max( 0, _frame.nLeft - (nMinWValue - (_frame.nRight-_frame.nLeft)) );
+    _frame.nRight = _frame.nLeft + max(nMinWValue, _frame.nRight-_frame.nLeft);
     bChanged = true;
   }
 
@@ -1174,15 +1213,21 @@ bool CTWAINDS_Base::ConstrainFrameToScanner(InternalFrame& _frame)
     _frame.nTop = 0;
     bChanged = true;
   }
-  if(pPhysicalHeight && true == pPhysicalHeight->GetCurrent(fMaxValue) && (int)fMaxValue*1000 < _frame.nBottom)
+  if(_frame.nBottom <= 0 || _frame.nBottom>nMaxHValue)
   {
-    _frame.nBottom = (int)fMaxValue;
+    _frame.nBottom = nMaxHValue;
     bChanged = true;
   }
-  if(pMinHeight && true == pMinHeight->GetCurrent(fMinValue) && (int)fMinValue*1000 > _frame.nBottom-_frame.nTop)
+  if(_frame.nTop >= _frame.nBottom)
   {
-    _frame.nTop  = max( 0, _frame.nTop - ((int)fMinValue - (_frame.nBottom-_frame.nTop)) );
-    _frame.nBottom = _frame.nTop + max((int)fMinValue, _frame.nBottom-_frame.nTop);
+    _frame.nTop = 0;
+    _frame.nBottom = nMaxHValue;
+    bChanged = true;
+  }  
+  if(( _frame.nBottom-_frame.nTop)< nMinHValue)
+  {
+    _frame.nTop  = max( 0, _frame.nTop - (nMinHValue - (_frame.nBottom-_frame.nTop)) );
+    _frame.nBottom = _frame.nTop + max(nMinHValue, _frame.nBottom-_frame.nTop);
     bChanged = true;
   }
 
