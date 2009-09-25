@@ -201,9 +201,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
 
   m_IndependantCapMap[CAP_UICONTROLLABLE] = new CTWAINContainerBool(CAP_UICONTROLLABLE, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_GETS);
   if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_UICONTROLLABLE]))
-  /// @todo add UI
-  // || !pnCap->Add(TRUE, true)
-   || !pbCap->Add(FALSE, true) )
+   || !pbCap->Add(TRUE, true) )
   {
     cerr << "Could not create CAP_UICONTROLLABLE" << endl;
     setConditionCode(TWCC_LOWMEMORY);
@@ -274,6 +272,8 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   m_IndependantCapMap[CAP_INDICATORS] = new CTWAINContainerBool(CAP_INDICATORS, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_ALL);
   if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_INDICATORS]))
    || !pbCap->Add(FALSE, true))
+  /// @todo add UI
+  // || !pnCap->Add(TRUE, true))//Default has to be TRUE if it is supported
   {
     cerr << "Could not create CAP_INDICATORS" << endl;
     setConditionCode(TWCC_LOWMEMORY);
