@@ -116,6 +116,11 @@ DS_Entry( pTW_IDENTITY _pOrigin,
     {
       // Failed to create the DS 
       //setConditionCode(TWCC_LOWMEMORY);
+      if(pTWAINLayer)
+      {
+        // Created but could not Initialize
+        delete pTWAINLayer;
+      }
       return TWRC_FAILURE;
     }
     DS_inst _DS;
