@@ -90,7 +90,8 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
 };
 
 //////////////////////////////////////////////////////////////////////////////
-CTWAINDS_FreeImage::CTWAINDS_FreeImage(TW_IDENTITY AppID)
+CTWAINDS_FreeImage::CTWAINDS_FreeImage(TW_IDENTITY AppID) :
+  m_pICAP_FRAMES(0)
 {
   m_AppID = AppID;
   // Setup our identity
