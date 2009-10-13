@@ -1128,6 +1128,32 @@ TW_INT16 CTWAINDS_Base::updatePostDependencies(TW_UINT16 MSG, TW_UINT16 Cap)
       }        
     }
     break;
+    case ICAP_XRESOLUTION:
+    case ICAP_YRESOLUTION:
+    case ICAP_UNITS:
+    {
+      int   unit;
+      float Xres, Yres;
+      CTWAINContainerFrame *pDepCapFrames = dynamic_cast<CTWAINContainerFrame*>(findCapability(ICAP_FRAMES));
+
+      if(pDepCapFrames ==0)
+      {
+        setConditionCode(TWCC_BUMMER);
+        twrc = TWRC_FAILURE;
+        break;
+      }
+
+      if(getCurrentUnits(unit, Xres, Yres)==TWRC_SUCCESS)
+      {
+        pDepCapFrames->setCurrentUnits(unit, Xres, Yres);
+      }
+      else
+      {
+        setConditionCode(TWCC_BUMMER);
+        return TWRC_FAILURE;
+      }
+    }
+    break;
 
     default:
     break;
@@ -1145,7 +1171,6 @@ bool CTWAINDS_Base::ConstrainFrameToScanner(InternalFrame& _frame)
   int nMaxWValue = 0x7FFFFFFF; //max frame size fit in InternalFrame
   int nMinWValue = 0;
   float fTemp;
-
   // ICAP_PHYSICALWIDTH and ICAP_PHYSICALHEIGHT are required Caps while
   // ICAP_MINIMUMWIDTH and ICAP_MINIMUMHEIGHT are not required caps.
   CTWAINContainerFix32* pPhysicalWidth  = dynamic_cast<CTWAINContainerFix32*>(findCapability(ICAP_PHYSICALWIDTH));

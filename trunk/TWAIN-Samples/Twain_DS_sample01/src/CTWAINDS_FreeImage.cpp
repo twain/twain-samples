@@ -419,6 +419,19 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
+  int   unit;
+  float Xres, Yres;
+  if(getCurrentUnits(unit, Xres, Yres)==TWRC_SUCCESS)
+  {
+    m_pICAP_FRAMES->setCurrentUnits(unit, Xres, Yres);
+  }
+  else
+  {
+    cerr << "Could not getCurrentUnits" << endl;
+    setConditionCode(TWCC_BUMMER);
+    return TWRC_FAILURE;
+   }
+
   return TWRC_SUCCESS;
 }
 
