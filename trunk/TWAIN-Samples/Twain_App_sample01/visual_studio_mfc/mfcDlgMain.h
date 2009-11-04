@@ -43,6 +43,7 @@
 #endif
 
 #include "CommonTWAIN.h"
+#include "afxwin.h"
 
 //forward declaration for class pointer
 class TwainApp;
@@ -84,8 +85,10 @@ public:
   afx_msg void OnLbnSelchangeDS();
   afx_msg void OnBnClickedConnectDs();
   afx_msg void OnLbnDblclkDs();
+  afx_msg void OnBnClickedDefaultDs();
 
   CString   m_sStc_DS;
   CListBox  m_lst_DS;
   CButton   m_btn_Connect_DS;
+  CButton   m_btn_Default_DS;
 };

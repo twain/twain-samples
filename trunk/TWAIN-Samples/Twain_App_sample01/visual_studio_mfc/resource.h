@@ -25,6 +25,7 @@
 #define IDC_CAP9                        1012
 #define IDB_CONNECT_DS                  1013
 #define IDB_DISCONNECT_DS               1014
+#define IDB_DEFAULT_DS                  1014
 #define IDB_DISCONNECT_DSM              1015
 #define IDB_SCAN                        1016
 #define IDC_STC_DS                      1017

@@ -158,6 +158,7 @@ void TwainApp::fillIdentity(TW_IDENTITY& _identity)
   _identity.Version.MinorNum = 0;
   _identity.Version.Language = TWLG_ENGLISH_CANADIAN;
   _identity.Version.Country = TWCY_CANADA;
+  SSTRCPY(_identity.Version.Info, sizeof(_identity.Version.Info), "1.0.10");
   _identity.ProtocolMajor = TWON_PROTOCOLMAJOR;
   _identity.ProtocolMinor = TWON_PROTOCOLMINOR;
   _identity.SupportedGroups = DF_APP2 | DG_IMAGE | DG_CONTROL;
@@ -348,6 +349,52 @@ pTW_IDENTITY TwainApp::getDefaultDataSource()
   return &_gSource;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+pTW_IDENTITY TwainApp::setDefaultDataSource(unsigned int _index)
+{
+  if(m_DSMState < 3)
+  {
+    cout << "You need to open the DSM first." << endl;
+    return NULL;
+  }
+
+  else if(m_DSMState > 3)
+  {
+    PrintCMDMessage("A source has already been opened, please close it first\n");
+    return NULL;
+  }
+
+  if(_index >= 0 && _index < m_DataSources.size())
+  {
+    m_pDataSource = &(m_DataSources[_index]);
+
+    // set the specific data source
+    TW_UINT16 twrc;
+    twrc = _DSM_Entry(
+      &m_MyInfo,
+      0,
+      DG_CONTROL,
+      DAT_IDENTITY,
+      MSG_SET,
+      (TW_MEMREF) m_pDataSource);
+
+    switch (twrc)
+    {
+      case TWRC_SUCCESS:
+        break;
+
+      case TWRC_FAILURE:
+        printError(0, "Failed to get the data source info!");
+        break;
+    }
+  }
+  else
+  {
+    return NULL;
+  }
+
+  return m_pDataSource;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 pTW_IDENTITY TwainApp::selectDefaultDataSource()

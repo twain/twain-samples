@@ -270,6 +270,7 @@ public:
 
 /**
 * Returns a pointer to the currently opened data source.
+* @param[in] _index the DS index to return
 * @return a TW_IDENTITY pointer to the opened data source 
 * if nothing open then return NULL.
 */
@@ -280,6 +281,13 @@ public:
 * @return a TW_IDENTITY pointer to the default.
 */
   pTW_IDENTITY getDefaultDataSource(void);
+
+/**
+* Set the default data source.
+* @param[in] _index the DS index to set as default
+* @return a TW_IDENTITY pointer of the default.
+*/
+  pTW_IDENTITY setDefaultDataSource(unsigned int _index);
 
 /**
 * Display the Select Source Dialog and returns a pointer to the selected data source.

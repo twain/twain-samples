@@ -102,6 +102,7 @@ void Cmfc32DlgMain::DoDataExchange(CDataExchange* pDX)
   DDX_Text(pDX, IDC_STC_DS, m_sStc_DS);
   DDX_Control(pDX, IDL_DS, m_lst_DS);
   DDX_Control(pDX, IDB_CONNECT_DS, m_btn_Connect_DS);
+  DDX_Control(pDX, IDB_DEFAULT_DS, m_btn_Default_DS);
 }
 
 BEGIN_MESSAGE_MAP(Cmfc32DlgMain, CDialog)
@@ -113,6 +114,7 @@ BEGIN_MESSAGE_MAP(Cmfc32DlgMain, CDialog)
   ON_LBN_SELCHANGE(IDL_DS, OnLbnSelchangeDS)
   ON_LBN_DBLCLK(IDL_DS, OnLbnDblclkDs)
   ON_BN_CLICKED(IDB_CONNECT_DS, OnBnClickedConnectDs)
+  ON_BN_CLICKED(IDB_DEFAULT_DS, OnBnClickedDefaultDs)
 END_MESSAGE_MAP()
 
 
@@ -250,6 +252,7 @@ void Cmfc32DlgMain::PopulateDSList()
     {
       m_lst_DS.EnableWindow(true);
       m_btn_Connect_DS.EnableWindow(true);
+      m_btn_Default_DS.EnableWindow(true);
       if(nDefault == -1)
       {
         m_lst_DS.SetCurSel(0);
@@ -288,10 +291,10 @@ void Cmfc32DlgMain::OnLbnDblclkDs()
 void Cmfc32DlgMain::OnBnClickedConnectDs()
 {
   int sel = m_lst_DS.GetCurSel();
-  TW_UINT32 index = (TW_UINT32)m_lst_DS.GetItemData(sel);
-  ASSERT(index > 0 );
+  TW_UINT32 ds_ID = (TW_UINT32)m_lst_DS.GetItemData(sel);
+  ASSERT(ds_ID > 0 );
 
-  Cmfc32DlgConfigure dlg(this, index);
+  Cmfc32DlgConfigure dlg(this, ds_ID);
   INT_PTR nResponse = dlg.DoModal();
  /*
   _pTWAINApp->connectDSM();
@@ -311,4 +314,16 @@ void Cmfc32DlgMain::OnBnClickedConnectDs()
   }
   _pTWAINApp->disconnectDSM();
   */
+}
+void Cmfc32DlgMain::OnBnClickedDefaultDs()
+{
+  int sel = m_lst_DS.GetCurSel();
+
+  _pTWAINApp->connectDSM();
+  if(3 == _pTWAINApp->m_DSMState)
+  {
+    _pTWAINApp->setDefaultDataSource(sel);
+
+  }
+  _pTWAINApp->disconnectDSM();
 }
