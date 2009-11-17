@@ -91,9 +91,9 @@ const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT32 _un
       pszString = convertICAP_BITORDER_toString((TW_UINT16)_unItem);
       break;
 
-//    case ICAP_AUTODISCARDBLANKPAGES:
-//      pszString = convertICAP_AUTODISCARDBLANKPAGES_toString((TW_UINT16)_unItem);
-//      break;
+    case ICAP_AUTODISCARDBLANKPAGES:
+      pszString = convertICAP_AUTODISCARDBLANKPAGES_toString((TW_UINT16)_unItem);
+      break;
 
     case ICAP_BITDEPTH:
       {
@@ -167,9 +167,9 @@ const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT32 _un
       pszString = convertICAP_IMAGEFILTER_toString((TW_UINT16)_unItem);
       break;
 
-//    case ICAP_IMAGEMERGE:
-//      pszString = convertICAP_IMAGEMERGE_toString((TW_UINT16)_unItem);
-//      break;
+    case ICAP_IMAGEMERGE:
+      pszString = convertICAP_IMAGEMERGE_toString((TW_UINT16)_unItem);
+      break;
 
     case CAP_JOBCONTROL:
       pszString = convertCAP_JOBCONTROL_toString((TW_UINT16)_unItem);
@@ -284,7 +284,7 @@ const char* convertEI_Item_toString(const TW_UINT16 _unEI, const TW_UINT32 _unIt
       break;
 
     case TWEI_PAGESIDE:
-      pszString = convertCAP_CAMERASIDE_toString((TW_UINT16)_unItem);
+      pszString = convertTWEI_PAGESIDE_toString((TW_UINT16)_unItem);
       break;
 
     case TWEI_DESKEWSTATUS:
@@ -561,6 +561,14 @@ const char* convertCAP_toString(const TW_UINT16 _unCap)
 
   case CAP_FEEDERPOCKET:
     text = "CAP_FEEDERPOCKET";
+    break;
+
+  case CAP_AUTOMATICSENSEMEDIUM:
+    text = "CAP_AUTOMATICSENSEMEDIUM";
+    break;
+
+  case CAP_CUSTOMINTERFACEGUID:
+    text = "CAP_CUSTOMINTERFACEGUID";
     break;
 
   case ICAP_AUTOBRIGHT:
@@ -849,6 +857,38 @@ const char* convertCAP_toString(const TW_UINT16 _unCap)
 
   case ICAP_AUTOSIZE:
     text = "ICAP_AUTOSIZE";
+    break;
+
+    case ICAP_AUTOMATICCROPUSESFRAME:
+    text = "ICAP_AUTOMATICCROPUSESFRAME";
+    break;
+
+  case ICAP_AUTOMATICLENGTHDETECTION:
+    text = "ICAP_AUTOMATICLENGTHDETECTION";
+    break;
+
+  case ICAP_AUTOMATICCOLORENABLED:
+    text = "ICAP_AUTOMATICCOLORENABLED";
+    break;
+
+  case ICAP_AUTOMATICCOLORNONCOLORPIXELTYPE:
+    text = "ICAP_AUTOMATICCOLORNONCOLORPIXELTYPE";
+    break;
+
+  case ICAP_COLORMANAGEMENTENABLED:
+    text = "ICAP_COLORMANAGEMENTENABLED";
+    break;
+
+  case ICAP_IMAGEMERGE:
+    text = "ICAP_IMAGEMERGE";
+    break;
+
+  case ICAP_IMAGEMERGEHEIGHTTHRESHOLD:
+    text = "ICAP_IMAGEMERGEHEIGHTTHRESHOLD";
+    break;
+
+  case ICAP_SUPPORTEDEXTIMAGEINFO:
+    text = "ICAP_SUPPORTEDEXTIMAGEINFO";
     break;
 
   case ACAP_AUDIOFILEFORMAT:
@@ -1444,7 +1484,7 @@ const char* convertICAP_BITORDER_toString(const TW_UINT16 InfoID)
 
 //////////////////////////////////////////////////////////////////////////////
 // Convert ICAP_AUTODISCARDBLANKPAGES values to String
-/*const char* convertICAP_AUTODISCARDBLANKPAGES_toString(const TW_UINT16 InfoID)
+const char* convertICAP_AUTODISCARDBLANKPAGES_toString(const TW_UINT16 InfoID)
 {
   const char* text;
 
@@ -1468,7 +1508,7 @@ const char* convertICAP_BITORDER_toString(const TW_UINT16 InfoID)
   }
 
   return text;
-}*/
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // Convert ICAP_BITDEPTHREDUCTION values to String
@@ -1680,7 +1720,7 @@ const char* convertICAP_COMPRESSION_toString(const TW_UINT16 _unItem)
 
 
 //////////////////////////////////////////////////////////////////////////////
-// Convert CAP_CAMERASIDE and TWEI_PAGESIDE values to String
+// Convert CAP_CAMERASIDE values to String
 const char* convertCAP_CAMERASIDE_toString(const TW_UINT16 InfoID)
 {
   const char* text;
@@ -1697,6 +1737,34 @@ const char* convertCAP_CAMERASIDE_toString(const TW_UINT16 InfoID)
 
 	case TWCS_BOTTOM:
     text = "Bottom";
+    break;
+
+  default:
+    {
+      char * buff = nextTempBuffer();
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWCS 0x:%4X", InfoID);
+      text = buff;
+    }
+    break;
+  }
+
+  return text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert TWEI_PAGESIDE values to String
+const char* convertTWEI_PAGESIDE_toString(const TW_UINT16 InfoID)
+{
+  const char* text;
+
+  switch(InfoID)
+  {
+	case TWCS_TOP:
+    text = "Front";
+    break;
+
+	case TWCS_BOTTOM:
+    text = "Back";
     break;
 
   default:
@@ -2036,7 +2104,11 @@ const char* convertICAP_IMAGEFILEFORMAT_toString(const TW_UINT16 _unItem)
     break;
 
   case TWFF_PDFA:
-    text = "PDF-A";
+    text = "PDF-A1";/* 2.0 Adobe PDF/A, Version 1*/
+    break;
+
+  case TWFF_PDFA2:
+    text = "PDF-A2";/* 2.1 Adobe PDF/A, Version 2*/
     break;
 
   default:
@@ -2059,10 +2131,6 @@ const char* convertICAP_IMAGEFILEFORMAT_toExt(const TW_UINT16 _unItem)
 
   switch(_unItem)
   {
-  case TWFF_TIFF:
-    text = ".tiff";
-    break;
-
   case TWFF_PICT:
     text = ".pict";
     break;
@@ -2083,6 +2151,7 @@ const char* convertICAP_IMAGEFILEFORMAT_toExt(const TW_UINT16 _unItem)
     text = ".fpx";
     break;
 
+  case TWFF_TIFF:
   case TWFF_TIFFMULTI:
     text = ".tiff";
     break;
@@ -2097,10 +2166,6 @@ const char* convertICAP_IMAGEFILEFORMAT_toExt(const TW_UINT16 _unItem)
 
   case TWFF_EXIF:
     text = ".exif";
-    break;
-
-  case TWFF_PDF:
-    text = ".pdf";
     break;
 
   case TWFF_JP2:
@@ -2119,14 +2184,16 @@ const char* convertICAP_IMAGEFILEFORMAT_toExt(const TW_UINT16 _unItem)
     text = ".dejavu";
     break;
 
+  case TWFF_PDF:
   case TWFF_PDFA:
+  case TWFF_PDFA2:
     text = ".pdf";
     break;
 
   default:
     {
       char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWFF 0x:%4X", _unItem);
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, ".0x:%4X", _unItem);//Unknown TWFF 
       text = buff;
     }
     break;
@@ -2505,7 +2572,7 @@ const char* convertICAP_IMAGEFILTER_toString(const TW_UINT16 InfoID)
 
 //////////////////////////////////////////////////////////////////////////////
 // Convert ICAP_IMAGEMERGE values to String
-/*const char* convertICAP_IMAGEMERGE_toString(const TW_UINT16 InfoID)
+const char* convertICAP_IMAGEMERGE_toString(const TW_UINT16 InfoID)
 {
   const char* text;
 
@@ -2541,7 +2608,7 @@ const char* convertICAP_IMAGEFILTER_toString(const TW_UINT16 InfoID)
   }
 
   return text;
-}*/
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // Convert CAP_JOBCONTROL values to String
@@ -2707,13 +2774,13 @@ const char* convertTWEI_MAGTYPE_toString(const TW_UINT16 InfoID)
     text = "MICR";
     break;
 
-//	case TWMD_RAW:
-//    text = "RAW";
-//    break;
+	case TWMD_RAW:
+    text = "RAW";
+    break;
 
-//	case TWMD_INVALID:
-//    text = "Invalid";
-//    break;
+	case TWMD_INVALID:
+    text = "Invalid";
+    break;
 
   default:
     {
@@ -3376,9 +3443,9 @@ const char* convertICAP_SUPPORTEDSIZES_toString(const TW_UINT16 InfoID)
     text = "Business Card";
     break;
 
-//	case TWSS_MAXSIZE:
-//    text = "MAX size";
-//    break;
+	case TWSS_MAXSIZE:
+    text = "MAX size";
+    break;
 
   default:
     {
@@ -3844,6 +3911,10 @@ const char* convertConditionCode_toString(const TW_UINT16 _unItem)
 
   case TWCC_DOCTOODARK:
     text = "TWCC_DOCTOODARK";
+    break;
+
+  case TWCC_NOMEDIA:
+    text = "TWCC_NOMEDIA";
     break;
 
   default:
