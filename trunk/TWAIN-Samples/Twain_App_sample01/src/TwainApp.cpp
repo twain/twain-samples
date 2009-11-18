@@ -1642,16 +1642,49 @@ TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const int _value, TW_U
   if(0 == cap.hContainer)
   {
     printError(0, "Error allocating memory");
-    return false;
+    return twrc;
   }
+
   pTW_ONEVALUE pVal = (pTW_ONEVALUE)_DSM_LockMemory(cap.hContainer);
 
   pVal->ItemType  = _type;
-  pVal->Item      = _value;
+  switch(_type)
+  {
+    case TWTY_INT8:
+      *(TW_INT8*)&pVal->Item = (TW_INT8)_value;
+    break;
 
+    case TWTY_INT16:
+      *(TW_INT16*)&pVal->Item = (TW_INT16)_value;
+    break;
+
+    case TWTY_INT32:
+      *(TW_INT32*)&pVal->Item = (TW_INT32)_value;
+    break;
+
+    case TWTY_UINT8:
+      *(TW_UINT8*)&pVal->Item = (TW_UINT8)_value;
+    break;
+
+    case TWTY_UINT16:
+      *(TW_UINT16*)&pVal->Item = (TW_UINT16)_value;
+    break;
+
+    case TWTY_UINT32:
+      *(TW_UINT32*)&pVal->Item = (TW_UINT32)_value;
+    break;
+
+    case TWTY_BOOL:
+      *(TW_BOOL*)&pVal->Item = (TW_BOOL)_value;
+    break;
+  }
   // capability structure is set, make the call to the source now
   twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
-  if(TWRC_SUCCESS != twrc)
+  if(TWRC_CHECKSTATUS == twrc)
+  {
+
+  }
+  else if(TWRC_FAILURE == twrc)
   {
     printError(m_pDataSource, "Could not set capability");
   }
@@ -1673,7 +1706,7 @@ TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValu
   if(0 == cap.hContainer)
   {
     printError(0, "Error allocating memory");
-    return false;
+    return twrc;
   }
 
   pTW_ONEVALUE_FIX32 pVal = (pTW_ONEVALUE_FIX32)_DSM_LockMemory(cap.hContainer);
@@ -1683,7 +1716,11 @@ TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FIX32 _pValu
 
   // capability structure is set, make the call to the source now
   twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
-  if(TWRC_SUCCESS != twrc)
+  if(TWRC_CHECKSTATUS == twrc)
+  {
+
+  }
+  else if(TWRC_FAILURE == twrc)
   {
     printError(m_pDataSource, "Could not set capability");
   }
@@ -1706,7 +1743,7 @@ TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FRAME _pValu
   if(0 == cap.hContainer)
   {
     printError(0, "Error allocating memory");
-    return false;
+    return twrc;
   }
 
   pTW_ONEVALUE_FRAME pVal = (pTW_ONEVALUE_FRAME)_DSM_LockMemory(cap.hContainer);
@@ -1716,7 +1753,11 @@ TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FRAME _pValu
 
   // capability structure is set, make the call to the source now
   twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
-  if(TWRC_SUCCESS != twrc)
+  if(TWRC_CHECKSTATUS == twrc)
+  {
+
+  }
+  else if(TWRC_FAILURE == twrc)
   {
     printError(m_pDataSource, "Could not set capability");
   }
@@ -1724,6 +1765,95 @@ TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FRAME _pValu
   _DSM_UnlockMemory(cap.hContainer);
   _DSM_Free(cap.hContainer);
 
+  return twrc;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+TW_UINT16 TwainApp::set_CapabilityArray(TW_UINT16 Cap, const int * _pValues, int Count, TW_UINT16 _type)
+{
+  TW_INT16        twrc = TWRC_FAILURE;
+  TW_CAPABILITY   cap;
+         
+  cap.Cap         = Cap;
+  cap.ConType     = TWON_ARRAY;
+  cap.hContainer  = _DSM_Alloc(sizeof(TW_ARRAY) + getTWTYsize(_type)*Count );// Largest int size
+  if(0 == cap.hContainer)
+  {
+    printError(0, "Error allocating memory");
+    return twrc;
+  }
+
+  pTW_ARRAY pArray = (pTW_ARRAY)_DSM_LockMemory(cap.hContainer);
+
+  pArray->ItemType  = _type;
+  pArray->NumItems  = Count;
+
+  int i = 0;
+  switch(_type)
+  {
+    case TWTY_INT8:
+      for(i=0; i<Count; i++)
+      {
+        ((pTW_INT8)(&pArray->ItemList))[i] = (TW_INT8)_pValues[i];
+      }
+    break;
+
+    case TWTY_INT16:
+      for(i=0; i<Count; i++)
+      {
+        ((pTW_INT16)(&pArray->ItemList))[i] = (TW_INT16)_pValues[i];
+      }
+    break;
+
+    case TWTY_INT32:
+      for(i=0; i<Count; i++)
+      {
+        ((pTW_INT32)(&pArray->ItemList))[i] = (TW_INT32)_pValues[i];
+      }
+    break;
+
+    case TWTY_UINT8:
+      for(i=0; i<Count; i++)
+      {
+        ((pTW_UINT8)(&pArray->ItemList))[i] = (TW_UINT8)_pValues[i];
+      }
+    break;
+
+    case TWTY_UINT16:
+      for(i=0; i<Count; i++)
+      {
+        ((pTW_UINT16)(&pArray->ItemList))[i] = (TW_UINT16)_pValues[i];
+      }
+    break;
+
+    case TWTY_UINT32:
+      for(i=0; i<Count; i++)
+      {
+        ((pTW_UINT32)(&pArray->ItemList))[i] = (TW_UINT32)_pValues[i];
+      }
+    break;
+
+    case TWTY_BOOL:
+      for(i=0; i<Count; i++)
+      {
+        ((pTW_BOOL)(&pArray->ItemList))[i] = (TW_BOOL)_pValues[i];
+      }
+    break;
+  }
+
+  // capability structure is set, make the call to the source now
+  twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_SET, (TW_MEMREF)&(cap));
+  if(TWRC_CHECKSTATUS == twrc)
+  {
+
+  }
+  else if(TWRC_FAILURE == twrc)
+  {
+    printError(m_pDataSource, "Could not set capability");
+  }
+
+  _DSM_UnlockMemory(cap.hContainer);
+  _DSM_Free(cap.hContainer);
   return twrc;
 }
 
