@@ -270,7 +270,7 @@ void EnableDS()
   // caps, only get ops.
   // -The scan will not start until the source calls the callback function
   // that was registered earlier.
-#if defined(WIN32) | defined(WIN64)
+#ifdef TWNDS_OS_WIN
   if(!gpTwainApplicationCMD->enableDS(GetDesktopWindow(), FALSE))
 #else
   if(!gpTwainApplicationCMD->enableDS(0, FALSE))
@@ -282,18 +282,22 @@ void EnableDS()
   // now we have to wait until we hear something back from the DS.
   while(!gpTwainApplicationCMD->m_DSMessage)
   {
+    TW_EVENT twEvent = {0};
 
     // If we are using callbacks, there is nothing to do here except sleep
     // and wait for our callback from the DS.  If we are not using them, 
     // then we have to poll the DSM.
-	  MSG Msg;
 
+    // Pumping messages is for Windows only
+#ifdef TWNDS_OS_WIN
+	  MSG Msg;
 	  if(!GetMessage((LPMSG)&Msg, NULL, 0, 0))
     {
       break;//WM_QUIT
     }
-    TW_EVENT twEvent = {0};
     twEvent.pEvent = (TW_MEMREF)&Msg;
+#endif
+
     twEvent.TWMessage = MSG_NULL;
     TW_UINT16  twRC = TWRC_NOTDSEVENT;
     twRC = _DSM_Entry( gpTwainApplicationCMD->getAppIdentity(),
@@ -321,12 +325,12 @@ void EnableDS()
       }
     }
     if(twRC!=TWRC_DSEVENT)
-	  {   
-#ifdef TWH_CMP_MSC
+    {   
+#ifdef TWNDS_OS_WIN
       TranslateMessage ((LPMSG)&Msg);
-		  DispatchMessage ((LPMSG)&Msg);
+      DispatchMessage ((LPMSG)&Msg);
 #endif
-	  }
+    }
   }
 
   // At this point the source has sent us a callback saying that it is ready to
