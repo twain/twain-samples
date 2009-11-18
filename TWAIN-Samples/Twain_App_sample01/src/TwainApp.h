@@ -221,14 +221,13 @@ public:
   void initiateTransfer_Memory();
 
 /**
-* Try to sets a OneValue Capability of type TW_INT16 to the value passed
+* Try to sets a OneValue Capability of any of the TW_INT or TW_UINT types to the value passed
 * @param[in] Cap the capability to update to set
 * @param[in] _value the value to set
 * @param[in] _type the TWAIN Type to set
 * @return a valid TWRC_xxxx return code.
 */
   TW_UINT16 set_CapabilityOneValue(TW_UINT16 Cap, const int _value, TW_UINT16 _type);
-
 
 /**
 * Try to sets a OneValue Capability of type TW_FIX32 to the value passed
@@ -245,6 +244,16 @@ public:
 * @return a valid TWRC_xxxx return code.
 */
   TW_UINT16 set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FRAME _pValue);
+
+/**
+* Try to sets an Array Capability of any of the TW_INT or TW_UINT types to the values passed
+* @param[in] Cap the capability to update to set
+* @param[in] _pValues pointer to the array of values to set
+* @param[in] Count the number of items in the array
+* @param[in] -type the type of items to set
+* @return a valid TWRC_xxxx return code.
+*/
+  TW_UINT16 set_CapabilityArray(TW_UINT16 Cap, const int * _pValues, int Count, TW_UINT16 _type);
 
 /**
 * Gets the capability.

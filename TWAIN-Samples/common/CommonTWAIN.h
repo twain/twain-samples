@@ -379,6 +379,15 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_FIX32& val);
 bool getcurrent(TW_CAPABILITY *pCap, TW_FRAME& val);
 
 /**
+* Get an array of values from a Capability as a in.
+* @param[in] pCap a pointer to the capability to retrieve the current value
+* @param[out] pVal an preallocated array to copy the values to
+* @pCount[in|out] pCount the size of pVal, on return the actual number of items copied.
+* @return ture if successful
+*/
+bool GetArray(TW_CAPABILITY *pCap, int *pVal, UINT *pCount);
+
+/**
 * Get the size of TWAIN type
 * @param[in] ItemType the TWAIN type to return the size for
 * @return the size of the type returned
