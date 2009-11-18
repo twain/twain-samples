@@ -39,7 +39,8 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#if defined(WIN32) | defined(WIN64)
+#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
+  #define TWNDS_OS_WIN
   #ifndef WIN32_LEAN_AND_MEAN
     #define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
   #endif
@@ -49,6 +50,9 @@
 #include "twain.h"
 
 #ifdef TWH_CMP_GNU
+  #ifndef TWNDS_OS_WIN
+    #define TWNDS_OS_LINUX
+  #endif
   #include <wchar.h>
   #include <stdarg.h>
 #endif
