@@ -127,7 +127,7 @@ void TwainAppCMD::printAvailableDataSources()
 }
 
 //////////////////////////////////////////////////////////////////////////////
-void TwainAppCMD::loadDS(const TW_UINT32 _dsID)
+void TwainAppCMD::loadDS(const TW_INT32 _dsID)
 {
   TwainApp::loadDS(_dsID);
 

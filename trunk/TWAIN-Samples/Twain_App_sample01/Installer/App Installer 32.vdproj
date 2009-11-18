@@ -275,19 +275,20 @@
         "MsiBootstrapper"
         {
         "LangId" = "3:1033"
+        "RequiresElevation" = "11:FALSE"
         }
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TWAIN 2.0 App Sample"
-        "ProductCode" = "8:{065E4115-E89C-4A08-A15A-8309B81101CA}"
-        "PackageCode" = "8:{5FD23082-3DE8-4988-AD3F-F17732289E9A}"
+        "ProductCode" = "8:{F39CD3C5-E90E-4EE5-A00A-94E7CAEAB875}"
+        "PackageCode" = "8:{314F7F1A-65A4-4B7F-A70C-52D49E9F3764}"
         "UpgradeCode" = "8:{3093BF18-1ADD-4A3C-AE32-8F818163DFAF}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:2.0.8"
+        "ProductVersion" = "8:2.0.9"
         "Manufacturer" = "8:TWAIN Working Group"
         "ARPHELPTELEPHONE" = "8:http://www.twainforum.org/"
         "ARPHELPLINK" = "8:http://sourceforge.net/projects/twain-samples/"
@@ -847,9 +848,6 @@
             }
         }
         "ProjectOutput"
-        {
-        }
-        "VJSharpPlugin"
         {
         }
     }

@@ -262,13 +262,21 @@ void Cmfc32DlgConfigure::ListCaps()
       TW_UINT32       QS        = 0;
       bool            bReadOnly = false;
       TW_CAPABILITY   Cap       = {0};
+      string          sCapName;
 
       // get the capability that is supported
       Cap.Cap         = pCapSupCaps->ItemList[i];
       Cap.hContainer  = 0;
       Cap.ConType     = TWON_DONTCARE16;
 
-      name = convertCAP_toString(Cap.Cap);
+      if(TWRC_SUCCESS == g_pTWAINApp->GetLabel(Cap.Cap, sCapName))
+      {
+        name = sCapName.c_str();
+      }
+      else
+      {
+        name = convertCAP_toString(Cap.Cap);
+      }
       sz = pDC->GetTextExtent(name);
       if (sz.cx > dx)
       {

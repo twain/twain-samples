@@ -178,9 +178,9 @@ public:
 * Try to load a Data Source.  Loads the data source with the ID passed in. 
 * To open a Data Source the DSM must be in state 3 (Open).  If successful 
 * moves the app to state 4
-* @param[in] _dsID the ID of the datasource to load
+* @param[in] _dsID the ID of the datasource to load, -1 to open the default
 */
-  virtual void loadDS(const TW_UINT32 _dsID);
+  virtual void loadDS(const TW_INT32 _dsID);
 
 /**
 * Unloads the currently loaded datasource.  If successful moves the 
@@ -263,6 +263,22 @@ public:
   TW_INT16 QuerySupport_CAP(TW_UINT16 _cap, TW_UINT32 &_QS);
 
 /**
+* Get the lable for a capability.
+* @param[in] _cap the capability id to lookup.
+* @param[out] sLable the Lable if returned
+* @return a valid TWRC_xxxx return code
+*/
+  TW_INT16 GetLabel(TW_UINT16 _cap, string &sLable);
+
+/**
+* Get the help or description for a capability.
+* @param[in] _cap the capability id to lookup.
+* @param[out] sDescription the Description or help if returned
+* @return a valid TWRC_xxxx return code
+*/
+  TW_INT16 GetHelp(TW_UINT16 _cap, string &sHelp);
+
+/**
 * Returns a pointer to the applications identity structure.
 * @return a TW_IDENTITY pointer to the applications identity struct.
 */
@@ -338,6 +354,8 @@ protected:
   pTW_EXTIMAGEINFO    m_pExtImageInfo;        /**< Detailed extended image info retrieved from the DS */
   TW_UINT16           m_nXferNum;             /**< Keep track of the number of images attempted to transfer - used when saving file to disk*/
   string              m_strExImageInfo;       /**< Extended image info retrieved from the DS */
+  TW_UINT16           m_nGetLableSupported;   /**< Remember if MSG_GETLABLE is supported */
+  TW_UINT16           m_nGetHelpSupported;    /**< Remember if MSG_GETHELP is supported */
 
   TW_USERINTERFACE    m_ui;                   /**< Coordinates UI between application and data source. */
 };

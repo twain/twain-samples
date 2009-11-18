@@ -296,25 +296,8 @@ void Cmfc32DlgMain::OnBnClickedConnectDs()
 
   Cmfc32DlgConfigure dlg(this, ds_ID);
   INT_PTR nResponse = dlg.DoModal();
- /*
-  _pTWAINApp->connectDSM();
-  _pTWAINApp->loadDS(index);
-
-  if(4 <= _pTWAINApp->m_DSMState)
-  {
-    m_lst_DS.EnableWindow(false);
-    m_btn_Connect_DS.EnableWindow(false);
-
-    
-    
-    _pTWAINApp->unloadDS();
-
-    m_lst_DS.EnableWindow(true);
-    m_btn_Connect_DS.EnableWindow(true);
-  }
-  _pTWAINApp->disconnectDSM();
-  */
 }
+
 void Cmfc32DlgMain::OnBnClickedDefaultDs()
 {
   int sel = m_lst_DS.GetCurSel();
