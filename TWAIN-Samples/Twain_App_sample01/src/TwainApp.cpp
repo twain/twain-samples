@@ -125,6 +125,8 @@ TwainApp::TwainApp(HWND parent /*=NULL*/)
 , m_pDataSource(NULL)
 , m_pExtImageInfo(NULL)
 , m_DSMessage(-1)
+, m_nGetLableSupported(TWCC_SUCCESS)
+, m_nGetHelpSupported(TWCC_SUCCESS)
 {
   // fill our identity structure
   fillIdentity(m_MyInfo);
@@ -154,11 +156,11 @@ TwainApp::~TwainApp()
 void TwainApp::fillIdentity(TW_IDENTITY& _identity)
 {
   _identity.Id = 0;
-  _identity.Version.MajorNum = 1;
+  _identity.Version.MajorNum = 2;
   _identity.Version.MinorNum = 0;
   _identity.Version.Language = TWLG_ENGLISH_CANADIAN;
   _identity.Version.Country = TWCY_CANADA;
-  SSTRCPY(_identity.Version.Info, sizeof(_identity.Version.Info), "1.0.10");
+  SSTRCPY(_identity.Version.Info, sizeof(_identity.Version.Info), "2.0.9");
   _identity.ProtocolMajor = TWON_PROTOCOLMAJOR;
   _identity.ProtocolMinor = TWON_PROTOCOLMINOR;
   _identity.SupportedGroups = DF_APP2 | DG_IMAGE | DG_CONTROL;
@@ -440,7 +442,7 @@ pTW_IDENTITY TwainApp::selectDefaultDataSource()
 
 
 //////////////////////////////////////////////////////////////////////////////
-void TwainApp::loadDS(const TW_UINT32 _dsID)
+void TwainApp::loadDS(const TW_INT32 _dsID)
 {
   // The application must be in state 3 to open a Data Source.
   if(m_DSMState < 3)
@@ -453,6 +455,10 @@ void TwainApp::loadDS(const TW_UINT32 _dsID)
     PrintCMDMessage("A source has already been opened, please close it first\n");
     return;
   }
+
+  // Reinitilize these 
+  m_nGetLableSupported  = TWCC_SUCCESS;
+  m_nGetHelpSupported   = TWCC_SUCCESS;
 
   if(_dsID > 0)
   {
@@ -1004,11 +1010,57 @@ void TwainApp::updateEXIMAGEINFO()
     }
 
     int cur_Info  = 0;
-    int num_Infos = num_OtherInfos;
+    int num_Infos = 0;
 
     if(TWRC_SUCCESS==exImgInfo.Info[0].CondCode)
     {
-      num_Infos += (num_BarInfos * (TW_UINT32)exImgInfo.Info[0].Item);
+      num_Infos = (num_BarInfos * (TW_UINT32)exImgInfo.Info[0].Item);
+    }
+
+    TW_CAPABILITY     CapSupportedExtImageInfos;
+    pTW_ARRAY_UINT16  pCapSupExtImageInfos = 0;
+
+    // get the supported capabilies
+    CapSupportedExtImageInfos.Cap = ICAP_SUPPORTEDEXTIMAGEINFO;
+    CapSupportedExtImageInfos.hContainer = 0;
+
+    get_CAP(CapSupportedExtImageInfos);
+
+    if(TWON_ARRAY == CapSupportedExtImageInfos.ConType)
+    {
+      pCapSupExtImageInfos = (pTW_ARRAY_UINT16)_DSM_LockMemory(CapSupportedExtImageInfos.hContainer);
+
+      if(TWTY_UINT16 != pCapSupExtImageInfos->ItemType)
+      {
+        _DSM_UnlockMemory(CapSupportedExtImageInfos.hContainer);
+        pCapSupExtImageInfos = NULL;
+      }
+      else //it is good to use
+      {
+        // Add all the non-barcode type ExtImageInfo
+        int  nCount = pCapSupExtImageInfos->NumItems;
+        bool bAdd;
+        for(int i=0; i<nCount; i++)
+        {
+          bAdd = true;
+          for(int BCeii=0; BCeii<num_BarInfos; BCeii++)
+          {
+            if( pCapSupExtImageInfos->ItemList[i] == TableBarCodeExtImgInfo[BCeii] )
+            {
+              bAdd = false;
+              break;
+            }
+          }
+          if(bAdd)
+          {
+            num_Infos++;
+          }
+        }
+      }
+    }
+    if(!pCapSupExtImageInfos)
+    {
+      num_Infos += num_OtherInfos;
     }
 
     TW_HANDLE hexInfo = _DSM_Alloc(sizeof(TW_EXTIMAGEINFO)+sizeof(TW_INFO)*(num_Infos-1));
@@ -1027,9 +1079,33 @@ void TwainApp::updateEXIMAGEINFO()
       }
     }
 
-    for (int nItem = 0; nItem < num_OtherInfos; nItem++)
+    if(pCapSupExtImageInfos)
     {
-      pexImgInfo->Info[cur_Info++].InfoID = TableOtherExtImgInfo[nItem];
+      int  nCount = pCapSupExtImageInfos->NumItems;
+      bool bAdd;
+      for(int i=0; i<nCount; i++)
+      {
+        bAdd = true;
+        for(int BCeii=0; BCeii<num_BarInfos; BCeii++)
+        {
+          if( pCapSupExtImageInfos->ItemList[i] == TableBarCodeExtImgInfo[BCeii] )
+          {
+            bAdd = false;
+            break;
+          }
+        }
+        if(bAdd)
+        {
+          pexImgInfo->Info[cur_Info++].InfoID = pCapSupExtImageInfos->ItemList[i];
+        }
+      }
+    }
+    else
+    {
+      for (int nItem = 0; nItem < num_OtherInfos; nItem++)
+      {
+        pexImgInfo->Info[cur_Info++].InfoID = TableOtherExtImgInfo[nItem];
+      }
     }
 
     twrc = DSM_Entry(DG_IMAGE, DAT_EXTIMAGEINFO, MSG_GET, (TW_MEMREF)pexImgInfo);
@@ -1651,4 +1727,136 @@ TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const pTW_FRAME _pValu
   return twrc;
 }
 
+TW_INT16 TwainApp::GetLabel(TW_UINT16 _cap, string &sLable)
+{
+  if(m_nGetLableSupported == TWCC_BADPROTOCOL)
+  {
+    return TWRC_FAILURE;
+  }
 
+  if(m_DSMState < 4)
+  {
+    PrintCMDMessage("You need to open a data source first.\n");
+    return TWCC_SEQERROR;
+  }
+
+  TW_CAPABILITY   cap = {0};
+  cap.Cap         = _cap;
+  cap.hContainer  = 0;
+  cap.ConType     = TWON_ONEVALUE;
+
+  // capability structure is set, make the call to the source now
+  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_GETLABEL, (TW_MEMREF)&cap);
+
+  switch(twrc)
+  {
+  case TWRC_FAILURE:
+  default:
+    {
+      string strErr = "Failed to GetLabel for the capability: [";
+      strErr += convertCAP_toString(_cap);
+      strErr += "]";
+      
+      if(TWCC_BADPROTOCOL == printError(m_pDataSource, strErr))
+      {
+        m_nGetLableSupported = TWCC_BADPROTOCOL;
+      }
+    }
+    break;
+
+  case TWRC_SUCCESS:
+    if(cap.ConType == TWON_ONEVALUE)
+    {
+      pTW_ONEVALUE pVal = (pTW_ONEVALUE)_DSM_LockMemory(cap.hContainer);
+      TW_UINT16 type = pVal->ItemType;
+      _DSM_UnlockMemory(cap.hContainer);
+      switch(type)
+      {
+        case TWTY_STR32:
+        case TWTY_STR64:
+        case TWTY_STR128:
+          printError(m_pDataSource, "Wrong STR type for MSG_GETLABEL");
+        case TWTY_STR255:
+          getcurrent(&cap, sLable);
+          break;
+
+        default:
+          twrc = TWRC_FAILURE;
+          break;
+      }
+    }
+    _DSM_Free(cap.hContainer);
+    break;
+  }
+
+  return twrc;
+}
+
+TW_INT16 TwainApp::GetHelp(TW_UINT16 _cap, string &sHelp)
+{
+  if(m_nGetHelpSupported == TWCC_BADPROTOCOL)
+  {
+    return TWRC_FAILURE;
+  }
+
+  if(m_DSMState < 4)
+  {
+    PrintCMDMessage("You need to open a data source first.\n");
+    return TWCC_SEQERROR;
+  }
+
+  TW_CAPABILITY   cap = {0};
+  cap.Cap         = _cap;
+  cap.hContainer  = 0;
+  cap.ConType     = TWON_ONEVALUE;
+
+  // capability structure is set, make the call to the source now
+  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_GETHELP, (TW_MEMREF)&cap);
+
+  switch(twrc)
+  {
+  case TWRC_FAILURE:
+  default:
+    {
+      string strErr = "Failed to GetHelp for the capability: [";
+      strErr += convertCAP_toString(_cap);
+      strErr += "]";
+      
+      if(TWCC_BADPROTOCOL == printError(m_pDataSource, strErr))
+      {
+        m_nGetHelpSupported = TWCC_BADPROTOCOL;
+      }
+    }
+    break;
+
+  case TWRC_SUCCESS:
+    if(cap.ConType == TWON_ONEVALUE)
+    {
+      pTW_ONEVALUE pVal = (pTW_ONEVALUE)_DSM_LockMemory(cap.hContainer);
+      TW_UINT16 type = pVal->ItemType;
+      _DSM_UnlockMemory(cap.hContainer);
+      switch(type)
+      {
+        case TWTY_STR32:
+        case TWTY_STR64:
+        case TWTY_STR128:
+        case TWTY_STR255:
+          printError(m_pDataSource, "Wrong STR type for MSG_GETHELP");
+//        case TWTY_STR4096:
+          getcurrent(&cap, sHelp);
+          break;
+
+        default:
+          twrc = TWRC_FAILURE;
+          break;
+      }
+    }
+    _DSM_Free(cap.hContainer);
+    break;
+  }
+
+  return twrc;
+}
+
+
+//#define MSG_GETLABELENUM    0x000b /* Return all of the labels for a capability of type  Added 2.1 */

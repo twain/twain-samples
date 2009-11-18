@@ -90,7 +90,7 @@ public:
 * Override so we can Initilize
 * @param[in] _dsID the ID of the datasource to load
 */
-  virtual void loadDS(const TW_UINT32 _dsID);
+  virtual void loadDS(const TW_INT32 _dsID);
 
 /**
 * Print a list of Data Sources.  Prints to stdout a quick list of the 

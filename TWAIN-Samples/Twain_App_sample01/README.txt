@@ -1,6 +1,6 @@
 TWAIN Application
 
-This is a TWAIN version 2.0 of the specification compliant application.  
+This is a TWAIN version 2.1 of the specification compliant application.  
 It offers text based interface.  It shows how to implement many of the 
 operations needed by an application.
 

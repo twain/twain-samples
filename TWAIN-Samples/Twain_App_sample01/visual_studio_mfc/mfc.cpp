@@ -38,6 +38,7 @@
 #include "stdafx.h"
 #include "mfc.h"
 #include "mfcDlgMain.h"
+#include "mfcDlgConfigure.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -87,9 +88,24 @@ BOOL Cmfc32App::InitInstance()
   // such as the name of your company or organization
   SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
-  Cmfc32DlgMain dlg;
-  m_pMainWnd = &dlg;
-  INT_PTR nResponse = dlg.DoModal();
+  INT_PTR nResponse = 0;
+
+  // If either of the shift keys are pressed down when the application starts
+  // Then we are going to open the default DS directly without displaying our
+  // custom Select Source Dialog.
+  if( (GetKeyState(VK_LSHIFT)&0xff80) || (GetKeyState(VK_RSHIFT)&0xff80) )
+  {
+    Cmfc32DlgConfigure dlg(NULL, -1);
+    m_pMainWnd = &dlg;
+    nResponse = dlg.DoModal();
+  }
+  else
+  {
+    Cmfc32DlgMain dlg;
+    m_pMainWnd = &dlg;
+    nResponse = dlg.DoModal();
+  }
+
   if (nResponse == IDOK)
   {
     // TODO: Place code here to handle when the dialog is
