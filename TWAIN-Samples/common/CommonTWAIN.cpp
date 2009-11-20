@@ -115,8 +115,21 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_UINT32& val)
     else if(TWON_ONEVALUE == pCap->ConType)
     {
       pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(pCap->hContainer);
-      val = pCapPT->Item;
-      bret = true;
+      if(pCapPT->ItemType < TWTY_FIX32)
+      {
+        val = pCapPT->Item;
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+    else if(TWON_RANGE == pCap->ConType)
+    {
+      pTW_RANGE pCapPT = (pTW_RANGE)_DSM_LockMemory(pCap->hContainer);
+      if(pCapPT->ItemType < TWTY_FIX32)
+      {
+        val = pCapPT->CurrentValue;
+        bret = true;
+      }
       _DSM_UnlockMemory(pCap->hContainer);
     }
   }
@@ -258,6 +271,16 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_FIX32& val)
       if(TWTY_FIX32 == pCapPT->ItemType)
       {
         val = pCapPT->Item;
+        bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+    else if(TWON_RANGE == pCap->ConType)
+    {
+      pTW_RANGE pCapPT = (pTW_RANGE)_DSM_LockMemory(pCap->hContainer);
+      if(TWTY_FIX32 == pCapPT->ItemType)
+      {
+        val = *(TW_FIX32*)&pCapPT->CurrentValue;
         bret = true;
       }
       _DSM_UnlockMemory(pCap->hContainer);
