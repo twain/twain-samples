@@ -123,8 +123,8 @@ void Cmfc32DlgConfigure::DoDataExchange(CDataExchange* pDX)
   DDX_Text(pDX, IDC_STC_DS, m_sStc_DS);
   DDX_Text(pDX, IDC_IMAGEINFO, m_sStc_ImageInfo);
   DDX_Text(pDX, IDC_EXTIMAGEINFO, m_sStc_ExtImageInfo);
-  DDX_Control(pDX, IDL_CAPS, m_lst_Caps);
   DDX_Check(pDX, IDC_SHOWUI, m_bShowUI);
+  DDX_Control(pDX, IDLC_CAPS, m_ListCtrl_Caps);
 }
 
 BEGIN_MESSAGE_MAP(Cmfc32DlgConfigure, CDialog)
@@ -133,10 +133,9 @@ BEGIN_MESSAGE_MAP(Cmfc32DlgConfigure, CDialog)
   ON_WM_QUERYDRAGICON()
   //}}AFX_MSG_MAP
   ON_WM_DESTROY()
-  ON_LBN_SELCHANGE(IDL_CAPS, OnLbnSelchangeCAPS)
   ON_BN_CLICKED(IDB_SCAN, OnBnClickedScan)
   ON_BN_CLICKED(IDCANCEL, OnBnClickedCancel)
-  ON_LBN_DBLCLK(IDL_CAPS, OnLbnDblclkCaps)
+  ON_NOTIFY(NM_DBLCLK, IDLC_CAPS, &Cmfc32DlgConfigure::OnNMDblclkCaps)
 END_MESSAGE_MAP()
 
 
@@ -168,14 +167,55 @@ BOOL Cmfc32DlgConfigure::OnInitDialog()
 
   if(4 <= g_pTWAINApp->m_DSMState)
   {
-    ListCaps();
+    DWORD style = m_ListCtrl_Caps.GetExtendedStyle();
+    m_ListCtrl_Caps.SetExtendedStyle(style | LVS_EX_FULLROWSELECT);
+
+    LVCOLUMN    col;
+    memset(&col, 0, sizeof(col));
+    col.mask      = LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
+
+    col.pszText   = "Capability";
+    col.iSubItem  = 0;
+    col.cx        = 160;
+    m_ListCtrl_Caps.InsertColumn(0, &col);
     
-    if( 0 < m_lst_Caps.GetCount())
-      {
-        m_lst_Caps.EnableWindow(true);
-        m_lst_Caps.SetCurSel(0);
-        OnLbnSelchangeCAPS();
-      }
+    col.pszText   = "Current Value";
+    col.iSubItem  = 1;
+    col.cx        = 100;
+    m_ListCtrl_Caps.InsertColumn(1, &col);
+
+    col.pszText   = "Querey";
+    col.iSubItem  = 2;
+    col.cx        = 65;
+    m_ListCtrl_Caps.InsertColumn(2, &col);
+
+    col.pszText   = "#";
+    col.iSubItem  = 3;
+    col.cx        = 20;
+    m_ListCtrl_Caps.InsertColumn(3, &col);
+
+    col.pszText   = "Type";
+    col.iSubItem  = 4;
+    col.cx        = 95;
+    m_ListCtrl_Caps.InsertColumn(4, &col);
+
+    ListSupportedCaps();
+    PopulateCurentValues();
+
+    CEdit *pWnd = NULL;
+
+    pWnd = (CEdit*)GetDlgItem(IDC_EXTIMAGEINFO);
+    if(pWnd)
+    {
+      pWnd->SetTabStops(94);
+    }
+
+    pWnd = (CEdit*)GetDlgItem(IDC_IMAGEINFO);
+    if(pWnd)
+    {
+      INT   TabStops[3] = {35, 95, 145};
+      pWnd->SetTabStops(3, TabStops);
+    }
   }
 
   return TRUE;  // return TRUE  unless you set the focus to a control
@@ -216,30 +256,26 @@ void Cmfc32DlgConfigure::OnDestroy()
   return;
 }
 
-
-
-void Cmfc32DlgConfigure::ListCaps()
+void Cmfc32DlgConfigure::ListSupportedCaps()
 {
   TW_UINT32         i;
-  int               dx = 0;
-  CString           str;
-  CString           name;
-  CString           value;
-  CSize             sz;
-  CDC              *pDC = m_lst_Caps.GetDC();
-  TW_UINT32         nCount = 0;
+  TW_UINT32         nCount          = 0;
   TW_CAPABILITY     CapSupportedCaps;
-  pTW_ARRAY_UINT16  pCapSupCaps = 0;
-  pTW_IDENTITY      pID = g_pTWAINApp->getDataSource();
-  TW_UINT16         CondCode;
+  pTW_ARRAY_UINT16  pCapSupCaps     = 0;
+  string            sCapName;
 
-  m_lst_Caps.ResetContent();
+  m_ListCtrl_Caps.DeleteAllItems();
+
+  LV_ITEM           Item;
+  memset(&Item, 0, sizeof(Item));
+  Item.iSubItem   = 0;
+  Item.mask       = LVIF_PARAM | LVIF_TEXT;
 
   // get the supported capabilies
   CapSupportedCaps.Cap = CAP_SUPPORTEDCAPS;
   CapSupportedCaps.hContainer = 0;
 
-  g_pTWAINApp->get_CAP(CapSupportedCaps);
+  g_pTWAINApp->get_CAP(CapSupportedCaps, MSG_GET);
 
   if(TWON_ARRAY != CapSupportedCaps.ConType)
   {
@@ -254,146 +290,27 @@ void Cmfc32DlgConfigure::ListCaps()
   }
 
   nCount = pCapSupCaps->NumItems;
+  m_ListCtrl_Caps.SetItemCount(nCount);
+
   for(i=0; i<nCount; i++)
   {
     // we are not listing these CAPABILITIES
     if(pCapSupCaps->ItemList[i] != CAP_SUPPORTEDCAPS)
     {
-      TW_UINT32       QS        = 0;
-      bool            bReadOnly = false;
-      TW_CAPABILITY   Cap       = {0};
-      string          sCapName;
-
-      // get the capability that is supported
-      Cap.Cap         = pCapSupCaps->ItemList[i];
-      Cap.hContainer  = 0;
-      Cap.ConType     = TWON_DONTCARE16;
-
-      if(TWRC_SUCCESS == g_pTWAINApp->GetLabel(Cap.Cap, sCapName))
+      if(TWRC_SUCCESS == g_pTWAINApp->GetLabel(pCapSupCaps->ItemList[i], sCapName))
       {
-        name = sCapName.c_str();
+        Item.pszText    = (LPSTR)sCapName.c_str();
       }
       else
       {
-        name = convertCAP_toString(Cap.Cap);
-      }
-      sz = pDC->GetTextExtent(name);
-      if (sz.cx > dx)
-      {
-        dx = sz.cx;
+        Item.pszText    = (LPSTR)convertCAP_toString(pCapSupCaps->ItemList[i]);
       }
 
-      CondCode = g_pTWAINApp->get_CAP(Cap);
-      g_pTWAINApp->QuerySupport_CAP(Cap.Cap, QS);
+      Item.iItem      = i;
+      Item.lParam     = (LPARAM)pCapSupCaps->ItemList[i];
 
-      if(CondCode==TWCC_SUCCESS)
-      {
-        if( Cap.ConType == TWON_ENUMERATION 
-         || Cap.ConType == TWON_ONEVALUE )
-        {
-          pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(Cap.hContainer);
-          if(pCap)
-          {
-            TW_UINT16 type = pCap->ItemType;
-            _DSM_UnlockMemory(Cap.hContainer);
-
-            switch(type)
-            {
-              case TWTY_INT8:
-              case TWTY_UINT8:
-              case TWTY_INT16:
-              case TWTY_UINT16:
-              case TWTY_INT32:
-              case TWTY_UINT32:
-              case TWTY_BOOL:
-              {
-                TW_UINT32 uVal;
-                getcurrent(&Cap, uVal);
-                value = convertCAP_Item_toString(Cap.Cap, uVal, type);
-                break;
-              }
-
-              case TWTY_STR32:
-              case TWTY_STR64:
-              case TWTY_STR128:
-              case TWTY_STR255:
-              {
-                string sVal;
-                getcurrent(&Cap, sVal);
-                value = sVal.c_str();
-                break;
-              }
-
-              case TWTY_FIX32:
-              {
-                TW_FIX32 fix32;
-                getcurrent(&Cap, fix32);
-                value.Format("%d.%d", fix32.Whole, (int)((fix32.Frac/65536.0 + .0005)*1000) );
-                break;
-              }
-
-              case TWTY_FRAME:
-              {
-                TW_FRAME frame;
-                getcurrent(&Cap, frame);
-                value.Format( "%d.%d  %d.%d  %d.%d  %d.%d", 
-                     frame.Left.Whole,   (int)((frame.Left.Frac/65536.0 + .0005)*1000),
-                     frame.Right.Whole,  (int)((frame.Right.Frac/65536.0 + .0005)*1000),
-                     frame.Top.Whole,    (int)((frame.Top.Frac/65536.0 + .0005)*1000),
-                     frame.Bottom.Whole, (int)((frame.Bottom.Frac/65536.0 + .0005)*1000) );
-                break;
-              }
-              default:
-              {
-                value = "?";
-                break;
-              }
-            }
-            bReadOnly = ( QS && !(QS & TWQC_SET) )? true : false;
-            str.Format("%s:\t%s %c", name, value, bReadOnly?'r':' ');
-            int index = m_lst_Caps.AddString( str );
-            if(LB_ERR != index)
-            {
-              m_lst_Caps.SetItemData( index, Cap.Cap );
-            }
-          }
-        }
-      }
-      else
-      {
-        value = convertConditionCode_toString(CondCode);
-        str.Format("%s:\t<<%s>>", name, value);
-        int index = m_lst_Caps.InsertString(-1, str );
-        if(LB_ERR != index)
-        {
-          m_lst_Caps.SetItemData( index, Cap.Cap );
-        }
-      }
+      m_ListCtrl_Caps.InsertItem(&Item);
     }
-  }
-
-  sz = pDC->GetTextExtent("   ");
-  dx += sz.cx;
-
-  // NOTE: Convert pixels to dialog units.
-  if(dx)
-  {
-    m_lst_Caps.SetTabStops((dx*4) / LOWORD(::GetDialogBaseUnits()));
-  }
-
-  CEdit *pWnd = NULL;
-
-  pWnd = (CEdit*)GetDlgItem(IDC_EXTIMAGEINFO);
-  if(pWnd)
-  {
-    pWnd->SetTabStops(94);
-  }
-
-  pWnd = (CEdit*)GetDlgItem(IDC_IMAGEINFO);
-  if(pWnd)
-  {
-    INT   TabStops[3] = {35, 95, 145};
-    pWnd->SetTabStops(3, TabStops);
   }
 
 cleanup:
@@ -405,114 +322,311 @@ cleanup:
   {
    _DSM_Free(CapSupportedCaps.hContainer);
   }
-  if(pDC)
-  {
-    m_lst_Caps.ReleaseDC(pDC);
-  }
 }
 
-
-
-void Cmfc32DlgConfigure::OnLbnSelchangeCAPS()
+void Cmfc32DlgConfigure::PopulateCurentValues()
 {
-  // TODO: Add your control notification handler code here
-}
+  TW_UINT32         nItem;
+  TW_UINT32         nCount    = m_ListCtrl_Caps.GetItemCount();
+  TW_UINT16         CondCode;
+  LV_ITEM           Item;
+  TW_UINT16         cap       = 0;
+  TW_CAPABILITY     Cap       = {0};
+  TW_UINT32         QS        = 0;
+  string            sItemValue;
 
-void Cmfc32DlgConfigure::OnLbnDblclkCaps()
-{
-  int             CAPLstIndex = 0;
-  TW_UINT16       CAPLstData  = 0;
-  bool            bChange     = false;
-  TW_UINT16       nCap        = 0;
-  CTW_Array_Dlg   Dlg(this);
-  TW_CAPABILITY   Cap;
-
-  CAPLstIndex = m_lst_Caps.GetCurSel();
-  if(LB_ERR != CAPLstIndex)
+  for(nItem=0; nItem<nCount; nItem++)
   {
-    nCap = (TW_UINT16)m_lst_Caps.GetItemData(CAPLstIndex);
+    memset(&Item, 0, sizeof(Item));
+    Item.iItem      = nItem;
+    Item.iSubItem   = 0;
+    Item.mask       = LVIF_PARAM;
+
+    m_ListCtrl_Caps.GetItem(&Item);
+    cap = (TW_UINT16)Item.lParam;
+
+    // All the subitems are added as text
+    Item.mask       = LVIF_TEXT;
 
     // get the capability that is supported
-    Cap.Cap         = nCap;
+    Cap.Cap         = cap;
     Cap.hContainer  = 0;
-    if(TWCC_SUCCESS==g_pTWAINApp->get_CAP(Cap))
-    {
-      if( Cap.ConType == TWON_ENUMERATION 
-         || Cap.ConType == TWON_ONEVALUE )
-      {
+    Cap.ConType     = TWON_DONTCARE16;
 
-        switch(nCap)
+    // We will ignor what Query Supported has reproted about Message Get and get the current anyway.
+    CondCode = g_pTWAINApp->get_CAP(Cap, MSG_GET);
+    if(CondCode==TWCC_SUCCESS)
+    {
+      pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(Cap.hContainer);
+      if(pCap)
+      {
+        TW_UINT16 type = pCap->ItemType;
+        _DSM_UnlockMemory(Cap.hContainer);
+
+        switch(type)
         {
-          case CAP_XFERCOUNT:
+          case TWTY_INT8:
+          case TWTY_UINT8:
+          case TWTY_INT16:
+          case TWTY_UINT16:
+          case TWTY_INT32:
+          case TWTY_UINT32:
+          case TWTY_BOOL:
           {
-            TW_UINT32 Val;
-            getcurrent(&Cap, Val);
-            Val = (TW_INT16)Val == -1? 1: -1;// flop
-            g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, Val, TWTY_INT16);
-            bChange = true;
+            if(Cap.ConType == TWON_ARRAY)
+            {
+              UINT nArrayCount = 100;
+              int Val[100];
+              GetArray(&Cap, Val, &nArrayCount);
+              sItemValue = "";
+              for(UINT i =0; i< nArrayCount; i++)
+              {
+                if(sItemValue.length()!=0)
+                   sItemValue += ", ";
+                sItemValue += convertCAP_Item_toString(Cap.Cap, (TW_UINT32)Val[i], type);
+              }
+            }
+            else
+            {
+              TW_UINT32 uVal;
+              getcurrent(&Cap, uVal);
+              sItemValue = convertCAP_Item_toString(Cap.Cap, uVal, type);
+            }
             break;
           }
 
+          case TWTY_STR32:
+          case TWTY_STR64:
+          case TWTY_STR128:
+          case TWTY_STR255:
+          {
+            if(Cap.ConType == TWON_ARRAY)
+            {
+              sItemValue = "";
+            }
+            else
+            {
+              getcurrent(&Cap, sItemValue);
+            }
+            break;
+          }
+
+          case TWTY_FIX32:
+          {
+            if(Cap.ConType == TWON_ARRAY)
+            {
+              sItemValue = "";
+            }
+            else
+            {
+              TW_FIX32 fix32;
+              getcurrent(&Cap, fix32);
+              CString value;
+              value.Format("%d.%d", fix32.Whole, (int)((fix32.Frac/65536.0 + .0005)*1000) );
+              sItemValue = value;
+            }
+            break;
+          }
+
+          case TWTY_FRAME:
+          {
+            if(Cap.ConType == TWON_ARRAY)
+            {
+              sItemValue = "";
+            }
+            else
+            {
+              TW_FRAME frame;
+              getcurrent(&Cap, frame);
+              CString value;
+              value.Format( "%d.%d  %d.%d  %d.%d  %d.%d", 
+                   frame.Left.Whole,   (int)((frame.Left.Frac/65536.0 + .0005)*1000),
+                   frame.Right.Whole,  (int)((frame.Right.Frac/65536.0 + .0005)*1000),
+                   frame.Top.Whole,    (int)((frame.Top.Frac/65536.0 + .0005)*1000),
+                   frame.Bottom.Whole, (int)((frame.Bottom.Frac/65536.0 + .0005)*1000) );
+              sItemValue = value;
+            }
+            break;
+          }
           default:
           {
-            if( IDOK == GetUpdateValue(&Cap, &Dlg) )
-            {
-              TW_UINT16 type = TWTY_UINT16;
-              TW_INT16  twrc = TWRC_FAILURE;
-
-              pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(Cap.hContainer);
-              if(pCap)
-              {
-                type = pCap->ItemType;
-                _DSM_UnlockMemory(Cap.hContainer);
-
-                switch(type)
-                {
-                  case TWTY_INT8:
-                  case TWTY_INT16:
-                  case TWTY_INT32:
-                  case TWTY_UINT8:
-                  case TWTY_UINT16:
-                  case TWTY_UINT32:
-                  case TWTY_BOOL:
-                  {
-                    twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, (TW_UINT16)Dlg.m_SelectionData, type);
-                    break;
-                  }
-
-                  case TWTY_FIX32:
-                  {
-                    TW_FIX32 TWfix32 = FloatToFIX32( (float)(Dlg.m_SelectionData/100.0));
-                    twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, &TWfix32);
-                    break;
-                  }
-                }
-
-                if(twrc == TWRC_SUCCESS || twrc == TWRC_CHECKSTATUS)
-                {
-                  bChange = true;
-                }
-              }
-            }
+            sItemValue = "?";
             break;
           }
         }
       }
     }
-
-    if(bChange)
+    else
     {
-      // Modifiying one CAP can change several others - repopulate the list of CAPS
-      ListCaps();
-        
-      if( 0 < m_lst_Caps.GetCount())
+      CString sError;
+      sError.Format("<<%s>>", convertConditionCode_toString(CondCode));
+      sItemValue = sError;
+    }
+
+    Item.iSubItem   = 1;
+    Item.pszText    = (char *)sItemValue.c_str();
+    m_ListCtrl_Caps.SetItem(&Item);
+
+    switch(Cap.ConType)
+    {
+      case TWON_ARRAY:
+        sItemValue = "Array";
+      break;
+
+      case TWON_ENUMERATION:
+        sItemValue = "Enumeration";
+      break;
+
+      case TWON_ONEVALUE:
+        sItemValue = "One Value";
+      break;
+
+      case TWON_RANGE:
+        sItemValue = "Range";
+      break;
+    }
+
+    Item.iSubItem   = 2;
+    Item.pszText    = (char *)sItemValue.c_str();
+    m_ListCtrl_Caps.SetItem(&Item);
+
+    if( Cap.ConType == TWON_ARRAY
+     || Cap.ConType == TWON_ENUMERATION )
+    {
+      TW_UINT32 nNumItems = 0;
+      pTW_ARRAY pCap = (pTW_ARRAY)_DSM_LockMemory(Cap.hContainer);
+      if(pCap)
       {
-        m_lst_Caps.EnableWindow(true);
-        m_lst_Caps.SetCurSel(CAPLstIndex);
-        OnLbnSelchangeCAPS();
+        nNumItems = pCap->NumItems;
+        _DSM_UnlockMemory(Cap.hContainer);
+      }
+      CString Value;
+      Value.Format("%d", nNumItems);
+      sItemValue = Value;
+
+      Item.iSubItem   = 3;
+      Item.pszText    = (char *)sItemValue.c_str();
+      m_ListCtrl_Caps.SetItem(&Item);
+    }
+
+    g_pTWAINApp->QuerySupport_CAP(cap, QS);
+
+    sItemValue = "";
+    if( QS & (TWQC_GET|TWQC_GETDEFAULT|TWQC_GETCURRENT) )
+    {
+      sItemValue += "Get";
+    }
+    if(QS & TWQC_SET)
+    {
+      if(0 != sItemValue.length())
+        sItemValue += ", ";
+      sItemValue += "Set";
+    }
+    if(QS & TWQC_RESET)
+    {
+      if(0 != sItemValue.length())
+        sItemValue += ", ";
+      sItemValue += "Reset";
+    }
+
+    Item.iSubItem   = 4;
+    Item.pszText    = (char *)sItemValue.c_str();
+    m_ListCtrl_Caps.SetItem(&Item);
+  }
+}
+
+
+void Cmfc32DlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
+{
+  LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+
+  TW_UINT16       CAPLstData  = 0;
+  bool            bChange     = false;
+  CTW_Array_Dlg   Dlg(this);
+  TW_CAPABILITY   Cap;
+  LV_ITEM           Item;
+
+  memset(&Item, 0, sizeof(Item));
+  Item.iItem      = pNMItemActivate->iItem;
+  Item.iSubItem   = 0;
+  Item.mask       = LVIF_PARAM;
+  m_ListCtrl_Caps.GetItem(&Item);
+
+  // get the capability that is supported
+  Cap.Cap         = (TW_UINT16)Item.lParam;
+  Cap.hContainer  = 0;
+
+  if(TWCC_SUCCESS==g_pTWAINApp->get_CAP(Cap, MSG_GET))
+  {
+    if( Cap.ConType == TWON_ENUMERATION 
+       || Cap.ConType == TWON_ONEVALUE )
+    {
+
+      switch(Cap.Cap)
+      {
+        case CAP_XFERCOUNT:
+        {
+          TW_UINT32 Val;
+          getcurrent(&Cap, Val);
+          Val = (TW_INT16)Val == -1? 1: -1;// flop
+          g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, Val, TWTY_INT16);
+          bChange = true;
+          break;
+        }
+
+        default:
+        {
+          if( IDOK == GetUpdateValue(&Cap, &Dlg) )
+          {
+            TW_UINT16 type = TWTY_UINT16;
+            TW_INT16  twrc = TWRC_FAILURE;
+
+            pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(Cap.hContainer);
+            if(pCap)
+            {
+              type = pCap->ItemType;
+              _DSM_UnlockMemory(Cap.hContainer);
+
+              switch(type)
+              {
+                case TWTY_INT8:
+                case TWTY_INT16:
+                case TWTY_INT32:
+                case TWTY_UINT8:
+                case TWTY_UINT16:
+                case TWTY_UINT32:
+                case TWTY_BOOL:
+                {
+                  twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, (TW_UINT16)Dlg.m_SelectionData, type);
+                  break;
+                }
+
+                case TWTY_FIX32:
+                {
+                  TW_FIX32 TWfix32 = FloatToFIX32( (float)(Dlg.m_SelectionData/100.0));
+                  twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, &TWfix32);
+                  break;
+                }
+              }
+
+              if(twrc == TWRC_SUCCESS || twrc == TWRC_CHECKSTATUS)
+              {
+                bChange = true;
+              }
+            }
+          }
+          break;
+        }
       }
     }
   }
+
+  if(bChange)
+  {
+    // Modifiying one CAP can change several others - repopulate the list of CAPS
+    PopulateCurentValues();
+  }
+  *pResult = 0;
 }
 
 int Cmfc32DlgConfigure::GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg)
@@ -704,7 +818,7 @@ void Cmfc32DlgConfigure::StartScan()
   Cap.Cap = ICAP_XFERMECH;
   Cap.hContainer = 0;
 
-  if( TWCC_SUCCESS!=g_pTWAINApp->get_CAP(Cap)
+  if( TWCC_SUCCESS!=g_pTWAINApp->get_CAP(Cap, MSG_GETCURRENT)
     ||!getcurrent(&Cap, mech) )
   {
       TRACE("Error: could not get the transfer mechanism");
@@ -728,7 +842,7 @@ void Cmfc32DlgConfigure::StartScan()
       Cap.Cap = ICAP_IMAGEFILEFORMAT;
       Cap.hContainer = 0;
 
-      if(TWCC_SUCCESS==g_pTWAINApp->get_CAP(Cap))
+      if(TWCC_SUCCESS==g_pTWAINApp->get_CAP(Cap, MSG_GETCURRENT))
       {
         getcurrent(&Cap, fileformat);
       }
@@ -780,3 +894,4 @@ void Cmfc32DlgConfigure::UpdateExtImageInfo()
   m_sStc_ExtImageInfo = g_pTWAINApp->getEXIMAGEINFO().c_str();
   UpdateData(false);
 }
+

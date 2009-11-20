@@ -258,10 +258,11 @@ public:
 /**
 * Gets the capability.
 * @param[in,out] _cap the capability struct to fill. _cap.Cap needs to be
+* @param[in] _msg one of MSG_GET, MSG_GETCURRENT, MSG_GETDEFAULT, or MSG_RESET
 * filled with the capability to retrieve.
 * @return a valid TWCC_xxxx condition code
 */
-  TW_INT16 get_CAP(TW_CAPABILITY& _cap);
+  TW_INT16 get_CAP(TW_CAPABILITY& _cap, TW_UINT16 _msg = MSG_GET);
 
 /**
 * Query Support messages of the capability.
