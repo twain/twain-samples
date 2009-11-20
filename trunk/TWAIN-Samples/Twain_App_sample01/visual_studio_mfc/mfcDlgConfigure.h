@@ -44,6 +44,7 @@
 
 #include "CommonTWAIN.h"
 #include "..\src\twainapp.h"
+#include "afxcmn.h"
 
 class CTW_Array_Dlg;
 
@@ -64,7 +65,8 @@ public:
 
   protected:
   virtual void DoDataExchange(CDataExchange* pDX);// DDX/DDV support
-  void ListCaps();
+  void ListSupportedCaps();
+  void PopulateCurentValues();
   int  GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg);
   void StartScan();
 
@@ -82,16 +84,15 @@ protected:
 
 public:
   afx_msg void OnDestroy();
-  afx_msg void OnLbnSelchangeCAPS();
   afx_msg void OnBnClickedScan();
   afx_msg void OnBnClickedCancel();
-  afx_msg void OnLbnDblclkCaps();
+  afx_msg void OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult);
   void UpdateImageInfo();
   void UpdateExtImageInfo();
 
-  CString  m_sStc_DS;
-  CString  m_sStc_ImageInfo;
-  CString  m_sStc_ExtImageInfo;
-  CListBox m_lst_Caps;
-  BOOL     m_bShowUI;
+  CString     m_sStc_DS;
+  CString     m_sStc_ImageInfo;
+  CString     m_sStc_ExtImageInfo;
+  CListCtrl   m_ListCtrl_Caps;
+  BOOL        m_bShowUI;
 };

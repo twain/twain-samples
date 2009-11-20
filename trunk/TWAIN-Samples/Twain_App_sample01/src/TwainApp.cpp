@@ -1120,7 +1120,7 @@ void TwainApp::updateEXIMAGEINFO()
        if(pexImgInfo->Info[nIndex].CondCode != TWRC_INFONOTSUPPORTED)
        {
          m_strExImageInfo += convertExtImageInfoName_toString(pexImgInfo->Info[nIndex].InfoID);
-         m_strExImageInfo += "\t";
+         m_strExImageInfo += ":\t";
          m_strExImageInfo += convertExtImageInfoItem_toString(pexImgInfo->Info[nIndex]);
          m_strExImageInfo +="\r\n";
        }
@@ -1547,9 +1547,16 @@ pTW_IDENTITY TwainApp::getDataSource(TW_INT16 _index /*= -1*/) const
   }
 }
 
+
 //////////////////////////////////////////////////////////////////////////////
-TW_INT16 TwainApp::get_CAP(TW_CAPABILITY& _cap)
+TW_INT16 TwainApp::get_CAP(TW_CAPABILITY& _cap, TW_UINT16 _msg /* = MSG_GET */)
 {
+  if(_msg != MSG_GET && _msg != MSG_GETCURRENT && _msg != MSG_GETDEFAULT && _msg != MSG_RESET)
+  {
+    PrintCMDMessage("Bad Message.\n");
+    return TWCC_BUMMER;
+  }
+
   if(m_DSMState < 4)
   {
     PrintCMDMessage("You need to open a data source first.\n");
@@ -1570,7 +1577,7 @@ TW_INT16 TwainApp::get_CAP(TW_CAPABILITY& _cap)
   _cap.ConType = TWON_DONTCARE16;
 
   // capability structure is set, make the call to the source now
-  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, MSG_GET, (TW_MEMREF)&_cap);
+  TW_UINT16 twrc = DSM_Entry( DG_CONTROL, DAT_CAPABILITY, _msg, (TW_MEMREF)&_cap);
 
   switch(twrc)
   {

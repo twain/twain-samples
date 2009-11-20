@@ -149,6 +149,14 @@ BOOL Cmfc32DlgMain::OnInitDialog()
 
   _pTWAINApp = new TwainApp(m_hWnd);
 
+  CEdit *pWnd = NULL;
+
+  pWnd = (CEdit*)GetDlgItem(IDC_STC_DS);
+  if(pWnd)
+  {
+    pWnd->SetTabStops(60);
+  }
+
   PopulateDSList();
 
   return TRUE;  // return TRUE  unless you set the focus to a control
@@ -275,7 +283,14 @@ void Cmfc32DlgMain::OnLbnSelchangeDS()
   {
     if( pID->Id == index )
     {
-      m_sStc_DS.Format("Manufacturer: %s\nProductFamily: %s",pID->Manufacturer,pID->ProductFamily );
+      m_sStc_DS.Format( "Manufacturer:\t%s\r\n"
+                        "Product Family:\t%s\r\n"
+                        "Version:\t%d.%d\r\n"
+                        "\t%s\r\n"
+                        "TWAIN Protocol:\t%d.%d",
+                        pID->Manufacturer, pID->ProductFamily, 
+                        pID->Version.MajorNum, pID->Version.MinorNum, pID->Version.Info, 
+                        pID->ProtocolMajor, pID->ProtocolMinor);
       UpdateData(false);
       break;
     }
