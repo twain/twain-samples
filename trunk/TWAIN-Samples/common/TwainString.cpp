@@ -127,6 +127,10 @@ const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT32 _un
       pszString = convertCAP_DUPLEX_toString((TW_UINT16)_unItem);
       break;
 
+    case CAP_EXTENDEDCAPS:
+      pszString = convertCAP_toString((TW_UINT16)_unItem);
+      break;
+
     case CAP_FEEDERALIGNMENT:
       pszString = convertCAP_FEEDERALIGNMENT_toString((TW_UINT16)_unItem);
       break;
@@ -225,6 +229,10 @@ const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT32 _un
 
     case CAP_SEGMENTED:
       pszString = convertCAP_SEGMENTED_toString((TW_UINT16)_unItem);
+      break;
+
+    case ICAP_SUPPORTEDEXTIMAGEINFO:
+      pszString = convertExtImageInfoName_toString((TW_UINT16)_unItem);
       break;
 
     case ICAP_SUPPORTEDSIZES:
@@ -1015,267 +1023,267 @@ const char* convertExtImageInfoName_toString(int InfoID)
   switch(InfoID)
   {
   case TWEI_BARCODEX:
-    text = "TWEI_BARCODEX:";
+    text = "TWEI_BARCODEX";
     break;
 
   case TWEI_BARCODEY:
-    text = "TWEI_BARCODEY:";
+    text = "TWEI_BARCODEY";
     break;
 
 	case TWEI_BARCODETEXT:
-    text = "TWEI_BARCODETEXT:";
+    text = "TWEI_BARCODETEXT";
     break;
 
 	case TWEI_BARCODETYPE:
-    text = "TWEI_BARCODETYPE:";
+    text = "TWEI_BARCODETYPE";
     break;
 
 	case TWEI_DESHADETOP:
-    text = "TWEI_DESHADETOP:";
+    text = "TWEI_DESHADETOP";
     break;
 
 	case TWEI_DESHADELEFT:
-    text = "TWEI_DESHADELEFT:";
+    text = "TWEI_DESHADELEFT";
     break;
 
 	case TWEI_DESHADEHEIGHT:
-    text = "TWEI_DESHADEHEIGHT:";
+    text = "TWEI_DESHADEHEIGHT";
     break;
 
 	case TWEI_DESHADEWIDTH:
-    text = "TWEI_DESHADEWIDTH:";
+    text = "TWEI_DESHADEWIDTH";
     break;
 
 	case TWEI_DESHADESIZE:
-    text = "TWEI_DESHADESIZE:";
+    text = "TWEI_DESHADESIZE";
     break;
 
 	case TWEI_SPECKLESREMOVED:
-    text = "TWEI_SPECKLESREMOVED:";
+    text = "TWEI_SPECKLESREMOVED";
     break;
 
 	case TWEI_HORZLINEXCOORD:
-    text = "TWEI_HORZLINEXCOORD:";
+    text = "TWEI_HORZLINEXCOORD";
     break;
 
 	case TWEI_HORZLINEYCOORD:
-    text = "TWEI_HORZLINEYCOORD:";
+    text = "TWEI_HORZLINEYCOORD";
     break;
 
 	case TWEI_HORZLINELENGTH:
-    text = "TWEI_HORZLINELENGTH:";
+    text = "TWEI_HORZLINELENGTH";
     break;
 
 	case TWEI_HORZLINETHICKNESS:
-    text = "TWEI_HORZLINETHICKNESS:";
+    text = "TWEI_HORZLINETHICKNESS";
     break;
 
 	case TWEI_VERTLINEXCOORD:
-    text = "TWEI_VERTLINEXCOORD:";
+    text = "TWEI_VERTLINEXCOORD";
     break;
 
 	case TWEI_VERTLINEYCOORD:
-    text = "TWEI_VERTLINEYCOORD:";
+    text = "TWEI_VERTLINEYCOORD";
     break;
 
 	case TWEI_VERTLINELENGTH:
-    text = "TWEI_VERTLINELENGTH:";
+    text = "TWEI_VERTLINELENGTH";
     break;
 
 	case TWEI_VERTLINETHICKNESS:
-    text = "TWEI_VERTLINETHICKNESS:";
+    text = "TWEI_VERTLINETHICKNESS";
     break;
 
 	case TWEI_PATCHCODE:
-    text = "TWEI_PATCHCODE:";
+    text = "TWEI_PATCHCODE";
     break;
 
 	case TWEI_ENDORSEDTEXT:
-    text = "TWEI_ENDORSEDTEXT:";
+    text = "TWEI_ENDORSEDTEXT";
     break;
 
 	case TWEI_FORMCONFIDENCE:
-    text = "TWEI_FORMCONFIDENCE:";
+    text = "TWEI_FORMCONFIDENCE";
     break;
 
 	case TWEI_FORMTEMPLATEMATCH:
-    text = "TWEI_FORMTEMPLATEMATCH:";
+    text = "TWEI_FORMTEMPLATEMATCH";
     break;
 
 	case TWEI_FORMTEMPLATEPAGEMATCH:
-    text = "TWEI_FORMTEMPLATEPAGEMATCH:";
+    text = "TWEI_FORMTEMPLATEPAGEMATCH";
     break;
 
 	case TWEI_FORMHORZDOCOFFSET:
-    text = "TWEI_FORMHORZDOCOFFSET:";
+    text = "TWEI_FORMHORZDOCOFFSET";
     break;
 
 	case TWEI_FORMVERTDOCOFFSET:
-    text = "TWEI_FORMVERTDOCOFFSET:";
+    text = "TWEI_FORMVERTDOCOFFSET";
     break;
 
 	case TWEI_BARCODECOUNT:
-    text = "TWEI_BARCODECOUNT:";
+    text = "TWEI_BARCODECOUNT";
     break;
 
 	case TWEI_BARCODECONFIDENCE:
-    text = "TWEI_BARCODECONFIDENCE:";
+    text = "TWEI_BARCODECONFIDENCE";
     break;
 
 	case TWEI_BARCODEROTATION:
-    text = "TWEI_BARCODEROTATION:";
+    text = "TWEI_BARCODEROTATION";
     break;
 
 	case TWEI_BARCODETEXTLENGTH:
-    text = "TWEI_BARCODETEXTLENGTH:";
+    text = "TWEI_BARCODETEXTLENGTH";
     break;
 
 	case TWEI_DESHADECOUNT:
-    text = "TWEI_DESHADECOUNT:";
+    text = "TWEI_DESHADECOUNT";
     break;
 
 	case TWEI_DESHADEBLACKCOUNTOLD:
-    text = "TWEI_DESHADEBLACKCOUNTOLD:";
+    text = "TWEI_DESHADEBLACKCOUNTOLD";
     break;
 
 	case TWEI_DESHADEBLACKCOUNTNEW:
-    text = "TWEI_DESHADEBLACKCOUNTNEW:";
+    text = "TWEI_DESHADEBLACKCOUNTNEW";
     break;
 
 	case TWEI_DESHADEBLACKRLMIN:
-    text = "TWEI_DESHADEBLACKRLMIN:";
+    text = "TWEI_DESHADEBLACKRLMIN";
     break;
 
 	case TWEI_DESHADEBLACKRLMAX:
-    text = "TWEI_DESHADEBLACKRLMAX:";
+    text = "TWEI_DESHADEBLACKRLMAX";
     break;
 
 	case TWEI_DESHADEWHITECOUNTOLD:
-    text = "TWEI_DESHADEWHITECOUNTOLD:";
+    text = "TWEI_DESHADEWHITECOUNTOLD";
     break;
 
 	case TWEI_DESHADEWHITECOUNTNEW:
-    text = "TWEI_DESHADEWHITECOUNTNEW:";
+    text = "TWEI_DESHADEWHITECOUNTNEW";
     break;
 
 	case TWEI_DESHADEWHITERLMIN:
-    text = "TWEI_DESHADEWHITERLMIN:";
+    text = "TWEI_DESHADEWHITERLMIN";
     break;
 
 	case TWEI_DESHADEWHITERLAVE:
-    text = "TWEI_DESHADEWHITERLAVE:";
+    text = "TWEI_DESHADEWHITERLAVE";
     break;
 
 	case TWEI_DESHADEWHITERLMAX:
-    text = "TWEI_DESHADEWHITERLMAX:";
+    text = "TWEI_DESHADEWHITERLMAX";
     break;
 
 	case TWEI_BLACKSPECKLESREMOVED:
-    text = "TWEI_BLACKSPECKLESREMOVED:";
+    text = "TWEI_BLACKSPECKLESREMOVED";
     break;
 
 	case TWEI_WHITESPECKLESREMOVED:
-    text = "TWEI_WHITESPECKLESREMOVED:";
+    text = "TWEI_WHITESPECKLESREMOVED";
     break;
 
 	case TWEI_HORZLINECOUNT:
-    text = "TWEI_HORZLINECOUNT:";
+    text = "TWEI_HORZLINECOUNT";
     break;
 
 	case TWEI_VERTLINECOUNT:
-    text = "TWEI_VERTLINECOUNT:";
+    text = "TWEI_VERTLINECOUNT";
     break;
 
 	case TWEI_DESKEWSTATUS:
-    text = "TWEI_DESKEWSTATUS:";
+    text = "TWEI_DESKEWSTATUS";
     break;
 
 	case TWEI_SKEWORIGINALANGLE:
-    text = "TWEI_SKEWORIGINALANGLE:";
+    text = "TWEI_SKEWORIGINALANGLE";
     break;
 
 	case TWEI_SKEWFINALANGLE:
-    text = "TWEI_SKEWFINALANGLE:";
+    text = "TWEI_SKEWFINALANGLE";
     break;
 
 	case TWEI_SKEWCONFIDENCE:
-    text = "TWEI_SKEWCONFIDENCE:";
+    text = "TWEI_SKEWCONFIDENCE";
     break;
 
 	case TWEI_SKEWWINDOWX1:
-    text = "TWEI_SKEWWINDOWX1:";
+    text = "TWEI_SKEWWINDOWX1";
     break;
 
 	case TWEI_SKEWWINDOWY1:
-    text = "TWEI_SKEWWINDOWY1:";
+    text = "TWEI_SKEWWINDOWY1";
     break;
 
 	case TWEI_SKEWWINDOWX2:
-    text = "TWEI_SKEWWINDOWX2:";
+    text = "TWEI_SKEWWINDOWX2";
     break;
 
 	case TWEI_SKEWWINDOWY2:
-    text = "TWEI_SKEWWINDOWY2:";
+    text = "TWEI_SKEWWINDOWY2";
     break;
 
 	case TWEI_SKEWWINDOWX3:
-    text = "TWEI_SKEWWINDOWX3:";
+    text = "TWEI_SKEWWINDOWX3";
     break;
 
 	case TWEI_SKEWWINDOWY3:
-    text = "TWEI_SKEWWINDOWY3:";
+    text = "TWEI_SKEWWINDOWY3";
     break;
 
 	case TWEI_SKEWWINDOWX4:
-    text = "TWEI_SKEWWINDOWX4:";
+    text = "TWEI_SKEWWINDOWX4";
     break;
 
 	case TWEI_SKEWWINDOWY4:
-    text = "TWEI_SKEWWINDOWY4:";
+    text = "TWEI_SKEWWINDOWY4";
     break;
 
 	case TWEI_BOOKNAME:
-    text = "TWEI_BOOKNAME:";
+    text = "TWEI_BOOKNAME";
     break;
 
 	case TWEI_CHAPTERNUMBER:
-    text = "TWEI_CHAPTERNUMBER:";
+    text = "TWEI_CHAPTERNUMBER";
     break;
 
 	case TWEI_DOCUMENTNUMBER:
-    text = "TWEI_DOCUMENTNUMBER:";
+    text = "TWEI_DOCUMENTNUMBER";
     break;
 
 	case TWEI_PAGENUMBER:
-    text = "TWEI_PAGENUMBER:";
+    text = "TWEI_PAGENUMBER";
     break;
 
 	case TWEI_CAMERA:
-    text = "TWEI_CAMERA:";
+    text = "TWEI_CAMERA";
     break;
 
 	case TWEI_FRAMENUMBER:
-    text = "TWEI_FRAMENUMBER:";
+    text = "TWEI_FRAMENUMBER";
     break;
 
 	case TWEI_FRAME:
-    text = "TWEI_FRAME:";
+    text = "TWEI_FRAME";
     break;
 
 	case TWEI_PIXELFLAVOR:
-    text = "TWEI_PIXELFLAVOR:";
+    text = "TWEI_PIXELFLAVOR";
     break;
 
 	case TWEI_PAGESIDE:
-    text = "TWEI_PAGESIDE:";
+    text = "TWEI_PAGESIDE";
     break;
 
 	case TWEI_MAGDATA:
-    text = "TWEI_MAGDATA:";
+    text = "TWEI_MAGDATA";
     break;
 
 	case TWEI_MAGTYPE:
-    text = "TWEI_MAGTYPE:";
+    text = "TWEI_MAGTYPE";
     break;
 
   default:
@@ -2677,7 +2685,7 @@ const char* convertICAP_JPEGQUALITY_toString(const TW_UINT16 InfoID)
   default:
     {
       char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWJQ 0x:%4X", InfoID);
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "%d", InfoID);
       text = buff;
     }
     break;
