@@ -460,7 +460,7 @@ void TwainAppCMD::set_ICAP_BITDEPTH(const TW_UINT16 _nVal)
 bool TwainAppCMD::getICAP_UNITS(TW_UINT16& _val)
 {
   TW_UINT32 val;
-  bool rtn = getcurrent(&m_ICAP_UNITS, val);
+  bool rtn = getCurrent(&m_ICAP_UNITS, val);
   _val = (TW_UINT16)val;
   return rtn;
 }
@@ -468,7 +468,7 @@ bool TwainAppCMD::getICAP_UNITS(TW_UINT16& _val)
 bool TwainAppCMD::getCAP_XFERCOUNT(TW_INT16& _val)
 {
   TW_UINT32 val;
-  bool rtn = getcurrent(&m_CAP_XFERCOUNT, val);
+  bool rtn = getCurrent(&m_CAP_XFERCOUNT, val);
   _val = (TW_UINT16)val;
   return rtn;
 }
@@ -476,7 +476,7 @@ bool TwainAppCMD::getCAP_XFERCOUNT(TW_INT16& _val)
 bool TwainAppCMD::getICAP_XFERMECH(TW_UINT16& _val)
 {
   TW_UINT32 val;
-  bool rtn = getcurrent(&m_ICAP_XFERMECH, val);
+  bool rtn = getCurrent(&m_ICAP_XFERMECH, val);
   _val = (TW_UINT16)val;
   return rtn;
 }
@@ -484,7 +484,7 @@ bool TwainAppCMD::getICAP_XFERMECH(TW_UINT16& _val)
 bool TwainAppCMD::getICAP_PIXELTYPE(TW_UINT16& _val)
 {
   TW_UINT32 val;
-  bool rtn = getcurrent(&m_ICAP_PIXELTYPE, val);
+  bool rtn = getCurrent(&m_ICAP_PIXELTYPE, val);
   _val = (TW_UINT16)val;
   return rtn;
 }
@@ -492,7 +492,7 @@ bool TwainAppCMD::getICAP_PIXELTYPE(TW_UINT16& _val)
 bool TwainAppCMD::getICAP_BITDEPTH(TW_UINT16& _val)
 {
   TW_UINT32 val;
-  bool rtn = getcurrent(&m_ICAP_BITDEPTH, val);
+  bool rtn = getCurrent(&m_ICAP_BITDEPTH, val);
   _val = (TW_UINT16)val;
   return rtn;
 }
@@ -500,7 +500,7 @@ bool TwainAppCMD::getICAP_BITDEPTH(TW_UINT16& _val)
 bool TwainAppCMD::getICAP_IMAGEFILEFORMAT(TW_UINT16& _val)
 {
   TW_UINT32 val;
-  bool rtn = getcurrent(&m_ICAP_IMAGEFILEFORMAT, val);
+  bool rtn = getCurrent(&m_ICAP_IMAGEFILEFORMAT, val);
   _val = (TW_UINT16)val;
   return rtn;
 }
@@ -508,19 +508,19 @@ bool TwainAppCMD::getICAP_IMAGEFILEFORMAT(TW_UINT16& _val)
 bool TwainAppCMD::getICAP_COMPRESSION(TW_UINT16& _val)
 {
   TW_UINT32 val;
-  bool rtn = getcurrent(&m_ICAP_COMPRESSION, val);
+  bool rtn = getCurrent(&m_ICAP_COMPRESSION, val);
   _val = (TW_UINT16)val;
   return rtn;
 }
 
 bool TwainAppCMD::getICAP_XRESOLUTION(TW_FIX32& _xres)
 {
-  return getcurrent(&m_ICAP_XRESOLUTION, _xres);
+  return getCurrent(&m_ICAP_XRESOLUTION, _xres);
 }
 
 bool TwainAppCMD::getICAP_YRESOLUTION(TW_FIX32& _yres)
 {
-  return getcurrent(&m_ICAP_YRESOLUTION, _yres);
+  return getCurrent(&m_ICAP_YRESOLUTION, _yres);
 }
 
 

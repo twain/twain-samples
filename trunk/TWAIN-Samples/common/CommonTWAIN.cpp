@@ -48,7 +48,8 @@ extern void _DSM_Free(TW_HANDLE _hMemory);
 TW_FIX32 FloatToFIX32 (float floater)
 {
   TW_FIX32 Fix32_value;
-  TW_INT32 value = (TW_INT32) (floater * 65536.0 + 0.5);
+  TW_BOOL  sign = (floater < 0)?TRUE:FALSE;
+  TW_INT32 value = (TW_INT32) (floater * 65536.0 + (sign?(-0.5):0.5));
   Fix32_value.Whole = (TW_UINT16)(value >> 16);
   Fix32_value.Frac = (TW_UINT16)(value & 0x0000ffffL);
   return (Fix32_value);
@@ -63,7 +64,7 @@ float FIX32ToFloat(const TW_FIX32& _fix32)
 
 
 //////////////////////////////////////////////////////////////////////////////
-bool getcurrent(TW_CAPABILITY *pCap, TW_UINT32& val)
+bool getCurrent(TW_CAPABILITY *pCap, TW_UINT32& val)
 {
   bool bret = false;
 
@@ -139,7 +140,7 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_UINT32& val)
 
 
 //////////////////////////////////////////////////////////////////////////////
-bool getcurrent(TW_CAPABILITY *pCap, string& val)
+bool getCurrent(TW_CAPABILITY *pCap, string& val)
 {
   bool bret = false;
 
@@ -247,7 +248,7 @@ bool getcurrent(TW_CAPABILITY *pCap, string& val)
 //////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////
-bool getcurrent(TW_CAPABILITY *pCap, TW_FIX32& val)
+bool getCurrent(TW_CAPABILITY *pCap, TW_FIX32& val)
 {
   bool bret = false;
 
@@ -291,7 +292,7 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_FIX32& val)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-bool getcurrent(TW_CAPABILITY *pCap, TW_FRAME& frame)
+bool getCurrent(TW_CAPABILITY *pCap, TW_FRAME& frame)
 {
   bool bret = false;
 
@@ -325,11 +326,11 @@ bool getcurrent(TW_CAPABILITY *pCap, TW_FRAME& frame)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-bool GetArray(TW_CAPABILITY *pCap, int *pVal, UINT *pCount)
+bool GetItem(TW_CAPABILITY *pCap, TW_UINT32 item, TW_UINT32& val)
 {
   bool bret = false;
 
-  if(0 != pCap->hContainer)
+  if(0 != pCap && 0 != pCap->hContainer)
   {
     if( TWON_ARRAY == pCap->ConType
      || TWON_ENUMERATION == pCap->ConType )
@@ -341,7 +342,7 @@ bool GetArray(TW_CAPABILITY *pCap, int *pVal, UINT *pCount)
       if( TWON_ARRAY == pCap->ConType )
       {
         pTW_ARRAY pArray = (pTW_ARRAY)_DSM_LockMemory(pCap->hContainer);
-        Count = min(*pCount, pArray->NumItems);
+        Count = pArray->NumItems;
         Type  = pArray->ItemType;
         pData = &pArray->ItemList[0];
       }
@@ -349,71 +350,217 @@ bool GetArray(TW_CAPABILITY *pCap, int *pVal, UINT *pCount)
       if( TWON_ENUMERATION == pCap->ConType )
       {
         pTW_ENUMERATION pEnumeration = (pTW_ENUMERATION)_DSM_LockMemory(pCap->hContainer);
-        Count = min(*pCount, pEnumeration->NumItems);
+        Count = pEnumeration->NumItems;
         Type  = pEnumeration->ItemType;
         pData = &pEnumeration->ItemList[0];
       }
       
-      *pCount = Count;
-      UINT i = 0;
-      switch(Type)
+      if(item < Count)
       {
-      case TWTY_INT32:
-        for(i=0; i<Count; i++)
+        switch(Type)
         {
-          pVal[i] = (int)((pTW_INT32)(pData))[i];
-        }
-        bret = true;
-        break;
+        case TWTY_INT32:
+          val  = (int)((pTW_INT32)(pData))[item];
+          bret = true;
+          break;
 
-      case TWTY_UINT32:
-        for(i=0; i<Count; i++)
+        case TWTY_UINT32:
+          val  = (int)((pTW_UINT32)(pData))[item];
+          bret = true;
+          break;
+
+        case TWTY_INT16:
+          val  = (int)((pTW_INT16)(pData))[item];
+          bret = true;
+          break;
+
+        case TWTY_UINT16:
+          val  = (int)((pTW_UINT16)(pData))[item];
+          bret = true;
+          break;
+
+        case TWTY_INT8:
+          val  = (int)((pTW_INT8)(pData))[item];
+          bret = true;
+          break;
+
+        case TWTY_UINT8:
+          val  = (int)((pTW_UINT8)(pData))[item];
+          bret = true;
+          break;
+
+        case TWTY_BOOL:
+          val  = (int)((pTW_BOOL)(pData))[item];
+          bret = true;
+          break;
+
+        }
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
+
+  return bret;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+bool GetItem(TW_CAPABILITY *pCap, TW_UINT32 item, string& val)
+{
+  bool bret = false;
+
+  if(0 != pCap && 0 != pCap->hContainer)
+  {
+    if( TWON_ARRAY == pCap->ConType
+     || TWON_ENUMERATION == pCap->ConType )
+    {
+      TW_UINT8 *pData = NULL;
+      UINT      Count = 0;
+      TW_UINT16 Type  = 0;
+
+      if( TWON_ARRAY == pCap->ConType )
+      {
+        pTW_ARRAY pArray = (pTW_ARRAY)_DSM_LockMemory(pCap->hContainer);
+        Count = pArray->NumItems;
+        Type  = pArray->ItemType;
+        pData = &pArray->ItemList[0];
+      }
+
+      if( TWON_ENUMERATION == pCap->ConType )
+      {
+        pTW_ENUMERATION pEnumeration = (pTW_ENUMERATION)_DSM_LockMemory(pCap->hContainer);
+        Count = pEnumeration->NumItems;
+        Type  = pEnumeration->ItemType;
+        pData = &pEnumeration->ItemList[0];
+      }
+      
+      if(item < Count)
+      {
+        switch(Type)
         {
-          pVal[i] = (int)((pTW_UINT32)(pData))[i];
-        }
-        bret = true;
-        break;
+        case TWTY_STR32:
+          {
+            pTW_STR32 pStr = &((pTW_STR32)(pData))[item];
+            // In case the Capability is not null terminated
+            pStr[32] = 0;
+            val = pStr;
+            bret = true;
+          }
+          break;
 
-      case TWTY_INT16:
-        for(i=0; i<Count; i++)
-        {
-          pVal[i] = (int)((pTW_INT16)(pData))[i];
-        }
-        bret = true;
-        break;
+        case TWTY_STR64:
+          {
+            pTW_STR64 pStr = &((pTW_STR64)(pData))[item];
+            // In case the Capability is not null terminated
+            pStr[64] = 0;
+            val = pStr;
+            bret = true;
+          }
+          break;
 
-      case TWTY_UINT16:
-        for(i=0; i<Count; i++)
-        {
-          pVal[i] = (int)((pTW_UINT16)(pData))[i];
-        }
-        bret = true;
-        break;
+        case TWTY_STR128:
+          {
+            pTW_STR128 pStr = &((pTW_STR128)(pData))[item];
+            // In case the Capability is not null terminated
+            pStr[128] = 0;
+            val = pStr;
+            bret = true;
+          }
+          break;
 
-      case TWTY_INT8:
-        for(i=0; i<Count; i++)
-        {
-          pVal[i] = (int)((pTW_INT8)(pData))[i];
+        case TWTY_STR255:
+          {
+            pTW_STR255 pStr = &((pTW_STR255)(pData))[item];
+            // In case the Capability is not null terminated
+            pStr[255] = 0;
+            val = pStr;
+            bret = true;
+          }
+          break;
         }
-        bret = true;
-        break;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
 
-      case TWTY_UINT8:
-        for(i=0; i<Count; i++)
-        {
-          pVal[i] = (int)((pTW_UINT8)(pData))[i];
-        }
-        bret = true;
-        break;
+  return bret;
+}
 
-      case TWTY_BOOL:
-        for(i=0; i<Count; i++)
-        {
-          pVal[i] = (int)((pTW_BOOL)(pData))[i];
-        }
-        bret = true;
-        break;
+//////////////////////////////////////////////////////////////////////////////
+bool GetItem(TW_CAPABILITY *pCap, TW_UINT32 item, TW_FIX32& val)
+{
+  bool bret = false;
 
+  if(0 != pCap && 0 != pCap->hContainer)
+  {
+    if( TWON_ARRAY == pCap->ConType
+     || TWON_ENUMERATION == pCap->ConType )
+    {
+      TW_FIX32 *pData = NULL;
+      UINT      Count = 0;
+      TW_UINT16 Type  = 0;
+
+      if( TWON_ARRAY == pCap->ConType )
+      {
+        pTW_ARRAY_FIX32 pArray = (pTW_ARRAY_FIX32)_DSM_LockMemory(pCap->hContainer);
+        Count = pArray->NumItems;
+        Type  = pArray->ItemType;
+        pData = &pArray->ItemList[0];
+      }
+
+      if( TWON_ENUMERATION == pCap->ConType )
+      {
+        pTW_ENUMERATION_FIX32 pEnumeration = (pTW_ENUMERATION_FIX32)_DSM_LockMemory(pCap->hContainer);
+        Count = pEnumeration->NumItems;
+        Type  = pEnumeration->ItemType;
+        pData = &pEnumeration->ItemList[0];
+      }
+      
+      if(item < Count && Type == TWTY_FIX32)
+      {
+            val = pData[item];
+            bret = true;
+      }
+      _DSM_UnlockMemory(pCap->hContainer);
+    }
+  }
+
+  return bret;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+bool GetItem(TW_CAPABILITY *pCap, TW_UINT32 item, TW_FRAME& val)
+{
+  bool bret = false;
+
+  if(0 != pCap && 0 != pCap->hContainer)
+  {
+    if( TWON_ARRAY == pCap->ConType
+     || TWON_ENUMERATION == pCap->ConType )
+    {
+      TW_FRAME *pData = NULL;
+      UINT      Count = 0;
+      TW_UINT16 Type  = 0;
+
+      if( TWON_ARRAY == pCap->ConType )
+      {
+        pTW_ARRAY_FRAME pArray = (pTW_ARRAY_FRAME)_DSM_LockMemory(pCap->hContainer);
+        Count = pArray->NumItems;
+        Type  = pArray->ItemType;
+        pData = &pArray->ItemList[0];
+      }
+
+      if( TWON_ENUMERATION == pCap->ConType )
+      {
+        pTW_ENUMERATION_FRAME pEnumeration = (pTW_ENUMERATION_FRAME)_DSM_LockMemory(pCap->hContainer);
+        Count = pEnumeration->NumItems;
+        Type  = pEnumeration->ItemType;
+        pData = &pEnumeration->ItemList[0];
+      }
+      
+      if(item < Count && Type == TWTY_FRAME)
+      {
+            val = pData[item];
+            bret = true;
       }
       _DSM_UnlockMemory(pCap->hContainer);
     }

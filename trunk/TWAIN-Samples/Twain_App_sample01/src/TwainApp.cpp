@@ -1914,7 +1914,7 @@ TW_INT16 TwainApp::GetLabel(TW_UINT16 _cap, string &sLable)
         case TWTY_STR128:
           printError(m_pDataSource, "Wrong STR type for MSG_GETLABEL");
         case TWTY_STR255:
-          getcurrent(&cap, sLable);
+          getCurrent(&cap, sLable);
           break;
 
         default:
@@ -1980,7 +1980,7 @@ TW_INT16 TwainApp::GetHelp(TW_UINT16 _cap, string &sHelp)
         case TWTY_STR255:
           printError(m_pDataSource, "Wrong STR type for MSG_GETHELP");
 //        case TWTY_STR4096:
-          getcurrent(&cap, sHelp);
+          getCurrent(&cap, sHelp);
           break;
 
         default:

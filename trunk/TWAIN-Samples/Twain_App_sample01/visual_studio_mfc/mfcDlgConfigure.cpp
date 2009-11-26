@@ -375,21 +375,21 @@ void Cmfc32DlgConfigure::PopulateCurentValues()
           {
             if(Cap.ConType == TWON_ARRAY)
             {
-              UINT nArrayCount = 100;
-              int Val[100];
-              GetArray(&Cap, Val, &nArrayCount);
+              TW_UINT32 uVal;
+              TW_UINT32 uCount = 0;
               sItemValue = "";
-              for(UINT i =0; i< nArrayCount; i++)
+              while( GetItem(&Cap, uCount, uVal) )
               {
                 if(sItemValue.length()!=0)
                    sItemValue += ", ";
-                sItemValue += convertCAP_Item_toString(Cap.Cap, (TW_UINT32)Val[i], type);
+                sItemValue += convertCAP_Item_toString(Cap.Cap, uVal, type);
+                uCount++;
               }
             }
             else
             {
               TW_UINT32 uVal;
-              getcurrent(&Cap, uVal);
+              getCurrent(&Cap, uVal);
               sItemValue = convertCAP_Item_toString(Cap.Cap, uVal, type);
             }
             break;
@@ -402,26 +402,45 @@ void Cmfc32DlgConfigure::PopulateCurentValues()
           {
             if(Cap.ConType == TWON_ARRAY)
             {
+              string sVal;
+              TW_UINT32 uCount = 0;
               sItemValue = "";
+              while( GetItem(&Cap, uCount, sVal) )
+              {
+                if(sItemValue.length()!=0)
+                   sItemValue += ", ";
+                sItemValue += sVal;
+                uCount++;
+              }
             }
             else
             {
-              getcurrent(&Cap, sItemValue);
+              getCurrent(&Cap, sItemValue);
             }
             break;
           }
 
           case TWTY_FIX32:
           {
+            TW_FIX32 fix32;
+            CString value;
+
             if(Cap.ConType == TWON_ARRAY)
             {
+              TW_UINT32 uCount = 0;
               sItemValue = "";
+              while( GetItem(&Cap, uCount, fix32) )
+              {
+                if(sItemValue.length()!=0)
+                   sItemValue += ", ";
+                value.Format("%d.%d", fix32.Whole, (int)((fix32.Frac/65536.0 + .0005)*1000) );
+                sItemValue = value;
+                uCount++;
+              }
             }
             else
             {
-              TW_FIX32 fix32;
-              getcurrent(&Cap, fix32);
-              CString value;
+              getCurrent(&Cap, fix32);
               value.Format("%d.%d", fix32.Whole, (int)((fix32.Frac/65536.0 + .0005)*1000) );
               sItemValue = value;
             }
@@ -430,15 +449,29 @@ void Cmfc32DlgConfigure::PopulateCurentValues()
 
           case TWTY_FRAME:
           {
+            TW_FRAME frame;
+            CString value;
+
             if(Cap.ConType == TWON_ARRAY)
             {
+              TW_UINT32 uCount = 0;
               sItemValue = "";
+              while( GetItem(&Cap, uCount, frame) )
+              {
+                if(sItemValue.length()!=0)
+                   sItemValue += ", ";
+                value.Format( "%d.%d  %d.%d  %d.%d  %d.%d", 
+                     frame.Left.Whole,   (int)((frame.Left.Frac/65536.0 + .0005)*1000),
+                     frame.Right.Whole,  (int)((frame.Right.Frac/65536.0 + .0005)*1000),
+                     frame.Top.Whole,    (int)((frame.Top.Frac/65536.0 + .0005)*1000),
+                     frame.Bottom.Whole, (int)((frame.Bottom.Frac/65536.0 + .0005)*1000) );
+                sItemValue = value;
+                uCount++;
+              }
             }
             else
             {
-              TW_FRAME frame;
-              getcurrent(&Cap, frame);
-              CString value;
+              getCurrent(&Cap, frame);
               value.Format( "%d.%d  %d.%d  %d.%d  %d.%d", 
                    frame.Left.Whole,   (int)((frame.Left.Frac/65536.0 + .0005)*1000),
                    frame.Right.Whole,  (int)((frame.Right.Frac/65536.0 + .0005)*1000),
@@ -567,7 +600,7 @@ void Cmfc32DlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
         case CAP_XFERCOUNT:
         {
           TW_UINT32 Val;
-          getcurrent(&Cap, Val);
+          getCurrent(&Cap, Val);
           Val = (TW_INT16)Val == -1? 1: -1;// flop
           g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, Val, TWTY_INT16);
           bChange = true;
@@ -672,7 +705,7 @@ int Cmfc32DlgConfigure::GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg
                 string sVal;
                 for(TW_UINT32 x=0; x<pCapPT->NumItems; ++x)
                 {
-                  getcurrent(pCap, sVal);
+                  getCurrent(pCap, sVal);
                   str = sVal.c_str();
                   pDlg->m_itemString.Add(str);
                   pDlg->m_itemData.Add(x);
@@ -819,7 +852,7 @@ void Cmfc32DlgConfigure::StartScan()
   Cap.hContainer = 0;
 
   if( TWCC_SUCCESS!=g_pTWAINApp->get_CAP(Cap, MSG_GETCURRENT)
-    ||!getcurrent(&Cap, mech) )
+    ||!getCurrent(&Cap, mech) )
   {
       TRACE("Error: could not get the transfer mechanism");
       return;
@@ -844,7 +877,7 @@ void Cmfc32DlgConfigure::StartScan()
 
       if(TWCC_SUCCESS==g_pTWAINApp->get_CAP(Cap, MSG_GETCURRENT))
       {
-        getcurrent(&Cap, fileformat);
+        getCurrent(&Cap, fileformat);
       }
 
       if(Cap.hContainer)
@@ -894,4 +927,5 @@ void Cmfc32DlgConfigure::UpdateExtImageInfo()
   m_sStc_ExtImageInfo = g_pTWAINApp->getEXIMAGEINFO().c_str();
   UpdateData(false);
 }
+
 
