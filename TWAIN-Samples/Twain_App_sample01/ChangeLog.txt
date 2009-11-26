@@ -1,3 +1,11 @@
+2009-11-25 JFL Peripheral Solutions jimw@jflinc.com
+
+
+    * Fix FloatToFIX32 rounding error for negitive values
+    * change from GetArray to getItem for Array and Enumeration caps
+    * update get_message to work with MSG_GET, MSG_GETCURRENT, MSG_GETDEFAULT Use 
+        CListCtrl for listing capabilities
+
 2009-11-05 JFL Peripheral Solutions jimw@jflinc.com
 
     * Update to TWAIN version 2.1 of the specificaion

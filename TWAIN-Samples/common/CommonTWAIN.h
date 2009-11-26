@@ -349,43 +349,74 @@ typedef struct tagBITMAPFILEHEADER
 * Get the current value from a Capability as a TW_UINT32.
 * @param[in] pCap a pointer to the capability to retrieve the current value
 * @param[out] val the value retrieved from the capability
-* @return ture if successful
+* @return true if successful
 */
-bool getcurrent(TW_CAPABILITY *pCap, TW_UINT32& val);
+bool getCurrent(TW_CAPABILITY *pCap, TW_UINT32& val);
 
 /**
 * Get the current value from a Capability as a string for capabilities of 
 * types TWTY_STR32, TWTY_STR64, TWTY_STR128, and TWTY_STR256
 * @param[in] pCap a pointer to the capability to retrieve the current value
 * @param[out] val the value retrieved from the capability
-* @return ture if successful
+* @return true if successful
 */
-bool getcurrent(TW_CAPABILITY *pCap, string& val);
+bool getCurrent(TW_CAPABILITY *pCap, string& val);
 
 /**
 * Get the current value from a Capability as a TW_FIX32.
 * @param[in] pCap a pointer to the capability to retrieve the current value
 * @param[out] val the value retrieved from the capability
-* @return ture if successful
+* @return true if successful
 */
-bool getcurrent(TW_CAPABILITY *pCap, TW_FIX32& val);
+bool getCurrent(TW_CAPABILITY *pCap, TW_FIX32& val);
 
 /**
 * Get the current value from a Capability as a TW_FRAME.
 * @param[in] pCap a pointer to the capability to retrieve the current value
 * @param[out] val the value retrieved from the capability
-* @return ture if successful
+* @return true if successful
 */
-bool getcurrent(TW_CAPABILITY *pCap, TW_FRAME& val);
+bool getCurrent(TW_CAPABILITY *pCap, TW_FRAME& val);
 
 /**
-* Get an array of values from a Capability as a in.
-* @param[in] pCap a pointer to the capability to retrieve the current value
-* @param[out] pVal an preallocated array to copy the values to
-* @pCount[in|out] pCount the size of pVal, on return the actual number of items copied.
-* @return ture if successful
+* Get an item value from an array of values from a TW_ENUMERATION or TW_ARRAY 
+* type Capability as a TW_UINT32.
+* @param[in] pCap a pointer to the capability to retrieve the value
+* @pCount[in] item the 0 based location in the array to retrieve the item.
+* @param[out] val the value retrieved from the capability
+* @return true if successful. false if no value returned
 */
-bool GetArray(TW_CAPABILITY *pCap, int *pVal, UINT *pCount);
+bool GetItem(TW_CAPABILITY *pCap, TW_UINT32 item, TW_UINT32& val);
+
+/**
+* Get an item value from an array of values from a TW_ENUMERATION or TW_ARRAY
+* containing types TWTY_STR32, TWTY_STR64, TWTY_STR128, and TWTY_STR256
+* @param[in] pCap a pointer to the capability to retrieve the value
+* @pCount[in] item the 0 based location in the array to retrieve the item.
+* @param[out] val the value retrieved from the capability
+* @return true if successful. false if no value returned
+*/
+bool GetItem(TW_CAPABILITY *pCap, TW_UINT32 item, string& val);
+
+/**
+* Get an item value from an array of values from a TW_ENUMERATION or TW_ARRAY
+* containing type TWTY_FIX32
+* @param[in] pCap a pointer to the capability to retrieve the value
+* @pCount[in] item the 0 based location in the array to retrieve the item.
+* @param[out] val the value retrieved from the capability
+* @return true if successful. false if no value returned
+*/
+bool GetItem(TW_CAPABILITY *pCap, TW_UINT32 item, TW_FIX32& val);
+
+/**
+* Get an item value from an array of values from a TW_ENUMERATION or TW_ARRAY
+* containing type TWTY_FRAME
+* @param[in] pCap a pointer to the capability to retrieve the value
+* @pCount[in] item the 0 based location in the array to retrieve the item.
+* @param[out] val the value retrieved from the capability
+* @return true if successful. false if no value returned
+*/
+bool GetItem(TW_CAPABILITY *pCap, TW_UINT32 item, TW_FRAME& val);
 
 /**
 * Get the size of TWAIN type
