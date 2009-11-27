@@ -1,3 +1,42 @@
-December 23, 2008 JFL Peripheral Solutions jimw@jflinc.com 
+November 27, 2009 JFL Peripheral Solutions jimw@jflinc.com 
 ===============================
+
+BASE Class - TwainApp
 - extend capability negotiations
+  -  Add set_CapabilityArray for TW_FIX32
+  -  Add set_CapabilityArray for TW_STRxxx
+  -  Add set_CapabilityArray for TW_FRAME
+  -  Add set_CapabilityRange for TW_INTxxx
+  -  Add set_CapabilityRange for TW_FIX32
+
+- Better handling of errro, warning, and status messages with condition codes
+  -  printError used throughout base class retrieves the last condition code and discards it
+  -  make printError virtual so derived classes can display the message plus have access to the condition code.
+
+- Support Compression memory transfer
+
+- Support Image Memory File Transfer DAT_IMAGEMEMFILEXFER
+
+- Support DAT_IMAGELAYOUT
+
+- Support DAT_DEVICEEVENT
+
+
+MFC Sample Application
+- Impliment the control for setting the desination to save files to.
+
+- Check CAP_ENABLEDSUIONLY before enabling the button for Showing the DS with UI Only.
+
+- Add dialogs to set Current when MSG_GET returns OneValue, Range, and Arrays
+
+- Add dialogs and methods to constrain DS values with Enumerations and Ranges.
+
+- Localize all stings to Resource
+
+- Make dialog resizable
+
+- Add controls for setting and display info for DAT_IMAGELAYOUT
+
+- Add controls for setting and displaying DAT_DEVICEEVENTs
+
+- Add control for displaying the last or curent status.
