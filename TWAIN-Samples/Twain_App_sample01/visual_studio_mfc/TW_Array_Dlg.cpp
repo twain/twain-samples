@@ -85,6 +85,10 @@ void CTW_Array_Dlg::DoDataExchange(CDataExchange* pDX)
         if(index != LB_ERR)
         {
           pList->SetItemData(index, m_itemData.GetAt(i));
+          if(m_SelectionData == i)
+          {
+            pList->SetCurSel(index);
+          }
         }
       }
     }

@@ -48,6 +48,13 @@
 
 class CTW_Array_Dlg;
 
+struct CapSetting
+{
+  TW_UINT16   CapID;      // The ID of the Capability
+  TW_UINT8    bChanged;   // The current value of the Capability
+  TW_UINT8    bReadOnly;  // The Cap is only read only
+};
+
 /**
 * Main dialalog window for applicaiton
 */
@@ -66,14 +73,15 @@ public:
   protected:
   virtual void DoDataExchange(CDataExchange* pDX);// DDX/DDV support
   void ListSupportedCaps();
-  void PopulateCurentValues();
+  void PopulateCurentValues(bool bCheckForChange = true);
   int  GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg);
   void StartScan();
 
 // Implementation
 protected:
-  HICON     m_hIcon;
-  int       m_nIndex;
+  HICON       m_hIcon;
+  int         m_nIndex;
+  CapSetting *m_pCapSettings;
 
   // Generated message map functions
   virtual BOOL OnInitDialog();
@@ -85,10 +93,13 @@ protected:
 public:
   afx_msg void OnDestroy();
   afx_msg void OnBnClickedScan();
+  afx_msg void OnBnClickedUIOnly();
   afx_msg void OnBnClickedCancel();
   afx_msg void OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnNMCustomdrawCaps(NMHDR *pNMHDR, LRESULT *pResult);
   void UpdateImageInfo();
   void UpdateExtImageInfo();
+  void MarkUnchanged();
 
   CString     m_sStc_DS;
   CString     m_sStc_ImageInfo;
