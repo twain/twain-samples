@@ -198,6 +198,14 @@ public:
   virtual bool enableDS(TW_HANDLE hWnd, BOOL bShowUI);
 
 /**
+* Show the DS GUI so the user can modify current settings.
+* successful moves app to state 5.
+* @param[in] hWnd the handle to the window
+* @return true if successfully enabled DS.
+*/
+  virtual bool enableDSUIOnly(TW_HANDLE hWnd);
+
+/**
 * Tries to disable the sources UI.  If successful moves app to state 4
 */
   virtual void disableDS();

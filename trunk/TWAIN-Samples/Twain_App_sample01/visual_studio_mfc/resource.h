@@ -30,6 +30,7 @@
 #define IDB_SCAN                        1016
 #define IDC_STC_DS                      1017
 #define IDC_LIST1                       1018
+#define IDB_UIONLY                      1018
 #define IDC_IMAGEINFO                   1019
 #define IDC_EXTIMAGEINFO                1020
 #define IDC_SHOWUI                      1021

@@ -756,6 +756,42 @@ bool TwainApp::enableDS(TW_HANDLE hWnd, BOOL bShowUI)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+bool TwainApp::enableDSUIOnly(TW_HANDLE hWnd)
+{
+  bool bret = true;
+
+  if(m_DSMState < 4)
+  {
+    PrintCMDMessage("You need to open the data source first.\n");
+    return false;
+  }
+
+  m_ui.ShowUI  = TRUE;
+  m_ui.ModalUI = TRUE;
+  m_ui.hParent = hWnd;
+  m_DSMState = 5;
+
+  TW_UINT16 twrc = DSM_Entry(DG_CONTROL, DAT_USERINTERFACE, MSG_ENABLEDSUIONLY, (TW_MEMREF)&(m_ui));
+
+  if( TWRC_SUCCESS != twrc &&
+      TWRC_CHECKSTATUS != twrc )
+  {
+    m_DSMState = 4;
+    printError(m_pDataSource, "Cannot enable source");
+    bret = false;
+  }
+
+  // Usually at this point the application sits here and waits for the
+  // scan to start. We are notified that we can start a scan through
+  // the DSM's callback mechanism. The callback was registered when the DSM
+  // was opened.
+  // If callbacks are not being used, then the DSM will be polled to see
+  // when the DS is ready to start scanning.
+
+  return bret;
+}
+
+//////////////////////////////////////////////////////////////////////////////
 void TwainApp::disableDS()
 {
   if(m_DSMState < 5)
