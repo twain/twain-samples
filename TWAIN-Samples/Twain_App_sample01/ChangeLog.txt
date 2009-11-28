@@ -1,3 +1,16 @@
+2009-11-27 JFL Peripheral Solutions jimw@jflinc.com
+
+    * Correct the name of the mcf classes to remove 32, from Cmfc32DlgConfigure
+        to CmfcDlgConfigure
+    * Identify capability as changed if number of items available change even
+        if current is the same.
+    * Highlight the column of the data that changed
+    * Correct the name of the class to display Enumerations from CTW_Array_Dlg
+        to CTW_Enum_Dlg
+    * Add MessageBoxes to identify Message Set functionality that is missing
+    * Move functionality to populate the items to display into the
+        CTW_Enum_Dlg class
+    
 2009-11-25 JFL Peripheral Solutions jimw@jflinc.com
 
     * Use color on CListCtrl to show readonly and changed capabilities

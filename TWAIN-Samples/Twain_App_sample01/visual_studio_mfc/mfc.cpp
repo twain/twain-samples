@@ -95,13 +95,13 @@ BOOL Cmfc32App::InitInstance()
   // custom Select Source Dialog.
   if( (GetKeyState(VK_LSHIFT)&0xff80) || (GetKeyState(VK_RSHIFT)&0xff80) )
   {
-    Cmfc32DlgConfigure dlg(NULL, -1);
+    CmfcDlgConfigure dlg(NULL, -1);
     m_pMainWnd = &dlg;
     nResponse = dlg.DoModal();
   }
   else
   {
-    Cmfc32DlgMain dlg;
+    CmfcDlgMain dlg;
     m_pMainWnd = &dlg;
     nResponse = dlg.DoModal();
   }

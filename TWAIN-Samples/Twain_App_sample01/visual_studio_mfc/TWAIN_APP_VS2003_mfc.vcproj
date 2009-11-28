@@ -199,7 +199,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\TW_Array_Dlg.cpp">
+				RelativePath=".\TW_Enum_Dlg.cpp">
 			</File>
 			<File
 				RelativePath="..\src\TwainApp.cpp">
@@ -252,7 +252,7 @@
 				RelativePath=".\stdafx.h">
 			</File>
 			<File
-				RelativePath=".\TW_Array_Dlg.h">
+				RelativePath=".\TW_Enum_Dlg.h">
 			</File>
 			<File
 				RelativePath="..\src\TwainApp.h">

@@ -45,7 +45,7 @@
 #include "..\src\twainapp.h"
 #include "..\src\dsminterface.h"
 #include "TwainString.h"
-#include ".\TW_Array_Dlg.h"
+#include ".\TW_Enum_Dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -84,19 +84,19 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// Cmfc32DlgMain dialog
+// CmfcDlgMain dialog
 
 
 
-Cmfc32DlgMain::Cmfc32DlgMain(CWnd* pParent /*=NULL*/)
-  : CDialog(Cmfc32DlgMain::IDD, pParent)
+CmfcDlgMain::CmfcDlgMain(CWnd* pParent /*=NULL*/)
+  : CDialog(CmfcDlgMain::IDD, pParent)
   , _pTWAINApp(NULL)
   , m_sStc_DS(_T(""))
 {
   m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void Cmfc32DlgMain::DoDataExchange(CDataExchange* pDX)
+void CmfcDlgMain::DoDataExchange(CDataExchange* pDX)
 {
   CDialog::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_STC_DS, m_sStc_DS);
@@ -105,7 +105,7 @@ void Cmfc32DlgMain::DoDataExchange(CDataExchange* pDX)
   DDX_Control(pDX, IDB_DEFAULT_DS, m_btn_Default_DS);
 }
 
-BEGIN_MESSAGE_MAP(Cmfc32DlgMain, CDialog)
+BEGIN_MESSAGE_MAP(CmfcDlgMain, CDialog)
   ON_WM_SYSCOMMAND()
   ON_WM_PAINT()
   ON_WM_QUERYDRAGICON()
@@ -118,9 +118,9 @@ BEGIN_MESSAGE_MAP(Cmfc32DlgMain, CDialog)
 END_MESSAGE_MAP()
 
 
-// Cmfc32DlgMain message handlers
+// CmfcDlgMain message handlers
 
-BOOL Cmfc32DlgMain::OnInitDialog()
+BOOL CmfcDlgMain::OnInitDialog()
 {
   CDialog::OnInitDialog();
 
@@ -162,7 +162,7 @@ BOOL Cmfc32DlgMain::OnInitDialog()
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
-void Cmfc32DlgMain::OnSysCommand(UINT nID, LPARAM lParam)
+void CmfcDlgMain::OnSysCommand(UINT nID, LPARAM lParam)
 {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX)
   {
@@ -179,7 +179,7 @@ void Cmfc32DlgMain::OnSysCommand(UINT nID, LPARAM lParam)
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
 
-void Cmfc32DlgMain::OnPaint() 
+void CmfcDlgMain::OnPaint() 
 {
   if (IsIconic())
   {
@@ -206,12 +206,12 @@ void Cmfc32DlgMain::OnPaint()
 
 // The system calls this function to obtain the cursor to display while the user drags
 //  the minimized window.
-HCURSOR Cmfc32DlgMain::OnQueryDragIcon()
+HCURSOR CmfcDlgMain::OnQueryDragIcon()
 {
   return static_cast<HCURSOR>(m_hIcon);
 }
 
-void Cmfc32DlgMain::OnDestroy()
+void CmfcDlgMain::OnDestroy()
 {
   CDialog::OnDestroy();
   if(_pTWAINApp)
@@ -223,7 +223,7 @@ void Cmfc32DlgMain::OnDestroy()
   return;
 }
 
-void Cmfc32DlgMain::PopulateDSList()
+void CmfcDlgMain::PopulateDSList()
 {
   _pTWAINApp->connectDSM();
   if(3 == _pTWAINApp->m_DSMState)
@@ -272,7 +272,7 @@ void Cmfc32DlgMain::PopulateDSList()
   }
 }
 
-void Cmfc32DlgMain::OnLbnSelchangeDS()
+void CmfcDlgMain::OnLbnSelchangeDS()
 {
   int           sel   = m_lst_DS.GetCurSel();
   TW_UINT32     index = (TW_UINT32)m_lst_DS.GetItemData(sel);
@@ -298,22 +298,22 @@ void Cmfc32DlgMain::OnLbnSelchangeDS()
   }
 }
 
-void Cmfc32DlgMain::OnLbnDblclkDs()
+void CmfcDlgMain::OnLbnDblclkDs()
 {
   OnBnClickedConnectDs();
 }
 
-void Cmfc32DlgMain::OnBnClickedConnectDs()
+void CmfcDlgMain::OnBnClickedConnectDs()
 {
   int sel = m_lst_DS.GetCurSel();
   TW_UINT32 ds_ID = (TW_UINT32)m_lst_DS.GetItemData(sel);
   ASSERT(ds_ID > 0 );
 
-  Cmfc32DlgConfigure dlg(this, ds_ID);
+  CmfcDlgConfigure dlg(this, ds_ID);
   INT_PTR nResponse = dlg.DoModal();
 }
 
-void Cmfc32DlgMain::OnBnClickedDefaultDs()
+void CmfcDlgMain::OnBnClickedDefaultDs()
 {
   int sel = m_lst_DS.GetCurSel();
 

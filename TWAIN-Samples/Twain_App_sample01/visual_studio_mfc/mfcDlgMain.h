@@ -51,14 +51,14 @@ class TwainApp;
 /**
 * Main dialalog window for applicaiton
 */
-class Cmfc32DlgMain : public CDialog
+class CmfcDlgMain : public CDialog
 {
 // Construction
 public:
 /**
 * standard constructor
 */
-  Cmfc32DlgMain(CWnd* pParent = NULL);
+  CmfcDlgMain(CWnd* pParent = NULL);
 
 // Dialog Data
   enum { IDD = IDD_MFC32_APP };

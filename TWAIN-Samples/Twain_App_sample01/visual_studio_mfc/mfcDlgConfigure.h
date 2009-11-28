@@ -46,26 +46,26 @@
 #include "..\src\twainapp.h"
 #include "afxcmn.h"
 
-class CTW_Array_Dlg;
+class CTW_Enum_Dlg;
 
 struct CapSetting
 {
   TW_UINT16   CapID;      // The ID of the Capability
-  TW_UINT8    bChanged;   // The current value of the Capability
+  TW_UINT8    byChanged;  // Each bit is used to indicate if that colume has changed.
   TW_UINT8    bReadOnly;  // The Cap is only read only
 };
 
 /**
 * Main dialalog window for applicaiton
 */
-class Cmfc32DlgConfigure : public CDialog
+class CmfcDlgConfigure : public CDialog
 {
 // Construction
 public:
 /**
 * standard constructor
 */
-  Cmfc32DlgConfigure(CWnd* pParent, int nIndex);
+  CmfcDlgConfigure(CWnd* pParent, int nIndex);
 
 // Dialog Data
   enum { IDD = IDD_MFC32_CONFIGURE };
@@ -74,7 +74,6 @@ public:
   virtual void DoDataExchange(CDataExchange* pDX);// DDX/DDV support
   void ListSupportedCaps();
   void PopulateCurentValues(bool bCheckForChange = true);
-  int  GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg);
   void StartScan();
 
 // Implementation
