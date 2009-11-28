@@ -30,7 +30,7 @@
 ***************************************************************************/
 
 /**
-* @file TW_Array_Dlg.h
+* @file TW_Enum_Dlg.h
 * 
 * @author TWAIN Working Group
 * @date October 2007
@@ -44,21 +44,22 @@
 
 #include "afxcoll.h"
 //#include "afxwin.h"
+#include "CommonTWAIN.h"
 
 
 /**
-* CTW_Array_Dlg dialog
+* CTW_Enum_Dlg dialog
 */
-class CTW_Array_Dlg : public CDialog
+class CTW_Enum_Dlg : public CDialog
 {
-  DECLARE_DYNAMIC(CTW_Array_Dlg)
+  DECLARE_DYNAMIC(CTW_Enum_Dlg)
 
 public:
-  CTW_Array_Dlg(CWnd* pParent = NULL);   // standard constructor
-  virtual ~CTW_Array_Dlg();
+  CTW_Enum_Dlg(CWnd* pParent = NULL);   // standard constructor
+  virtual ~CTW_Enum_Dlg();
 
 // Dialog Data
-  enum { IDD = IDD_TW_ARRAY };
+  enum { IDD = IDD_TW_ENUMERATION };
 
 protected:
   virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -66,11 +67,9 @@ protected:
   DECLARE_MESSAGE_MAP()
 public:
 
-  CString       m_Str_Name;           /**< The name to use on dialog title **/
-  CString       m_SelectionString;    /**< The string of item selected **/
-  DWORD         m_SelectionData;      /**< The data of item selected **/
-  CStringArray  m_itemString;
-  CDWordArray   m_itemData;
+  CString         m_SelectionString;    /**< The string of item selected **/
+  DWORD           m_SelectionData;      /**< The data of item selected **/
+  pTW_CAPABILITY  m_pCap;               /**< The Enumeration Capability to Show **/
 
   virtual BOOL OnInitDialog();
 

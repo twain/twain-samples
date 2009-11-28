@@ -8,7 +8,7 @@
 #define IDD_MFC32_DIALOG                102
 #define IDD_MFC32_APP                   102
 #define IDR_MAINFRAME                   128
-#define IDD_TW_ARRAY                    129
+#define IDD_TW_ENUMERATION              129
 #define IDD_MFC32_CONFIGURE             130
 #define IDB_CONNECT_DSM                 1000
 #define IDC_STATUS                      1001

@@ -37,13 +37,11 @@
 */
 
 #include "stdafx.h"
+#include "..\src\DSMInterface.h"
+#include "TwainString.h"
 #include "mfc.h"
 #include "mfcDlgConfigure.h"
-
-#include "..\src\dsminterface.h"
-#include "TwainString.h"
-#include ".\TW_Array_Dlg.h"
-#include ".\mfcdlgconfigure.h"
+#include "TW_Enum_Dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -102,12 +100,12 @@ TW_UINT16 FAR PASCAL DSMCallback(pTW_IDENTITY _pOrigin,
   return twrc;
 }
 
-// Cmfc32DlgConfigureConfigure dialog
+// CmfcDlgConfigureConfigure dialog
 
 
 
-Cmfc32DlgConfigure::Cmfc32DlgConfigure(CWnd* pParent, int nIndex)
-  : CDialog(Cmfc32DlgConfigure::IDD, pParent)
+CmfcDlgConfigure::CmfcDlgConfigure(CWnd* pParent, int nIndex)
+  : CDialog(CmfcDlgConfigure::IDD, pParent)
   ,m_sStc_DS(_T(""))
   ,m_sStc_ImageInfo(_T(""))
   ,m_sStc_ExtImageInfo(_T(""))
@@ -118,7 +116,7 @@ Cmfc32DlgConfigure::Cmfc32DlgConfigure(CWnd* pParent, int nIndex)
   m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void Cmfc32DlgConfigure::DoDataExchange(CDataExchange* pDX)
+void CmfcDlgConfigure::DoDataExchange(CDataExchange* pDX)
 {
   CDialog::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_STC_DS, m_sStc_DS);
@@ -128,7 +126,7 @@ void Cmfc32DlgConfigure::DoDataExchange(CDataExchange* pDX)
   DDX_Control(pDX, IDLC_CAPS, m_ListCtrl_Caps);
 }
 
-BEGIN_MESSAGE_MAP(Cmfc32DlgConfigure, CDialog)
+BEGIN_MESSAGE_MAP(CmfcDlgConfigure, CDialog)
   ON_WM_SYSCOMMAND()
   ON_WM_PAINT()
   ON_WM_QUERYDRAGICON()
@@ -136,15 +134,15 @@ BEGIN_MESSAGE_MAP(Cmfc32DlgConfigure, CDialog)
   ON_WM_DESTROY()
   ON_BN_CLICKED(IDB_SCAN, OnBnClickedScan)
   ON_BN_CLICKED(IDCANCEL, OnBnClickedCancel)
-  ON_NOTIFY(NM_DBLCLK, IDLC_CAPS, &Cmfc32DlgConfigure::OnNMDblclkCaps)
-  ON_NOTIFY(NM_CUSTOMDRAW, IDLC_CAPS, &Cmfc32DlgConfigure::OnNMCustomdrawCaps)
-  ON_BN_CLICKED(IDB_UIONLY, &Cmfc32DlgConfigure::OnBnClickedUIOnly)
+  ON_NOTIFY(NM_DBLCLK, IDLC_CAPS, &CmfcDlgConfigure::OnNMDblclkCaps)
+  ON_NOTIFY(NM_CUSTOMDRAW, IDLC_CAPS, &CmfcDlgConfigure::OnNMCustomdrawCaps)
+  ON_BN_CLICKED(IDB_UIONLY, &CmfcDlgConfigure::OnBnClickedUIOnly)
 END_MESSAGE_MAP()
 
 
-// Cmfc32DlgConfigure message handlers
+// CmfcDlgConfigure message handlers
 
-BOOL Cmfc32DlgConfigure::OnInitDialog()
+BOOL CmfcDlgConfigure::OnInitDialog()
 {
   CDialog::OnInitDialog();
 
@@ -224,7 +222,7 @@ BOOL Cmfc32DlgConfigure::OnInitDialog()
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
-void Cmfc32DlgConfigure::OnSysCommand(UINT nID, LPARAM lParam)
+void CmfcDlgConfigure::OnSysCommand(UINT nID, LPARAM lParam)
 {
   CDialog::OnSysCommand(nID, lParam);
 }
@@ -233,19 +231,19 @@ void Cmfc32DlgConfigure::OnSysCommand(UINT nID, LPARAM lParam)
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
 
-void Cmfc32DlgConfigure::OnPaint() 
+void CmfcDlgConfigure::OnPaint() 
 {
   CDialog::OnPaint();
 }
 
 // The system calls this function to obtain the cursor to display while the user drags
 //  the minimized window.
-HCURSOR Cmfc32DlgConfigure::OnQueryDragIcon()
+HCURSOR CmfcDlgConfigure::OnQueryDragIcon()
 {
   return static_cast<HCURSOR>(m_hIcon);
 }
 
-void Cmfc32DlgConfigure::OnDestroy()
+void CmfcDlgConfigure::OnDestroy()
 {
   if(g_pTWAINApp)
   {
@@ -264,7 +262,7 @@ void Cmfc32DlgConfigure::OnDestroy()
   return;
 }
 
-void Cmfc32DlgConfigure::ListSupportedCaps()
+void CmfcDlgConfigure::ListSupportedCaps()
 {
   TW_UINT32         i;
   TW_UINT32         nCount          = 0;
@@ -321,7 +319,7 @@ void Cmfc32DlgConfigure::ListSupportedCaps()
       }
 
       m_pCapSettings[i].CapID     = pCapSupCaps->ItemList[i];
-      m_pCapSettings[i].bChanged  = FALSE;
+      m_pCapSettings[i].byChanged  = 0;
       m_pCapSettings[i].bReadOnly = FALSE;
       Item.lParam = (LPARAM)&m_pCapSettings[i];
       Item.iItem  = i;
@@ -341,7 +339,7 @@ cleanup:
   }
 }
 
-void Cmfc32DlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
+void CmfcDlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
 {
   TW_UINT32         nItem;
   TW_UINT32         nCount    = m_ListCtrl_Caps.GetItemCount();
@@ -351,7 +349,7 @@ void Cmfc32DlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
   TW_CAPABILITY     Cap         = {0};
   TW_UINT32         QS          = 0;
   string            sItemValue;
-  BOOL              bChanged;
+  BOOL              byChanged;
   BOOL              bReadOnly;
   CWaitCursor       wait;
 
@@ -362,7 +360,7 @@ void Cmfc32DlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
     Item.iSubItem   = 0;
     Item.mask       = LVIF_PARAM;
 
-    bChanged  = FALSE;
+    byChanged = 0;
     bReadOnly = FALSE;
 
     m_ListCtrl_Caps.GetItem(&Item);
@@ -529,7 +527,7 @@ void Cmfc32DlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
       m_ListCtrl_Caps.GetItem(&Item);
       if(0 != strcmp(sItemValue.c_str(), oldString))
       {
-        bChanged = true;
+        byChanged |= 1<<Item.iSubItem;
       }
     }
 
@@ -556,6 +554,20 @@ void Cmfc32DlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
       break;
     }
 
+    // Get the current test to see if it has changed.
+    if(bCheckForChange)
+    {
+      char oldString[260];
+      Item.cchTextMax = 260;
+      Item.iSubItem   = 2;
+      Item.pszText = oldString;
+      m_ListCtrl_Caps.GetItem(&Item);
+      if(0 != strcmp(sItemValue.c_str(), oldString))
+      {
+        byChanged |= 1<<Item.iSubItem;
+      }
+    }
+
     Item.iSubItem   = 2;
     Item.pszText    = (char *)sItemValue.c_str();
     m_ListCtrl_Caps.SetItem(&Item);
@@ -570,9 +582,24 @@ void Cmfc32DlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
         nNumItems = pCap->NumItems;
         _DSM_UnlockMemory(Cap.hContainer);
       }
+
       CString Value;
       Value.Format("%d", nNumItems);
       sItemValue = Value;
+
+      // Get the current test to see if it has changed.
+      if(bCheckForChange)
+      {
+        char oldString[260];
+        Item.cchTextMax = 260;
+        Item.iSubItem   = 3;
+        Item.pszText = oldString;
+        m_ListCtrl_Caps.GetItem(&Item);
+        if(0 != strcmp(sItemValue.c_str(), oldString))
+        {
+          byChanged |= 1<<Item.iSubItem;
+        }
+      }
 
       Item.iSubItem   = 3;
       Item.pszText    = (char *)sItemValue.c_str();
@@ -599,6 +626,20 @@ void Cmfc32DlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
       sItemValue += "Reset";
     }
 
+    // Get the current test to see if it has changed.
+    if(bCheckForChange)
+    {
+      char oldString[260];
+      Item.cchTextMax = 260;
+      Item.iSubItem   = 4;
+      Item.pszText = oldString;
+      m_ListCtrl_Caps.GetItem(&Item);
+      if(0 != strcmp(sItemValue.c_str(), oldString))
+      {
+        byChanged |= 1<<Item.iSubItem;
+      }
+    }
+
     Item.iSubItem   = 4;
     Item.pszText    = (char *)sItemValue.c_str();
     m_ListCtrl_Caps.SetItem(&Item);
@@ -609,32 +650,33 @@ void Cmfc32DlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
       bReadOnly = TRUE;
     }
 
-    pCapSetting->bChanged  = bChanged;
+    pCapSetting->byChanged = byChanged;
     pCapSetting->bReadOnly = bReadOnly;
   }
   m_ListCtrl_Caps.Invalidate(FALSE);
 }
 
-void Cmfc32DlgConfigure::MarkUnchanged()
+void CmfcDlgConfigure::MarkUnchanged()
 {
   TW_UINT32 nItem;
   TW_UINT32 nCount = m_ListCtrl_Caps.GetItemCount();
   for(nItem=0; nItem<nCount; nItem++)
   {
-    m_pCapSettings[nItem].bChanged  = FALSE;
+    m_pCapSettings[nItem].byChanged  = 0;
   }
   m_ListCtrl_Caps.Invalidate(FALSE);
 }
 
-void Cmfc32DlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
+// This method sets the new current value.
+// TODO set constraints using Enumerations and Ranges
+void CmfcDlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
 {
   LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 
   TW_UINT16       CAPLstData  = 0;
   bool            bChange     = false;
-  CTW_Array_Dlg   Dlg(this);
   TW_CAPABILITY   Cap;
-  LV_ITEM           Item;
+  LV_ITEM         Item;
 
   memset(&Item, 0, sizeof(Item));
   Item.iItem      = pNMItemActivate->iItem;
@@ -647,67 +689,99 @@ void Cmfc32DlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
   Cap.Cap         = pCapSettings->CapID;
   Cap.hContainer  = 0;
 
+  // get possible values to populate dialog box with
   if(TWCC_SUCCESS==g_pTWAINApp->get_CAP(Cap, MSG_GET))
   {
-    if( Cap.ConType == TWON_ENUMERATION 
-       || Cap.ConType == TWON_ONEVALUE )
+    // Special Case first
+    if(CAP_XFERCOUNT == Cap.Cap)
     {
+      TW_UINT32 Val;
+      getCurrent(&Cap, Val);
+      Val = (TW_INT16)Val == -1? 1: -1;// flop
+      g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, Val, TWTY_INT16);
+      bChange = true;
+    }
+    else if( Cap.ConType == TWON_ENUMERATION )
+    {
+      CTW_Enum_Dlg    Dlg(this);
+      Dlg.m_pCap = &Cap;
 
-      switch(Cap.Cap)
+      if( IDOK == Dlg.DoModal() )
       {
-        case CAP_XFERCOUNT:
+        TW_UINT16 type = TWTY_UINT16;
+        TW_INT16  twrc = TWRC_FAILURE;
+
+        pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(Cap.hContainer);
+        if(pCap)
         {
-          TW_UINT32 Val;
-          getCurrent(&Cap, Val);
-          Val = (TW_INT16)Val == -1? 1: -1;// flop
-          g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, Val, TWTY_INT16);
-          bChange = true;
-          break;
+          type = pCap->ItemType;
+          _DSM_UnlockMemory(Cap.hContainer);
+
+          switch(type)
+          {
+            case TWTY_INT8:
+            case TWTY_INT16:
+            case TWTY_INT32:
+            case TWTY_UINT8:
+            case TWTY_UINT16:
+            case TWTY_UINT32:
+            case TWTY_BOOL:
+            {
+              twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, (TW_UINT16)Dlg.m_SelectionData, type);
+              break;
+            }
+
+            case TWTY_FIX32:
+            {
+              TW_FIX32 TWfix32 = FloatToFIX32( (float)(Dlg.m_SelectionData/100.0));
+              twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, &TWfix32);
+              break;
+            }
+
+            default:
+              MessageBox("Setting this data type is not implemented.  Patches welcome.", "Not Implemented");
+              break;
+          }
+
+          if(twrc == TWRC_SUCCESS || twrc == TWRC_CHECKSTATUS)
+          {
+            bChange = true;
+          }
         }
+      }
+    }
+    else if(Cap.ConType == TWON_ONEVALUE)
+    {
+      pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(Cap.hContainer);
+      switch(pCapPT->ItemType)
+      {
+        case TWTY_BOOL:
+        {
+          // Not displaying a dialog just try to set the opposit value
+          TW_INT16  twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, (TW_UINT16)pCapPT->Item? FALSE:TRUE, TWTY_BOOL);
+          if(twrc == TWRC_SUCCESS || twrc == TWRC_CHECKSTATUS)
+          {
+            bChange = true;
+          }
+        }
+        break;
 
         default:
-        {
-          if( IDOK == GetUpdateValue(&Cap, &Dlg) )
+          //TODO create a dialog to set OneValue
+          if(!pCapSettings->bReadOnly)
           {
-            TW_UINT16 type = TWTY_UINT16;
-            TW_INT16  twrc = TWRC_FAILURE;
-
-            pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(Cap.hContainer);
-            if(pCap)
-            {
-              type = pCap->ItemType;
-              _DSM_UnlockMemory(Cap.hContainer);
-
-              switch(type)
-              {
-                case TWTY_INT8:
-                case TWTY_INT16:
-                case TWTY_INT32:
-                case TWTY_UINT8:
-                case TWTY_UINT16:
-                case TWTY_UINT32:
-                case TWTY_BOOL:
-                {
-                  twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, (TW_UINT16)Dlg.m_SelectionData, type);
-                  break;
-                }
-
-                case TWTY_FIX32:
-                {
-                  TW_FIX32 TWfix32 = FloatToFIX32( (float)(Dlg.m_SelectionData/100.0));
-                  twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, &TWfix32);
-                  break;
-                }
-              }
-
-              if(twrc == TWRC_SUCCESS || twrc == TWRC_CHECKSTATUS)
-              {
-                bChange = true;
-              }
-            }
+            MessageBox("Setting OneValue is not implemented.  Patches welcome.", "Not Implemented");
           }
-          break;
-        }
+        break;
+      }
+      _DSM_UnlockMemory(Cap.hContainer);
+    }
+    else
+    {
+      //ToDo create a dialog to set Ranges and arrays
+      if(!pCapSettings->bReadOnly)
+      {
+        MessageBox("Setting Ranges and arrays is not implemented.  Patches welcome.", "Not Implemented");
       }
     }
   }
@@ -724,101 +798,7 @@ void Cmfc32DlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
   *pResult = 0;
 }
 
-int Cmfc32DlgConfigure::GetUpdateValue( pTW_CAPABILITY pCap, CTW_Array_Dlg *pDlg)
-{
-  int nResponse = 0;
-
-  if(pCap && 0 != pCap->hContainer)
-    {
-      switch(pCap->ConType)
-      {
-        case TWON_ENUMERATION:
-        {
-            pTW_ENUMERATION pCapPT = (pTW_ENUMERATION)_DSM_LockMemory(pCap->hContainer);
-            CString         str;
-
-            pDlg->m_Str_Name = convertCAP_toString(pCap->Cap);
-            pDlg->m_SelectionData = pCapPT->CurrentIndex;
-
-            switch(pCapPT->ItemType)
-            {
-              case TWTY_INT8:
-              case TWTY_INT16:
-              case TWTY_INT32:
-              case TWTY_UINT8:
-              case TWTY_UINT16:
-              case TWTY_UINT32:
-              case TWTY_BOOL:
-              {
-                for(TW_UINT32 x=0; x<pCapPT->NumItems; ++x)
-                {
-                  str   = convertCAP_Item_toString(pCap->Cap, ((pTW_UINT16)(&pCapPT->ItemList))[x], pCapPT->ItemType);
-                  pDlg->m_itemString.Add(str);
-                  pDlg->m_itemData.Add(((pTW_UINT16)(&pCapPT->ItemList))[x]);
-                }
-              }
-              break;
-
-              case TWTY_STR32:
-              case TWTY_STR64:
-              case TWTY_STR128:
-              case TWTY_STR255:
-              {
-                string sVal;
-                for(TW_UINT32 x=0; x<pCapPT->NumItems; ++x)
-                {
-                  getCurrent(pCap, sVal);
-                  str = sVal.c_str();
-                  pDlg->m_itemString.Add(str);
-                  pDlg->m_itemData.Add(x);
-                }
-                break;
-              }
-
-              case TWTY_FIX32:
-              {
-                float valf;
-
-                for(TW_UINT32 x=0; x<pCapPT->NumItems; ++x)
-                {
-                  valf = FIX32ToFloat( ((pTW_FIX32)(&pCapPT->ItemList))[x] );
-                  str.Format( "%0.1f", valf);
-                  pDlg->m_itemString.Add(str);
-                  pDlg->m_itemData.Add((DWORD) valf*100);
-                }
-              }
-              break;
-          }
-          nResponse = (int)pDlg->DoModal();
-          _DSM_UnlockMemory(pCap->hContainer);
-        }
-        break;
-
-        case TWON_ONEVALUE:
-        {
-          pTW_ONEVALUE pCapPT = (pTW_ONEVALUE)_DSM_LockMemory(pCap->hContainer);
-          switch(pCapPT->ItemType)
-          {
-            case TWTY_BOOL:
-            {
-              // Not displaying a dialog just try to set the opposit value
-              pDlg->m_SelectionData = pCapPT->Item? FALSE:TRUE;
-              nResponse = IDOK;
-            }
-            break;
-
-            default:
-            break;
-          }
-          _DSM_UnlockMemory(pCap->hContainer);
-        }
-        break;
-      }
-    }
-  return nResponse;
-}
-
-void Cmfc32DlgConfigure::OnBnClickedScan()
+void CmfcDlgConfigure::OnBnClickedScan()
 {
   g_pTWAINApp->m_DSMessage = (TW_UINT16)-1;
 
@@ -909,7 +889,7 @@ void Cmfc32DlgConfigure::OnBnClickedScan()
   return;
 }
 
-void Cmfc32DlgConfigure::OnBnClickedUIOnly()
+void CmfcDlgConfigure::OnBnClickedUIOnly()
 {
   g_pTWAINApp->m_DSMessage = (TW_UINT16)-1;
 
@@ -984,7 +964,7 @@ void Cmfc32DlgConfigure::OnBnClickedUIOnly()
   return;
 }
 
-void Cmfc32DlgConfigure::StartScan()
+void CmfcDlgConfigure::StartScan()
 {
   TW_UINT32       mech;
   TW_CAPABILITY   Cap;
@@ -1038,7 +1018,7 @@ void Cmfc32DlgConfigure::StartScan()
   return;
 }
 
-void Cmfc32DlgConfigure::OnBnClickedCancel()
+void CmfcDlgConfigure::OnBnClickedCancel()
 {
   // TODO: Add your control notification handler code here
   g_pTWAINApp->exit();
@@ -1046,7 +1026,7 @@ void Cmfc32DlgConfigure::OnBnClickedCancel()
 }
 
 
-void Cmfc32DlgConfigure::UpdateImageInfo()
+void CmfcDlgConfigure::UpdateImageInfo()
 {
   pTW_IMAGEINFO pII = g_pTWAINApp->getIMAGEINFO();
   m_sStc_ImageInfo.Format( 
@@ -1063,7 +1043,7 @@ void Cmfc32DlgConfigure::UpdateImageInfo()
 }
 
 
-void Cmfc32DlgConfigure::UpdateExtImageInfo()
+void CmfcDlgConfigure::UpdateExtImageInfo()
 {
   m_sStc_ExtImageInfo = g_pTWAINApp->getEXIMAGEINFO().c_str();
   UpdateData(false);
@@ -1071,7 +1051,7 @@ void Cmfc32DlgConfigure::UpdateExtImageInfo()
 
 
 
-void Cmfc32DlgConfigure::OnNMCustomdrawCaps(NMHDR *pNMHDR, LRESULT *pResult)
+void CmfcDlgConfigure::OnNMCustomdrawCaps(NMHDR *pNMHDR, LRESULT *pResult)
 {
   LPNMLVCUSTOMDRAW lpLVCustomDraw = reinterpret_cast<LPNMLVCUSTOMDRAW>(pNMHDR);
 
@@ -1086,7 +1066,7 @@ void Cmfc32DlgConfigure::OnNMCustomdrawCaps(NMHDR *pNMHDR, LRESULT *pResult)
     case CDDS_ITEMPREPAINT:
     {
       CapSetting *pCapSettings = (CapSetting *)lpLVCustomDraw->nmcd.lItemlParam;
-      if(pCapSettings->bChanged)
+      if(pCapSettings->byChanged)
       {
         if(pCapSettings->bReadOnly)
         {
@@ -1098,12 +1078,36 @@ void Cmfc32DlgConfigure::OnNMCustomdrawCaps(NMHDR *pNMHDR, LRESULT *pResult)
           // Changed only = Dark Red
           lpLVCustomDraw->clrText = RGB(255, 0, 0);
         }
-        *pResult = CDRF_NEWFONT;
+        *pResult = CDRF_NOTIFYITEMDRAW;
       }
       else if(pCapSettings->bReadOnly)
       {
         // Unchanged but readoly = gray
         lpLVCustomDraw->clrText = RGB(128, 128, 128);
+        *pResult = CDRF_NEWFONT;
+      }
+      else
+      {
+        // Default = black
+        *pResult = CDRF_DODEFAULT;
+      }
+    }
+    break;
+    
+    case CDDS_ITEMPREPAINT | CDDS_SUBITEM:
+    {
+      // Only getting sub item notification when capability has changed.
+      CapSetting *pCapSettings = (CapSetting *)lpLVCustomDraw->nmcd.lItemlParam;
+      if(pCapSettings->byChanged)
+      {
+        if( (1<<lpLVCustomDraw->iSubItem) & pCapSettings->byChanged )
+        {
+          lpLVCustomDraw->clrTextBk = RGB(200, 255, 255);
+        }
+        else
+        {
+          lpLVCustomDraw->clrTextBk = RGB(255, 255, 255);
+        }
         *pResult = CDRF_NEWFONT;
       }
       else
