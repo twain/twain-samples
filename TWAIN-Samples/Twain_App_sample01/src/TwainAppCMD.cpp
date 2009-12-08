@@ -61,11 +61,21 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////
 TwainAppCMD::TwainAppCMD(HWND parent /*=NULL*/):TwainApp(parent)
 {
+#ifdef TWNDS_OS_LINUX
+// Initialize event semaphore
+  sem_init(&m_TwainEvent,   // handle to the event semaphore
+           0,     // not shared
+           0);    // initially set to non signaled state
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////
 TwainAppCMD::~TwainAppCMD()
 {
+#ifdef TWNDS_OS_LINUX
+// now destroy the event semaphore
+  sem_destroy(&m_TwainEvent);   // Event semaphore handle
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////
