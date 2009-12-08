@@ -263,7 +263,22 @@ void negotiateCaps()
 void EnableDS()
 {
   gpTwainApplicationCMD->m_DSMessage = 0;
+  #ifdef TWNDS_OS_LINUX
 
+    int test;
+    sem_getvalue(&(gpTwainApplicationCMD->m_TwainEvent), &test);
+    while(test<0)
+    {
+      sem_post(&(gpTwainApplicationCMD->m_TwainEvent));    // Event semaphore Handle
+      sem_getvalue(&(gpTwainApplicationCMD->m_TwainEvent), &test);
+    }
+    while(test>0)
+    {
+      sem_wait(&(gpTwainApplicationCMD->m_TwainEvent)); // event semaphore handle
+      sem_getvalue(&(gpTwainApplicationCMD->m_TwainEvent), &test);
+    }
+
+  #endif
   // -Enable the data source. This puts us in state 5 which means that we
   // have to wait for the data source to tell us to move to state 6 and
   // start the transfer.  Once in state 5, no more set ops can be done on the
@@ -279,6 +294,7 @@ void EnableDS()
     return;
   }
 
+#ifdef TWNDS_OS_WIN
   // now we have to wait until we hear something back from the DS.
   while(!gpTwainApplicationCMD->m_DSMessage)
   {
@@ -289,14 +305,12 @@ void EnableDS()
     // then we have to poll the DSM.
 
     // Pumping messages is for Windows only
-#ifdef TWNDS_OS_WIN
 	  MSG Msg;
 	  if(!GetMessage((LPMSG)&Msg, NULL, 0, 0))
     {
       break;//WM_QUIT
     }
     twEvent.pEvent = (TW_MEMREF)&Msg;
-#endif
 
     twEvent.TWMessage = MSG_NULL;
     TW_UINT16  twRC = TWRC_NOTDSEVENT;
@@ -326,12 +340,15 @@ void EnableDS()
     }
     if(twRC!=TWRC_DSEVENT)
     {   
-#ifdef TWNDS_OS_WIN
       TranslateMessage ((LPMSG)&Msg);
       DispatchMessage ((LPMSG)&Msg);
-#endif
     }
   }
+#elif defined(TWNDS_OS_LINUX)
+  // Wait for the event be signaled
+  sem_wait(&(gpTwainApplicationCMD->m_TwainEvent)); // event semaphore handle
+                            // Indefinite wait
+#endif
 
   // At this point the source has sent us a callback saying that it is ready to
   // transfer the image.
@@ -387,6 +404,13 @@ DSMCallback(pTW_IDENTITY _pOrigin,
     case MSG_CLOSEDSOK:
     case MSG_NULL:
       gpTwainApplicationCMD->m_DSMessage = _MSG;
+      // now signal the event semaphore
+    #ifdef TWNDS_OS_LINUX
+      {
+      int test=12345;
+      sem_post(&(gpTwainApplicationCMD->m_TwainEvent));    // Event semaphore Handle
+  }
+    #endif
       break;
 
     default:

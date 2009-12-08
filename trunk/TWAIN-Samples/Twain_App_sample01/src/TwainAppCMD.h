@@ -60,6 +60,10 @@
 
 using namespace std;
 
+#ifdef TWNDS_OS_LINUX
+  #include <semaphore.h> 
+#endif
+
 /**
 * The Main Application Class.
 */
@@ -256,6 +260,10 @@ public:
   TW_CAPABILITY   m_ICAP_XRESOLUTION;     /**< Current/Available optical resolutions for x-axis. */
   TW_CAPABILITY   m_ICAP_YRESOLUTION;     /**< Current/Available optical resolutions for y-axis */
   TW_CAPABILITY   m_ICAP_FRAMES;          /**< Size and location of frames on page. */
+  
+#ifdef TWNDS_OS_LINUX
+  sem_t m_TwainEvent;
+#endif
 
 protected:
 };
