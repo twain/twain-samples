@@ -317,6 +317,17 @@ typedef struct {
    TW_FRAME   ItemList[1];                         /**< Array of TW_FRAME structures starts here */
 } TW_ENUMERATION_FRAME, FAR * pTW_ENUMERATION_FRAME;/**< Pointer to TW_ENUMERATION that holds a TW_FRAME item */
 
+/**
+* TW_RANGE that holds a TW_FIX32 item
+*/
+typedef struct {
+   TW_UINT16  ItemType;
+   TW_FIX32  MinValue;                             /* Starting value in the range.           */
+   TW_FIX32  MaxValue;                             /* Final value in the range.              */
+   TW_FIX32  StepSize;                             /* Increment from MinValue to MaxValue.   */
+   TW_FIX32  DefaultValue;                         /* Power-up value.                        */
+   TW_FIX32  CurrentValue;                         /* The value that is currently in effect. */
+} TW_RANGE_FIX32, FAR * pTW_RANGE_FIX32;           /**< Pointer to TW_RANGE that holds an array TW_FIX32 items */
 
 #ifdef TWH_CMP_MSC
 #pragma pack (pop, before_twain)
