@@ -44,6 +44,12 @@
 #include <string>
 using namespace std;
 
+typedef struct _TW_GUID {
+    unsigned long  Data1;
+    unsigned short Data2;
+    unsigned short Data3;
+    unsigned char  Data4[ 8 ];
+} TW_GUID;
 /**
 * @def kTWAIN_DSM_DLL_NAME
 * File name of the DSM library.

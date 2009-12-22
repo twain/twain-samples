@@ -336,7 +336,7 @@ bool GetItem(TW_CAPABILITY *pCap, TW_UINT32 item, TW_UINT32& val)
      || TWON_ENUMERATION == pCap->ConType )
     {
       TW_UINT8 *pData = NULL;
-      UINT      Count = 0;
+      unsigned int      Count = 0;
       TW_UINT16 Type  = 0;
 
       if( TWON_ARRAY == pCap->ConType )
@@ -414,7 +414,7 @@ bool GetItem(TW_CAPABILITY *pCap, TW_UINT32 item, string& val)
      || TWON_ENUMERATION == pCap->ConType )
     {
       TW_UINT8 *pData = NULL;
-      UINT      Count = 0;
+      unsigned int      Count = 0;
       TW_UINT16 Type  = 0;
 
       if( TWON_ARRAY == pCap->ConType )
@@ -496,7 +496,7 @@ bool GetItem(TW_CAPABILITY *pCap, TW_UINT32 item, TW_FIX32& val)
      || TWON_ENUMERATION == pCap->ConType )
     {
       TW_FIX32 *pData = NULL;
-      UINT      Count = 0;
+      unsigned int      Count = 0;
       TW_UINT16 Type  = 0;
 
       if( TWON_ARRAY == pCap->ConType )
@@ -538,7 +538,7 @@ bool GetItem(TW_CAPABILITY *pCap, TW_UINT32 item, TW_FRAME& val)
      || TWON_ENUMERATION == pCap->ConType )
     {
       TW_FRAME *pData = NULL;
-      UINT      Count = 0;
+      unsigned int      Count = 0;
       TW_UINT16 Type  = 0;
 
       if( TWON_ARRAY == pCap->ConType )

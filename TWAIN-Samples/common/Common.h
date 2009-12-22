@@ -95,14 +95,14 @@
     #define TWNDS_CMP             TWNDS_CMP_GNUGPP
     #define TWNDS_CMP_VERSION     __GNUC__
 
-    #define kTWAIN_DS_DIR         "/usr/local/lib/twain/"
+    #define kTWAIN_DSM_DIR         "/usr/local/lib/twain/"
 
   // Visual Studio C++
   #elif defined(TWH_CMP_MSC)
     #define TWNDS_CMP              TWNDS_CMP_VISUALCPP
     #define TWNDS_CMP_VERSION      _MSC_VER
     // Not neccessary it is in Windows path
-    #define kTWAIN_DS_DIR         ""
+    #define kTWAIN_DSM_DIR         ""
   // ruh-roh...
   #else
     #error Sorry, we don't recognize this system...
@@ -155,11 +155,13 @@
 
   #if (TWNDS_CMP_VERSION >= 1400)
     #define SNPRINTF _snprintf_s
+    #define SSCANF sscanf_s
     #define FOPEN(pf,name,mode) (void)fopen_s(&pf,name,mode)
     #define _OPEN(pf,name,mode,share,perm) (void)_sopen_s(&pf,name,mode,share,perm)
   #else
+    #define SSCANF sscanf
     #define SNPRINTF _snprintf
-    #define FOPEN(pf,name,mode) pf = fopen(name,mode)
+    #define FOPEN(pf,name,mode) pf=fopen(name,mode)
     #define _OPEN(pf,name,mode,share,perm) pf = _open(name,mode,share)
   #endif
   #define MAX(a, b) max(a,b)
@@ -176,11 +178,12 @@
   #define CLOSE close
   #define PATH_SEPERATOR '/'
   #define SNPRINTF snprintf
+  #define SSCANF sscanf
   typedef void * HMODULE;
   #define MAX(a, b)  (((a) > (b)) ? (a) : (b))
   #define MIN(a, b)  (((a) < (b)) ? (a) : (b))
   #define FILE_EXISTS(FILE_NAME) ((0 == access(FILE_NAME, R_OK))?TRUE:FALSE)
-  #define FOPEN(pf,name,mode) pf = fopen(name,mode)
+  #define FOPEN(pf,name,mode) (pf=fopen(name,mode))
 
   #if !defined(TRUE)
   	#define FALSE		0

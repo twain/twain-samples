@@ -38,6 +38,7 @@
 
 
 #include "CTiffWriter.h"
+#include <sstream>
 
 CTiffWriter::CTiffWriter(const string& _filename,
                          const long int _width,
@@ -199,6 +200,41 @@ void CTiffWriter::setBytesPerRow(const int _v)
   m_StripByteCounts.DataOffset = _v * m_ImageLength.DataOffset;
 }
 
+void CTiffWriter::GetImageHeader(stringstream &Header)
+{
+  // write the header
+  TIFFIFH hdr = {0x4949, 0x002a, sizeof(TIFFIFH)};
+  Header.write(reinterpret_cast<char*>(&hdr), sizeof(TIFFIFH));
+
+  // write the Tags immediately after the header
+  WORD numTags = 12;
+  Header.write(reinterpret_cast<char*>(&numTags), sizeof(numTags));
+
+  const int nsize = sizeof(TIFFTag);
+
+  Header.write(reinterpret_cast<char*>(&m_ImageWidth), nsize);
+  Header.write(reinterpret_cast<char*>(&m_ImageLength), nsize);
+  Header.write(reinterpret_cast<char*>(&m_BitsPerSample), nsize);
+  Header.write(reinterpret_cast<char*>(&m_Compression), nsize);
+  Header.write(reinterpret_cast<char*>(&m_PhotometricInterp), nsize);
+  Header.write(reinterpret_cast<char*>(&m_StripOffsets), nsize);
+  Header.write(reinterpret_cast<char*>(&m_SamplesPerPixel), nsize);
+  Header.write(reinterpret_cast<char*>(&m_RowsPerStrip), nsize);
+  Header.write(reinterpret_cast<char*>(&m_StripByteCounts), nsize);
+  Header.write(reinterpret_cast<char*>(&m_XResolution), nsize);
+  Header.write(reinterpret_cast<char*>(&m_YResolution), nsize);
+  Header.write(reinterpret_cast<char*>(&m_ResolutionUnit), nsize);
+
+  // end the header by setting the next image offset to null
+  DWORD end = 0;
+  Header.write(reinterpret_cast<char*>(&end), sizeof(end));
+
+  // write the X and Y resolutions
+  Header.write(reinterpret_cast<char*>(&m_xres), sizeof(DWORD)*2);
+
+  Header.write(reinterpret_cast<char*>(&m_yres), sizeof(DWORD)*2);
+}
+
 bool CTiffWriter::writeImageHeader()
 {
   // create the out stream if not done so already
@@ -216,41 +252,15 @@ bool CTiffWriter::writeImageHeader()
   {
     m_pImageStream->open(m_filename.c_str(), ios_base::out|ios_base::binary|ios_base::trunc);
   }
-
-  // write the header
-  TIFFIFH hdr = {0x4949, 0x002a, sizeof(TIFFIFH)};
-  m_pImageStream->write(reinterpret_cast<char*>(&hdr), sizeof(TIFFIFH));
-
-  // write the Tags immediately after the header
-  WORD numTags = 12;
-  m_pImageStream->write(reinterpret_cast<char*>(&numTags), sizeof(numTags));
-
-  const int nsize = sizeof(TIFFTag);
-
-  m_pImageStream->write(reinterpret_cast<char*>(&m_ImageWidth), nsize);
-  m_pImageStream->write(reinterpret_cast<char*>(&m_ImageLength), nsize);
-  m_pImageStream->write(reinterpret_cast<char*>(&m_BitsPerSample), nsize);
-  m_pImageStream->write(reinterpret_cast<char*>(&m_Compression), nsize);
-  m_pImageStream->write(reinterpret_cast<char*>(&m_PhotometricInterp), nsize);
-  m_pImageStream->write(reinterpret_cast<char*>(&m_StripOffsets), nsize);
-  m_pImageStream->write(reinterpret_cast<char*>(&m_SamplesPerPixel), nsize);
-  m_pImageStream->write(reinterpret_cast<char*>(&m_RowsPerStrip), nsize);
-  m_pImageStream->write(reinterpret_cast<char*>(&m_StripByteCounts), nsize);
-  m_pImageStream->write(reinterpret_cast<char*>(&m_XResolution), nsize);
-  m_pImageStream->write(reinterpret_cast<char*>(&m_YResolution), nsize);
-  m_pImageStream->write(reinterpret_cast<char*>(&m_ResolutionUnit), nsize);
-
-  // end the header by setting the next image offset to null
-  DWORD end = 0;
-  m_pImageStream->write(reinterpret_cast<char*>(&end), sizeof(end));
-
-  // write the X and Y resolutions
-  m_pImageStream->write(reinterpret_cast<char*>(&m_xres), sizeof(DWORD)*2);
-
-  m_pImageStream->write(reinterpret_cast<char*>(&m_yres), sizeof(DWORD)*2);
-
-  m_nOffset = getSizeofHeader();
-
+  stringstream Header;
+  GetImageHeader(Header);
+  Header.seekp(0, ios_base::end);
+  m_nOffset =(int) Header.tellp();
+  Header.seekg(0, ios_base::beg);
+  char *pData = new char[m_nOffset];
+  Header.read(pData,m_nOffset);
+  m_pImageStream->write(pData,m_nOffset);
+  delete []pData;
   return true;
 }
 
