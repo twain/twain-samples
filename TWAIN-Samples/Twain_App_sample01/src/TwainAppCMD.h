@@ -97,6 +97,12 @@ public:
   virtual void loadDS(const TW_INT32 _dsID);
 
 /**
+* Unloads the currently loaded datasource.  If successful moves the 
+* app to state 3.
+*/
+  virtual void unloadDS();
+
+/**
 * Print a list of Data Sources.  Prints to stdout a quick list of the 
 * Data Sources the app knows about.
 */
@@ -121,7 +127,10 @@ public:
 * Negotiates the default capabilities with the currently opened data source.
 */
   void initCaps();
-
+/**
+* Free allocated capabilities.
+*/
+  void uninitCaps();
 /**
 * Tries to starts the scanning process.  Must be in state 6 to start.  
 * If successfully finishes scan moves app to state 5.

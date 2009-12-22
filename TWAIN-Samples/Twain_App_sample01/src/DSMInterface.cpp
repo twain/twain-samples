@@ -79,9 +79,9 @@ TW_UINT16 _DSM_Entry( pTW_IDENTITY _pOrigin,
 {
   TW_UINT16 ret = TWRC_FAILURE;
 
-  if((0 == gpDSM) && !LoadDSMLib(kTWAIN_DS_DIR kTWAIN_DSM_DLL_NAME))
+  if((0 == gpDSM) && !LoadDSMLib(kTWAIN_DSM_DIR kTWAIN_DSM_DLL_NAME))
   {
-    cerr << "Could not load the DSM: " << kTWAIN_DS_DIR kTWAIN_DSM_DLL_NAME << endl;
+    cerr << "Could not load the DSM: " << kTWAIN_DSM_DIR kTWAIN_DSM_DLL_NAME << endl;
     return 0;   /*< return 0.  @todo are we sure of this return? */
   }
 
