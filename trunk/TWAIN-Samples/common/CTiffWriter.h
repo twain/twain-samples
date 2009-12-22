@@ -212,6 +212,8 @@ public:
 */
   unsigned int getSizeofHeader();
 
+  void GetImageHeader(stringstream &Header);
+
 protected:
   string m_filename;                        /**< Name and or path of file */
   int m_nOffset;                            /**< Current offset into file */
