@@ -67,9 +67,9 @@ TW_UINT16 CTWAINContainer::GetItemType()
   return m_unItemType;
 }
 
-TW_UINT16 CTWAINContainer::GetGetType()
+TW_UINT16 CTWAINContainer::GetGetType(const TW_UINT16 _unMsg)
 {
-  return m_unGetType;
+  return  (MSG_GET==_unMsg)?m_unGetType:TWON_ONEVALUE;
 }
 
 unsigned int CTWAINContainer::getTWTYSize(TW_UINT16 _TWType)

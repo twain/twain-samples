@@ -2,10 +2,11 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="TWAINDS_VS2003_mfc32"
+	Name="TWAINDS_Sample"
 	ProjectGUID="{1E73CADF-90D9-45E9-97E2-CD25E3532DB4}"
 	RootNamespace="TWAINDS_VS2005_mfc32"
-	Keyword="Win32Proj">
+	Keyword="Win32Proj"
+	>
 	<Platforms>
 		<Platform
 			Name="Win32"/>
@@ -13,120 +14,168 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(ConfigurationName)32"
+			IntermediateDirectory="$(ConfigurationName)32"
 			ConfigurationType="2"
-			UseOfMFC="2"
-			CharacterSet="2">
+			UseOfMFC="0"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				Description="create pub folders if do not exist"
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;&#x0D;&#x0A;if NOT EXIST c:\windows\twain_32\sample2 mkdir c:\windows\twain_32\sample2&#x0D;&#x0A;"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/GR"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\;..\..\Common"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;TWAINDS_SAMPLE01_EXPORTS"
+				AdditionalIncludeDirectories=".;..;..\src\GeneratedFiles\;..\..\pub\external\include\;..\..\Common;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;STRICT;_USRDLL"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				BrowseInformation="1"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="4"/>
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="4"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="FreeImage.lib"
-				OutputFile="$(OutDir)\$(ProjectName).ds"
+				AdditionalDependencies="user32.lib FreeImage.lib qtmainTWGd.lib QtCoreTWGd4.lib QtGuiTWGd4.lib"
+				OutputFile="$(OutDir)\$(ProjectName)32.ds"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib"
+				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\lib"
 				ModuleDefinitionFile="..\src\TWAINDS.def"
+				DelayLoadDLLs="FreeImage.dll QtCored4.dll QtGuid4.dll"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/TWAINDS_Sample01.pdb"
 				SubSystem="2"
-				TargetMachine="1"/>
+				BaseAddress=""
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
+
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy Application to pub\bin directory"
-				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot;
-copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;
-"/>
-			<Tool
-				Name="VCPreBuildEventTool"
-				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Description="Copy Data Source to windows\twain_32\sample2 dir"
+				CommandLine="copy &quot;$(TargetPath)&quot;  c:\windows\twain_32\sample2&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; c:\windows\twain_32\sample2&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png&quot; c:\windows\twain_32\sample2&#x0D;&#x0A;"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(ConfigurationName)32"
+			IntermediateDirectory="$(ConfigurationName)32"
 			ConfigurationType="2"
-			UseOfMFC="1"
-			CharacterSet="2">
+			UseOfMFC="0"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				Description="create pub folders if do not exist"
+				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".;..;..\..\pub\external\include\;..\..\Common"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TWAINDS_SAMPLE01_EXPORTS"
+				AdditionalIncludeDirectories=".;..;..\src\GeneratedFiles\;..\..\pub\external\include\;..\..\Common;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;STRICT;_USRDLL"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="TRUE"/>
+				Detect64BitPortabilityProblems="FALSE"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="FreeImage.lib"
-				OutputFile="$(OutDir)\$(ProjectName).ds"
+				AdditionalDependencies="User32.lib FreeImage.lib  qtmaind.lib QtCored4.lib QtGuid4.lib"
+				OutputFile="$(OutDir)\$(ProjectName)32.ds"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib"
+				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\lib"
 				ModuleDefinitionFile="..\src\TWAINDS.def"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy Application to pub\bin directory"
-				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot;
-copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;
-"/>
-			<Tool
-				Name="VCPreBuildEventTool"
-				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Description="Copy Data Source to pub\bin directory"
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;&#x0D;&#x0A;"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -135,109 +184,427 @@ copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(Proj
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
 			<File
-				RelativePath="..\src\CommonDS.cpp">
+				RelativePath="..\src\CommonDS.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\..\common\CommonTWAIN.cpp">
+				RelativePath="..\..\common\CommonTWAIN.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\src\CScanner_FreeImage.cpp">
+				RelativePath="..\src\CScanner_FreeImage.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\..\common\CTiffWriter.cpp">
+				RelativePath="..\..\common\CTiffWriter.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\src\CTWAINDS_Base.cpp">
+				RelativePath="..\src\CTWAINDS_Base.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\src\CTWAINDS_FreeImage.cpp">
+				RelativePath="..\src\CTWAINDS_FreeImage.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\src\CTWAINDS_Sample1.cpp">
+				RelativePath="..\src\CTWAINDS_Sample1.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\src\DSMInterface.cpp">
+				RelativePath="..\src\DSMInterface.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\src\TWAINContainer.cpp">
+				RelativePath="..\src\Qt_About.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\src\TWAINContainerBool.cpp">
+				RelativePath="..\src\Qt_MainForm.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\src\TWAINContainerFix32.cpp">
+				RelativePath="..\src\Qt_ProfileName.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\src\TWAINContainerFrame.cpp">
+				RelativePath="..\src\QT_UI.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\src\TWAINContainerInt.cpp">
+				RelativePath="..\src\TWAIN_UI.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerBool.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerFix32.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerFix32Range.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerFrame.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerInt.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerString.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
 			<File
-				RelativePath="..\..\common\Common.h">
+				RelativePath="..\..\common\Common.h"
+				>
 			</File>
 			<File
-				RelativePath="..\src\CommonDS.h">
+				RelativePath="..\src\CommonDS.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\common\CommonTWAIN.h">
+				RelativePath="..\..\common\CommonTWAIN.h"
+				>
 			</File>
 			<File
-				RelativePath="..\src\CScanner_FreeImage.h">
+				RelativePath="..\src\CScanner_FreeImage.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\common\CTiffWriter.h">
+				RelativePath="..\..\common\CTiffWriter.h"
+				>
 			</File>
 			<File
-				RelativePath="..\src\CTWAINDS_Base.h">
+				RelativePath="..\src\CTWAINDS_Base.h"
+				>
 			</File>
 			<File
-				RelativePath="..\src\CTWAINDS_FreeImage.h">
+				RelativePath="..\src\CTWAINDS_FreeImage.h"
+				>
 			</File>
 			<File
-				RelativePath="..\src\CTWAINDS_Sample1.h">
+				RelativePath="..\src\CTWAINDS_Sample1.h"
+				>
 			</File>
 			<File
-				RelativePath="..\src\DSMInterface.h">
+				RelativePath="..\src\DSMInterface.h"
+				>
 			</File>
 			<File
-				RelativePath=".\resource.h">
+				RelativePath="..\src\Qt_About.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\src\TWAINContainer.h">
+				RelativePath="..\src\Qt_MainForm.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\src\TWAINContainerBool.h">
+				RelativePath="..\src\Qt_ProfileName.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\src\TWAINContainerFix32.h">
+				RelativePath="..\src\QT_UI.h"
+				>
 			</File>
 			<File
-				RelativePath="..\src\TWAINContainerFrame.h">
+				RelativePath=".\resource.h"
+				>
 			</File>
 			<File
-				RelativePath="..\src\TWAINContainerInt.h">
+				RelativePath="..\src\TWAIN_UI.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerBool.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerFix32.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerFix32Range.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerFrame.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerInt.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWAINContainerString.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
 			<File
-				RelativePath=".\TWAINDS_GUI.rc">
+				RelativePath="..\src\About.ui"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\src\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\src\GeneratedFiles\ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\MainForm.ui"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\src\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\src\GeneratedFiles\ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\ProfileName.ui"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\src\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\src\GeneratedFiles\ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\qtresources.qrc"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Rcc&apos;ing $(InputPath)..."
+						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o ..\src\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(InputPath)"
+						Outputs="..\src\GeneratedFiles\qrc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\TWAINDS_GUI.rc"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TWG-Logo.png"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Generated Files"
+			>
+			<File
+				RelativePath="..\src\GeneratedFiles\Win32\Release\moc_Qt_About.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\GeneratedFiles\Win32\Debug\moc_Qt_About.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\GeneratedFiles\Win32\Release\moc_Qt_MainForm.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\GeneratedFiles\Win32\Debug\moc_Qt_MainForm.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\GeneratedFiles\Win32\Release\moc_Qt_ProfileName.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\GeneratedFiles\Win32\Debug\moc_Qt_ProfileName.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\GeneratedFiles\qrc_qtresources.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\GeneratedFiles\ui_About.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\GeneratedFiles\ui_MainForm.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\GeneratedFiles\ui_ProfileName.h"
+				>
 			</File>
 		</Filter>
 	</Files>
 	<Globals>
 		<Global
 			Name="RESOURCE_FILE"
-			Value="TWAINGUI.rc"/>
+			Value="TWAINDS_GUI.rc"/>
 	</Globals>
 </VisualStudioProject>

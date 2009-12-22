@@ -41,8 +41,6 @@
 #define __CTWAINCONTAINERFRAME_H__
 
 #include "TWAINContainer.h"
-//#include "TWAINContainerInt.h"
-//#include "TWAINContainerFix32.h"
 
 /**
 * This structure is used to hold the values for a frame. 
@@ -132,6 +130,7 @@ typedef vector<InternalFrame> FrameVector;
 */
 class CTWAINContainerFrame : public CTWAINContainer
 {
+  friend class CTWAIN_UI;
 public:
   /**
   * Constructor.  
@@ -141,7 +140,6 @@ public:
   * @param[in] _nSupportedQueries the supported querie types TWQC_xxxx
   */
   CTWAINContainerFrame(const TW_UINT16 _unCapID, 
-                       const TW_UINT16 _unItemType, 
                        const TW_UINT16 _unGetType, 
                        const TW_INT32  _nSupportedQueries = TWQC_ALL);
   virtual ~CTWAINContainerFrame();

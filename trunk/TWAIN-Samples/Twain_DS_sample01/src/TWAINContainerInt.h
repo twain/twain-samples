@@ -58,6 +58,7 @@ static int GetIndexIntValue(pTW_ENUMERATION pCap, TW_UINT32 index);
 */
 class CTWAINContainerInt : public CTWAINContainer
 {
+  friend class CTWAIN_UI;
 public:
   /**
   * Constructor.  

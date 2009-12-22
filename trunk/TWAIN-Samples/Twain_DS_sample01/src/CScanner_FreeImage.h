@@ -194,7 +194,9 @@ public:
   * @return true if online.
   */
   bool getDeviceOnline() const;
-
+  
+  short GetMaxPagesInADF(void){return m_nMaxDocCount;}
+  void SetMaxPagesInADF(short nVal){m_nMaxDocCount = nVal;};
 
 protected:
   /**
@@ -221,6 +223,7 @@ protected:
   bool              m_bReadOnly;              /**< current mode */
   DWORD             m_nDestBytesPerRow;       /**< number of bytes needed for a row of data */
   short             m_nDocCount;              /**< number of documents waiting to transfer */
+  short             m_nMaxDocCount;              /**< Max number of documents waiting to transfer */
   WORD              m_nSourceWidth;           /**< Width of image in FreeImage */
   WORD              m_nSourceHeight;          /**< Height of image in FreeImage */
   char              m_szSourceImagePath[PATH_MAX];  /**< image used with FreeImage */

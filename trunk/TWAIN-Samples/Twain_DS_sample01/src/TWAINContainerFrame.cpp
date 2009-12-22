@@ -276,10 +276,9 @@ bool operator== (const InternalFrame& _frame1, const InternalFrame& _frame2)
 
 
 CTWAINContainerFrame::CTWAINContainerFrame(const TW_UINT16 _unCapID, 
-                                           const TW_UINT16 _unItemType, 
                                            const TW_UINT16 _unGetType, 
                                            const TW_INT32  _nSupportedQueries /*=TWQC_ALL*/) 
-  : CTWAINContainer(_unCapID, _unItemType, _unGetType, _nSupportedQueries)
+  : CTWAINContainer(_unCapID, TWTY_FRAME, _unGetType, _nSupportedQueries)
 {
   m_Unit = TWUN_PIXELS;
   m_Xres = 100;
@@ -409,9 +408,7 @@ TW_INT16 CTWAINContainerFrame::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
         case TWON_ENUMERATION:
         {
           /// @todo check to see if frame is in range
-          m_listFrames.clear();
-          m_listFrames.push_back(frame);
-          m_nCurrent = 0;
+          Set(frame);
         }
         break;
         /*

@@ -30,41 +30,28 @@
 ***************************************************************************/
 
 /**
-* @file TWAINSampleDlg.h
-* Sample DS Dlg header file
-* @author JFL Peripheral Solutions Inc.
-* @date October 2005
+* @file CTWAINDS_FreeImage.cpp
+* The main Data Source class.
+* This class is derived from the Base class describing a TWAIN DS.
+* @author TWAIN Working Group
+* @date April 2007
 */
 
-#pragma once
-#include "afxwin.h"
-#include "resource.h"
+#include "CommonDS.h"
+#include "CTWAINDS_FreeImage.h"
+#include "TWAIN_UI.h"
 
-// CTWAINSampleDlg dialog
 
-class CTWAINSampleDlg : public CDialog
+
+CTWAIN_UI* CreateUI(CTWAINDS_FreeImage *pDS)
 {
-	DECLARE_DYNAMIC(CTWAINSampleDlg)
+  return new CTWAIN_UI(pDS);
+}
 
-public:
-	CTWAINSampleDlg(CWnd* pParent = NULL);   // standard constructor
-	virtual ~CTWAINSampleDlg();
-
-// Dialog Data
-	enum { IDD = IDD_DLG_TWAINSAMPLE };
-
-protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
-	DECLARE_MESSAGE_MAP()
-public:
-  // Sets the resolution of the output image
-  CComboBox m_cbxResolution;
-  // Contains the available paper sizes
-  CComboBox m_cbxPaperSize;
-  // Lists the supported pixeltypes
-  CComboBox m_cbxPixelType;
-  virtual BOOL OnInitDialog();
-  afx_msg void OnBnClickedOk();
-  afx_msg void OnBnClickedCancel();
-};
+void DestroyUI(CTWAIN_UI* pUI)
+{
+  if(pUI)
+  {
+    delete pUI;
+  }
+}

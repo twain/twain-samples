@@ -44,6 +44,7 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sstream>
 
 //////////////////////////////////////////////////////////////////////////////
 CTWAINDS_Base::CTWAINDS_Base() :
@@ -147,6 +148,10 @@ TW_UINT16 CTWAINDS_Base::DS_Entry( pTW_IDENTITY _pOrigin,
 
           case DAT_XFERGROUP:
             twrc = dat_xfergroup(_MSG, (pTW_UINT32)_pData);
+            break;
+            
+          case DAT_CUSTOMDSDATA:
+            twrc = dat_customdsdata(_MSG, (pTW_CUSTOMDSDATA)_pData);
             break;
             
           default:
@@ -368,6 +373,10 @@ TW_INT16 CTWAINDS_Base::dat_userinterface(TW_UINT16         _MSG,
       twrc = enableDS(_pData);
       break;
 
+    case MSG_ENABLEDSUIONLY:
+      twrc = enableDSOnly();
+      break;
+
     case MSG_DISABLEDS:
       twrc = disableDS(_pData);
       break;
@@ -469,6 +478,36 @@ TW_INT16 CTWAINDS_Base::dat_imagefilexfer(TW_UINT16    _MSG)
   {
     case MSG_GET:
       twrc = saveImageFile();
+      break;
+
+    default:
+      setConditionCode(TWCC_BADPROTOCOL);
+      //assert(0);
+      twrc = TWRC_FAILURE;
+      break;
+  }
+
+  return twrc;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+TW_INT16 CTWAINDS_Base::dat_customdsdata(TW_UINT16 _MSG, pTW_CUSTOMDSDATA  _pDSData)
+{
+  TW_INT16 twrc = TWRC_SUCCESS;
+  if(m_CurrentState != dsState_Open)
+  {
+    setConditionCode(TWCC_SEQERROR);
+    return TWRC_FAILURE;
+  }
+
+  switch(_MSG)
+  {
+    case MSG_GET:
+      twrc = GetGustomDSData(_pDSData);
+      break;
+
+    case MSG_SET:
+      twrc = SetGustomDSData(_pDSData);
       break;
 
     default:
@@ -811,13 +850,10 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
       case TWTY_BOOL:
       case TWTY_FIX32:
       case TWTY_FRAME:
-/// @todo impliment str types
-//      case TWTY_STR32:
-//      case TWTY_STR64:
-//      case TWTY_STR128:
-//      case TWTY_STR255:
-//      case TWTY_STR1024:
-//      case TWTY_UNI512:
+      case TWTY_STR32:
+      case TWTY_STR64:
+      case TWTY_STR128:
+      case TWTY_STR255:
         twrc = TWRC_SUCCESS; // so far so good
       break;
       
@@ -847,7 +883,7 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
         case MSG_GETCURRENT:
         case MSG_GETDEFAULT:
         case MSG_GET:
-          _pCap->ConType = (MSG_GET==_MSG)?_pContainer->GetGetType():TWON_ONEVALUE;
+          _pCap->ConType = _pContainer->GetGetType(_MSG);
           twrc = updatePreDependencies(_pContainer);
           if(twrc != TWRC_SUCCESS)
           {
@@ -872,7 +908,15 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
               break;
             }
 
-            twrc = validateCapabilitySet(_pCap);
+            BYTE * pContainer = (BYTE*)_DSM_LockMemory(_pCap->hContainer);
+            if(pContainer==0)
+            {
+              setConditionCode(TWCC_LOWMEMORY);
+              twrc = TWRC_FAILURE;
+              break;
+            }
+            twrc = validateCapabilitySet(_pCap->Cap,_pCap->ConType, pContainer);
+            _DSM_UnlockMemory(_pCap->hContainer);
             if(twrc != TWRC_SUCCESS)
             {
               setConditionCode(TWCC_BADVALUE);
@@ -906,18 +950,18 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
 }
 
 //////////////////////////////////////////////////////////////////////////////
-TW_INT16 CTWAINDS_Base::validateCapabilitySet(pTW_CAPABILITY _pCap)
+TW_INT16 CTWAINDS_Base::validateCapabilitySet(TW_UINT16 _Cap, TW_UINT16  _ConType, BYTE* _pContainer)
 {
   TW_INT16 twrc  = TWRC_SUCCESS;
 
-  switch(_pCap->Cap)
+  switch(_Cap)
   {
     case CAP_XFERCOUNT:
     {
       twrc = TWRC_FAILURE;
-      if(TWON_ONEVALUE == _pCap->ConType)
+      if(TWON_ONEVALUE == _ConType)
       {
-        pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(_pCap->hContainer);
+        pTW_ONEVALUE pCap = (pTW_ONEVALUE)_pContainer;
 
         if(pCap)
         {
@@ -925,7 +969,23 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(pTW_CAPABILITY _pCap)
           {
             twrc = TWRC_SUCCESS;
           }
-          _DSM_UnlockMemory(_pCap->hContainer);
+        }
+      }
+      break;
+    }
+    case ICAP_GAMMA:
+    {
+      twrc = TWRC_FAILURE;
+      if(TWON_ONEVALUE == _ConType)
+      {
+        pTW_ONEVALUE_FIX32 pCap = (pTW_ONEVALUE_FIX32)_pContainer;
+        if(pCap)
+        {
+          float flVal = FIX32ToFloat(pCap->Item);
+          if( flVal>0 )
+          {
+            twrc = TWRC_SUCCESS;
+          }
         }
       }
       break;
@@ -937,9 +997,9 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(pTW_CAPABILITY _pCap)
       float Yres = 100;
       twrc = getCurrentUnits(unit, Xres, Yres);
 
-      if(TWON_ONEVALUE == _pCap->ConType)
+      if(TWON_ONEVALUE == _ConType)
       {
-        pTW_ONEVALUE_FRAME pCap = (pTW_ONEVALUE_FRAME)_DSM_LockMemory(_pCap->hContainer);
+        pTW_ONEVALUE_FRAME pCap = (pTW_ONEVALUE_FRAME)_pContainer;
 
         if(pCap && pCap->ItemType == TWTY_FRAME)
         {
@@ -949,39 +1009,53 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(pTW_CAPABILITY _pCap)
             pCap->Item = frame.AsTW_FRAME(unit, Xres, Yres);
             twrc = TWRC_CHECKSTATUS;
           }
-          _DSM_UnlockMemory(_pCap->hContainer);
         }
       }
-      else if(TWON_ENUMERATION == _pCap->ConType)
+      else if(TWON_ENUMERATION == _ConType)
       {
-        pTW_ENUMERATION_FRAME pCap = (pTW_ENUMERATION_FRAME)_DSM_LockMemory(_pCap->hContainer);
-
-        if(pCap && pCap->ItemType == TWTY_FRAME)
+        CTWAINContainerInt *pDepCapMax = dynamic_cast<CTWAINContainerInt*>(findCapability(ICAP_MAXFRAMES));
+        if(pDepCapMax==0)
         {
-          for(TW_UINT32 x = 0; x < pCap->NumItems; ++x)
+          setConditionCode(TWCC_BUMMER);
+          twrc = TWRC_FAILURE;
+        }
+        else
+        {
+          pTW_ENUMERATION_FRAME pCap = (pTW_ENUMERATION_FRAME)_pContainer;
+          int nMax;
+          if(!pDepCapMax->GetCurrent(nMax) || pCap->NumItems>(TW_UINT32)nMax)
           {
-            InternalFrame frame(pCap->ItemList[x], unit, Xres, Yres);
-            if(ConstrainFrameToScanner(frame))
+            setConditionCode(TWCC_BADVALUE);
+            twrc = TWRC_FAILURE;
+          }
+          else
+          {
+            if(pCap && pCap->ItemType == TWTY_FRAME)
             {
-              pCap->ItemList[x] = frame.AsTW_FRAME(unit, Xres, Yres);
-              twrc = TWRC_CHECKSTATUS;
+              for(TW_UINT32 x = 0; x < pCap->NumItems; ++x)
+              {
+                InternalFrame frame(pCap->ItemList[x], unit, Xres, Yres);
+                if(ConstrainFrameToScanner(frame))
+                {
+                  pCap->ItemList[x] = frame.AsTW_FRAME(unit, Xres, Yres);
+                  twrc = TWRC_CHECKSTATUS;
+                }
+              }
             }
           }
-          _DSM_UnlockMemory(_pCap->hContainer);
         }
       }
       break;
     }
     case CAP_FEEDERENABLED:
-      if(TWON_ONEVALUE == _pCap->ConType)
+      if(TWON_ONEVALUE == _ConType)
       {
-        TW_ONEVALUE *pCap = (TW_ONEVALUE*)_DSM_LockMemory(_pCap->hContainer);
+        TW_ONEVALUE *pCap = (TW_ONEVALUE*)_pContainer;
 
-        if(!pCap || pCap->ItemType != TWTY_BOOL || pCap->Item==0)
+        if(!pCap || pCap->ItemType != TWTY_BOOL)// || pCap->Item==0)
         {
           twrc = TWRC_FAILURE;
         }
-        _DSM_UnlockMemory(_pCap->hContainer);
       }
       else
       {
@@ -990,15 +1064,14 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(pTW_CAPABILITY _pCap)
       }
       break;
     case ICAP_MAXFRAMES:
-      if(TWON_ONEVALUE == _pCap->ConType)
+      if(TWON_ONEVALUE == _ConType)
       {
-        TW_ONEVALUE *pCap = (TW_ONEVALUE*)_DSM_LockMemory(_pCap->hContainer);
+        TW_ONEVALUE *pCap = (TW_ONEVALUE*)_pContainer;
 
         if(!pCap || pCap->ItemType != TWTY_UINT16 || pCap->Item!=1)
         {
           twrc = TWRC_FAILURE;
         }
-        _DSM_UnlockMemory(_pCap->hContainer);
       }
       else
       {
@@ -1123,7 +1196,11 @@ TW_INT16 CTWAINDS_Base::updatePostDependencies(TW_UINT16 MSG, TW_UINT16 Cap)
         // No match found
         if(x >= nSize)
         {
-          pDepCapSS->SetCurrent(TWSS_NONE);
+          if(!pDepCapSS->SetCurrent(TWSS_NONE))
+          {
+            pDepCapSS->Add(TWSS_NONE);
+            pDepCapSS->SetCurrent(TWSS_NONE);
+          }
         }
       }        
     }
@@ -1154,7 +1231,9 @@ TW_INT16 CTWAINDS_Base::updatePostDependencies(TW_UINT16 MSG, TW_UINT16 Cap)
       }
     }
     break;
-
+    case CAP_FEEDERENABLED:
+      //TODO add routine here if CAP_DUPLEXENABLED supports TRUE 
+    break;
     default:
     break;
   }
@@ -1440,7 +1519,7 @@ TW_INT16 CTWAINDS_Base::saveImageFile()
       break;
 
     /* 
-    Untill compression is implimented we don't support Jpeg
+    Untill compression is implimented we  support Jpeg
     case TWFF_JFIF:
       break;
     */
@@ -1497,7 +1576,7 @@ TW_INT16 CTWAINDS_Base::saveImageFileAsTIFF()
 
   // write the received image data to the image file
   if( m_ImageInfo.BitsPerPixel < 24 // BW or Gray
-   || m_ImageInfo.BitsPerPixel > 24 && !bSwitch) //Color but don't have to switch between RGB and BGR
+   || m_ImageInfo.BitsPerPixel > 24 && !bSwitch) //Color but  have to switch between RGB and BGR
   {
     if(!pTifImg->WriteTIFFData(reinterpret_cast<char*>(pImage), nBPL*nHeight))
     {
@@ -1785,6 +1864,109 @@ TW_INT16 CTWAINDS_Base::getDIBImage(TW_MEMREF* _pImage)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+TW_INT16 CTWAINDS_Base::getTIFFImage(TW_MEMREF* _pTIFFImage)
+{
+  if(0 == m_hImageData || 0 == _pTIFFImage )
+  {
+    setConditionCode(TWCC_BADVALUE);
+    return TWRC_FAILURE;
+  }  
+
+  *_pTIFFImage = 0;
+  BYTE *pImage = (BYTE *)_DSM_LockMemory(m_hImageData);
+  if(pImage == NULL)
+  {
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+  
+  TW_INT32      nWidth   = m_ImageInfo.ImageWidth;
+  TW_INT32      nHeight  = m_ImageInfo.ImageLength;
+  TW_INT16      nBPP     = m_ImageInfo.BitsPerPixel;
+  TW_INT32      nBPL     = BYTES_PERLINE(nWidth, nBPP);
+  CTiffWriter  *pTifImg  = new CTiffWriter("", nWidth, nHeight, nBPP, nBPL);
+  if(!pTifImg)
+  {
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+
+  pTifImg->setXResolution(m_ImageInfo.XResolution.Whole, 1);
+  pTifImg->setYResolution(m_ImageInfo.YResolution.Whole, 1);
+
+  stringstream Header;
+  pTifImg->GetImageHeader(Header);
+  Header.seekp(0, ios_base::end);
+  DWORD dwSize =(DWORD) Header.tellp();
+  Header.seekg(0, ios_base::beg);
+  TW_HANDLE hTiff  = _DSM_Alloc(dwSize+nBPL*nHeight);	//create a buffer as large as the bitmap
+  if(hTiff==0)
+  {
+    setConditionCode(TWCC_LOWMEMORY);
+    delete pTifImg;
+    return TWRC_FAILURE;
+  }
+  char *pData = (char*)_DSM_LockMemory(hTiff);
+  if(pData==0)
+  {
+    _DSM_Free(hTiff);
+    setConditionCode(TWCC_LOWMEMORY);
+    delete pTifImg;
+    return TWRC_FAILURE;
+  }
+
+  Header.read(pData,dwSize);
+  pData +=dwSize;
+
+  bool bSwitch = true;
+  CTWAINContainerInt *pnCap = dynamic_cast<CTWAINContainerInt*>(findCapability(ICAP_BITORDER));
+  if(pnCap)
+  {
+    int nVal;
+    if(pnCap->GetCurrent(nVal))
+    {
+      bSwitch = nVal==TWBO_LSBFIRST? true:false;
+    }
+  }
+
+  // write the received image data to the image file
+  if( m_ImageInfo.BitsPerPixel < 24 // BW or Gray
+   || m_ImageInfo.BitsPerPixel > 24 && !bSwitch) //Color but  have to switch between RGB and BGR
+  {
+    memcpy(pData,pImage,nBPL*nHeight);
+  }
+  else // color
+  {
+    BYTE *pSource = pImage;
+    BYTE *pDest   = NULL;
+
+
+    for(TW_INT32 row=0; row<nHeight; row++)
+    {
+      pSource = pImage;
+      pDest   = (BYTE*)pData;
+
+      // need to switch from BGR to RGB
+      for(TW_INT32 nCol=0; nCol<nWidth; nCol++)
+      {
+        *pDest++ = pSource[2];
+        *pDest++ = pSource[1];
+        *pDest++ = pSource[0];
+        pSource += 3;
+      }
+      pData += nBPL;
+      pImage += nBPL;
+    }
+  }
+
+  delete pTifImg;
+  _DSM_UnlockMemory(m_hImageData);
+  _DSM_UnlockMemory(hTiff);
+  *_pTIFFImage = hTiff;
+
+  return TWRC_SUCCESS;
+}
+//////////////////////////////////////////////////////////////////////////////
 TW_INT16 CTWAINDS_Base::transferMemoryBuffers(pTW_IMAGEMEMXFER _ImageXfer)
 {
   TW_INT16 twrc = TWRC_SUCCESS;
@@ -1942,16 +2124,13 @@ TW_INT16 CTWAINDS_Base::transferNativeImage(TW_MEMREF* _pData)
   {
     // Native is basicaly an image file transfered by memory
     // Windows is a Device independent BMP
-    // Mac is a PICT
+    // Mac is a PICT - !!!!
     // Linux is a TIFF
-#ifdef TWH_CMP_MSC
+#ifdef TWNDS_OS_LINUX
+    twrc = getTIFFImage(_pData);
+#else
     twrc = getDIBImage(_pData);
-#elif defined(TWH_CMP_GNU)
-    //On Linux, we need to do TIFF transfers in native mode
-    //TODO: this needs to be implemented
-    //twrc = getTIFFImage(_pData);
 #endif
-
     if( TWRC_SUCCESS == twrc )
     {
       twrc = TWRC_XFERDONE;
@@ -1960,4 +2139,18 @@ TW_INT16 CTWAINDS_Base::transferNativeImage(TW_MEMREF* _pData)
   }
 
   return twrc;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+TW_INT16 CTWAINDS_Base::GetGustomDSData(pTW_CUSTOMDSDATA _pDSData)
+{
+  setConditionCode(TWCC_BADPROTOCOL);
+  return TWRC_FAILURE;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+TW_INT16 CTWAINDS_Base::SetGustomDSData(pTW_CUSTOMDSDATA _pDSData)
+{
+  setConditionCode(TWCC_BADPROTOCOL);
+  return TWRC_FAILURE;
 }

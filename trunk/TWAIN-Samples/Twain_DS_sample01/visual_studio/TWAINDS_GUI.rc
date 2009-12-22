@@ -63,8 +63,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,1,0,0
- PRODUCTVERSION 2,1,0,0
+ FILEVERSION 2,1,1,0
+ PRODUCTVERSION 2,1,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -81,12 +81,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "TWAIN Working Group"
             VALUE "FileDescription", "SAMPLE Data Source"
-            VALUE "FileVersion", "2.1.0.0"
+            VALUE "FileVersion", "2, 1, 1, 0"
             VALUE "InternalName", "TWAINDS.dll"
             VALUE "LegalCopyright", "(c) TWAIN Working Group.  All rights reserved."
             VALUE "OriginalFilename", "TWAINDS.dll"
             VALUE "ProductName", "SampleDS01"
-            VALUE "ProductVersion", "2.1.0.0"
+            VALUE "ProductVersion", "2, 1, 1, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -94,46 +94,6 @@ BEGIN
         VALUE "Translation", 0x409, 1252
     END
 END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_DLG_TWAINSAMPLE DIALOGEX 0, 0, 141, 121
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dialog"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    DEFPUSHBUTTON   "Scan",IDOK,7,100,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,84,100,50,14
-    LTEXT           "Resolution",IDC_STATIC,7,7,34,8
-    COMBOBOX        IDC_CBX_RESOLUTION,53,7,81,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Papersize",IDC_STATIC,9,38,32,8
-    COMBOBOX        IDC_CBX_PAPERSIZE,53,39,81,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "PixelType",IDC_STATIC,7,69,32,8
-    COMBOBOX        IDC_CBX_PIXELTYPE,53,69,81,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
-BEGIN
-    IDD_DLG_TWAINSAMPLE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 134
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 114
-    END
-END
-#endif    // APSTUDIO_INVOKED
 
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////

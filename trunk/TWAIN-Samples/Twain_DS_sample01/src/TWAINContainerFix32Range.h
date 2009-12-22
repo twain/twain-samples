@@ -31,24 +31,26 @@
 
 /**
 * @file TWAINContainerFix32.h
-* Fix32 Container class for negotiating capabilities.
+* Fix32 Range Container class for negotiating capabilities.
 * @author TWAIN Working Group
 * @date April 2007
 */
 
 
-#ifndef __CTWAINCONTAINERFIX32_H__
-#define __CTWAINCONTAINERFIX32_H__
+#ifndef __CTWAINContainerFix32RangeRANGE_H__
+#define __CTWAINContainerFix32RangeRANGE_H__
 
 #include "TWAINContainer.h"
-
+typedef struct {
+   float  fMinValue;     /* Starting value in the range.           */
+   float  fMaxValue;     /* Final value in the range.              */
+   float  fStepSize;     /* Increment from MinValue to MaxValue.   */
+   float  fCurrentValue; /* The value that is currently in effect. */
+} FLOAT_RANGE;
 /**
 * This class can be used for any Fix32 based TWAIN container. 
-* All values are stored internally as 1/1000th of an inch. They are converted
-* as necessary when TWAIN containers are created. Any direct access will require
-* the caller to do their own conversion. 
 */
-class CTWAINContainerFix32 : public CTWAINContainer
+class CTWAINContainerFix32Range : public CTWAINContainer
 {
   friend class CTWAIN_UI;
 public:
@@ -59,31 +61,14 @@ public:
   * @param[in] _unGetType TWON_xxxx container
   * @param[in] _nSupportedQueries the supported querie types TWQC_xxxx
   */
-  CTWAINContainerFix32(const TW_UINT16 _unCapID, 
-                       const TW_UINT16 _unGetType, 
+  CTWAINContainerFix32Range(const TW_UINT16 _unCapID, 
+                       const FLOAT_RANGE _InitRange, 
                        const TW_INT32  _nSupportedQueries = TWQC_ALL);
-  virtual ~CTWAINContainerFix32();
+  virtual ~CTWAINContainerFix32Range();
 
   virtual TW_HANDLE GetContainer(const TW_UINT16 _unMsg);
   virtual TW_INT16 Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition);
   virtual bool Reset();
-
-  // For float vals
-  /**
-  * Try to add a value for container.  The first value added to a capabiltiy is set as the default and current value.
-  * @param[in] _flAdd the value to be added.
-  * @param[in] _bDefault if true explisitly sets this value to be the default and current.  
-  * @return true if success.
-  */
-  bool Add(const float _flAdd, bool _bDefault = false);
-
-  /**
-  * Try to set the current value for container.
-  * The value must already be part of the container.
-  * @param[in] _flAdd the value to be set as current.
-  * @return true if success.
-  */
-  bool SetCurrent(float _flCurr);
 
   /**
   * Return the default value through _flVal if set.
@@ -98,27 +83,15 @@ public:
   * @return true if success.
   */
   bool GetCurrent(float &_flVal);
-
   /**
-  * Return a vector of supported values.
-  * @return supported values.
+  * Set the current value through _flVal.
+  * @param[in] _flVal the current value.
+  * @return true if success.
   */
-  const FloatVector &GetSupported();
+  bool SetCurrent(float _flVal);
 
-  /**
-  * Return the weather or not the value is supported by this capability.
-  * @param[in] _flVal the value to check to see if it is supported
-  * @return true is the _flVal is supported.
-  */
-  bool isValueSupported(const float _flVal) {return -1 != getIndexForValue(_flVal);}
-
-  /**
-  * Return the index in vector list for value.
-  * @param[in] _flVal value to search for.
-  * @return the index of value, or -1 if does not exist.
-  */
-  int getIndexForValue(const float _flVal);
-
+  void GetMinMaxStep(float &_flMinVal,float &_flMaxVal,float &_flStepVal);
+  int  IsInRange(FLOAT_RANGE _Range, float &_flVal);
 
 protected:
   /**
@@ -128,8 +101,9 @@ protected:
   */
   bool isValidType(const TW_UINT16 _unTWType);
 
-  FloatVector m_listFloats;                   /**< vector of valid container values. */
-  FloatVector m_listFloatsDefault;            /**< vector of valid container default values. */
+  FLOAT_RANGE m_Cur;
+  FLOAT_RANGE m_Def;
+
 };
 
-#endif // __CTWAINCONTAINERFIX32_H__
+#endif // __CTWAINContainerFix32RangeRANGE_H__

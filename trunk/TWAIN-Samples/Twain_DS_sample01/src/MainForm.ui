@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainForm</class>
+ <widget class="QDialog" name="MainForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>346</width>
+    <height>571</height>
+   </rect>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::DefaultContextMenu</enum>
+  </property>
+  <property name="windowTitle">
+   <string>TWAIN Sample DS</string>
+  </property>
+  <property name="whatsThis">
+   <string/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
+    <widget class="QGroupBox" name="pGroupBox_Profiles">
+     <property name="title">
+      <string>Profiles</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QComboBox" name="pComboBox_Profiles">
+        <property name="editable">
+         <bool>false</bool>
+        </property>
+        <item>
+         <property name="text">
+          <string>Default</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QPushButton" name="pPushButton_Profile_Save">
+          <property name="text">
+           <string>Save</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pPushButton_Profile_Load">
+          <property name="text">
+           <string>Load</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pPushButton_Profile_Delete">
+          <property name="text">
+           <string>Delete</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="pGroupBox_ScanSettings">
+     <property name="title">
+      <string>Scan Settings</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="pLabel_Source">
+        <property name="text">
+         <string>Source:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="pComboBox_Source">
+        <item>
+         <property name="text">
+          <string>ADF</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Flatbed</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="pLabel_ScanSide">
+        <property name="text">
+         <string>Scan side:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="pComboBox_ScanSide">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>Simplex</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Duplex</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="pLabel_ColorMode">
+        <property name="text">
+         <string>Color Mode:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="pComboBox_ColorMode">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>Black and White</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Grayscale</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Color</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="pLabel_Resolution">
+        <property name="text">
+         <string>Resolution (DPI):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="pComboBox_Resolution">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>50</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>100</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>150</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>200</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>300</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>400</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>500</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>600</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="pGroupBox_ScanArea">
+     <property name="title">
+      <string>Scan Area</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QLabel" name="pLabel_Orientation">
+          <property name="text">
+           <string>Orientation:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="pComboBox_Orientation">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <item>
+           <property name="text">
+            <string>Portrait</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Landscape</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="pCheckBox_LongDoc">
+          <property name="text">
+           <string>Long Document Support</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QComboBox" name="pComboBox_PaperSize_StandardSizes">
+        <item>
+         <property name="text">
+          <string>US Letter (8.5&quot; x 11&quot;)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>US Legal (8.5&quot; x 14&quot;)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Custom</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="pLabel_PaperSize_Custom_Width">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Width</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="pLineEdit_PaperSize_Custom_Width">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>8.5</string>
+            </property>
+            <property name="maxLength">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="pLabel_PaperSize_Custom_Height">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Height</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="pLineEdit_PaperSize_Custom_Height">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>11</string>
+            </property>
+            <property name="maxLength">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QComboBox" name="pComboBox_PaperSize_Custom_Units">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <item>
+           <property name="text">
+            <string>Inches</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Pixels</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Centimeters</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Picas</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Points</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Twips</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QLabel" name="pLabel_Contrast">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Contrast:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="pLabel_Brightness">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Brightness:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QSlider" name="pHorizontalSlider_Contrast">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sliderPosition">
+        <number>50</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBelow</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSlider" name="pHorizontalSlider_Brightness">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sliderPosition">
+        <number>50</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBelow</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="pLabel_Gamma">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Gamma:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="pLabel_Threshold">
+       <property name="text">
+        <string>Threshold:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QSlider" name="pHorizontalSlider_Gamma">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sliderPosition">
+        <number>50</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBelow</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSlider" name="pHorizontalSlider_Threshold">
+       <property name="sliderPosition">
+        <number>50</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBelow</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <item>
+      <widget class="QGroupBox" name="pGroupBox_XferCount">
+       <property name="title">
+        <string>Images To Scan</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QSpinBox" name="pSpinBox_XferCount">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="suffix">
+           <string/>
+          </property>
+          <property name="prefix">
+           <string/>
+          </property>
+          <property name="minimum">
+           <number>-1</number>
+          </property>
+          <property name="maximum">
+           <number>500</number>
+          </property>
+          <property name="value">
+           <number>2</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="pGroupBox_DocsInADF">
+       <property name="title">
+        <string>Documents in ADF</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QSpinBox" name="pSpinBox_DocsInADF">
+          <property name="suffix">
+           <string/>
+          </property>
+          <property name="prefix">
+           <string/>
+          </property>
+          <property name="minimum">
+           <number>-1</number>
+          </property>
+          <property name="maximum">
+           <number>500</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QPushButton" name="pPushButton_Scan">
+       <property name="text">
+        <string>Scan</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pPushButton_Cancel">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pPushButton_Help">
+       <property name="text">
+        <string>Help</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pPushButton_About">
+       <property name="text">
+        <string>About</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>pComboBox_Profiles</tabstop>
+  <tabstop>pPushButton_Profile_Save</tabstop>
+  <tabstop>pPushButton_Profile_Load</tabstop>
+  <tabstop>pPushButton_Profile_Delete</tabstop>
+  <tabstop>pComboBox_Source</tabstop>
+  <tabstop>pComboBox_ScanSide</tabstop>
+  <tabstop>pComboBox_ColorMode</tabstop>
+  <tabstop>pComboBox_Resolution</tabstop>
+  <tabstop>pComboBox_Orientation</tabstop>
+  <tabstop>pCheckBox_LongDoc</tabstop>
+  <tabstop>pComboBox_PaperSize_StandardSizes</tabstop>
+  <tabstop>pLineEdit_PaperSize_Custom_Width</tabstop>
+  <tabstop>pLineEdit_PaperSize_Custom_Height</tabstop>
+  <tabstop>pComboBox_PaperSize_Custom_Units</tabstop>
+  <tabstop>pHorizontalSlider_Contrast</tabstop>
+  <tabstop>pHorizontalSlider_Brightness</tabstop>
+  <tabstop>pHorizontalSlider_Gamma</tabstop>
+  <tabstop>pHorizontalSlider_Threshold</tabstop>
+  <tabstop>pSpinBox_XferCount</tabstop>
+  <tabstop>pSpinBox_DocsInADF</tabstop>
+  <tabstop>pPushButton_Scan</tabstop>
+  <tabstop>pPushButton_Cancel</tabstop>
+  <tabstop>pPushButton_Help</tabstop>
+  <tabstop>pPushButton_About</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
