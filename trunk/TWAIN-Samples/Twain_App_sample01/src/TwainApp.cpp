@@ -229,10 +229,10 @@ void TwainApp::connectDSM()
     return;
   }
 
-  if(!LoadDSMLib(kTWAIN_DS_DIR kTWAIN_DSM_DLL_NAME))
+  if(!LoadDSMLib(kTWAIN_DSM_DIR kTWAIN_DSM_DLL_NAME))
   {
     PrintCMDMessage("The DSM could not be opened. Please ensure that it is installed into a directory that is in the library path:");
-    PrintCMDMessage(kTWAIN_DS_DIR kTWAIN_DSM_DLL_NAME);
+    PrintCMDMessage(kTWAIN_DSM_DIR kTWAIN_DSM_DLL_NAME);
     return;
   }
   else
@@ -1187,6 +1187,20 @@ void TwainApp::initiateTransfer_File(TW_UINT16 fileformat /*= TWFF_TIFF*/)
   // start the transfer
   bool      bPendingXfers = true;
   TW_UINT16 twrc          = TWRC_SUCCESS;
+  // setup the file xfer
+  TW_SETUPFILEXFER filexfer;
+  memset(&filexfer, 0, sizeof(filexfer));
+
+  const char * pExt = convertICAP_IMAGEFILEFORMAT_toExt(fileformat);
+  if(fileformat==TWFF_TIFFMULTI)
+  {
+    SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "FROM_SCANNER_F%s", pExt);
+  }
+  else
+  {
+    SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "FROM_SCANNER_%06dF%s", m_nXferNum, pExt);
+  }
+  filexfer.Format = fileformat;
 
   while(bPendingXfers)
   {
@@ -1196,16 +1210,10 @@ void TwainApp::initiateTransfer_File(TW_UINT16 fileformat /*= TWFF_TIFF*/)
     {
       break;
     }
-
-    // setup the file xfer
-    TW_SETUPFILEXFER filexfer;
-    memset(&filexfer, 0, sizeof(filexfer));
-
-    const char * pExt = convertICAP_IMAGEFILEFORMAT_toExt(fileformat);
-
-    SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "FROM_SCANNER_%06dF%s", m_nXferNum, pExt);
-
-    filexfer.Format = fileformat;
+    if(fileformat!=TWFF_TIFFMULTI)
+    {
+      SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "FROM_SCANNER_%06dF%s", m_nXferNum, pExt);
+    }
 
     PrintCMDMessage("app: Sending file transfer details...\n");
     twrc = DSM_Entry( DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, (TW_MEMREF)&(filexfer));
@@ -1226,7 +1234,10 @@ void TwainApp::initiateTransfer_File(TW_UINT16 fileformat /*= TWFF_TIFF*/)
 
       PrintCMDMessage("app: File \"%s\" saved...\n", filexfer.FileName);
 #ifdef _WINDOWS
-      ShellExecute(m_Parent, "open", filexfer.FileName, NULL, NULL, SW_SHOWNORMAL);
+      if(fileformat!=TWFF_TIFFMULTI)
+      {
+        ShellExecute(m_Parent, "open", filexfer.FileName, NULL, NULL, SW_SHOWNORMAL);
+      }
 #endif
       
       updateEXIMAGEINFO();
@@ -1265,7 +1276,12 @@ void TwainApp::initiateTransfer_File(TW_UINT16 fileformat /*= TWFF_TIFF*/)
       break;
     }
   }
-
+#ifdef _WINDOWS
+  if(TWRC_SUCCESS == twrc && fileformat==TWFF_TIFFMULTI)
+  {
+    ShellExecute(m_Parent, "open", filexfer.FileName, NULL, NULL, SW_SHOWNORMAL);
+  }
+#endif
   // Check to see if we left the scan loop before we were actualy done scanning
   // This will hapen if we had an error.  Need to let the DS know we are not going 
   // to transfer more images
