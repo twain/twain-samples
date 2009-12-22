@@ -31,17 +31,17 @@ Installation
 ------------
 
 [Linux]
-- install qmake then run it to generate makefiles
+- install QT 4.5.3 then run it to generate makefiles
 - make
-- copy images/TWAIN_logo.png to /usr/local/lib/twain
-- copy src/TWAINDS_Sample01.ds to /usr/local/lib/twain
+- copy images/TWAIN_logo.png to /usr/local/lib/twain/sample2
+- copy src/TWAINDS_Sample01.ds to /usr/local/lib/twain/sample2
 
 notes: it is a future goal to have "make install" do the above copies.
 
 [Windows]
 - QMake is used to generate the makefiles. You can get a copy of this free in any
 QT Open Source distribution.  Please see http://www.trolltech.com for more info.
-- copy the TWAIN_logo.png and TWAINDS_Sample[32|64].ds to /Windows/twain_[32|64] 
+- copy the TWAIN_logo.png and TWAINDS_Sample[32|64].ds to /Windows/twain_[32|64]/sample2
 directory.  
 - Or use the provided Visual Studio project files.
 
@@ -50,3 +50,4 @@ directory.
 - original: fredh@jflinc.com, May 14, 2005
 - updated:  fredh@jflin.com, Nov 23, 2007
 - updated:  jimw@jflin.com, Dec 10, 2007
+- updated:  mihailm@jflin.com, Dec 23, 2009

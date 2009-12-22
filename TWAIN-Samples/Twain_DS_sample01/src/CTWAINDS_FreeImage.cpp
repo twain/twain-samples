@@ -36,14 +36,16 @@
 * @author TWAIN Working Group
 * @date April 2007
 */
-
 #include "CTWAINDS_FreeImage.h"
+#include "TWAIN_UI.h"
 #include "FreeImage.h"
+#include <sstream>
 
 #include <iostream>
 #include <cstdlib>
 #include <assert.h>
 #include <signal.h>
+#include <typeinfo>
 
 #ifdef TWH_CMP_MSC
   #include <Winbase.h>
@@ -69,7 +71,7 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
     1,                                    // TW_UINT16  MinorNum;         Incremental revision number of the software
     TWLG_ENGLISH,                         // TW_UINT16  Language;         e.g. TWLG_SWISSFRENCH
     TWCY_USA,                             // TW_UINT16  Country;          e.g. TWCY_SWITZERLAND
-    "2.1 sample"                          // TW_STR32   Info;             e.g. "1.0b3 Beta release"
+    "2.1.1 sample"                        // TW_STR32   Info;             e.g. "1.0b3 Beta release"
 #ifdef _DEBUG
     " debug"
 #else
@@ -82,7 +84,7 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
 #endif
   },
   2,                                  // TW_UINT16  ProtocolMajor;    Application and DS must set to TWON_PROTOCOLMAJOR
-  0,                                  // TW_UINT16  ProtocolMinor;    Application and DS must set to TWON_PROTOCOLMINOR
+  1,                                  // TW_UINT16  ProtocolMinor;    Application and DS must set to TWON_PROTOCOLMINOR
   DG_IMAGE | DG_CONTROL | DF_DS2,     // TW_UINT32  SupportedGroups;  Bit field OR combination of DG_ constants
   "TWAIN Working Group",              // TW_STR32   Manufacturer;     Manufacturer name, e.g. "Hewlett-Packard"
   "Software Scan",                    // TW_STR32   ProductFamily;    Product family name, e.g. "ScanJet"
@@ -96,7 +98,262 @@ CTWAINDS_FreeImage::CTWAINDS_FreeImage(TW_IDENTITY AppID) :
   m_AppID = AppID;
   // Setup our identity
   fillIdentityStructure(*getIdentity());
+  m_pGUI = CreateUI(this);
   return;
+}
+
+bool CTWAINDS_FreeImage::StoreCapInStream(stringstream &_DsData, TW_UINT16 _unCapID, TW_UINT16 _unCapIdx, TW_UINT16 unContType)
+{
+  CUST_DS_DATA_ELEMENT *pCapCon =(CUST_DS_DATA_ELEMENT*) new BYTE[sizeof(CUST_DS_DATA_ELEMENT)];
+  CTWAINContainer *pCap = findCapability(_unCapID);
+  TW_UINT16 unType = pCap->GetItemType();
+  pCapCon->unItemType = unType;
+  pCapCon->unCapID = _unCapID;
+  pCapCon->unCapIdx=_unCapIdx;
+  pCapCon->unContType = unContType;
+  pCapCon->dwSize = sizeof(CUST_DS_DATA_ELEMENT);
+
+  if(unContType!=TWON_ONEVALUE)//currentlly storing a single value
+  {
+    delete []pCapCon;
+    return false;
+  }
+  
+  if(typeid(*pCap) == typeid(CTWAINContainerBool))
+  {
+
+    CTWAINContainerBool *pfBoolCap = (CTWAINContainerBool*)pCap;
+    bool bVal;
+    if(!pfBoolCap->GetCurrent(bVal))
+    {
+      delete []pCapCon;
+      return false;
+    }
+    pCapCon->dwVal[0] = bVal?1:0;
+  }
+  else if(typeid(*pCap) == typeid(CTWAINContainerInt))
+  {
+    CTWAINContainerInt *pfIntCap = (CTWAINContainerInt*)pCap;
+    int nVal;
+    if(!pfIntCap->GetCurrent(nVal))
+    {
+      delete []pCapCon;
+      return false;
+    }
+    pCapCon->dwVal[0] = nVal;
+  } 
+  else if(typeid(*pCap) == typeid(CTWAINContainerFix32))
+  {
+    CTWAINContainerFix32 *pfFix32Cap = (CTWAINContainerFix32*)pCap;
+    float fVal;
+    if(!pfFix32Cap->GetCurrent(fVal))
+    {
+      delete []pCapCon;
+      return false;
+    }
+    *((float*)pCapCon->dwVal) = fVal;
+  } 
+  else if(typeid(*pCap) == typeid(CTWAINContainerFix32Range))
+  {
+    CTWAINContainerFix32Range *pfFix32Cap = (CTWAINContainerFix32Range*)pCap;
+    float fVal;
+    if(!pfFix32Cap->GetCurrent(fVal))
+    {
+     delete []pCapCon;
+     return false;
+    }
+    *((float*)pCapCon->dwVal) = fVal;
+  } 
+  else if(typeid(*pCap) == typeid(CTWAINContainerFrame))
+  {
+
+    CTWAINContainerFrame *pfFrameCap = (CTWAINContainerFrame*)pCap;
+    InternalFrame frmVal;
+    if(!pfFrameCap->GetCurrent(frmVal))
+    {
+      delete []pCapCon;
+      return false;
+    }
+    CUST_DS_DATA_ELEMENT *pCapCon1 =(CUST_DS_DATA_ELEMENT*) new BYTE[sizeof(CUST_DS_DATA_ELEMENT) + (4*sizeof(int)-sizeof(DWORD))];
+    *pCapCon1=*pCapCon;
+    delete []pCapCon;
+    pCapCon=pCapCon1;
+    pCapCon->dwSize +=(4*sizeof(int)-sizeof(DWORD)); 
+    pCapCon->dwVal[0] = frmVal.nBottom;
+    pCapCon->dwVal[1] = frmVal.nLeft;
+    pCapCon->dwVal[2] = frmVal.nRight;
+    pCapCon->dwVal[3] = frmVal.nTop;
+  } 
+  else
+  {
+    delete []pCapCon;
+    return false;
+  }
+
+  _DsData.write((char*)pCapCon,pCapCon->dwSize);
+  delete []pCapCon;
+  return true;
+}
+
+bool CTWAINDS_FreeImage::ReadCapFromStream(stringstream &_DsData, TW_UINT16 _unCapID, TW_UINT16 _unCapIdx)
+{
+  _DsData.seekg(0, ios_base::beg);
+  DWORD dwSize = sizeof(CUST_DS_DATA_ELEMENT);
+  CUST_DS_DATA_ELEMENT *pCapCon =(CUST_DS_DATA_ELEMENT*) new BYTE[dwSize];
+  pCapCon->unCapID=-1;
+  pCapCon->unCapIdx=-1;
+  pCapCon->dwSize = 0;
+  while(!_DsData.eof() && (pCapCon->unCapID!=_unCapID || pCapCon->unCapIdx!=_unCapIdx))
+  {
+    _DsData.read((char*)pCapCon,sizeof(CUST_DS_DATA_ELEMENT));
+    if(!_DsData.eof() && pCapCon->dwSize>sizeof(CUST_DS_DATA_ELEMENT))
+    {
+      if(pCapCon->dwSize>dwSize)
+      {
+        BYTE *pTemp = new BYTE[pCapCon->dwSize];
+        memcpy(pTemp,pCapCon,sizeof(CUST_DS_DATA_ELEMENT));
+        delete []pCapCon;
+        pCapCon = (CUST_DS_DATA_ELEMENT*) pTemp;
+        dwSize = pCapCon->dwSize;
+      }
+      _DsData.read((char*)pCapCon+sizeof(CUST_DS_DATA_ELEMENT),pCapCon->dwSize-sizeof(CUST_DS_DATA_ELEMENT));
+    }
+  }
+
+  if(pCapCon->unCapID!=_unCapID || pCapCon->unCapIdx!=_unCapIdx)
+  {
+    delete []pCapCon;
+    return false;
+  }
+  CTWAINContainer *pCap = findCapability(_unCapID);
+  TW_UINT16 unType = pCap->GetItemType();
+  if(unType !=pCapCon->unItemType)
+  {
+    delete []pCapCon;
+    return false;
+  }
+
+  if(pCapCon->unContType!=TWON_ONEVALUE)//currentlly storing a single value
+  {
+    delete []pCapCon;
+    return false;
+  }
+
+  bool bRes =true;
+  TW_ONEVALUE conVal;
+  conVal.ItemType = pCapCon->unItemType;
+  conVal.Item =pCapCon->dwVal[0];
+  if(typeid(*pCap) == typeid(CTWAINContainerBool))
+  {
+    bRes = validateCapabilitySet(_unCapID,TWON_ONEVALUE,(BYTE*)&conVal)!=TWRC_FAILURE;
+    if(bRes)
+    {
+      CTWAINContainerBool *pfBoolCap = (CTWAINContainerBool*)pCap;
+      bRes = pfBoolCap->SetCurrent(pCapCon->dwVal[0]!=0);
+    }
+  }
+  else if(typeid(*pCap) == typeid(CTWAINContainerInt))
+  {
+    bRes = validateCapabilitySet(_unCapID,TWON_ONEVALUE,(BYTE*)&conVal)!=TWRC_FAILURE;
+    if(bRes)
+    {
+      CTWAINContainerInt *pfIntCap = (CTWAINContainerInt*)pCap;
+      bRes = pfIntCap->SetCurrent(pCapCon->dwVal[0]);
+    }
+  } 
+  else if(typeid(*pCap) == typeid(CTWAINContainerFix32))
+  {
+    bRes = validateCapabilitySet(_unCapID,TWON_ONEVALUE,(BYTE*)&conVal)!=TWRC_FAILURE;
+    if(bRes)
+    {
+      CTWAINContainerFix32 *pfFix32Cap = (CTWAINContainerFix32*)pCap;
+      bRes = pfFix32Cap->SetCurrent(*(float*)pCapCon->dwVal);
+    }
+  } 
+  else if(typeid(*pCap) == typeid(CTWAINContainerFix32Range))
+  {
+    bRes = validateCapabilitySet(_unCapID,TWON_ONEVALUE,(BYTE*)&conVal)!=TWRC_FAILURE;
+    if(bRes)
+    {
+      CTWAINContainerFix32Range *pfFix32Cap = (CTWAINContainerFix32Range*)pCap;
+      bRes=pfFix32Cap->SetCurrent(*(float*)pCapCon->dwVal);
+    }
+  } 
+  else if(typeid(*pCap) == typeid(CTWAINContainerFrame))
+  {
+    InternalFrame frmVal;
+    frmVal.nBottom = pCapCon->dwVal[0];
+    frmVal.nLeft   = pCapCon->dwVal[1];
+    frmVal.nRight  = pCapCon->dwVal[2];
+    frmVal.nTop    = pCapCon->dwVal[3];
+    ConstrainFrameToScanner(frmVal);
+    CTWAINContainerFrame *pfFrameCap = (CTWAINContainerFrame*)pCap;
+    bRes = pfFrameCap->Set(frmVal);
+  } 
+  else
+  {
+    bRes = false;
+  }
+
+  delete []pCapCon;
+  return bRes;
+}
+
+bool CTWAINDS_FreeImage::StoreCustomDSdata(stringstream &DsData)
+{
+  bool bResult = true;
+  bResult = bResult && StoreCapInStream(DsData,CAP_FEEDERENABLED,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,CAP_DUPLEXENABLED,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,CAP_AUTOFEED,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_BITDEPTH,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_BITORDER,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_COMPRESSION,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_FRAMES,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_IMAGEFILEFORMAT,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_PIXELFLAVOR,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_PIXELTYPE,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_PLANARCHUNKY,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_SUPPORTEDSIZES,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_ORIENTATION,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_UNITS,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_XRESOLUTION,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_YRESOLUTION,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_THRESHOLD,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_CONTRAST,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_BRIGHTNESS,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,ICAP_GAMMA,0,TWON_ONEVALUE);
+  bResult = bResult && StoreCapInStream(DsData,CUSTCAP_LONGDOCUMENT,0,TWON_ONEVALUE);
+  return bResult;
+}
+
+bool CTWAINDS_FreeImage::ReadCustomDSdata(stringstream &DsData)
+{
+  // When adding to Capabiltiy remember the order of operations 
+  // Some capabilities are dependent on others.
+  // see: http://www.twain.org/docs/CapOrderForWeb.PDF
+  bool bResult = true;
+  bResult = bResult && ReadCapFromStream(DsData,CUSTCAP_LONGDOCUMENT,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_BITORDER,0);
+  bResult = bResult && ReadCapFromStream(DsData,CAP_FEEDERENABLED,0);
+  bResult = bResult && ReadCapFromStream(DsData,CAP_DUPLEXENABLED,0);
+  bResult = bResult && ReadCapFromStream(DsData,CAP_AUTOFEED,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_UNITS,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_PIXELTYPE,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_BITDEPTH,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_XRESOLUTION,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_YRESOLUTION,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_PIXELFLAVOR,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_PLANARCHUNKY,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_THRESHOLD,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_IMAGEFILEFORMAT,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_COMPRESSION,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_CONTRAST,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_BRIGHTNESS,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_GAMMA,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_SUPPORTEDSIZES,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_ORIENTATION,0);
+  bResult = bResult && ReadCapFromStream(DsData,ICAP_FRAMES,0);
+  return bResult;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -109,14 +366,19 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   // setup the supported independant caps
   CTWAINContainerInt* pnCap = 0;
   CTWAINContainerBool* pbCap = 0;
+  CTWAINContainerString* pstrCap = 0;
+  CTWAINContainerFix32* pfixCap = 0;
 
   m_IndependantCapMap[CAP_SUPPORTEDCAPS] = new CTWAINContainerInt(CAP_SUPPORTEDCAPS, TWTY_UINT16, TWON_ARRAY, TWQC_GETS);
   if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_SUPPORTEDCAPS]))
    || !pnCap->Add(CAP_DEVICEONLINE)
    || !pnCap->Add(CAP_INDICATORS)
+   || !pnCap->Add(CAP_ENABLEDSUIONLY)
    || !pnCap->Add(CAP_PAPERDETECTABLE)
    || !pnCap->Add(CAP_FEEDERENABLED)
    || !pnCap->Add(CAP_FEEDERLOADED)
+   || !pnCap->Add(CAP_DUPLEX)
+   || !pnCap->Add(CAP_DUPLEXENABLED)
    || !pnCap->Add(CAP_AUTOFEED)
    || !pnCap->Add(CAP_SUPPORTEDCAPS)
    || !pnCap->Add(CAP_UICONTROLLABLE)
@@ -133,10 +395,20 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
    || !pnCap->Add(ICAP_PIXELTYPE)
    || !pnCap->Add(ICAP_PLANARCHUNKY)
    || !pnCap->Add(ICAP_SUPPORTEDSIZES)
+   || !pnCap->Add(ICAP_ORIENTATION)
    || !pnCap->Add(ICAP_UNITS)
    || !pnCap->Add(ICAP_XFERMECH)
    || !pnCap->Add(ICAP_XRESOLUTION)
-   || !pnCap->Add(ICAP_YRESOLUTION) )
+   || !pnCap->Add(ICAP_YRESOLUTION) 
+   || !pnCap->Add(ICAP_THRESHOLD) 
+   || !pnCap->Add(ICAP_CONTRAST) 
+   || !pnCap->Add(ICAP_BRIGHTNESS) 
+   || !pnCap->Add(ICAP_GAMMA) 
+   || !pnCap->Add(CAP_CUSTOMINTERFACEGUID)
+   || !pnCap->Add(CUSTCAP_LONGDOCUMENT) 
+   || !pnCap->Add(CUSTCAP_DOCS_IN_ADF) 
+   || !pnCap->Add(CAP_CUSTOMDSDATA) 
+   )
   {
     cerr << "Could not create CAP_SUPPORTEDCAPS" << endl;
     setConditionCode(TWCC_LOWMEMORY);
@@ -209,6 +481,15 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
+  m_IndependantCapMap[CAP_ENABLEDSUIONLY] = new CTWAINContainerBool(CAP_ENABLEDSUIONLY, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_GETS);
+  if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_ENABLEDSUIONLY]))
+   || !pbCap->Add(TRUE, true) )
+  {
+    cerr << "Could not create CAP_ENABLEDSUIONLY" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+
   m_IndependantCapMap[CAP_XFERCOUNT] = new CTWAINContainerInt(CAP_XFERCOUNT, TWTY_INT16, TWON_ONEVALUE);
   if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_XFERCOUNT]))
    || !pnCap->Add(TWON_DONTCARE32, true) )
@@ -260,6 +541,15 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
+  m_IndependantCapMap[ICAP_ORIENTATION] = new CTWAINContainerInt(ICAP_ORIENTATION, TWTY_UINT16, TWON_ENUMERATION);
+  if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[ICAP_ORIENTATION]))
+   || !pnCap->Add(TWOR_PORTRAIT, true))
+  {
+    cerr << "Could not create ICAP_ORIENTATION" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+
   m_IndependantCapMap[CAP_DEVICEONLINE] = new CTWAINContainerBool(CAP_DEVICEONLINE, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_GETS);
   if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_DEVICEONLINE]))
    || !pbCap->Add(TRUE, true)
@@ -272,9 +562,8 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
 
   m_IndependantCapMap[CAP_INDICATORS] = new CTWAINContainerBool(CAP_INDICATORS, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_ALL);
   if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_INDICATORS]))
-   || !pbCap->Add(FALSE, true))
-  /// @todo add UI
-  // || !pnCap->Add(TRUE, true))//Default has to be TRUE if it is supported
+   || !pbCap->Add(TRUE, true)
+   || !pbCap->Add(FALSE))
   {
     cerr << "Could not create CAP_INDICATORS" << endl;
     setConditionCode(TWCC_LOWMEMORY);
@@ -291,8 +580,8 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   }
 
   m_IndependantCapMap[CAP_FEEDERENABLED] = new CTWAINContainerBool(CAP_FEEDERENABLED, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_ALL);
-  /// @todo to add support for flatbed set to TWQC_ALL and add False as posible value.
   if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_FEEDERENABLED]))
+   || !pbCap->Add(FALSE)
    || !pbCap->Add(TRUE, true) )
   {
     cerr << "Could not create CAP_FEEDERENABLED" << endl;
@@ -300,6 +589,23 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
+  m_IndependantCapMap[CAP_DUPLEX] = new CTWAINContainerInt(CAP_DUPLEX, TWTY_UINT16, TWON_ONEVALUE, TWQC_GETS);
+  if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_DUPLEX]))
+   || !pnCap->Add(TWDX_NONE, true) )
+  {
+    cerr << "Could not create CAP_DUPLEX" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+
+  m_IndependantCapMap[CAP_DUPLEXENABLED] = new CTWAINContainerBool(CAP_DUPLEXENABLED, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_ALL);
+  if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_DUPLEXENABLED]))
+   || !pbCap->Add(FALSE, true))
+  {
+    cerr << "Could not create CAP_DUPLEXENABLED" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
   m_IndependantCapMap[CAP_FEEDERLOADED] = new CTWAINContainerBool(CAP_FEEDERLOADED, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_GETS);
   if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_FEEDERLOADED]))
    || !pbCap->Add(TRUE)
@@ -329,6 +635,34 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
+  m_IndependantCapMap[CUSTCAP_LONGDOCUMENT] = new CTWAINContainerBool(CUSTCAP_LONGDOCUMENT, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_ALL);
+  if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CUSTCAP_LONGDOCUMENT]))
+   || !pbCap->Add(TRUE)
+   || !pbCap->Add(FALSE, true) )
+  {
+    cerr << "Could not create CUSTCAP_LONGDOCUMENT" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+
+  m_IndependantCapMap[CUSTCAP_DOCS_IN_ADF] = new CTWAINContainerInt(CUSTCAP_DOCS_IN_ADF, TWTY_UINT16, TWON_ONEVALUE, TWQC_ALL);
+  if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CUSTCAP_DOCS_IN_ADF]))
+   || !pnCap->Add(m_Scanner.GetMaxPagesInADF()))
+  {
+    cerr << "Could not create CUSTCAP_DOCS_IN_ADF" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+
+  m_IndependantCapMap[CAP_CUSTOMDSDATA] = new CTWAINContainerBool(CAP_CUSTOMDSDATA, (m_AppID.SupportedGroups&DF_APP2)!=0, TWQC_GETS);
+  if( NULL == (pbCap = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_CUSTOMDSDATA]))
+   || !pbCap->Add(TRUE, true) )
+  {
+    cerr << "Could not create CAP_CUSTOMDSDATA" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+
   // setup dependant caps
   if( NULL == (m_BitDepthMap[TWPT_BW] = new CTWAINContainerInt(ICAP_BITDEPTH, TWTY_UINT16, TWON_ENUMERATION))
    || !m_BitDepthMap[TWPT_BW]->Add(1, true) )
@@ -354,8 +688,61 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
+  m_IndependantCapMap[CAP_CUSTOMINTERFACEGUID] = new CTWAINContainerString(CAP_CUSTOMINTERFACEGUID,TWTY_STR255,TWON_ONEVALUE, TWQC_GETS);
+  if( NULL == (pstrCap = dynamic_cast<CTWAINContainerString*>(m_IndependantCapMap[CAP_CUSTOMINTERFACEGUID]))
+    || !pstrCap->Add(kCUSTOMDSGUI, true))
+  {
+    cerr << "Could not create CAP_CUSTOMINTERFACEGUID" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+  
+  m_IndependantCapMap[ICAP_GAMMA] = new CTWAINContainerFix32(ICAP_GAMMA,TWON_ONEVALUE, TWQC_ALL);
+  if( NULL == (pfixCap = dynamic_cast<CTWAINContainerFix32*>(m_IndependantCapMap[ICAP_GAMMA]))
+    || !pfixCap->Add(1, true))
+  {
+    cerr << "Could not create ICAP_GAMMA" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+  FLOAT_RANGE fRange;
+  fRange.fCurrentValue = 128.0f;
+  fRange.fMaxValue = 255.0f;
+  fRange.fMinValue = 0.0f;
+  fRange.fStepSize = 1.0f;
+  m_IndependantCapMap[ICAP_THRESHOLD] = new CTWAINContainerFix32Range(ICAP_THRESHOLD,fRange, TWQC_ALL);
+  if( NULL == dynamic_cast<CTWAINContainerFix32Range*>(m_IndependantCapMap[ICAP_THRESHOLD]))
+  {
+    cerr << "Could not create ICAP_THRESHOLD" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+
+  fRange.fCurrentValue = 0.0f;
+  fRange.fMaxValue = 1000.0f;
+  fRange.fMinValue = -1000.0f;
+  fRange.fStepSize = 1.0f;
+  m_IndependantCapMap[ICAP_CONTRAST] = new CTWAINContainerFix32Range(ICAP_CONTRAST,fRange, TWQC_ALL);
+  if( NULL == dynamic_cast<CTWAINContainerFix32Range*>(m_IndependantCapMap[ICAP_CONTRAST]))
+  {
+    cerr << "Could not create ICAP_CONTRAST" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+
+  fRange.fCurrentValue = 0.0f;
+  fRange.fMaxValue = 1000.0f;
+  fRange.fMinValue = -1000.0f;
+  fRange.fStepSize = 1.0f;
+  m_IndependantCapMap[ICAP_BRIGHTNESS] = new CTWAINContainerFix32Range(ICAP_BRIGHTNESS,fRange, TWQC_ALL);
+  if( NULL == dynamic_cast<CTWAINContainerFix32Range*>(m_IndependantCapMap[ICAP_BRIGHTNESS]))
+  {
+    cerr << "Could not create ICAP_BRIGHTNESS" << endl;
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
   // expressed internally as pixels per inch
-  if( NULL == (m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION] = new CTWAINContainerFix32(ICAP_XRESOLUTION, TWTY_FIX32, TWON_ENUMERATION, TWQC_ALL))
+  if( NULL == (m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION] = new CTWAINContainerFix32(ICAP_XRESOLUTION, TWON_ENUMERATION, TWQC_ALL))
    || !m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION]->Add(50)
    || !m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION]->Add(100)
    || !m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION]->Add(150)
@@ -371,7 +758,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   }
 
   // expressed internally as pixels per inch
-  if( NULL == (m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION] = new CTWAINContainerFix32(ICAP_YRESOLUTION, TWTY_FIX32, TWON_ENUMERATION, TWQC_ALL))
+  if( NULL == (m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION] = new CTWAINContainerFix32(ICAP_YRESOLUTION, TWON_ENUMERATION, TWQC_ALL))
    || !m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION]->Add(50)
    || !m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION]->Add(100)
    || !m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION]->Add(150)
@@ -392,7 +779,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   //  Flatbed   - A4 letter paper
   //  ConvertUnits(29.7f, TWUN_CENTIMETERS, TWUN_INCHES, 1000);
   //  ConvertUnits(21.0f, TWUN_CENTIMETERS, TWUN_INCHES, 1000);
-  if( NULL == (m_ICAP_UNIT_Dependant[ICAP_PHYSICALWIDTH] = new CTWAINContainerFix32(ICAP_PHYSICALWIDTH, TWTY_FIX32, TWON_ONEVALUE, TWQC_GETS))
+  if( NULL == (m_ICAP_UNIT_Dependant[ICAP_PHYSICALWIDTH] = new CTWAINContainerFix32(ICAP_PHYSICALWIDTH, TWON_ONEVALUE, TWQC_GETS))
    || !m_ICAP_UNIT_Dependant[ICAP_PHYSICALWIDTH]->Add(8.5, true) )
   {
     cerr << "Could not create ICAP_PHYSICALWIDTH" << endl;
@@ -400,7 +787,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
 
-  if( NULL == (m_ICAP_UNIT_Dependant[ICAP_PHYSICALHEIGHT] = new CTWAINContainerFix32(ICAP_PHYSICALHEIGHT, TWTY_FIX32, TWON_ONEVALUE, TWQC_GETS))
+  if( NULL == (m_ICAP_UNIT_Dependant[ICAP_PHYSICALHEIGHT] = new CTWAINContainerFix32(ICAP_PHYSICALHEIGHT, TWON_ONEVALUE, TWQC_GETS))
    || !m_ICAP_UNIT_Dependant[ICAP_PHYSICALHEIGHT]->Add(14.0, true) )
   {
     cerr << "Could not create ICAP_PHYSICALHEIGHT" << endl;
@@ -411,7 +798,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   // setup the ICAP_FRAMES
   // expressed internally as 1000 pixels per inch
   // Currently only supports one frame see: ICAP_MAXFRAMES
-  if( NULL == (m_pICAP_FRAMES = new CTWAINContainerFrame(ICAP_FRAMES, TWTY_FRAME, TWON_ENUMERATION, TWQC_ALL))
+  if( NULL == (m_pICAP_FRAMES = new CTWAINContainerFrame(ICAP_FRAMES, TWON_ENUMERATION, TWQC_ALL))
    || !m_pICAP_FRAMES->Add(0, 0, 8500, 11000, true) )
   {
     cerr << "Could not create ICAP_FRAMES" << endl;
@@ -439,6 +826,8 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
 //////////////////////////////////////////////////////////////////////////////
 CTWAINDS_FreeImage::~CTWAINDS_FreeImage()
 {
+  DestroyUI(m_pGUI);
+
   // free all resources belonging to m_IndependantCapMap
   TWAINCapabilitiesMap_int::iterator cur_int = m_BitDepthMap.begin();
   while(cur_int != m_BitDepthMap.end())
@@ -459,6 +848,7 @@ CTWAINDS_FreeImage::~CTWAINDS_FreeImage()
     delete m_pICAP_FRAMES;
   }
   m_pICAP_FRAMES = 0;
+  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -526,7 +916,6 @@ TW_INT16 CTWAINDS_FreeImage::getImageInfo(pTW_IMAGEINFO _pImageInfo)
 TW_INT16 CTWAINDS_FreeImage::openDS(pTW_IDENTITY  _pOrigin)
 {
   TW_INT16 ret = TWRC_SUCCESS;
-
   // this basic version of the DS only supports one connection from the DSM
   if( m_App.Id != 0 )
   {
@@ -583,12 +972,29 @@ TW_INT16 CTWAINDS_FreeImage::enableDS(pTW_USERINTERFACE _pData)
     setConditionCode(TWCC_SEQERROR);
     return TWRC_FAILURE;
   }
+  m_CurrentState = dsState_Enabled;
+  m_bCanceled = false;
 
-  // @todo Impliment UI in the DS
-  if(1)//FALSE == _pData->ShowUI)
+
+  //set pending xfers to whatever the user configured for XferCount
+  int Count = TWON_DONTCARE32;
+  CTWAINContainerInt *pnCap = dynamic_cast<CTWAINContainerInt*>(findCapability(CAP_XFERCOUNT));
+  if(pnCap)
   {
-    m_CurrentState = dsState_Enabled;
+    pnCap->GetCurrent(Count);
+  }
+  m_Xfers.Count = Count;
 
+  // Indicate we have not transferred any images yet
+  m_DocumentNumber = 0;
+  m_PageNumber     = 0;
+
+  // The application will move to state 5 after this triplet which means that
+  // no more capabilities can be set until we are brought back to state 4.
+  m_Scanner.Lock();
+
+  if(FALSE == _pData->ShowUI)
+  {    
     // Update the scanner with the latest negotiated caps
     if(!updateScannerFromCaps())
     {
@@ -596,24 +1002,9 @@ TW_INT16 CTWAINDS_FreeImage::enableDS(pTW_USERINTERFACE _pData)
       setConditionCode(TWCC_BADVALUE);
       return TWRC_FAILURE;
     }
-
-    //set pending xfers to whatever the user configured for XferCount
-    int Count = TWON_DONTCARE32;
-    CTWAINContainerInt *pnCap = dynamic_cast<CTWAINContainerInt*>(findCapability(CAP_XFERCOUNT));
-    if(pnCap)
-    {
-      pnCap->GetCurrent(Count);
-    }
-    m_Xfers.Count = Count;
-
-    // Indicate we have not transferred any images yet
-    m_DocumentNumber = 0;
-    m_PageNumber     = 0;
-
     // The application will move to state 5 after this triplet which means that
     // no more capabilities can be set until we are brought back to state 4.
     m_Scanner.Lock();
-
     // Because there is no user interface, there isn't anything to show here.
     // But, at this point, the application is not allowed to set any more
     // capabilities.  This means that we can do any initializations we
@@ -633,37 +1024,50 @@ TW_INT16 CTWAINDS_FreeImage::enableDS(pTW_USERINTERFACE _pData)
       setConditionCode(TWCC_SEQERROR);
       return TWRC_FAILURE;
     }
-
-    // @todo remove this when UI is working
-    if(TRUE == _pData->ShowUI)
-    {
-      setConditionCode(TWCC_BADPROTOCOL);
-      return TWRC_CHECKSTATUS;
-    }
   }
-  else
+  CTWAINContainerBool *pbCap = dynamic_cast<CTWAINContainerBool*>(findCapability(CAP_INDICATORS));
+  bool bIndicators = FALSE;
+  if(pbCap)
   {
-  /// @todo Hook up the GUI
-  /*
-    if(!DisplayTWAINGUI(*_pData))
-    {
-      // A user interface is not supported as of right now because we are
-      // in text mode.
-      setConditionCode(TWCC_OPERATIONERROR);
-      twrc = TWRC_FAILURE;
-    }
-    else
-    {
-      m_CurrentState = dsState_Enabled;
-    }
-   */
-  return TWRC_FAILURE;
-
+    pbCap->GetCurrent(bIndicators);
+  }  
+  if(m_pGUI->DisplayTWAINGUI(*_pData,false,bIndicators)!=TWRC_SUCCESS)
+  {
+    // A user interface is not supported as of right now because we are
+    // in text mode.
+    m_CurrentState = dsState_Open;
+    setConditionCode(TWCC_OPERATIONERROR);
+    return TWRC_FAILURE;
   }
 
   return TWRC_SUCCESS;
 }
+//////////////////////////////////////////////////////////////////////////////
+TW_INT16 CTWAINDS_FreeImage::enableDSOnly()
+{
+  if( dsState_Open != m_CurrentState )
+  {
+    setConditionCode(TWCC_SEQERROR);
+    return TWRC_FAILURE;
+  }
+  m_CurrentState = dsState_Enabled;
 
+  TW_USERINTERFACE Data;
+  memset(&Data,0,sizeof(TW_USERINTERFACE));
+  Data.ShowUI = 1;
+
+
+  if(m_pGUI->DisplayTWAINGUI(Data,true,false)!=TWRC_SUCCESS)
+  {
+    // A user interface is not supported as of right now because we are
+    // in text mode.
+    m_CurrentState = dsState_Open;
+    setConditionCode(TWCC_OPERATIONERROR);
+    return TWRC_FAILURE;
+  }
+
+  return TWRC_SUCCESS;
+}
 //////////////////////////////////////////////////////////////////////////////
 TW_INT16 CTWAINDS_FreeImage::disableDS(pTW_USERINTERFACE _pData)
 {
@@ -672,23 +1076,18 @@ TW_INT16 CTWAINDS_FreeImage::disableDS(pTW_USERINTERFACE _pData)
     setConditionCode(TWCC_SEQERROR);
     return TWRC_FAILURE;
   }
+  m_pGUI->DestroyTWAINGUI();
 
   // allow the scanners caps to be writeable again because we are moving back
   // to state 4. If this source had a UI, it would be lowered at this time.
   m_Scanner.Unlock();
 
-  if(TRUE == _pData->ShowUI)
-  {
-    // @todo Add this line back in later:
-    //DestroyTWAINGUI();
-  }
   
   // There is no UI in this text interface so there is nothing
   // to do here.
   m_CurrentState = dsState_Open;
   return TWRC_SUCCESS;
 }
-
 //////////////////////////////////////////////////////////////////////////////
 TW_INT16 CTWAINDS_FreeImage::getMemoryXfer(pTW_SETUPMEMXFER _pData)
 {
@@ -784,10 +1183,7 @@ TW_INT16 CTWAINDS_FreeImage::processEvent(pTW_EVENT _pEvent)
     return TWRC_FAILURE;
   }
 
-  #ifdef TWH_CMP_MSC
-  // There is only a GUI in windows
-  /// @todo once we have an UI then we will need to determine if this message is ours.
-  if (0)//hImageDlg && IsDialogMessage(hImageDlg, (LPMSG)(((pTW_EVENT)pData)->pEvent)))
+  if (m_pGUI && m_pGUI->processEvent(_pEvent))//hImageDlg && IsDialogMessage(hImageDlg, (LPMSG)(((pTW_EVENT)pData)->pEvent)))
   {
     twRc = TWRC_DSEVENT;
     // The source should, for proper form, return a MSG_NULL for
@@ -795,7 +1191,6 @@ TW_INT16 CTWAINDS_FreeImage::processEvent(pTW_EVENT _pEvent)
     _pEvent->TWMessage = MSG_NULL;
   }
   else
-  #endif
   {
     // notify the application that the source did not
     // consume this message
@@ -810,7 +1205,11 @@ TW_INT16 CTWAINDS_FreeImage::processEvent(pTW_EVENT _pEvent)
 TW_INT16 CTWAINDS_FreeImage::transfer()
 {
   TW_INT16 twrc = TWRC_SUCCESS;
-
+  if(m_bCanceled)
+  {
+    m_bCanceled = false;
+    return TWRC_CANCEL;
+  }
   if( dsState_XferReady != m_CurrentState )
   {
     setConditionCode(TWCC_SEQERROR);
@@ -891,11 +1290,16 @@ TW_INT16 CTWAINDS_FreeImage::endXfer(pTW_PENDINGXFERS _pXfers)
   {
     --m_Xfers.Count;
   }
-  else if(m_Xfers.Count == TW_UINT16(TWON_DONTCARE16) && !m_Scanner.isFeederLoaded())
+  
+  if(!m_Scanner.isFeederLoaded())
   {
     m_Xfers.Count = 0;
   }
-
+  if(m_bCanceled)
+  {
+    m_bCanceled = false;
+    m_Xfers.Count = 0;
+  }
   if(0 != m_Xfers.Count)
   {
     // Check to see if autofeed is turned on if so automaticly go get next image.
@@ -1056,7 +1460,6 @@ bool CTWAINDS_FreeImage::updateScannerFromCaps()
   }
 
   m_Scanner.setSetting(settings);
-  
   return bret;
 }
 
@@ -1096,17 +1499,6 @@ CTWAINContainer* CTWAINDS_FreeImage::findCapability(const TW_UINT16 _unCap)
       pRet = getICAP_BITDEPTH();
     break;
 
-    case CAP_INDICATORS:
-      {
-        CTWAINContainerBool *pBoolCon = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_INDICATORS]);
-        if( NULL != pBoolCon )
-        {
-          pBoolCon->SetCurrent(FALSE );
-          pRet = pBoolCon;
-        }
-      }
-    break;
-
     case CAP_DEVICEONLINE:
       {
         CTWAINContainerBool *pBoolCon = dynamic_cast<CTWAINContainerBool*>(m_IndependantCapMap[CAP_DEVICEONLINE]);
@@ -1114,6 +1506,16 @@ CTWAINContainer* CTWAINDS_FreeImage::findCapability(const TW_UINT16 _unCap)
         {
           pBoolCon->SetCurrent( m_Scanner.getDeviceOnline()?TRUE:FALSE );
           pRet = pBoolCon;
+        }
+      }
+    break;
+    case CUSTCAP_DOCS_IN_ADF:
+      {
+        CTWAINContainerInt *pIntCon = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CUSTCAP_DOCS_IN_ADF]);
+        if( NULL != pIntCon )
+        {
+          pIntCon->SetCurrent( m_Scanner.GetMaxPagesInADF());
+          pRet = pIntCon;
         }
       }
     break;
@@ -1287,19 +1689,27 @@ TW_INT16 CTWAINDS_FreeImage::dat_imagelayout(TW_UINT16         _MSG,
         cap.ConType = TWON_ONEVALUE;
         pTW_ONEVALUE_FRAME pCap = (pTW_ONEVALUE_FRAME)_DSM_LockMemory(cap.hContainer);
         pCap->Item = _pData->Frame;
+
+        int   unit = TWUN_PIXELS;
+        float Xres = 100;
+        float Yres = 100;
+        twrc = getCurrentUnits(unit, Xres, Yres);
+        InternalFrame frame(pCap->Item, unit, Xres, Yres);
+        if(ConstrainFrameToScanner(frame))
+        {
+          pCap->Item = frame.AsTW_FRAME(unit, Xres, Yres);
+          twrc = TWRC_CHECKSTATUS;
+        }
+
         pCap->ItemType = TWTY_FRAME;
         _DSM_UnlockMemory(hContainer);
 
         TW_INT16 Condition;
-        if(!m_pICAP_FRAMES->Set(&cap, Condition))
-        {
-          twrc = TWRC_FAILURE;
-          setConditionCode(Condition);
-        }
-        else
+        if(m_pICAP_FRAMES->Set(&cap, Condition))
         {
           updatePostDependencies(MSG_SET, ICAP_FRAMES);
         }
+
         _DSM_Free(hContainer);
       }
       else
@@ -1329,3 +1739,120 @@ TW_INT16 CTWAINDS_FreeImage::dat_imagelayout(TW_UINT16         _MSG,
   return twrc;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+TW_INT16 CTWAINDS_FreeImage::GetGustomDSData(pTW_CUSTOMDSDATA _pDSData)
+{
+  stringstream DsData;
+  if(StoreCustomDSdata(DsData))
+  {
+    DsData.seekp(0, ios_base::end);
+    DWORD dwSize =(DWORD) DsData.tellp();
+    _pDSData->InfoLength = dwSize+sizeof(TW_GUID);
+    TW_HANDLE hData = _DSM_Alloc(_pDSData->InfoLength);
+    if(hData==0)
+    {
+      setConditionCode(TWCC_LOWMEMORY);
+      return TWRC_FAILURE;
+    }
+    char * pData = (char*)_DSM_LockMemory(hData);
+    if(pData==0)
+    {
+      _DSM_Free(hData);
+      setConditionCode(TWCC_LOWMEMORY);
+      return TWRC_FAILURE;
+    }
+    memcpy(pData,&CustomDSGUI,sizeof(TW_GUID));
+    pData +=sizeof(TW_GUID);
+    DsData.seekg(0, ios_base::beg);
+    DsData.read(pData,dwSize);
+    _DSM_UnlockMemory(hData);
+    _pDSData->hData=hData;
+    return TWRC_SUCCESS;
+  }
+  setConditionCode(TWCC_BUMMER);
+  return TWRC_FAILURE;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+TW_INT16 CTWAINDS_FreeImage::SetGustomDSData(pTW_CUSTOMDSDATA _pDSData)
+{
+  if(_pDSData->hData==0 || _pDSData->InfoLength<=sizeof(TW_GUID))
+  {
+    setConditionCode(TWCC_BADVALUE);
+    return TWRC_FAILURE;
+  }
+
+  stringstream DsData;
+  char * pData = (char*)_DSM_LockMemory(_pDSData->hData);
+  if(pData==0)
+  {
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+  if(memcmp(pData,&CustomDSGUI,sizeof(TW_GUID))==0)
+  {
+    pData +=sizeof(TW_GUID);
+    DsData.write(pData,_pDSData->InfoLength);
+    _DSM_UnlockMemory(_pDSData->hData);
+    stringstream DsDataBackUp;
+    if(StoreCustomDSdata(DsDataBackUp))//Back up current settings
+    {
+      if(ReadCustomDSdata(DsData))
+      {
+        return TWRC_SUCCESS;
+      }
+      ReadCustomDSdata(DsDataBackUp);//restore current settings
+    }
+  }
+  setConditionCode(TWCC_BADVALUE);
+  return TWRC_FAILURE;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+TW_INT16 CTWAINDS_FreeImage::validateCapabilitySet(TW_UINT16 _Cap, TW_UINT16  _ConType, BYTE* _pContainer)
+{
+  TW_INT16 twrc  = CTWAINDS_Base::validateCapabilitySet(_Cap,_ConType,_pContainer);
+  if(twrc!=TWRC_SUCCESS)
+  {
+    return twrc;
+  }
+
+  switch(_Cap)
+  {
+    case CUSTCAP_DOCS_IN_ADF:
+    {
+      twrc = TWRC_FAILURE;
+      if(TWON_ONEVALUE == _ConType)
+      {
+        pTW_ONEVALUE pCap = (pTW_ONEVALUE)_pContainer;
+
+        if(pCap)
+        {
+          if( (TW_INT16)pCap->Item >= 0 )
+          {
+            twrc = TWRC_SUCCESS;
+            m_Scanner.SetMaxPagesInADF((TW_INT16)pCap->Item);
+          }
+        }
+      }
+      break;
+    }
+    default:
+      break;
+  }
+
+  return twrc;
+}
+
+bool CTWAINDS_FreeImage::StartScanning()
+{
+  // Update the scanner with the latest negotiated caps
+  if(!updateScannerFromCaps())
+  {
+    cerr << "ds: There was an error while prepping the image for scanning" << endl;
+    setConditionCode(TWCC_BADVALUE);
+    return false;
+  }
+
+  return m_Scanner.acquireImage();
+};

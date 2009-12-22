@@ -30,76 +30,61 @@
 ***************************************************************************/
 
 /**
-* @file TWAINSampleDlg.cpp
-* Sample DS Dlg implementation file.
-* @author JFL Peripheral Solutions Inc.
-* @date October 2005
+* @file QT_UI.h
+* UI base class - QT based 
+* @author TWAIN Working Group
+* @date Nov 2009
 */
+#include "CTWAINDS_FreeImage.h"
 
-//#include "stdafx.h"
-//#include "TWAINGUI.h"
-#include "TWAINDS_SampleDlg.h"
-#include "..\src\CTWAINDS_Sample1.h"
-extern CTWAINDS_Base* g_pTWAINLayer;
+#ifndef __QT_UI_H__
+#define __QT_UI_H__
 
-// CTWAINSampleDlg dialog
+#include "TWAIN_UI.h"
+#include <QThread>
+#include <QtCore/QCoreApplication>
+#include <QApplication>
+#include <QMessageBox>
 
-IMPLEMENT_DYNAMIC(CTWAINSampleDlg, CDialog)
-CTWAINSampleDlg::CTWAINSampleDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CTWAINSampleDlg::IDD, pParent)
+class MainForm;
+class QT_UI;
+
+
+class UIThread : public QThread
 {
-}
+public:
+   UIThread(QT_UI *pUI, TW_USERINTERFACE Data){m_pUI=pUI;m_Data=Data;}
+   void run();
+   TW_USERINTERFACE m_Data;
+   QT_UI *m_pUI;
+   QApplication *m_pApp;
+   MainForm *m_pDlg;
+};
 
-CTWAINSampleDlg::~CTWAINSampleDlg()
+class QT_UI : public CTWAIN_UI
 {
-}
+public:
+  QT_UI(CTWAINDS_FreeImage *pDS);
+  ~QT_UI();
+  /**
+  * Will show the TWAIN GUI
+  * @param[in] _pData contains info about if the UI should be shown etc.
+  * @return a valid TWRC_xxxx return code.
+  */
+  TW_INT16 DisplayTWAINGUI(TW_USERINTERFACE Data, bool bSetup, bool bIndicators);
 
-void CTWAINSampleDlg::DoDataExchange(CDataExchange* pDX)
-{
-  CDialog::DoDataExchange(pDX);
-  DDX_Control(pDX, IDC_CBX_RESOLUTION, m_cbxResolution);
-  DDX_Control(pDX, IDC_CBX_PAPERSIZE, m_cbxPaperSize);
-  DDX_Control(pDX, IDC_CBX_PIXELTYPE, m_cbxPixelType);
-}
+  /**
+  * Close the user interface for TWAIN
+  */
+  void DestroyTWAINGUI();
+  void UpdateProgress(bool bShow, unsigned char ucProgress, unsigned int unPageNo, string strProgressTitle);
+  unsigned int MessageBox(string strMessage,string strTitle, unsigned int unIconID);
+  bool processEvent(pTW_EVENT _pEvent);
 
+  MainForm *m_pDlg;
+  QWidget  *m_pChildWnd;
+  UIThread *m_pUIThread;
+  QApplication  *m_pQtApp;
+};
 
-BEGIN_MESSAGE_MAP(CTWAINSampleDlg, CDialog)
-  ON_BN_CLICKED(IDOK, OnBnClickedOk)
-  ON_BN_CLICKED(IDCANCEL, OnBnClickedCancel)
-END_MESSAGE_MAP()
-
-
-// CTWAINSampleDlg message handlers
-
-BOOL CTWAINSampleDlg::OnInitDialog()
-{
-  CDialog::OnInitDialog();
-
-  // JMH: This is where you initialize all the controls
-  //m_cbxResolution
-  //m_cbxPaperSize
-  //m_cbxPixelType
-  // JMH: I suggest creating functions for syncing the contents of these controls
-  // Each control should have a function to check to see if they are populated
-  // According to the content of their respective TWAIN Capabilities...
-  // So they can be re-used to update the contents when settings change
-  //UpdateResolution();
-  //UpdatePaperSize();
-  //UpdatePixelType();
-
-  return TRUE;  // return TRUE unless you set the focus to a control
-  // EXCEPTION: OCX Property Pages should return FALSE
-}
-
-
-void CTWAINSampleDlg::OnBnClickedOk()
-{
-  g_pTWAINLayer->DoXferReadyEvent();
-  return;
-}
-
-void CTWAINSampleDlg::OnBnClickedCancel()
-{
-  g_pTWAINLayer->DoCloseDSRequestEvent();
-  return;
-}
+#endif // __QT_UI_H__

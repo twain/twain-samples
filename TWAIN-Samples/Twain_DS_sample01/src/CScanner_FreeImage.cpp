@@ -67,6 +67,8 @@ using namespace std;
 extern HINSTANCE   g_hinstance;
 #endif
 
+#define kTWAIN_DS_DIR         "/usr/local/lib/twain/sample2"
+
 //////////////////////////////////////////////////////////////////////////////
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message)
 {
@@ -141,7 +143,7 @@ bool CScanner_FreeImage::resetScanner()
   m_nScanLine        = 0;
   m_nDestBytesPerRow = 0;
 
-  m_nDocCount     = getDocumentCount();// Reloaded the scanner with paper
+  m_nDocCount     = m_nMaxDocCount = getDocumentCount();// Reloaded the scanner with paper
   m_nPixelType    = TWPT_RGB;
   m_nPaperSource  = SFI_PAPERSOURCE_ADF;
   m_bDuplex       = false;
@@ -175,6 +177,7 @@ void CScanner_FreeImage::setSetting(SFreeImage settings)
   m_nHeight      = settings.m_nHeight;
   m_fXResolution = settings.m_fXResolution;
   m_fYResolution = settings.m_fYResolution;
+  m_nDocCount = m_nMaxDocCount;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -427,7 +430,7 @@ bool CScanner_FreeImage::isFeederLoaded()
   if(m_nDocCount<=0)
   {
     rtn = false;
-    m_nDocCount = getDocumentCount();// Reloaded the scanner with paper
+    m_nDocCount = m_nMaxDocCount;// Reloaded the scanner with paper
   }
   return rtn;
 }

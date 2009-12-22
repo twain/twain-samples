@@ -55,9 +55,6 @@
 #include <vector>
 using namespace std;
 
-#ifdef TWH_CMP_GNU
-  typedef unsigned int UINT;
-#endif // TWH_CMP_GNU
 
 /**
 * String Vector
@@ -93,6 +90,7 @@ typedef vector<int> IntVector;
 */
 class CTWAINContainer
 {
+  friend class CTWAIN_UI;
 public:
   /**
   * Constructor.  
@@ -121,9 +119,10 @@ public:
 
   /**
   * Return the TWON_xxxx containor type.
+  * @param[in] _MSG the MSG_GETxxxx get message.
   * @return the containor type
   */
-  TW_UINT16 GetGetType();
+  virtual TW_UINT16 GetGetType(const TW_UINT16 _unMsg);
 
   //////////////////////////////////////////////////////////////////////////////
   /**

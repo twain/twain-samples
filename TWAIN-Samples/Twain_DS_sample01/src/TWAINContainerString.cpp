@@ -30,8 +30,8 @@
 ***************************************************************************/
 
 /**
-* @file TWAINContainerFix32.cpp
-* Fix32 Container class for negotiating capabilities.
+* @file TWAINContainerInt.cpp
+* Int Container class for negotiating capabilities.
 * @author TWAIN Working Group
 * @date April 2007
 */
@@ -39,20 +39,22 @@
 
 #include "CommonDS.h"
 #include <algorithm>
-#include <float.h>
 
-CTWAINContainerFix32::CTWAINContainerFix32(const TW_UINT16 _unCapID, 
-                                           const TW_UINT16 _unGetType, 
-                                           const TW_INT32  _nSupportedQueries /*=TWQC_ALL*/)
-  : CTWAINContainer(_unCapID, TWTY_FIX32, _unGetType, _nSupportedQueries)
+
+CTWAINContainerString::CTWAINContainerString(const TW_UINT16 _unCapID, 
+                                         const TW_UINT16 _unItemType, 
+                                         const TW_UINT16 _unGetType, 
+                                         const TW_INT32  _nSupportedQueries /*=TWQC_ALL*/)
+  : CTWAINContainer(_unCapID, _unItemType, _unGetType, _nSupportedQueries)
+{
+  m_unItemSize = getTWTYSize(_unItemType);
+}
+
+CTWAINContainerString::~CTWAINContainerString()
 {
 }
 
-CTWAINContainerFix32::~CTWAINContainerFix32()
-{
-}
-
-TW_HANDLE CTWAINContainerFix32::GetContainer(const TW_UINT16 _unMsg)
+TW_HANDLE CTWAINContainerString::GetContainer(const TW_UINT16 _unMsg)
 {
   TW_HANDLE hContainer = 0;
 
@@ -60,17 +62,17 @@ TW_HANDLE CTWAINContainerFix32::GetContainer(const TW_UINT16 _unMsg)
      (MSG_GETCURRENT == _unMsg) ||
      (MSG_GETDEFAULT == _unMsg))
   {
-    hContainer = _DSM_Alloc(sizeof(TW_ONEVALUE_FIX32));
+    hContainer = _DSM_Alloc(sizeof(TW_ONEVALUE)+m_unItemSize-sizeof(TW_UINT32));
 
     if(0 != hContainer)
     {
-      pTW_ONEVALUE_FIX32 pCap = (pTW_ONEVALUE_FIX32)_DSM_LockMemory(hContainer);
+      pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(hContainer);
 
-      pCap->ItemType = TWTY_FIX32;
-      // If the Cap has been constrained the default may only be in the m_listFloatsDefault.
-      const float flVal = (MSG_GETDEFAULT == _unMsg)?m_listFloatsDefault[m_nDefault]:m_listFloats[m_nCurrent];
-      
-      pCap->Item = FloatToFIX32(flVal);
+      pCap->ItemType = m_unItemType;
+      // If the Cap has been constrained the default may only be in the defaultlist.
+      string strTemp = ((MSG_GETDEFAULT == _unMsg)?m_listStrsDefault[m_nDefault]:m_listStrs[m_nCurrent]);
+      memset((char*)&pCap->Item,0,m_unItemSize);
+      memcpy((char*)&pCap->Item, strTemp.c_str(),MIN(m_unItemSize, strTemp.length()));
       _DSM_UnlockMemory(hContainer);
     }
   }
@@ -78,14 +80,14 @@ TW_HANDLE CTWAINContainerFix32::GetContainer(const TW_UINT16 _unMsg)
   {
     if(TWON_ENUMERATION == m_unGetType)
     {
-      hContainer = _DSM_Alloc(sizeof(TW_ENUMERATION_FIX32) + (sizeof(TW_FIX32) * (m_listFloats.size()-1))); // -1 because already contains 1 element
+      hContainer = _DSM_Alloc(sizeof(TW_ENUMERATION) -1 + (m_unItemSize * m_listStrs.size()));
 
       if(0 != hContainer)
       {
-        pTW_ENUMERATION_FIX32 pCap = (pTW_ENUMERATION_FIX32)_DSM_LockMemory(hContainer);
+        pTW_ENUMERATION pCap = (pTW_ENUMERATION)_DSM_LockMemory(hContainer);
 
-        pCap->ItemType = TWTY_FIX32;
-        pCap->NumItems = (TW_UINT32)m_listFloats.size();
+        pCap->ItemType = m_unItemType;
+        pCap->NumItems = (TW_UINT32)m_listStrs.size();
         pCap->CurrentIndex = m_nCurrent;
         //If the CAP has been constrained m_nDefault index might not point 
         // to the correct index and the index may not be valid.  We need to 
@@ -93,8 +95,8 @@ TW_HANDLE CTWAINContainerFix32::GetContainer(const TW_UINT16 _unMsg)
         // in the current list.  If no match found then set to first index.
         // see spec on twain.org Chap4 p73 Advanced Application Implementation | 
         // Capabilities | Constrained Capabilities and Message Responses | MSG_SET
-        const float flVal = m_listFloatsDefault[m_nDefault];
-        int nIndex = getIndexForValue(flVal);
+        const string strVal   = m_listStrsDefault[m_nDefault];
+        int nIndex = getIndexForValue(strVal);
         if(nIndex != -1)
         {
           pCap->DefaultIndex = nIndex;
@@ -107,74 +109,82 @@ TW_HANDLE CTWAINContainerFix32::GetContainer(const TW_UINT16 _unMsg)
           pCap->DefaultIndex = 0;
         }
 
-        for(TW_UINT32 x = 0; x < pCap->NumItems; ++x)
-        {
-          pCap->ItemList[x] = FloatToFIX32(m_listFloats[x]);
-        }
+        fillValues(&pCap->ItemList, pCap->NumItems);
 
         _DSM_UnlockMemory(hContainer);
       }
     }
     else if(TWON_ARRAY == m_unGetType)
     {
-      hContainer = _DSM_Alloc(sizeof(TW_ARRAY_FIX32) + (sizeof(TW_FIX32) * (m_listFloats.size()-1))); // -1 because a TW_ARRAY_FIX32 already includes 1 element
+      hContainer = _DSM_Alloc(sizeof(TW_ARRAY)-1 + (m_unItemSize * m_listStrs.size()));
 
       if(0 != hContainer)
       {
-        pTW_ARRAY_FIX32 pCap = (pTW_ARRAY_FIX32)_DSM_LockMemory(hContainer);
+        pTW_ARRAY pCap = (pTW_ARRAY)_DSM_LockMemory(hContainer);
         pCap->ItemType = m_unItemType;
-        pCap->NumItems = (TW_UINT32)m_listFloats.size();
+        pCap->NumItems = (TW_UINT32)m_listStrs.size();
 
-        for(TW_UINT32 x = 0; x < pCap->NumItems; ++x)
-        {
-          pCap->ItemList[x] = FloatToFIX32(m_listFloats[x]);
-        }
+        fillValues(&pCap->ItemList, pCap->NumItems);
 
         _DSM_UnlockMemory(hContainer);
       }
     }
-  }
+  } // else if(MSG_GET == _unMsg)
 
   return hContainer;
 }
 
-bool CTWAINContainerFix32::isValidType(const TW_UINT16 _unTWType)
+void CTWAINContainerString::fillValues(void* _pItemList, const TW_UINT32 _unNumItems)
 {
-  bool bret = false;
-
-  if(TWTY_FIX32 == _unTWType)
+  for(TW_UINT32 x = 0; x < _unNumItems; ++x)
   {
-    bret = true;
+    string strTemp = m_listStrs[x];
+    char *pItem = (char*)_pItemList + m_unItemSize*x;
+    memset(pItem,0,m_unItemSize);
+    memcpy(pItem, strTemp.c_str(),MIN(m_unItemSize, strTemp.length()));
   }
-
-  return bret;
 }
 
-TW_INT16 CTWAINContainerFix32::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
+bool CTWAINContainerString::isValidType(const TW_UINT16 _unTWType)
+{
+  return m_unItemType == _unTWType;
+}
+
+string CTWAINContainerString::getValue(const char* _pchVal)
+{
+  string strRet;
+  char *pstrTemp = new char[m_unItemSize+1];
+  memcpy(pstrTemp,_pchVal,m_unItemSize);
+  pstrTemp[m_unItemSize]=0;
+  strRet = pstrTemp;
+  delete [] pstrTemp;
+  return strRet;
+}
+
+TW_INT16 CTWAINContainerString::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
 {
   TW_INT16 twrc = TWRC_SUCCESS;
   Condition = TWCC_SUCCESS;
 
   if(TWON_ONEVALUE == _pCap->ConType)
   {
-    pTW_ONEVALUE_FIX32 pCap = (pTW_ONEVALUE_FIX32)_DSM_LockMemory(_pCap->hContainer);
-
+    pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(_pCap->hContainer);
     if(isValidType(pCap->ItemType))
     {
-      float flVal = FIX32ToFloat(pCap->Item);
       switch(m_unGetType)
       {
         case TWON_ONEVALUE:
         {
-          m_listFloats.clear();
-          m_listFloats.push_back(flVal);
+          m_listStrs.clear();
+          m_listStrs.push_back(getValue((char*)&(pCap->Item)));
           m_nCurrent = 0;
         }
         break;
         case TWON_ENUMERATION:
         {
           int nVal = -1;
-          if((nVal = getIndexForValue(flVal)) >= 0)
+
+          if( (nVal = getIndexForValue(getValue((char*)&(pCap->Item)))) >= 0 )
           {
             m_nCurrent = nVal;
           }
@@ -195,46 +205,50 @@ TW_INT16 CTWAINContainerFix32::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
         break;
       }
     }
-
+    else // NOT isValidType(pCap->ItemType))
+    {
+      twrc = TWRC_FAILURE;
+      Condition = TWCC_CAPBADOPERATION;
+    }
     _DSM_UnlockMemory(_pCap->hContainer);
   }
   else if(TWON_ENUMERATION == _pCap->ConType)
   {
-    pTW_ENUMERATION_FIX32 pCap = (pTW_ENUMERATION_FIX32)_DSM_LockMemory(_pCap->hContainer);
+    pTW_ENUMERATION pCap = (pTW_ENUMERATION)_DSM_LockMemory(_pCap->hContainer);
 
     if(isValidType(pCap->ItemType))
     {
       int  nNewCurrentIndex  = pCap->CurrentIndex;
-      FloatVector::iterator iter;
+      StringVector::iterator iter;
       bool bListCleared      = false; // We only want to crear the current list if we are passed 
                                       // valid data, and only clear it once through the loop of testing
-      float flVal;
-
+      
       for(TW_UINT32 x = 0; x < pCap->NumItems; ++x)
-      {     
-        flVal = FIX32ToFloat(pCap->ItemList[x]);
+      {
+        // only set the value if it exists in m_listStrsDefault
+        string strValue = getValue((char*)&(pCap->ItemList)+x*m_unItemSize);
 
-        // only set the value if it exists in m_listFloatsDefault
-        iter = find(m_listFloatsDefault.begin(), m_listFloatsDefault.end(), flVal);
+        iter = find(m_listStrsDefault.begin(), m_listStrsDefault.end(), strValue);
 
-        if(iter != m_listFloatsDefault.end())
+        if(iter != m_listStrsDefault.end())
         {
           // We have valid data
           if(!bListCleared)
           {
             // only clear the list if we have not done so already
-            m_listFloats.clear();
+            m_listStrs.clear();
             bListCleared = true;
           }
 
           // only add it if it was not added already
-          iter = find(m_listFloats.begin(), m_listFloats.end(), flVal);
-          if(iter == m_listFloats.end())
+          iter = find(m_listStrs.begin(), m_listStrs.end(), strValue);
+          if(iter == m_listStrs.end())
           {
-            m_listFloats.push_back(flVal);
+            m_listStrs.push_back(strValue);
           }
           else
           {
+            // if the index is below the current then we need to adjust what is going to be current
             if(x < pCap->CurrentIndex)
             {
               nNewCurrentIndex--;
@@ -250,8 +264,8 @@ TW_INT16 CTWAINContainerFix32::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
           {
             nNewCurrentIndex--;
           }
-
-          twrc = TWRC_CHECKSTATUS;          
+          
+          twrc = TWRC_CHECKSTATUS;
           Condition = TWCC_BADVALUE;
         }
       }
@@ -259,7 +273,7 @@ TW_INT16 CTWAINContainerFix32::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
       // If the list has been cleared then there was at at least some valid data
       if(bListCleared)
       {
-        if(nNewCurrentIndex >= 0 && nNewCurrentIndex < (int)(m_listFloats.size()))
+        if(nNewCurrentIndex >= 0 && nNewCurrentIndex < (int)(m_listStrs.size()))
         {
           m_nCurrent = nNewCurrentIndex;
         }
@@ -294,75 +308,86 @@ TW_INT16 CTWAINContainerFix32::Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition)
   return twrc;
 }
 
-bool CTWAINContainerFix32::Reset()
+bool CTWAINContainerString::Reset()
 {
   m_nCurrent = m_nDefault;
 
-  m_listFloats.clear();
+  m_listStrs.clear();
 
-  const int nSize = (int)(m_listFloatsDefault.size());
+  const int nSize = (int)(m_listStrsDefault.size());
 
   for(int x = 0; x < nSize; ++x)
   {
-    m_listFloats.push_back(m_listFloatsDefault[x]);
+    m_listStrs.push_back(m_listStrsDefault[x]);
   }
 
   return true;
 }
 
-bool CTWAINContainerFix32::GetCurrent(float &_flVal)
+// For int vals
+bool CTWAINContainerString::GetCurrent(string &_strVal)
 {
   bool bret = false;
 
-  if((m_nCurrent >= 0) && ((int)(m_listFloats.size()) > m_nCurrent))
-  {    
-    _flVal = m_listFloats[m_nCurrent];
-    bret = true;
-  }
-
-  return bret;
-}
-
-bool CTWAINContainerFix32::GetDefault(float &_flVal)
-{
-  bool bret = false;
-
-  if((m_nDefault >= 0) && ((int)(m_listFloatsDefault.size()) > m_nDefault))
+  if(!(m_nMSG_QUERYSUPPORT & TWQC_GETCURRENT))
   {
-    _flVal = m_listFloatsDefault[m_nDefault];
+    return false;
+  }
+
+  if((m_nCurrent >= 0) && ((int)(m_listStrs.size()) > m_nCurrent))
+  {    
+    _strVal = m_listStrs[m_nCurrent];
     bret = true;
   }
 
   return bret;
 }
 
-const FloatVector &CTWAINContainerFix32::GetSupported()
+bool CTWAINContainerString::GetDefault(string &_strVal)
 {
-  return m_listFloats;
+  bool bret = false;
+
+  if(!(m_nMSG_QUERYSUPPORT & TWQC_GETDEFAULT))
+  {
+    return TWRC_FAILURE;
+  }
+
+  if((m_nDefault >= 0) && ((int)(m_listStrsDefault.size()) > m_nDefault))
+  {
+    _strVal = m_listStrsDefault[m_nDefault];
+    bret = true;
+  }
+
+  return bret;
 }
 
-bool CTWAINContainerFix32::Add(const float _flAdd, bool _bDefault /*= false*/)
+const StringVector &CTWAINContainerString::GetSupported()
 {
-  m_listFloats.push_back(_flAdd);
-  m_listFloatsDefault.push_back(_flAdd);
+  return m_listStrs;
+}
+
+bool CTWAINContainerString::Add(string _strAdd, bool _bDefault /*= false*/)
+{
+  m_listStrs.push_back(_strAdd);
+  m_listStrsDefault.push_back(_strAdd);
   if(m_nDefault == -1 || _bDefault)
   {
-    m_nCurrent = m_nDefault = getIndexForValue(_flAdd);
+    m_nCurrent = m_nDefault = m_listStrsDefault.size()-1;
   }
   return true;
 }
 
-bool CTWAINContainerFix32::SetCurrent(float _flCurr)
+bool CTWAINContainerString::SetCurrent(string _strCurr)
 {
   if(TWON_ONEVALUE == m_unGetType)//check before call
   {
-    m_listFloats.clear();
-    m_listFloats.push_back(_flCurr);
+    m_listStrs.clear();
+    m_listStrs.push_back(_strCurr);
     m_nCurrent = 0;
   }
   else
   {
-    int nIdx = getIndexForValue(_flCurr);
+    int nIdx = getIndexForValue(_strCurr);
     if(nIdx < 0)
     {
       return false;
@@ -373,15 +398,15 @@ bool CTWAINContainerFix32::SetCurrent(float _flCurr)
   return true;
 }
 
-int CTWAINContainerFix32::getIndexForValue(const float _flVal)
+int CTWAINContainerString::getIndexForValue(const string _strVal)
 {
   int ret = -1;
 
-  const int nSize = (int)(m_listFloats.size());
+  const int nSize = (int)(m_listStrs.size());
 
   for(int x = 0; x < nSize; ++x)
   {
-    if(_flVal == m_listFloats[x]) //@TODO remove float comparison
+    if(_strVal == m_listStrs[x])
     {
       ret = x; 
       break;
@@ -390,4 +415,3 @@ int CTWAINContainerFix32::getIndexForValue(const float _flVal)
 
   return ret;
 }
-

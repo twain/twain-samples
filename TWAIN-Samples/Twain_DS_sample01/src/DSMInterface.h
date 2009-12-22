@@ -121,17 +121,5 @@ TW_MEMREF _DSM_LockMemory(TW_HANDLE _hMemory);
 */
 void _DSM_UnlockMemory(TW_HANDLE _hMemory);
 
-/**
-* Display the user interface for TWAIN.
-* @param[in] twUI reference to TW_USERINTERFACE
-* @return true if success
-*/
-bool DisplayTWAINGUI(TW_USERINTERFACE &twUI);
-
-/**
-* Close the user interface for TWAIN
-*/
-void DestroyTWAINGUI();
-
 
 #endif // __DSMINTERFACE_H__

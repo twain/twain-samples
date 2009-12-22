@@ -230,6 +230,15 @@ public:
   virtual TW_INT16 dat_xfergroup(TW_UINT16   _MSG,
                                  pTW_UINT32  _pXferGroup);
 
+  /**
+  * Figures out what to do with the DAT_CUSTOMDSDATA request.
+  * @param[in] _MSG the message to handle.
+  * @param[in] _pDSData a pointer to a TW_CUSTOMDSDATA structure.
+  * @return a valid TWRC_xxxx return code.
+  */
+  virtual TW_INT16 dat_customdsdata(TW_UINT16   _MSG,
+                                 pTW_CUSTOMDSDATA  _pDSData);
+
 
   //////////////////////////////////////////////////////////////////////////////
   /**
@@ -258,6 +267,13 @@ public:
   * @return a valid TWRC_xxxx return code.
   */
   virtual TW_INT16 enableDS(pTW_USERINTERFACE _pData) = 0;
+
+  /**
+  * Enable the Data Source in setup mode.
+  * Called when a DG_CONTROL / DAT_USERINTERFACE / MSG_ENABLEDS op is sent.
+  * @return a valid TWRC_xxxx return code.
+  */
+  virtual TW_INT16 enableDSOnly() = 0;
 
   /**
   * Disable the Data Source.
@@ -452,6 +468,15 @@ public:
   */
   virtual bool DoDeviceEvent();
 
+  /**
+  * get the Internal Image format. For Linux Only
+  * Called when a DG_IMAGE / DAT_IMAGENATIVEXFER / MSG_GET op is sent.
+  * also used when creating a BMP for saving when DG_IMAGE / DAT_IMAGEFILEXFER / MSG_GET op is sent.
+  * @param[out] _pImage a pointer to store the image locaton.
+  * @return a valid TWRC_xxxx return code.
+  */
+  TW_INT16 getTIFFImage(TW_MEMREF* _pImage);
+
   // END Capabilities 
   /**
   * @}
@@ -523,10 +548,12 @@ public:
   * Validate the value being used to set a capability.  Ranges and enums can be tested
   * by the capability but OneValues might have only some values that are acceptable.
   * Override this function in base class to support more capabilities
-  * @param[in] _pCap a pointer to TW_CAPABILITY structure.
+  * @param[in] Cap the Capability ID
+  * @param[in] ConType the container type 
+  * @param[in] _pCap a pointer to BYTE. Pointer to Cap container
   * @return a valid TWRC_xxxx return code.
   */
-  virtual TW_INT16 validateCapabilitySet(pTW_CAPABILITY _pCap);
+  virtual TW_INT16 validateCapabilitySet(TW_UINT16 _Cap, TW_UINT16  _ConType, BYTE* _pContainer);
 
   /**
   * if the CTWAINContainer is dependend on another Capabiltiy. 
@@ -553,6 +580,20 @@ public:
   * @return a CTWAINContainer for the capability.
   */
   TW_INT16 getCurrentUnits(int &Unit, float &Xres, float &Yres);
+
+  /**
+  * Get Gustom DS data
+  * @param[out] _pDSData a pointer to a TW_CUSTOMDSDATA structure.
+  * @return a valid TWRC_xxxx return code, TWRC_SUCCESS on success.
+  */
+  virtual TW_INT16 GetGustomDSData(pTW_CUSTOMDSDATA _pDSData);
+
+  /**
+  * Set Gustom DS data
+  * @param[in] _pDSData a pointer to a TW_CUSTOMDSDATA structure.
+  * @return a valid TWRC_xxxx return code, TWRC_SUCCESS on success.
+  */
+  virtual TW_INT16 SetGustomDSData(pTW_CUSTOMDSDATA _pDSData);
 
 // END Accessors
   /** 

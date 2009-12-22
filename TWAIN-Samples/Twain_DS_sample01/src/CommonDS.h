@@ -53,8 +53,10 @@
 #include "TWAINContainer.h"
 #include "TWAINContainerInt.h"
 #include "TWAINContainerFix32.h"
+#include "TWAINContainerFix32Range.h"
 #include "TWAINContainerBool.h"
 #include "TWAINContainerFrame.h"
+#include "TWAINContainerString.h"
 #include "CTiffWriter.h"
 
 #include <map>

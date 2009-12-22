@@ -42,20 +42,26 @@
 CTWAINContainerBool::CTWAINContainerBool(const TW_UINT16 _unCapID, 
                                          const bool _bAPP2,
                                          const TW_INT32  _nSupportedQueries /*=TWQC_ALL*/)
-  : CTWAINContainer(_unCapID, TWTY_BOOL, _bAPP2?TWON_ENUMERATION:TWON_ONEVALUE, _nSupportedQueries)
+  : CTWAINContainer(_unCapID, TWTY_BOOL, TWON_ENUMERATION, _nSupportedQueries)
 {
+  m_bApp2 = _bAPP2;
 }
 
 CTWAINContainerBool::~CTWAINContainerBool()
 {
 }
 
+TW_UINT16 CTWAINContainerBool::GetGetType(const TW_UINT16 _unMsg)
+{
+  return  (MSG_GET==_unMsg)?(m_bApp2?m_unGetType:TWON_ONEVALUE):TWON_ONEVALUE;
+}
+
 TW_HANDLE CTWAINContainerBool::GetContainer(const TW_UINT16 _unMsg)
 {
   TW_HANDLE hContainer = 0;
 
-  if((TWON_ONEVALUE == m_unGetType) ||
-     (MSG_GETCURRENT == _unMsg) ||
+  if((MSG_GETCURRENT == _unMsg) ||
+     (MSG_GET == _unMsg && !m_bApp2) ||
      (MSG_GETDEFAULT == _unMsg))
   {
     hContainer = _DSM_Alloc(sizeof(TW_ONEVALUE));

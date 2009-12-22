@@ -30,25 +30,26 @@
 ***************************************************************************/
 
 /**
-* @file TWAINContainerFix32.h
-* Fix32 Container class for negotiating capabilities.
+* @file TWAINContainerString.h
+* String Container class for negotiating capabilities.
 * @author TWAIN Working Group
 * @date April 2007
 */
 
 
-#ifndef __CTWAINCONTAINERFIX32_H__
-#define __CTWAINCONTAINERFIX32_H__
+#ifndef __CTWAINContainerString_H__
+#define __CTWAINContainerString_H__
 
 #include "TWAINContainer.h"
 
+
 /**
-* This class can be used for any Fix32 based TWAIN container. 
+* This class can be used for any Integer based TWAIN container. 
 * All values are stored internally as 1/1000th of an inch. They are converted
 * as necessary when TWAIN containers are created. Any direct access will require
 * the caller to do their own conversion. 
 */
-class CTWAINContainerFix32 : public CTWAINContainer
+class CTWAINContainerString : public CTWAINContainer
 {
   friend class CTWAIN_UI;
 public:
@@ -59,66 +60,72 @@ public:
   * @param[in] _unGetType TWON_xxxx container
   * @param[in] _nSupportedQueries the supported querie types TWQC_xxxx
   */
-  CTWAINContainerFix32(const TW_UINT16 _unCapID, 
+  CTWAINContainerString(const TW_UINT16 _unCapID, 
+                       const TW_UINT16 _unItemType, 
                        const TW_UINT16 _unGetType, 
-                       const TW_INT32  _nSupportedQueries = TWQC_ALL);
-  virtual ~CTWAINContainerFix32();
+                       const TW_INT32 _nSupportedQueries = TWQC_ALL);
+  virtual ~CTWAINContainerString();
 
   virtual TW_HANDLE GetContainer(const TW_UINT16 _unMsg);
   virtual TW_INT16 Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition);
   virtual bool Reset();
 
-  // For float vals
   /**
   * Try to add a value for container.  The first value added to a capabiltiy is set as the default and current value.
-  * @param[in] _flAdd the value to be added.
+  * @param[in] _nAdd the value to be added.
   * @param[in] _bDefault if true explisitly sets this value to be the default and current.  
   * @return true if success.
   */
-  bool Add(const float _flAdd, bool _bDefault = false);
+  bool Add(string _strAdd, bool _bDefault = false);
 
   /**
   * Try to set the current value for container.
   * The value must already be part of the container.
-  * @param[in] _flAdd the value to be set as current.
+  * @param[in] _nCurr the value to be set as current.
   * @return true if success.
   */
-  bool SetCurrent(float _flCurr);
+  bool SetCurrent(string _strCurr);
 
   /**
-  * Return the default value through _flVal if set.
-  * @param[out] _flVal set the default value on return.
+  * Return the default value through _nVal if set.
+  * @param[out] _nVal set the default value on return.
   * @return true if success.
   */
-  bool GetDefault(float &_flVal);
+  bool GetDefault(string &_strVal);
 
   /**
-  * Return the current value through _flVal if set.
-  * @param[out] _flVal set the current value on return.
+  * Return the current value through _nVal if set.
+  * @param[out] _nVal set the current value on return.
   * @return true if success.
   */
-  bool GetCurrent(float &_flVal);
+  bool GetCurrent(string &_strVal);
 
   /**
   * Return a vector of supported values.
   * @return supported values.
   */
-  const FloatVector &GetSupported();
+  const StringVector &GetSupported();
+  
+  /**
+  * Return the current value from the container.
+  * @param[in] _pVal pointer to TW_ONEVALUE container of 
+  * @return the value converted to int.
+  */
+  string getValue(const char* _pchVal);
 
   /**
   * Return the weather or not the value is supported by this capability.
-  * @param[in] _flVal the value to check to see if it is supported
-  * @return true is the _flVal is supported.
+  * @param[in] _nVal the value to check to see if it is supported
+  * @return true is the _nVal is supported.
   */
-  bool isValueSupported(const float _flVal) {return -1 != getIndexForValue(_flVal);}
+  bool isValueSupported(const string _strVal) {return -1 != getIndexForValue(_strVal);}
 
   /**
   * Return the index in vector list for value.
   * @param[in] _flVal value to search for.
   * @return the index of value, or -1 if does not exist.
   */
-  int getIndexForValue(const float _flVal);
-
+  int getIndexForValue(const string _strVal);
 
 protected:
   /**
@@ -128,8 +135,16 @@ protected:
   */
   bool isValidType(const TW_UINT16 _unTWType);
 
-  FloatVector m_listFloats;                   /**< vector of valid container values. */
-  FloatVector m_listFloatsDefault;            /**< vector of valid container default values. */
+  /**
+  * This is a utility function used to help create the TWAIN container.
+  * @param[in] _pItemList container to fill up.
+  * @param[in] _unNumItems number of fields to fill in.
+  */
+  void fillValues(void* _pItemList, const TW_UINT32 _unNumItems);
+
+  StringVector m_listStrs;                          /**< vector of valid container values. */
+  StringVector m_listStrsDefault;                   /**< vector of valid container default values. */
+  unsigned int m_unItemSize;                         /**< Size of single item */
 };
 
-#endif // __CTWAINCONTAINERFIX32_H__
+#endif // __CTWAINContainerString_H__

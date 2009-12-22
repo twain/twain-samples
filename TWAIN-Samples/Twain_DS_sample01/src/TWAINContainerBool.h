@@ -47,6 +47,7 @@
 */
 class CTWAINContainerBool : public CTWAINContainer
 {
+  friend class CTWAIN_UI;
 public:
   /**
   * Constructor.  
@@ -59,7 +60,12 @@ public:
                       const bool _bAPP2,
                       const TW_INT32  _nSupportedQueries = TWQC_ALL);
   virtual ~CTWAINContainerBool();
-
+  /**
+  * Return the TWON_xxxx containor type.
+  * @param[in] _MSG the MSG_GETxxxx get message.
+  * @return the containor type
+  */
+  virtual TW_UINT16 GetGetType(const TW_UINT16 _unMsg);
   virtual TW_HANDLE GetContainer(const TW_UINT16 _unMsg);
   virtual TW_INT16 Set(pTW_CAPABILITY _pCap, TW_INT16 &Condition);
   virtual bool Reset();
@@ -126,6 +132,7 @@ protected:
 
   IntVector m_listBools;                   /**< vector of valid container values. */
   IntVector m_listBoolsDefault;            /**< vector of valid container default values. */
+  bool      m_bApp2;
 };
 
 #endif // __CTWAINCONTAINERBOOL_H__

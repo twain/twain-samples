@@ -42,6 +42,24 @@
 #include "CTWAINDS_Base.h"
 #include "CScanner_FreeImage.h"
 
+#define CUSTCAP_LONGDOCUMENT CAP_CUSTOMBASE+1
+#define CUSTCAP_DOCS_IN_ADF  CAP_CUSTOMBASE+2
+
+#define kCUSTOMDSGUI "{A4FAF845-1383-4036-AEDC-17C3968188B4}"
+const TW_GUID CustomDSGUI = 
+{ 0xa4faf845, 0x1383, 0x4036, { 0xae, 0xdc, 0x17, 0xc3, 0x96, 0x81, 0x88, 0xb4 } };
+
+typedef struct _CUST_DS_DATA_ELEMENT
+{
+  DWORD dwSize;
+  TW_UINT16 unCapID;
+  TW_UINT16 unCapIdx;
+  TW_UINT16 unItemType;
+  TW_UINT16 unContType;
+  DWORD dwVal[1];
+}CUST_DS_DATA_ELEMENT;
+
+class CTWAIN_UI;
 /**
 * This is the main DS class. It inherits the TWAIN base class, implements all
 * the pure virtual functions and manages all of the required capabilities
@@ -137,11 +155,19 @@ public:
   TW_INT16 enableDS(pTW_USERINTERFACE _pData);
 
   /**
+  * Enable the Data Source in setup mode.
+  * Called when a DG_CONTROL / DAT_USERINTERFACE / MSG_ENABLEDS op is sent.
+  * @return a valid TWRC_xxxx return code.
+  */
+  TW_INT16 enableDSOnly();
+
+  /**
   * Called by the base class when the data source is disabled.
   * @param[in] _pData a pointer to a TW_USERINTERFACE struct.
   * @return a valid TWRC_xxxx return code.
   */
   TW_INT16 disableDS(pTW_USERINTERFACE _pData);
+
 
   /**
   * handles DAT_IMAGELAYOUT requests
@@ -189,6 +215,38 @@ public:
   * @return CTWAINContainer BitDepth for current PixelType.
   */
   CTWAINContainer* getICAP_BITDEPTH();
+  
+  bool StartScanning();
+  bool StopScanning(){m_bCanceled = true; return true;};
+  bool ReadCustomDSdata(stringstream &DsData);
+  bool StoreCustomDSdata(stringstream &DsData);
+  bool StoreCapInStream(stringstream &_DsData, TW_UINT16 _unCapID, TW_UINT16 _unCapIdx, TW_UINT16 unContType);
+  bool ReadCapFromStream(stringstream &_DsData, TW_UINT16 _unCapID, TW_UINT16 _unCapIdx);
+
+  /**
+  * Get Gustom DS data
+  * @param[out] _pDSData a pointer to a TW_CUSTOMDSDATA structure.
+  * @return a valid TWRC_xxxx return code, TWRC_SUCCESS on success.
+  */
+  TW_INT16 GetGustomDSData(pTW_CUSTOMDSDATA _pDSData);
+
+  /**
+  * Set Gustom DS data
+  * @param[in] _pDSData a pointer to a TW_CUSTOMDSDATA structure.
+  * @return a valid TWRC_xxxx return code, TWRC_SUCCESS on success.
+  */
+  TW_INT16 SetGustomDSData(pTW_CUSTOMDSDATA _pDSData);
+
+  /**
+  * Validate the value being used to set a capability.  Ranges and enums can be tested
+  * by the capability but OneValues might have only some values that are acceptable.
+  * Override this function in base class to support more capabilities
+  * @param[in] Cap the Capability ID
+  * @param[in] ConType the container type 
+  * @param[in] _pCap a pointer to BYTE. Pointer to Cap container
+  * @return a valid TWRC_xxxx return code.
+  */
+  TW_INT16 validateCapabilitySet(TW_UINT16 _Cap, TW_UINT16  _ConType, BYTE* _pContainer);
 
 protected:
   CScanner_FreeImage          m_Scanner;                 /**< The main scanner. */
@@ -197,6 +255,8 @@ protected:
   TWAINCapabilitiesMap_FIX32  m_ICAP_UNIT_Dependant;     /**< Capability for any Fix32 based TWAIN container */
   CTWAINContainerFrame       *m_pICAP_FRAMES;            /**< Capabiltiy for a FRAMES based container */
   TW_IDENTITY m_AppID;
+  bool                        m_bCanceled;
+  CTWAIN_UI *m_pGUI; /**< This is the main Qt UI dialog */
 };
 
 

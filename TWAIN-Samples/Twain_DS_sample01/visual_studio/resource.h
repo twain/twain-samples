@@ -2,10 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by TWAINDS_GUI.rc
 //
-#define IDD_DLG_TWAINSAMPLE             1000
-#define IDC_CBX_RESOLUTION              1000
-#define IDC_CBX_PAPERSIZE               1001
-#define IDC_CBX_PIXELTYPE               1002
 
 // Next default values for new objects
 // 

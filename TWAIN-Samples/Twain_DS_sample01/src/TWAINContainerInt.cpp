@@ -76,7 +76,7 @@ TW_HANDLE CTWAINContainerInt::GetContainer(const TW_UINT16 _unMsg)
   }
   else if(MSG_GET == _unMsg)
   {
-    UINT unSize = getTWTYSize(m_unItemType);
+    unsigned int unSize = getTWTYSize(m_unItemType);
 
     if(TWON_ENUMERATION == m_unGetType)
     {
@@ -446,13 +446,23 @@ bool CTWAINContainerInt::Add(int _nAdd, bool _bDefault /*= false*/)
 
 bool CTWAINContainerInt::SetCurrent(int _nCurr)
 {
-  int nIdx = getIndexForValue(_nCurr);
-  if(nIdx < 0)
+  if(TWON_ONEVALUE == m_unGetType)//check before call
   {
-    return false;
+    m_listInts.clear();
+    m_listInts.push_back(_nCurr);
+    m_nCurrent = 0;
+  }
+  else
+  {
+    int nIdx = getIndexForValue(_nCurr);
+    if(nIdx < 0)
+    {
+      return false;
+    }
+
+    m_nCurrent = nIdx;
   }
 
-  m_nCurrent = nIdx;
   return true;
 }
 
