@@ -95,7 +95,7 @@
     #define TWNDS_CMP             TWNDS_CMP_GNUGPP
     #define TWNDS_CMP_VERSION     __GNUC__
 
-    #define kTWAIN_DSM_DIR         "/usr/local/lib/twain/"
+    #define kTWAIN_DSM_DIR         "/usr/local/lib/"
 
   // Visual Studio C++
   #elif defined(TWH_CMP_MSC)

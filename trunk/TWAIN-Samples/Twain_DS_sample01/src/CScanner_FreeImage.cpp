@@ -52,6 +52,9 @@
 #include <sys/io.h>
 #endif //#ifdef TWH_CMP_MSC
 
+#ifdef TWNDS_OS_LINUX
+#define kTWAIN_DS_DIR "/usr/local/lib/twain/sample2"
+#endif
 
 #include "DSMInterface.h"
 
@@ -66,8 +69,6 @@ using namespace std;
 #ifdef TWH_CMP_MSC
 extern HINSTANCE   g_hinstance;
 #endif
-
-#define kTWAIN_DS_DIR         "/usr/local/lib/twain/sample2"
 
 //////////////////////////////////////////////////////////////////////////////
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message)

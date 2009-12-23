@@ -73,3 +73,4 @@ QMAKE_LIBS_QT_THREAD =
 FORMS += MainForm.ui \
     About.ui \
     ProfileName.ui
+RESOURCES += qtresources.qrc

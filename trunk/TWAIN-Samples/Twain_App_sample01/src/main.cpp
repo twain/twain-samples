@@ -288,7 +288,7 @@ void EnableDS()
 #ifdef TWNDS_OS_WIN
   if(!gpTwainApplicationCMD->enableDS(GetDesktopWindow(), FALSE))
 #else
-  if(!gpTwainApplicationCMD->enableDS(0, FALSE))
+  if(!gpTwainApplicationCMD->enableDS(0, TRUE))
 #endif
   {
     return;

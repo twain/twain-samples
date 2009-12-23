@@ -45,21 +45,32 @@ void MainForm::on_pPushButton_Profile_Save_clicked(bool _bChecked)
   if(nRes)
   {
     QString strName = dlg.GetProfileName();
-    if(ui->pComboBox_Profiles->findText(strName)>=0)
+    int nItem = ui->pComboBox_Profiles->findText(strName);
+    if(nItem>=0)
     {
       QMessageBox msgBox(QMessageBox::Critical, 
       QApplication::translate("MainForm", "Error", 0, QApplication::UnicodeUTF8),
-      QApplication::translate("MainForm", "Profile already exist", 0, QApplication::UnicodeUTF8));
-      msgBox.exec();
-      return;
+      QApplication::translate("MainForm", "Profile already exist. Do you want to overwrite it?", 0, QApplication::UnicodeUTF8),
+      QMessageBox::Yes|QMessageBox::Cancel);
+      if(msgBox.exec() == QMessageBox::Cancel)
+      {
+        return;
+      }
     }
 
     string strProfile = strName.toStdString();
 
     if(m_pUI->TW_SaveProfileToFile(strProfile))
     {
-      ui->pComboBox_Profiles->addItem(strName);
-      ui->pComboBox_Profiles->setCurrentIndex(ui->pComboBox_Profiles->count()-1);
+      if(nItem<0)
+      {
+        ui->pComboBox_Profiles->addItem(strName);
+        ui->pComboBox_Profiles->setCurrentIndex(ui->pComboBox_Profiles->count()-1);
+      }
+      else
+      {
+        ui->pComboBox_Profiles->setCurrentIndex(nItem);
+      }
     }
   }
   return;

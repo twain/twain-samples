@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>346</width>
-    <height>571</height>
+    <width>418</width>
+    <height>648</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -15,6 +15,10 @@
   </property>
   <property name="windowTitle">
    <string>TWAIN Sample DS</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="qtresources.qrc">
+    <normaloff>:/images/TWG-LogoSmall.png</normaloff>:/images/TWG-LogoSmall.png</iconset>
   </property>
   <property name="whatsThis">
    <string/>
@@ -489,6 +493,9 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="toolTip">
+           <string>TWAIN application sets this field via CAP_XFERCOUNT</string>
+          </property>
           <property name="suffix">
            <string/>
           </property>
@@ -599,6 +606,8 @@
   <tabstop>pPushButton_Help</tabstop>
   <tabstop>pPushButton_About</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="qtresources.qrc"/>
+ </resources>
  <connections/>
 </ui>

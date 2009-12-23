@@ -63,12 +63,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="user32.lib FreeImage.lib qtmainTWGd.lib QtCoreTWGd4.lib QtGuiTWGd4.lib"
+				AdditionalDependencies="user32.lib FreeImage.lib qtmaind.lib QtCored4.lib QtGuid4.lib"
 				OutputFile="$(OutDir)\$(ProjectName)32.ds"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\lib"
 				ModuleDefinitionFile="..\src\TWAINDS.def"
-				DelayLoadDLLs="FreeImage.dll QtCored4.dll QtGuid4.dll"
+				DelayLoadDLLs=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/TWAINDS_Sample01.pdb"
 				SubSystem="2"
@@ -441,7 +441,18 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Uic&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\src\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\src\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\src\GeneratedFiles\ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\src\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;"
 						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
 						Outputs="&quot;..\src\GeneratedFiles\ui_$(InputName).h&quot;"
 					/>
@@ -456,7 +467,18 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Uic&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\src\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\src\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\src\GeneratedFiles\ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\src\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;"
 						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
 						Outputs="&quot;..\src\GeneratedFiles\ui_$(InputName).h&quot;"
 					/>
@@ -471,7 +493,18 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Uic&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\src\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\src\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;..\src\GeneratedFiles\ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\src\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;"
 						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
 						Outputs="&quot;..\src\GeneratedFiles\ui_$(InputName).h&quot;"
 					/>
@@ -486,7 +519,18 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing $(InputPath)..."
-						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o ..\src\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o ..\src\GeneratedFiles\qrc_$(InputName).cpp"
+						AdditionalDependencies="$(InputPath)"
+						Outputs="..\src\GeneratedFiles\qrc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Rcc&apos;ing $(InputPath)..."
+						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o ..\src\GeneratedFiles\qrc_$(InputName).cpp"
 						AdditionalDependencies="$(InputPath)"
 						Outputs="..\src\GeneratedFiles\qrc_$(InputName).cpp"
 					/>
@@ -500,7 +544,11 @@
 				RelativePath="..\src\TWG-Logo.png"
 				>
 			</File>
-		</Filter>
+			<File
+				RelativePath="..\src\TWG-LogoSmall.png"
+				>
+			</File>
+		</Filter>		
 		<Filter
 			Name="Generated Files"
 			>

@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/images" >
         <file>TWG-Logo.png</file>
+        <file>TWG-LogoSmall.png</file>
     </qresource>
 </RCC>
