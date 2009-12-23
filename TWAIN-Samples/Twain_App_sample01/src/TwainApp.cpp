@@ -90,12 +90,12 @@ void PrintCMDMessage(const char* const pStr, ...)
 
   va_list valist;
   va_start(valist, pStr);
-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP) && (TWNDS_CMP_VERSION >= 1400)
+  #if (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
+    vsnprintf(buffer, 200, pStr, valist);
+  #elif (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP) && (TWNDS_CMP_VERSION >= 1400)
     _vsnprintf_s(buffer, 200, 200, pStr, valist);
   #elif (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
     _vsnprintf(buffer, 200, pStr, valist);
-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
-    vsnprintf(buffer, 200, pStr, valist);
   #else
     #error Sorry, we do not recognize this system...
   #endif
@@ -1106,7 +1106,7 @@ void TwainApp::updateEXIMAGEINFO()
 
     if(TWRC_SUCCESS==exImgInfo.Info[0].CondCode)
     {
-      for(UINT nCount = 0; nCount < (UINT)exImgInfo.Info[0].Item; nCount++)
+      for(unsigned int nCount = 0; nCount < (unsigned int)exImgInfo.Info[0].Item; nCount++)
       {
         for (int nBarItem = 0; nBarItem < num_BarInfos; nBarItem++)
         {

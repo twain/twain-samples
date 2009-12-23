@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>New Profile Name</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="qtresources.qrc">
+    <normaloff>:/images/TWG-LogoSmall.png</normaloff>:/images/TWG-LogoSmall.png</iconset>
+  </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
@@ -50,7 +54,9 @@
   <tabstop>lineEdit</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="qtresources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

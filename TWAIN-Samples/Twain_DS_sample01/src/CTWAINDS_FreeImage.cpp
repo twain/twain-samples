@@ -71,7 +71,7 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
     1,                                    // TW_UINT16  MinorNum;         Incremental revision number of the software
     TWLG_ENGLISH,                         // TW_UINT16  Language;         e.g. TWLG_SWISSFRENCH
     TWCY_USA,                             // TW_UINT16  Country;          e.g. TWCY_SWITZERLAND
-    "2.1.1 sample"                        // TW_STR32   Info;             e.g. "1.0b3 Beta release"
+    "2.1.2 sample"                        // TW_STR32   Info;             e.g. "1.0b3 Beta release"
 #ifdef _DEBUG
     " debug"
 #else

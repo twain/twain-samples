@@ -48,7 +48,7 @@
   * @param[in] index the index into the enumeration to retrieve the value.
   * @return the Int value at index into pCap
   */
-static int GetIndexIntValue(pTW_ENUMERATION pCap, TW_UINT32 index);
+int GetIndexIntValue(pTW_ENUMERATION pCap, TW_UINT32 index);
 
 /**
 * This class can be used for any Integer based TWAIN container. 
