@@ -39,6 +39,8 @@ Installation
 notes: it is a future goal to have "make install" do the above copies.
 
 [Windows]
+- install QT 4.5.3 SDK for windows
+- Set environment variable QTDIR and/or QTDIR_64 to qt directory (Ex. QTDIR=C:\Qt\2009.02\qt QTDIR_64=C:\Qt\2009.02_x64\qt)
 - QMake is used to generate the makefiles. You can get a copy of this free in any
 QT Open Source distribution.  Please see http://www.trolltech.com for more info.
 - copy the TWAIN_logo.png and TWAINDS_Sample[32|64].ds to /Windows/twain_[32|64]/sample2
@@ -51,3 +53,4 @@ directory.
 - updated:  fredh@jflin.com, Nov 23, 2007
 - updated:  jimw@jflin.com, Dec 10, 2007
 - updated:  mihailm@jflin.com, Dec 23, 2009
+- updated:  mihailm@jflin.com, Dec 30, 2009
