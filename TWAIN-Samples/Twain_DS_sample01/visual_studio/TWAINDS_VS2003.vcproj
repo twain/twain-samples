@@ -142,7 +142,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="User32.lib FreeImage.lib  qtmaind.lib QtCored4.lib QtGuid4.lib"
+				AdditionalDependencies="User32.lib FreeImage.lib qtmain.lib QtCore4.lib QtGui4.lib"
 				OutputFile="$(OutDir)\$(ProjectName)32.ds"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\lib"

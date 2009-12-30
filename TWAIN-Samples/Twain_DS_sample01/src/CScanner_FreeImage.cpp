@@ -178,6 +178,11 @@ void CScanner_FreeImage::setSetting(SFreeImage settings)
   m_nHeight      = settings.m_nHeight;
   m_fXResolution = settings.m_fXResolution;
   m_fYResolution = settings.m_fYResolution;
+  m_fGamma       = settings.m_fGamma;
+  m_fContrast    = settings.m_fContrast;
+  m_fBrightness  = settings.m_fBrightness;
+  m_fThreshold   = settings.m_fThreshold;
+  
   m_nDocCount = m_nMaxDocCount;
 }
 
@@ -235,6 +240,22 @@ bool CScanner_FreeImage::preScanPrep()
 
   FIBITMAP *pDib = 0;
 
+  if(m_nPixelType != TWPT_BW)
+  {
+    if(m_fBrightness!=0)
+    {
+      FreeImage_AdjustBrightness(m_pDIB, m_fBrightness/10);
+    }
+    if(m_fContrast!=0)
+    {
+      FreeImage_AdjustContrast(m_pDIB, m_fContrast/10);
+    }
+    if(m_fGamma!=1.0)
+    {
+      FreeImage_AdjustGamma(m_pDIB, m_fGamma);
+    }
+  }
+
   m_nSourceWidth   = FreeImage_GetWidth(m_pDIB);
   m_nSourceHeight  = FreeImage_GetHeight(m_pDIB);
   WORD res = 0;
@@ -270,7 +291,7 @@ bool CScanner_FreeImage::preScanPrep()
 
   FreeImage_SetDotsPerMeterX( m_pDIB, WORD(m_fXResolution*39.37 + 0.5) );
   FreeImage_SetDotsPerMeterY( m_pDIB, WORD(m_fYResolution*39.37 + 0.5) );
-
+  
   if(m_nPixelType != TWPT_RGB)
   {
     // Apply bit depth color transforms
@@ -280,7 +301,7 @@ bool CScanner_FreeImage::preScanPrep()
         cout << "ds: converting to TWPT_BW..." << endl;
         /// @todo impliment Dithering
         /// @todo add Threshold setting
-        pDib = FreeImage_Threshold(m_pDIB, 128);
+        pDib = FreeImage_Threshold(m_pDIB, (BYTE)m_fThreshold);
       break;
 
       case TWPT_GRAY:

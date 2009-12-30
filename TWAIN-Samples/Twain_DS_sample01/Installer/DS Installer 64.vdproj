@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_07DA8AEFF84640E38871701AAB3FBCDF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_164B111C280C4535AC7E0ECE5A7DE80E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -39,6 +45,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_886E985518584FE09453C0048FE68EA4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8AB80F151A894ECEAD27208BF99BCC35"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_9EAB8EBF015A4A75A1AD24D2DD183A84"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -58,6 +76,12 @@
         "Entry"
         {
         "MsmKey" = "8:_D8EEE6B5A1E5424B894198FA6274D8C1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E93E83E9992749808BB6A275EA1151DE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -129,6 +153,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_07DA8AEFF84640E38871701AAB3FBCDF"
+            {
+            "SourcePath" = "8:..\\pub\\bin\\QtCore4.dll"
+            "TargetName" = "8:QtCore4.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_1963C0C487104258AC3B758ED11B69FB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_164B111C280C4535AC7E0ECE5A7DE80E"
             {
             "SourcePath" = "8:..\\..\\pub\\bin\\TWAIN_logo.png"
@@ -173,6 +217,46 @@
             {
             "SourcePath" = "8:..\\pub\\bin\\TWAINDS_Sample32.ds"
             "TargetName" = "8:TWAINDS_Sample32.ds"
+            "Tag" = "8:"
+            "Folder" = "8:_1963C0C487104258AC3B758ED11B69FB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_886E985518584FE09453C0048FE68EA4"
+            {
+            "SourcePath" = "8:..\\pub\\bin\\QtGui4x64.dll"
+            "TargetName" = "8:QtGui4.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_7F3AC73469D641B392D2D1F48A9249E9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8AB80F151A894ECEAD27208BF99BCC35"
+            {
+            "SourcePath" = "8:..\\pub\\bin\\QtGui4.dll"
+            "TargetName" = "8:QtGui4.dll"
             "Tag" = "8:"
             "Folder" = "8:_1963C0C487104258AC3B758ED11B69FB"
             "Condition" = "8:"
@@ -253,6 +337,26 @@
             {
             "SourcePath" = "8:..\\pub\\bin\\FreeImagex64.dll"
             "TargetName" = "8:FreeImagex64.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_7F3AC73469D641B392D2D1F48A9249E9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E93E83E9992749808BB6A275EA1151DE"
+            {
+            "SourcePath" = "8:..\\pub\\bin\\QtCore4x64.dll"
+            "TargetName" = "8:QtCore4.dll"
             "Tag" = "8:"
             "Folder" = "8:_7F3AC73469D641B392D2D1F48A9249E9"
             "Condition" = "8:"
@@ -412,27 +516,28 @@
         "MsiBootstrapper"
         {
         "LangId" = "3:1033"
+        "RequiresElevation" = "11:FALSE"
         }
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:TWAIN 2.0 DS Sample"
-        "ProductCode" = "8:{83D9E86A-409B-41B3-9573-46005AA47537}"
-        "PackageCode" = "8:{23BF0EB6-CFDA-4D27-A0DA-16F9711D709A}"
+        "ProductName" = "8:TWAIN 2.1 DS Sample"
+        "ProductCode" = "8:{FA2E386F-BAB5-4625-8322-20AC986E4D99}"
+        "PackageCode" = "8:{FB22C79E-853D-4DA5-A786-9D756C8CF4AB}"
         "UpgradeCode" = "8:{C2305D08-ACCD-48FD-8147-F655F8356F23}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:2.0.9"
+        "ProductVersion" = "8:2.1.3"
         "Manufacturer" = "8:TWAIN Working Group"
         "ARPHELPTELEPHONE" = "8:http://www.twainforum.org/"
         "ARPHELPLINK" = "8:http://sourceforge.net/projects/twain-samples/"
         "Title" = "8:TWAIN Sample DS 64 Installer"
         "Subject" = "8:"
         "ARPCONTACT" = "8:TWAIN Working Group"
-        "Keywords" = "8:TWAIN 2.0 DS Sample 64bit"
-        "ARPCOMMENTS" = "8:Sample software-only TWAIN 2.0 Data Source using freeimage in 32 bit and 64 bit"
+        "Keywords" = "8:TWAIN 2.1 DS Sample 64bit"
+        "ARPCOMMENTS" = "8:Sample software-only TWAIN 2.1 Data Source using freeimage in 32 bit and 64 bit"
         "ARPURLINFOABOUT" = "8:http://twain.org"
         "ARPPRODUCTICON" = "8:_B7ECB12BF6AB400BACA48E8A3E93AD3B"
         "ARPIconIndex" = "3:0"
@@ -854,9 +959,6 @@
             }
         }
         "ProjectOutput"
-        {
-        }
-        "VJSharpPlugin"
         {
         }
     }

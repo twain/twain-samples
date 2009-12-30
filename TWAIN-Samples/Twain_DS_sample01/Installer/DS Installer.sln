@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DS Installer 32", "DS Installer 32.vdproj", "{A540EBDC-617D-41C1-B8A1-8A7AF85F753F}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DS Installer 64", "DS Installer 64.vdproj", "{3A198E1E-1A53-422A-852A-BF6D613ADC83}"

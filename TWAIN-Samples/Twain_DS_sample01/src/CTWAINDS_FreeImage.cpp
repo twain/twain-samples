@@ -71,7 +71,7 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
     1,                                    // TW_UINT16  MinorNum;         Incremental revision number of the software
     TWLG_ENGLISH,                         // TW_UINT16  Language;         e.g. TWLG_SWISSFRENCH
     TWCY_USA,                             // TW_UINT16  Country;          e.g. TWCY_SWITZERLAND
-    "2.1.2 sample"                        // TW_STR32   Info;             e.g. "1.0b3 Beta release"
+    "2.1.3 sample"                        // TW_STR32   Info;             e.g. "1.0b3 Beta release"
 #ifdef _DEBUG
     " debug"
 #else
@@ -1402,7 +1402,8 @@ bool CTWAINDS_FreeImage::updateScannerFromCaps()
 
   CTWAINContainerInt    *pnCap = 0;
   CTWAINContainerFix32  *pfCap = 0;
- 
+  CTWAINContainerFix32Range *pfRCap = 0;
+
   if(0 == (pnCap = dynamic_cast<CTWAINContainerInt*>(findCapability(ICAP_PIXELTYPE))))
   {
     cerr << "Could not get ICAP_PIXELTYPE" << endl;
@@ -1459,7 +1460,54 @@ bool CTWAINDS_FreeImage::updateScannerFromCaps()
     settings.m_nHeight = int(FIX32ToFloat(TWframe.Bottom) - FIX32ToFloat(TWframe.Top));
   }
 
-  m_Scanner.setSetting(settings);
+  if(0 == (pfRCap = dynamic_cast<CTWAINContainerFix32Range*>(findCapability(ICAP_THRESHOLD))))
+  {
+    cerr << "Could not get ICAP_THRESHOLD" << endl;
+    bret = false;
+  }
+  else
+  {
+    pfRCap->GetCurrent(fVal);
+    settings.m_fThreshold = fVal;
+  }
+
+  if(0 == (pfRCap = dynamic_cast<CTWAINContainerFix32Range*>(findCapability(ICAP_CONTRAST))))
+  {
+    cerr << "Could not get ICAP_CONTRAST" << endl;
+    bret = false;
+  }
+  else
+  {
+    pfRCap->GetCurrent(fVal);
+    settings.m_fContrast = fVal;
+  }
+
+  if(0 == (pfRCap = dynamic_cast<CTWAINContainerFix32Range*>(findCapability(ICAP_BRIGHTNESS))))
+  {
+    cerr << "Could not get ICAP_BRIGHTNESS" << endl;
+    bret = false;
+  }
+  else
+  {
+    pfRCap->GetCurrent(fVal);
+    settings.m_fBrightness = fVal;
+  }
+  // Y resolution the same.
+  if(0 == (pfCap = dynamic_cast<CTWAINContainerFix32*>(findCapability(ICAP_GAMMA))))
+  {
+    cerr << "Could not get ICAP_GAMMA" << endl;
+    bret = false;
+  }
+  else
+  {
+    pfCap->GetCurrent(fVal);
+    settings.m_fGamma = fVal;
+  }
+
+  if(bret)
+  {
+    m_Scanner.setSetting(settings);
+  }
   return bret;
 }
 

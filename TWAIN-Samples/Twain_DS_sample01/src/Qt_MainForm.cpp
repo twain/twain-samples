@@ -244,13 +244,13 @@ void MainForm::on_pHorizontalSlider_Gamma_valueChanged(int value)
   if(m_bSliderValueChanged)
   {
     m_bSliderValueChanged = false;
-    m_pUI->SetCapValueFloat(ICAP_GAMMA,ui->pHorizontalSlider_Gamma->value()/10);
+    m_pUI->SetCapValueFloat(ICAP_GAMMA,ui->pHorizontalSlider_Gamma->value()/10.0);
     UpdateControls(); 
   }
 }
 void MainForm::on_pHorizontalSlider_Gamma_sliderReleased()
 {
-  m_pUI->SetCapValueFloat(ICAP_GAMMA,ui->pHorizontalSlider_Gamma->value()/10);
+  m_pUI->SetCapValueFloat(ICAP_GAMMA,ui->pHorizontalSlider_Gamma->value()/10.0);
   UpdateControls(); 
   return;
 }
@@ -515,7 +515,7 @@ void MainForm::UpdateControls()
     ui->pHorizontalSlider_Contrast->setMaximum((int)fMax);
     ui->pHorizontalSlider_Contrast->setValue((int)fCur);
     ui->pHorizontalSlider_Contrast->setSingleStep((int)fStep);
-    ui->pHorizontalSlider_Contrast->setTickInterval((fMax-fMin)/10);
+    ui->pHorizontalSlider_Contrast->setTickInterval((fMax-fMin)/10.0);
   }
 
   fCur = m_pUI->GetCapValueFloat(ICAP_BRIGHTNESS);
@@ -525,11 +525,11 @@ void MainForm::UpdateControls()
     ui->pHorizontalSlider_Brightness->setMaximum((int)fMax);
     ui->pHorizontalSlider_Brightness->setValue((int)fCur);
     ui->pHorizontalSlider_Brightness->setSingleStep((int)fStep);
-    ui->pHorizontalSlider_Brightness->setTickInterval((fMax-fMin)/10);
+    ui->pHorizontalSlider_Brightness->setTickInterval((fMax-fMin)/10.0);
   }
 
   fCur = m_pUI->GetCapValueFloat(ICAP_GAMMA);
-  fCur *=10;
+  fCur *=10.0;
   if(fCur<1)
   {
     fCur = 1;
@@ -551,7 +551,7 @@ void MainForm::UpdateControls()
     ui->pHorizontalSlider_Threshold->setMaximum((int)fMax);
     ui->pHorizontalSlider_Threshold->setValue((int)fCur);
     ui->pHorizontalSlider_Threshold->setSingleStep((int)fStep);
-    ui->pHorizontalSlider_Threshold->setTickInterval((fMax-fMin)/10);
+    ui->pHorizontalSlider_Threshold->setTickInterval((fMax-fMin)/10.0);
   }
 
   lstCapValues = m_pUI->GetValidCap(CAP_XFERCOUNT);

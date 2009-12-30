@@ -114,6 +114,10 @@ struct SFreeImage
   int               m_nHeight;                /**< frame top edge */
   float             m_fXResolution;           /**< horizontal resolution */
   float             m_fYResolution;           /**< vertical resolution */
+  float             m_fGamma;                 /**< Gamma */
+  float             m_fContrast;              /**< Contrast */
+  float             m_fBrightness;            /**< Brightness */
+  float             m_fThreshold;             /**< Threshold */
 };
 
 
