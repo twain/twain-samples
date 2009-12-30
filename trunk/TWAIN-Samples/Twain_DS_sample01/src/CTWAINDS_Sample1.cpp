@@ -187,7 +187,7 @@ BOOL WINAPI DllMain(HINSTANCE _hmodule,
   }
   return(TRUE);
 }
-#elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
+#elif (TWNDS_CMP == TWNDS_CMP_GNUGPP)
     // Nothing for us to do...
 #else
     #error Sorry, we do not recognize this system...
