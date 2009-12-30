@@ -1,3 +1,9 @@
+2009-12-30 JFL Peripheral Solutions mihailm@jflinc.com
+
+    * Installer update - QT based
+    * bug fixing
+
+
 2009-12-22 JFL Peripheral Solutions mihailm@jflinc.com
 
     * UI added - QT based
