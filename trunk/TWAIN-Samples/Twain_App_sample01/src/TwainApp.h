@@ -350,7 +350,7 @@ pTW_IDENTITY selectDefaultDataSource(void);
 * retrieve the extended image info for the current image
 * @return true on succes
 */
-  void updateEXIMAGEINFO();
+  void updateEXTIMAGEINFO();
 
   int             m_DSMState;             /**< The current TWAIN state of the dsm (2-7) */
   TW_UINT16       m_DSMessage;            /**< Statis to indicate if we are waiting for DS */

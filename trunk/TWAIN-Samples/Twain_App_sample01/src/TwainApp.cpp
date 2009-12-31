@@ -934,7 +934,7 @@ void TwainApp::initiateTransfer_Native()
       _DSM_Free(hImg);
       pDIB = 0;
       
-      updateEXIMAGEINFO();
+      updateEXTIMAGEINFO();
 
       // see if there are any more transfers to do
       PrintCMDMessage("app: Checking to see if there are more images to transfer...\n");
@@ -998,7 +998,7 @@ void TwainApp::initiateTransfer_Native()
 
   return;
 }
-void TwainApp::updateEXIMAGEINFO()
+void TwainApp::updateEXTIMAGEINFO()
 {
   int TableBarCodeExtImgInfo[] = { 
          TWEI_BARCODETYPE, 
@@ -1240,7 +1240,7 @@ void TwainApp::initiateTransfer_File(TW_UINT16 fileformat /*= TWFF_TIFF*/)
       }
 #endif
       
-      updateEXIMAGEINFO();
+      updateEXTIMAGEINFO();
 
       // see if there are any more transfers to do
       PrintCMDMessage("app: Checking to see if there are more images to transfer...\n");
@@ -1443,7 +1443,7 @@ void TwainApp::initiateTransfer_Memory()
 #ifdef _WINDOWS
           ShellExecute(m_Parent, "open", szOutFileName, NULL, NULL, SW_SHOWNORMAL);
 #endif
-          updateEXIMAGEINFO();
+          updateEXTIMAGEINFO();
           break;
         }
       }
