@@ -157,7 +157,10 @@ BOOL CmfcDlgMain::OnInitDialog()
     pWnd->SetTabStops(60);
   }
 
+  //Connect to the DSM just to update list
+  _pTWAINApp->connectDSM();
   PopulateDSList();
+  _pTWAINApp->disconnectDSM();
 
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -225,76 +228,67 @@ void CmfcDlgMain::OnDestroy()
 
 void CmfcDlgMain::PopulateDSList()
 {
-  _pTWAINApp->connectDSM();
-  if(3 == _pTWAINApp->m_DSMState)
+  pTW_IDENTITY pID = NULL;
+  int   i = 0;
+  int   index = 0;
+  int   nDefault = -1;
+
+  // Emply the list the refill
+  m_lst_DS.ResetContent();
+
+  if( NULL != (pID = _pTWAINApp->getDefaultDataSource()) ) // Get Default
   {
-    pTW_IDENTITY pID = NULL;
-    int   i = 0;
-    int   index = 0;
-    int   nDefault = -1;
+    nDefault = pID->Id;
+  }
 
-    if( NULL != (pID = _pTWAINApp->getDefaultDataSource()) ) // Get Default
+  while( NULL != (pID = _pTWAINApp->getDataSource(i)) )
+  {
+    index = m_lst_DS.AddString( pID->ProductName );
+    if(LB_ERR == index)
     {
-      nDefault = pID->Id;
+      break;
     }
 
-    while( NULL != (pID = _pTWAINApp->getDataSource(i)) )
+    m_lst_DS.SetItemData( index, i );
+
+    if(nDefault == pID->Id)
     {
-      index = m_lst_DS.AddString( pID->ProductName );
-      if(LB_ERR == index)
-      {
-        break;
-      }
-
-      m_lst_DS.SetItemData( index, pID->Id );
-
-      if(nDefault == pID->Id)
-      {
-        m_lst_DS.SetCurSel(index);
-      }
-
-      i++;
+      m_lst_DS.SetCurSel(index);
     }
 
-    if( 0 < m_lst_DS.GetCount())
-    {
-      m_lst_DS.EnableWindow(true);
-      m_btn_Connect_DS.EnableWindow(true);
-      m_btn_Default_DS.EnableWindow(true);
-      if(nDefault == -1)
-      {
-        m_lst_DS.SetCurSel(0);
-      }
-      OnLbnSelchangeDS();
-    }
+    i++;
+  }
 
-    _pTWAINApp->disconnectDSM();
+  if( 0 < m_lst_DS.GetCount())
+  {
+    m_lst_DS.EnableWindow(true);
+    m_btn_Connect_DS.EnableWindow(true);
+    m_btn_Default_DS.EnableWindow(true);
+    if(nDefault == -1)
+    {
+      m_lst_DS.SetCurSel(0);
+    }
+    OnLbnSelchangeDS();
   }
 }
 
 void CmfcDlgMain::OnLbnSelchangeDS()
 {
   int           sel   = m_lst_DS.GetCurSel();
-  TW_UINT32     index = (TW_UINT32)m_lst_DS.GetItemData(sel);
+  TW_INT16      index = (TW_INT16)m_lst_DS.GetItemData(sel);
   pTW_IDENTITY  pID   = NULL;
-  int           i     = 0;
   
-  while(NULL != (pID = _pTWAINApp->getDataSource(i)) )
+  if(NULL != (pID = _pTWAINApp->getDataSource(index)) )
   {
-    if( pID->Id == index )
-    {
-      m_sStc_DS.Format( "Manufacturer:\t%s\r\n"
-                        "Product Family:\t%s\r\n"
-                        "Version:\t%d.%d\r\n"
-                        "\t%s\r\n"
-                        "TWAIN Protocol:\t%d.%d",
-                        pID->Manufacturer, pID->ProductFamily, 
-                        pID->Version.MajorNum, pID->Version.MinorNum, pID->Version.Info, 
-                        pID->ProtocolMajor, pID->ProtocolMinor);
-      UpdateData(false);
-      break;
-    }
-    i++;
+    m_sStc_DS.Format( "Manufacturer:\t%s\r\n"
+                      "Product Family:\t%s\r\n"
+                      "Version:\t%d.%d\r\n"
+                      "\t%s\r\n"
+                      "TWAIN Protocol:\t%d.%d",
+                      pID->Manufacturer, pID->ProductFamily, 
+                      pID->Version.MajorNum, pID->Version.MinorNum, pID->Version.Info, 
+                      pID->ProtocolMajor, pID->ProtocolMinor);
+    UpdateData(false);
   }
 }
 
@@ -305,23 +299,29 @@ void CmfcDlgMain::OnLbnDblclkDs()
 
 void CmfcDlgMain::OnBnClickedConnectDs()
 {
-  int sel = m_lst_DS.GetCurSel();
-  TW_UINT32 ds_ID = (TW_UINT32)m_lst_DS.GetItemData(sel);
-  ASSERT(ds_ID > 0 );
-
-  CmfcDlgConfigure dlg(this, ds_ID);
-  INT_PTR nResponse = dlg.DoModal();
+  int           sel   = m_lst_DS.GetCurSel();
+  TW_INT16      index = (TW_INT16)m_lst_DS.GetItemData(sel);
+  pTW_IDENTITY  pID   = NULL;
+  
+  if(NULL != (pID = _pTWAINApp->getDataSource(index)) )
+  {
+    CmfcDlgConfigure dlg(this, pID->Id);
+    INT_PTR nResponse = dlg.DoModal();
+  }
 }
 
 void CmfcDlgMain::OnBnClickedDefaultDs()
 {
-  int sel = m_lst_DS.GetCurSel();
-
+  int           sel   = m_lst_DS.GetCurSel();
+  TW_INT16      index = (TW_INT16)m_lst_DS.GetItemData(sel);
+  pTW_IDENTITY  pID   = NULL;
+  
   _pTWAINApp->connectDSM();
   if(3 == _pTWAINApp->m_DSMState)
   {
-    _pTWAINApp->setDefaultDataSource(sel);
+    _pTWAINApp->setDefaultDataSource(index);
 
+    PopulateDSList();
+    _pTWAINApp->disconnectDSM();
   }
-  _pTWAINApp->disconnectDSM();
 }
