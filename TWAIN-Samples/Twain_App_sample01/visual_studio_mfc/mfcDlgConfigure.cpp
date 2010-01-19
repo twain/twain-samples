@@ -378,8 +378,9 @@ void CmfcDlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
     CondCode = g_pTWAINApp->get_CAP(Cap, MSG_GET);
     if(CondCode==TWCC_SUCCESS)
     {
-      pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(Cap.hContainer);
-      if(pCap)
+      pTW_ONEVALUE pCap = NULL;
+      if( Cap.hContainer
+       && NULL != (pCap = (pTW_ONEVALUE)_DSM_LockMemory(Cap.hContainer)) )
       {
         TW_UINT16 type = pCap->ItemType;
         _DSM_UnlockMemory(Cap.hContainer);
@@ -509,6 +510,10 @@ void CmfcDlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
           }
         }
       }
+      else //if(Cap.hContainer)
+      {
+        sItemValue = "<<Invalid Container>>";
+      }
     }
     else
     {
@@ -525,7 +530,7 @@ void CmfcDlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
       Item.iSubItem   = 1;
       Item.pszText = oldString;
       m_ListCtrl_Caps.GetItem(&Item);
-      if(0 != strcmp(sItemValue.c_str(), oldString))
+      if(0 != strncmp(sItemValue.c_str(), oldString, 260))
       {
         byChanged |= 1<<Item.iSubItem;
       }
