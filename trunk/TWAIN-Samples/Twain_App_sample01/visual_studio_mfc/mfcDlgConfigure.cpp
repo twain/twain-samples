@@ -50,7 +50,7 @@
 /**
 * gloabals
 */
-TwainApp *g_pTWAINApp = NULL;
+CmfcDlgConfigure *g_pTWAINApp = NULL;
 extern bool gUSE_CALLBACKS;    // defined in TwainApp.cpp
 
 //////////////////////////////////////////////////////////////////////////////
@@ -105,7 +105,7 @@ TW_UINT16 FAR PASCAL DSMCallback(pTW_IDENTITY _pOrigin,
 
 
 CmfcDlgConfigure::CmfcDlgConfigure(CWnd* pParent, int nIndex)
-  : CDialog(CmfcDlgConfigure::IDD, pParent)
+  : CDialog(CmfcDlgConfigure::IDD, pParent), TwainApp(pParent->m_hWnd)
   ,m_sStc_DS(_T(""))
   ,m_sStc_ImageInfo(_T(""))
   ,m_sStc_ExtImageInfo(_T(""))
@@ -151,22 +151,20 @@ BOOL CmfcDlgConfigure::OnInitDialog()
   SetIcon(m_hIcon, TRUE);     // Set big icon
   SetIcon(m_hIcon, FALSE);    // Set small icon
 
-  g_pTWAINApp = new TwainApp(m_hWnd);
+  g_pTWAINApp = this;
 
-  g_pTWAINApp->connectDSM();
-  g_pTWAINApp->loadDS(m_nIndex);
+  connectDSM();
+  loadDS(m_nIndex);
 
-  pTW_IDENTITY pID = g_pTWAINApp->getDataSource();
-    
-  if( NULL != pID )
+  if( NULL != m_pDataSource )
   {
     m_sStc_DS.Format( "Scanner: %s\nManufacturer: %s\nProductFamily: %s\nInfo: %s", 
-      pID->ProductName, pID->Manufacturer, pID->ProductFamily, 
-      pID->Version.Info);
+      m_pDataSource->ProductName, m_pDataSource->Manufacturer, m_pDataSource->ProductFamily, 
+      m_pDataSource->Version.Info);
     UpdateData(false);
   }
 
-  if(4 <= g_pTWAINApp->m_DSMState)
+  if(4 <= m_DSMState)
   {
     DWORD style = m_ListCtrl_Caps.GetExtendedStyle();
     m_ListCtrl_Caps.SetExtendedStyle(style | LVS_EX_FULLROWSELECT);
@@ -182,7 +180,7 @@ BOOL CmfcDlgConfigure::OnInitDialog()
     
     col.pszText   = "Current Value";
     col.iSubItem  = 1;
-    col.cx        = 100;
+    col.cx        = 95;
     m_ListCtrl_Caps.InsertColumn(1, &col);
 
     col.pszText   = "Querey";
@@ -208,7 +206,7 @@ BOOL CmfcDlgConfigure::OnInitDialog()
     pWnd = (CEdit*)GetDlgItem(IDC_EXTIMAGEINFO);
     if(pWnd)
     {
-      pWnd->SetTabStops(94);
+      pWnd->SetTabStops(105);
     }
 
     pWnd = (CEdit*)GetDlgItem(IDC_IMAGEINFO);
@@ -245,12 +243,9 @@ HCURSOR CmfcDlgConfigure::OnQueryDragIcon()
 
 void CmfcDlgConfigure::OnDestroy()
 {
-  if(g_pTWAINApp)
-  {
-    g_pTWAINApp->exit();
-    delete g_pTWAINApp;
-    g_pTWAINApp = NULL;
-  }
+  exit();
+  g_pTWAINApp = NULL;
+
   if(m_pCapSettings)
   {
     delete[] m_pCapSettings;
@@ -281,7 +276,7 @@ void CmfcDlgConfigure::ListSupportedCaps()
   CapSupportedCaps.Cap = CAP_SUPPORTEDCAPS;
   CapSupportedCaps.hContainer = 0;
 
-  g_pTWAINApp->get_CAP(CapSupportedCaps, MSG_GET);
+  get_CAP(CapSupportedCaps, MSG_GET);
 
   if(TWON_ARRAY != CapSupportedCaps.ConType)
   {
@@ -309,7 +304,7 @@ void CmfcDlgConfigure::ListSupportedCaps()
     // we are not listing this CAPABILITIES
     if(pCapSupCaps->ItemList[i] != CAP_SUPPORTEDCAPS)
     {
-      if(TWRC_SUCCESS == g_pTWAINApp->GetLabel(pCapSupCaps->ItemList[i], sCapName))
+      if(TWRC_SUCCESS == GetLabel(pCapSupCaps->ItemList[i], sCapName))
       {
         Item.pszText    = (LPSTR)sCapName.c_str();
       }
@@ -375,7 +370,7 @@ void CmfcDlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
     Cap.ConType     = TWON_DONTCARE16;
 
     // We will ignor what Query Supported has reproted about Message Get and get the current anyway.
-    CondCode = g_pTWAINApp->get_CAP(Cap, MSG_GET);
+    CondCode = get_CAP(Cap, MSG_GET);
     if(CondCode==TWCC_SUCCESS)
     {
       pTW_ONEVALUE pCap = NULL;
@@ -611,7 +606,7 @@ void CmfcDlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
       m_ListCtrl_Caps.SetItem(&Item);
     }
 
-    g_pTWAINApp->QuerySupport_CAP(Cap.Cap, QS);
+    QuerySupport_CAP(Cap.Cap, QS);
 
     sItemValue = "";
     if( QS & (TWQC_GET|TWQC_GETDEFAULT|TWQC_GETCURRENT) )
@@ -695,7 +690,7 @@ void CmfcDlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
   Cap.hContainer  = 0;
 
   // get possible values to populate dialog box with
-  if(TWCC_SUCCESS==g_pTWAINApp->get_CAP(Cap, MSG_GET))
+  if(TWCC_SUCCESS==get_CAP(Cap, MSG_GET))
   {
     // Special Case first
     if(CAP_XFERCOUNT == Cap.Cap)
@@ -703,7 +698,7 @@ void CmfcDlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
       TW_UINT32 Val;
       getCurrent(&Cap, Val);
       Val = (TW_INT16)Val == -1? 1: -1;// flop
-      g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, Val, TWTY_INT16);
+      set_CapabilityOneValue(Cap.Cap, Val, TWTY_INT16);
       bChange = true;
     }
     else if( Cap.ConType == TWON_ENUMERATION )
@@ -732,14 +727,14 @@ void CmfcDlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
             case TWTY_UINT32:
             case TWTY_BOOL:
             {
-              twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, (TW_UINT16)Dlg.m_SelectionData, type);
+              twrc = set_CapabilityOneValue(Cap.Cap, (TW_UINT16)Dlg.m_SelectionData, type);
               break;
             }
 
             case TWTY_FIX32:
             {
               TW_FIX32 TWfix32 = FloatToFIX32( (float)(Dlg.m_SelectionData/100.0));
-              twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, &TWfix32);
+              twrc = set_CapabilityOneValue(Cap.Cap, &TWfix32);
               break;
             }
 
@@ -763,7 +758,7 @@ void CmfcDlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
         case TWTY_BOOL:
         {
           // Not displaying a dialog just try to set the opposit value
-          TW_INT16  twrc = g_pTWAINApp->set_CapabilityOneValue(Cap.Cap, (TW_UINT16)pCapPT->Item? FALSE:TRUE, TWTY_BOOL);
+          TW_INT16  twrc = set_CapabilityOneValue(Cap.Cap, (TW_UINT16)pCapPT->Item? FALSE:TRUE, TWTY_BOOL);
           if(twrc == TWRC_SUCCESS || twrc == TWRC_CHECKSTATUS)
           {
             bChange = true;
@@ -805,7 +800,7 @@ void CmfcDlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CmfcDlgConfigure::OnBnClickedScan()
 {
-  g_pTWAINApp->m_DSMessage = (TW_UINT16)-1;
+  m_DSMessage = (TW_UINT16)-1;
 
   UpdateData(true);
 
@@ -815,13 +810,13 @@ void CmfcDlgConfigure::OnBnClickedScan()
   // caps, only get ops.
   // -The scan will not start until the source calls the callback function
   // that was registered earlier.
-  if( !g_pTWAINApp->enableDS(GetSafeHwnd(), m_bShowUI) )
+  if( !enableDS(GetSafeHwnd(), m_bShowUI) )
   {
     return;
   }
 
   // now we have to wait until we hear something back from the DS.
-  while((TW_UINT16)-1 == g_pTWAINApp->m_DSMessage)
+  while((TW_UINT16)-1 == m_DSMessage)
   {
 
     // If we are using callbacks, there is nothing to do here except sleep
@@ -837,8 +832,8 @@ void CmfcDlgConfigure::OnBnClickedScan()
     twEvent.pEvent = (TW_MEMREF)&Msg;
     twEvent.TWMessage = MSG_NULL;
     TW_UINT16  twRC = TWRC_NOTDSEVENT;
-    twRC = _DSM_Entry( g_pTWAINApp->getAppIdentity(),
-                g_pTWAINApp->getDataSource(),
+    twRC = _DSM_Entry( getAppIdentity(),
+                m_pDataSource,
                 DG_CONTROL,
                 DAT_EVENT,
                 MSG_PROCESSEVENT,
@@ -852,7 +847,7 @@ void CmfcDlgConfigure::OnBnClickedScan()
         case MSG_XFERREADY:
         case MSG_CLOSEDSREQ:
         case MSG_NULL:
-          g_pTWAINApp->m_DSMessage = twEvent.TWMessage;
+          m_DSMessage = twEvent.TWMessage;
           break;
 
         case MSG_CLOSEDSOK:
@@ -874,19 +869,18 @@ void CmfcDlgConfigure::OnBnClickedScan()
   // At this point the source has sent us a callback saying that it is ready to
   // transfer the image.
 
-  if(g_pTWAINApp->m_DSMessage == MSG_XFERREADY)
+  if(m_DSMessage == MSG_XFERREADY)
   {
     // move to state 6 as a result of the data source. We can start a scan now.
-    g_pTWAINApp->m_DSMState = 6;
-    g_pTWAINApp->updateIMAGEINFO();
+    m_DSMState = 6;
+    updateIMAGEINFO();
     UpdateImageInfo();
     StartScan();
-    UpdateExtImageInfo();
   }
 
   // Scan is done, disable the ds, thus moving us back to state 4 where we
   // can negotiate caps again.
-  g_pTWAINApp->disableDS();
+  disableDS();
 
   // update showing new values
   PopulateCurentValues(true);
@@ -896,20 +890,20 @@ void CmfcDlgConfigure::OnBnClickedScan()
 
 void CmfcDlgConfigure::OnBnClickedUIOnly()
 {
-  g_pTWAINApp->m_DSMessage = (TW_UINT16)-1;
+  m_DSMessage = (TW_UINT16)-1;
 
   UpdateData(true);
 
   // Enable the data source. This puts us in state 5 which means that we
   // have to wait for the data source to tell us close.
   // Once in state 5, no more set ops can be done on the caps, only get ops.
-  if( !g_pTWAINApp->enableDSUIOnly(GetSafeHwnd()) )
+  if( !enableDSUIOnly(GetSafeHwnd()) )
   {
     return;
   }
 
   // now we have to wait until we hear something back from the DS.
-  while((TW_UINT16)-1 == g_pTWAINApp->m_DSMessage)
+  while((TW_UINT16)-1 == m_DSMessage)
   {
 
     // If we are using callbacks, there is nothing to do here except sleep
@@ -925,8 +919,8 @@ void CmfcDlgConfigure::OnBnClickedUIOnly()
     twEvent.pEvent = (TW_MEMREF)&Msg;
     twEvent.TWMessage = MSG_NULL;
     TW_UINT16  twRC = TWRC_NOTDSEVENT;
-    twRC = _DSM_Entry( g_pTWAINApp->getAppIdentity(),
-                g_pTWAINApp->getDataSource(),
+    twRC = _DSM_Entry( getAppIdentity(),
+                m_pDataSource,
                 DG_CONTROL,
                 DAT_EVENT,
                 MSG_PROCESSEVENT,
@@ -940,7 +934,7 @@ void CmfcDlgConfigure::OnBnClickedUIOnly()
         case MSG_CLOSEDSREQ:
         case MSG_CLOSEDSOK:
         case MSG_NULL:
-          g_pTWAINApp->m_DSMessage = twEvent.TWMessage;
+          m_DSMessage = twEvent.TWMessage;
           break;
 
         case MSG_XFERREADY: // Should never get this when Show UI Only
@@ -961,7 +955,7 @@ void CmfcDlgConfigure::OnBnClickedUIOnly()
 
   // ShowUI is done, disable the ds, thus moving us back to state 4 where we
   // can negotiate caps again.
-  g_pTWAINApp->disableDS();
+  disableDS();
 
   // update showing new values
   PopulateCurentValues(true);
@@ -977,7 +971,7 @@ void CmfcDlgConfigure::StartScan()
   Cap.Cap = ICAP_XFERMECH;
   Cap.hContainer = 0;
 
-  if( TWCC_SUCCESS!=g_pTWAINApp->get_CAP(Cap, MSG_GETCURRENT)
+  if( TWCC_SUCCESS!=get_CAP(Cap, MSG_GETCURRENT)
     ||!getCurrent(&Cap, mech) )
   {
       TRACE("Error: could not get the transfer mechanism");
@@ -992,7 +986,7 @@ void CmfcDlgConfigure::StartScan()
   switch ( (TW_UINT16)mech )
   {
   case TWSX_NATIVE:
-   g_pTWAINApp->initiateTransfer_Native();
+   initiateTransfer_Native();
     break;
 
   case TWSX_FILE:
@@ -1001,7 +995,7 @@ void CmfcDlgConfigure::StartScan()
       Cap.Cap = ICAP_IMAGEFILEFORMAT;
       Cap.hContainer = 0;
 
-      if(TWCC_SUCCESS==g_pTWAINApp->get_CAP(Cap, MSG_GETCURRENT))
+      if(TWCC_SUCCESS==get_CAP(Cap, MSG_GETCURRENT))
       {
         getCurrent(&Cap, fileformat);
       }
@@ -1011,12 +1005,12 @@ void CmfcDlgConfigure::StartScan()
        _DSM_Free(Cap.hContainer);
       }
 
-      g_pTWAINApp->initiateTransfer_File((TW_UINT16)fileformat);
+      initiateTransfer_File((TW_UINT16)fileformat);
     }
     break;
 
   case TWSX_MEMORY:
-    g_pTWAINApp->initiateTransfer_Memory();
+    initiateTransfer_Memory();
     break;
   }
 
@@ -1026,14 +1020,14 @@ void CmfcDlgConfigure::StartScan()
 void CmfcDlgConfigure::OnBnClickedCancel()
 {
   // TODO: Add your control notification handler code here
-  g_pTWAINApp->exit();
+  exit();
   OnCancel();
 }
 
 
 void CmfcDlgConfigure::UpdateImageInfo()
 {
-  pTW_IMAGEINFO pII = g_pTWAINApp->getIMAGEINFO();
+  pTW_IMAGEINFO pII = getIMAGEINFO();
   m_sStc_ImageInfo.Format( 
                           "Width: \t%d \tBitsPerPixel: \t%d\r\n"
                           "Length:\t%d \tPlanar:       \t%s\r\n"
@@ -1047,13 +1041,14 @@ void CmfcDlgConfigure::UpdateImageInfo()
   UpdateData(false);
 }
 
-
-void CmfcDlgConfigure::UpdateExtImageInfo()
+void CmfcDlgConfigure::updateEXTIMAGEINFO()
 {
-  m_sStc_ExtImageInfo = g_pTWAINApp->getEXIMAGEINFO().c_str();
+  // Call base class first
+  TwainApp::updateEXTIMAGEINFO();
+  m_sStc_ExtImageInfo += getEXIMAGEINFO().c_str();
+  m_sStc_ExtImageInfo += "\r\n";
   UpdateData(false);
 }
-
 
 
 void CmfcDlgConfigure::OnNMCustomdrawCaps(NMHDR *pNMHDR, LRESULT *pResult)

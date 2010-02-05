@@ -149,6 +149,21 @@ BOOL CmfcDlgMain::OnInitDialog()
 
   _pTWAINApp = new TwainApp(m_hWnd);
 
+  // Set up our Unique Application Identity
+  TW_IDENTITY *pAppID = _pTWAINApp->getAppIdentity();
+
+  pAppID->Version.MajorNum = 2;
+  pAppID->Version.MinorNum = 1;
+  pAppID->Version.Language = TWLG_ENGLISH_CANADIAN;
+  pAppID->Version.Country = TWCY_CANADA;
+  SSTRCPY(pAppID->Version.Info, sizeof(pAppID->Version.Info), "2.1.1");
+  pAppID->ProtocolMajor = TWON_PROTOCOLMAJOR;
+  pAppID->ProtocolMinor = TWON_PROTOCOLMINOR;
+  pAppID->SupportedGroups = DF_APP2 | DG_IMAGE | DG_CONTROL;
+  SSTRCPY(pAppID->Manufacturer, sizeof(pAppID->Manufacturer), "TWAIN Working Group");
+  SSTRCPY(pAppID->ProductFamily, sizeof(pAppID->ProductFamily), "Sample");
+  SSTRCPY(pAppID->ProductName, sizeof(pAppID->ProductName), "MFC Supported Caps");
+
   CEdit *pWnd = NULL;
 
   pWnd = (CEdit*)GetDlgItem(IDC_STC_DS);
@@ -159,8 +174,11 @@ BOOL CmfcDlgMain::OnInitDialog()
 
   //Connect to the DSM just to update list
   _pTWAINApp->connectDSM();
-  PopulateDSList();
-  _pTWAINApp->disconnectDSM();
+  if(_pTWAINApp->m_DSMState >= 3)
+  {
+    PopulateDSList();
+    _pTWAINApp->disconnectDSM();
+  }
 
   return TRUE;  // return TRUE  unless you set the focus to a control
 }

@@ -58,7 +58,7 @@ struct CapSetting
 /**
 * Main dialalog window for applicaiton
 */
-class CmfcDlgConfigure : public CDialog
+class CmfcDlgConfigure : public CDialog, public TwainApp
 {
 // Construction
 public:
@@ -98,6 +98,13 @@ public:
   afx_msg void OnNMCustomdrawCaps(NMHDR *pNMHDR, LRESULT *pResult);
   void UpdateImageInfo();
   void UpdateExtImageInfo();
+
+/**
+* Override the virtual function to retrieve the extended image info for the current image
+* @return true on succes
+*/
+  virtual void updateEXTIMAGEINFO();
+
   void MarkUnchanged();
 
   CString     m_sStc_DS;
