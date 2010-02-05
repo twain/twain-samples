@@ -206,8 +206,8 @@
 * chance of finding boo-boos...
 */
 #if (TWNDS_CMP == TWNDS_CMP_VISUALCPP) && (TWNDS_CMP_VERSION >= 1400)
-  #define SSTRCPY(d,z,s) strcpy_s(d,z,s)
-  #define SSTRCAT(d,z,s) strcat_s(d,z,s)
+  #define SSTRCPY(d,z,s) strncpy_s(d,z,s,_TRUNCATE)
+  #define SSTRCAT(d,z,s) strncat_s(d,z,s,_TRUNCATE)
   #define SSTRNCPY(d,z,s,m) strncpy_s(d,z,s,m)
   #define SGETENV(d,z,n) ::GetEnvironmentVariable(n,d,z)
   inline int SSNPRINTF(char *d, size_t z, size_t c, const char *f,...)
