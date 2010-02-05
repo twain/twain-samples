@@ -621,6 +621,9 @@ int getTWTYsize(TW_UINT16  ItemType)
   case TWTY_UNI512:
     TypeSize = sizeof(TW_UNI512);
     break;
+  case TWTY_HANDLE:
+    TypeSize = sizeof(TW_HANDLE);
+    break;
 
   default:
     break;

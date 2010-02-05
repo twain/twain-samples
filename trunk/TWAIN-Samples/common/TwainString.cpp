@@ -999,6 +999,10 @@ const char* convertTWTY_toString(const TW_UINT16 _unItem)
     text = "UNI512";
     break;
 
+  case TWTY_HANDLE:
+    text = "HANDLE";
+    break;    
+
   default:
     {
       char * buff = nextTempBuffer();
@@ -3713,6 +3717,14 @@ const char* convertExtImageInfoItem_toString(TW_INFO &ImgInfo)
          SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "%.*s", getTWTYsize(ImgInfo.ItemType), chTest);
 
          _DSM_UnlockMemory((TW_HANDLE)ImgInfo.Item);
+         }
+         break;
+
+       case TWTY_HANDLE:
+         {
+         // Need to look at the item to know how to handle :) this 
+         // It might be a handle to a string or a handle to a chunk of memory
+         SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Handle 0x:%8X", (TW_HANDLE)ImgInfo.Item);
          }
          break;
 
