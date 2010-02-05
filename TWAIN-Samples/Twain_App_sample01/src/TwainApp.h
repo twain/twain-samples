@@ -327,7 +327,8 @@ public:
 * Display the Select Source Dialog and returns a pointer to the selected data source.
 * @return a TW_IDENTITY pointer.  NULL if no source selected.
 */
-pTW_IDENTITY selectDefaultDataSource(void);
+  pTW_IDENTITY selectDefaultDataSource(void);
+
 /**
 * Gets the imageinfo of the currently transfered image
 * @return pointer to the image info
@@ -350,7 +351,7 @@ pTW_IDENTITY selectDefaultDataSource(void);
 * retrieve the extended image info for the current image
 * @return true on succes
 */
-  void updateEXTIMAGEINFO();
+  virtual void updateEXTIMAGEINFO();
 
   int             m_DSMState;             /**< The current TWAIN state of the dsm (2-7) */
   TW_UINT16       m_DSMessage;            /**< Statis to indicate if we are waiting for DS */
