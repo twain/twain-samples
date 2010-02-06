@@ -1193,7 +1193,6 @@ void TwainApp::updateEXTIMAGEINFO()
             {
               pStrLen   = (TW_UINT32 *)_DSM_LockMemory((TW_HANDLE)pExtImgInfo->Info[nIndex-1].Item);
               StrLen    = *pStrLen;
-              StrLen    = min(StrLen, 256);
             }
             // Data source should not return multiple items in a single Info for BarCodeText
             // because we send a Info for each one it had for us but we will handle the case
@@ -1205,7 +1204,6 @@ void TwainApp::updateEXTIMAGEINFO()
                 m_strExImageInfo +="\r\n\t";
                 pStrData += StrLen;
                 StrLen    = *++pStrLen;
-                //StrLen    = min(StrLen, 256);
               }
               bool bNonPrintableData = FALSE;
               if( nIndex>1
@@ -1238,7 +1236,7 @@ void TwainApp::updateEXTIMAGEINFO()
               }
               else
               {
-                SSTRNCPY(buff, 256, pStrData, StrLen);
+                SSTRNCPY(buff, 256, pStrData, min(StrLen, 255));
                 m_strExImageInfo += buff;
               }
             }
