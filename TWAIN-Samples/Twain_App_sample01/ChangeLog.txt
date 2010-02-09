@@ -1,3 +1,26 @@
+2010-02-05 JFL Peripheral Solutions jimw@jflinc.com
+
+    * TwainApp.cpp, TwainApp.h, mfcDlgConfigure.cpp, mfcDlgConfigure.h, & mfcDlgMain.cpp
+        Expand ExtImageInfo usability. 
+        Make mfcDlgConfigure a child of TWAINApp.
+
+2010-01-19 JFL Peripheral Solutions jimw@jflinc.com
+
+    * mfcDlgConfigure.cpp, Fix issue if receive invalid container
+
+2009-12-31 JFL Peripheral Solutions jimw@jflinc.com
+
+    * TwainApp.cpp, TwainApp.h Fix MSGSET for default DS.
+
+2009-12-27 JFL Peripheral Solutions mihailm
+
+    * Correct Linux compatible
+    * Add Multi-page TIFF just one file for all pages
+    * Initialize capability containers 
+    * Free some resources 
+    * Added: MSVC 2008 solution
+    * Fixed: compiler defines
+
 2009-11-27 JFL Peripheral Solutions jimw@jflinc.com
 
     * Correct the name of the mcf classes to remove 32, from Cmfc32DlgConfigure

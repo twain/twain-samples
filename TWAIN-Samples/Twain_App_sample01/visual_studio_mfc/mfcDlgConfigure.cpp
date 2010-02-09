@@ -525,7 +525,7 @@ void CmfcDlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
       Item.iSubItem   = 1;
       Item.pszText = oldString;
       m_ListCtrl_Caps.GetItem(&Item);
-      if(0 != strncmp(sItemValue.c_str(), oldString, 260))
+      if(0 != strncmp(sItemValue.c_str(), oldString, 259))
       {
         byChanged |= 1<<Item.iSubItem;
       }

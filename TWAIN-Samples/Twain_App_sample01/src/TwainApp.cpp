@@ -1216,7 +1216,7 @@ void TwainApp::updateEXTIMAGEINFO()
               else
               {
                 // This is an unknown type so check to see if it is printable
-                for ( int i=0; i<StrLen-1; i++ )
+                for ( int i=0; i<min(StrLen-1, 255); i++ )
                 {
                   if ( !isprint( (int) pStrData[i] ) )
                   {
@@ -1252,13 +1252,18 @@ void TwainApp::updateEXTIMAGEINFO()
          }
          m_strExImageInfo +="\r\n";
        }
+    }
 
+    for(int nIndex = 0; nIndex < num_Infos; nIndex++)
+    {
        // We have no more use for the item so free the one that are handles
-       if( pExtImgInfo->Info[nIndex].Item
-        && ( getTWTYsize(pExtImgInfo->Info[nIndex].ItemType)*pExtImgInfo->Info[nIndex].NumItems > sizeof(TW_UINT32) 
+       if( pExtImgInfo->Info[nIndex].ReturnCode == TWRC_SUCCESS
+        && pExtImgInfo->Info[nIndex].Item
+        &&   ( getTWTYsize(pExtImgInfo->Info[nIndex].ItemType)*pExtImgInfo->Info[nIndex].NumItems > sizeof(TW_UINT32) 
           || pExtImgInfo->Info[nIndex].ItemType == TWTY_HANDLE ) )
        {
          _DSM_Free((TW_HANDLE)pExtImgInfo->Info[nIndex].Item);
+         pExtImgInfo->Info[nIndex].Item = 0;
        }
     }
 
