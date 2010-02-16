@@ -375,6 +375,7 @@ protected:
   string              m_strExImageInfo;       /**< Extended image info retrieved from the DS */
   TW_UINT16           m_nGetLableSupported;   /**< Remember if MSG_GETLABLE is supported */
   TW_UINT16           m_nGetHelpSupported;    /**< Remember if MSG_GETHELP is supported */
+  string              m_strSavePath;          /**< The Path to save the files to */
 
   TW_USERINTERFACE    m_ui;                   /**< Coordinates UI between application and data source. */
 };

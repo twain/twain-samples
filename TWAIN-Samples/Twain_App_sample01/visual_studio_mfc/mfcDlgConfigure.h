@@ -45,6 +45,7 @@
 #include "CommonTWAIN.h"
 #include "..\src\twainapp.h"
 #include "afxcmn.h"
+#include "afxwin.h"
 
 class CTW_Enum_Dlg;
 
@@ -72,6 +73,7 @@ public:
 
   protected:
   virtual void DoDataExchange(CDataExchange* pDX);// DDX/DDV support
+
   void ListSupportedCaps();
   void PopulateCurentValues(bool bCheckForChange = true);
   void StartScan();
@@ -81,6 +83,7 @@ protected:
   HICON       m_hIcon;
   int         m_nIndex;
   CapSetting *m_pCapSettings;
+  CEdit       m_EdtSavePath;
 
   // Generated message map functions
   virtual BOOL OnInitDialog();
@@ -96,8 +99,12 @@ public:
   afx_msg void OnBnClickedCancel();
   afx_msg void OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult);
   afx_msg void OnNMCustomdrawCaps(NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnBnClickedPath();
+
   void UpdateImageInfo();
   void UpdateExtImageInfo();
+  bool GetSavePath();
+  bool SetSavePath(const TCHAR *pPath);
 
 /**
 * Override the virtual function to retrieve the extended image info for the current image
@@ -107,9 +114,9 @@ public:
 
   void MarkUnchanged();
 
-  CString     m_sStc_DS;
-  CString     m_sStc_ImageInfo;
-  CString     m_sStc_ExtImageInfo;
+  CString     m_sStr_DS;
+  CString     m_sStr_ImageInfo;
+  CString     m_sStr_ExtImageInfo;
   CListCtrl   m_ListCtrl_Caps;
   BOOL        m_bShowUI;
 };
