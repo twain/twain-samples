@@ -127,6 +127,7 @@ TwainApp::TwainApp(HWND parent /*=NULL*/)
 , m_DSMessage(-1)
 , m_nGetLableSupported(TWCC_SUCCESS)
 , m_nGetHelpSupported(TWCC_SUCCESS)
+, m_strSavePath("")
 {
   // fill our identity structure
   fillIdentity(m_MyInfo);
@@ -837,9 +838,18 @@ void TwainApp::initiateTransfer_Native()
 {
   PrintCMDMessage("app: Starting a TWSX_NATIVE transfer...\n");
 
-  TW_STR255 szOutFileName;
-  bool      bPendingXfers = true;
-  TW_UINT16 twrc          = TWRC_SUCCESS;
+  TW_STR255   szOutFileName;
+  bool        bPendingXfers = true;
+  TW_UINT16   twrc          = TWRC_SUCCESS;
+  string      strPath       = m_strSavePath;
+
+  if( strlen(strPath.c_str()) )
+  {
+    if(strPath[strlen(strPath.c_str())-1] != PATH_SEPERATOR)
+    {
+      strPath += PATH_SEPERATOR;
+    }
+  }
 
   while(bPendingXfers)
   {
@@ -870,7 +880,7 @@ void TwainApp::initiateTransfer_Native()
       }
 
       // Set the filename to save to
-      SSNPRINTF(szOutFileName, sizeof(szOutFileName), sizeof(szOutFileName), "FROM_SCANNER_%06dN.bmp", m_nXferNum);
+      SSNPRINTF(szOutFileName, sizeof(szOutFileName), sizeof(szOutFileName), "%sFROM_SCANNER_%06dN.bmp", strPath.c_str(), m_nXferNum);
 
       // Save the image to disk
       FILE *pFile;
@@ -1289,15 +1299,24 @@ void TwainApp::initiateTransfer_File(TW_UINT16 fileformat /*= TWFF_TIFF*/)
   // setup the file xfer
   TW_SETUPFILEXFER filexfer;
   memset(&filexfer, 0, sizeof(filexfer));
+  string    strPath       = m_strSavePath;
+
+  if( strlen(strPath.c_str()) )
+  {
+    if(strPath[strlen(strPath.c_str())-1] != PATH_SEPERATOR)
+    {
+      strPath += PATH_SEPERATOR;
+    }
+  }
 
   const char * pExt = convertICAP_IMAGEFILEFORMAT_toExt(fileformat);
   if(fileformat==TWFF_TIFFMULTI)
   {
-    SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "FROM_SCANNER_F%s", pExt);
+    SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "%sFROM_SCANNER_F%s", strPath.c_str(), pExt);
   }
   else
   {
-    SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "FROM_SCANNER_%06dF%s", m_nXferNum, pExt);
+    SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "%sFROM_SCANNER_%06dF%s", strPath.c_str(), m_nXferNum, pExt);
   }
   filexfer.Format = fileformat;
 
@@ -1311,7 +1330,7 @@ void TwainApp::initiateTransfer_File(TW_UINT16 fileformat /*= TWFF_TIFF*/)
     }
     if(fileformat!=TWFF_TIFFMULTI)
     {
-      SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "FROM_SCANNER_%06dF%s", m_nXferNum, pExt);
+      SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "%sFROM_SCANNER_%06dF%s", strPath.c_str(), m_nXferNum, pExt);
     }
 
     PrintCMDMessage("app: Sending file transfer details...\n");
@@ -1422,6 +1441,15 @@ void TwainApp::initiateTransfer_Memory()
   TW_SETUPMEMXFER   SourcesBufferSizes;   /**< Used to set up the buffer size used by memory transfer method */
   bool              bPendingXfers = true;
   TW_UINT16         twrc          = TWRC_SUCCESS;
+  string            strPath       = m_strSavePath;
+
+  if( strlen(strPath.c_str()) )
+  {
+    if(strPath[strlen(strPath.c_str())-1] != PATH_SEPERATOR)
+    {
+      strPath += PATH_SEPERATOR;
+    }
+  }
 
   // start the transfer
   while(bPendingXfers)
@@ -1435,7 +1463,7 @@ void TwainApp::initiateTransfer_Memory()
     }
 
     // Set the filename to save to
-    SSNPRINTF(szOutFileName, sizeof(szOutFileName), sizeof(szOutFileName), "FROM_SCANNER_%06dM.tif", m_nXferNum);
+    SSNPRINTF(szOutFileName, sizeof(szOutFileName), sizeof(szOutFileName), "%sFROM_SCANNER_%06dM.tif", strPath.c_str(), m_nXferNum);
 
     // get the buffer sizes that the source wants to use
     PrintCMDMessage("app: getting the buffer sizes...\n");

@@ -115,8 +115,8 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,213,207,50,16
     LTEXT           "",IDC_STC_DS,7,1,304,38
     CONTROL         "",IDLC_CAPS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_GROUP | WS_TABSTOP,7,39,304,148
-    PUSHBUTTON      "Path...",IDB_PATH,7,190,33,12,WS_DISABLED
-    EDITTEXT        IDC_EDIT1,46,190,265,12,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "Path...",IDB_PATH,7,190,33,12
+    EDITTEXT        IDC_EDIT1,46,190,265,12,ES_AUTOHSCROLL | ES_READONLY
     CONTROL         "Show UI",IDC_SHOWUI,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,215,76,8
     LTEXT           "Image Info",IDC_STATIC,319,7,237,8
     EDITTEXT        IDC_IMAGEINFO,319,16,237,48,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
@@ -131,8 +131,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,1,1,1
- PRODUCTVERSION 2,1,1,1
+ FILEVERSION 2,1,2,0
+ PRODUCTVERSION 2,1,2,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -149,12 +149,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "TWAIN Working Group"
             VALUE "FileDescription", "Sample TWAIN Application"
-            VALUE "FileVersion", "2.1.1.1"
+            VALUE "FileVersion", "2.1.2.0"
             VALUE "InternalName", "SampleApp.exe"
             VALUE "LegalCopyright", "(c) TWAIN Working Group.  All rights reserved."
             VALUE "OriginalFilename", "SampleApp.exe"
             VALUE "ProductName", "SampleApp"
-            VALUE "ProductVersion", "2.1.1.1"
+            VALUE "ProductVersion", "2.1.2.0"
         END
     END
     BLOCK "VarFileInfo"

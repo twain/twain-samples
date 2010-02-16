@@ -1,3 +1,8 @@
+2010-02-16 JFL Peripheral Solutions jimw@jflinc.com
+
+    * TwainApp.cpp, TwainApp.h, mfcDlgConfigure.cpp, & mfcDlgConfigure.h
+        Save files to selected destination folder.
+
 2010-02-05 JFL Peripheral Solutions jimw@jflinc.com
 
     * TwainApp.cpp, TwainApp.h, mfcDlgConfigure.cpp, mfcDlgConfigure.h, & mfcDlgMain.cpp

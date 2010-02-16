@@ -42,6 +42,7 @@
 #include "mfc.h"
 #include "mfcDlgConfigure.h"
 #include "TW_Enum_Dlg.h"
+#include <shlobj.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -106,12 +107,17 @@ TW_UINT16 FAR PASCAL DSMCallback(pTW_IDENTITY _pOrigin,
 
 CmfcDlgConfigure::CmfcDlgConfigure(CWnd* pParent, int nIndex)
   : CDialog(CmfcDlgConfigure::IDD, pParent), TwainApp(pParent->m_hWnd)
-  ,m_sStc_DS(_T(""))
-  ,m_sStc_ImageInfo(_T(""))
-  ,m_sStc_ExtImageInfo(_T(""))
+  ,m_sStr_DS(_T(""))
+  ,m_sStr_ImageInfo(_T(""))
+  ,m_sStr_ExtImageInfo(_T(""))
   ,m_bShowUI(FALSE)
   ,m_pCapSettings(NULL)
 {
+  // fill our identity structure
+  SSTRCPY(m_MyInfo.Manufacturer, sizeof(m_MyInfo.Manufacturer), "TWAIN Working Group");
+  SSTRCPY(m_MyInfo.ProductFamily, sizeof(m_MyInfo.ProductFamily), "Sample TWAIN App");
+  SSTRCPY(m_MyInfo.ProductName, sizeof(m_MyInfo.ProductName), "MFC GUI TWAIN app");
+
   m_nIndex = nIndex;
   m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -119,11 +125,12 @@ CmfcDlgConfigure::CmfcDlgConfigure(CWnd* pParent, int nIndex)
 void CmfcDlgConfigure::DoDataExchange(CDataExchange* pDX)
 {
   CDialog::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_STC_DS, m_sStc_DS);
-  DDX_Text(pDX, IDC_IMAGEINFO, m_sStc_ImageInfo);
-  DDX_Text(pDX, IDC_EXTIMAGEINFO, m_sStc_ExtImageInfo);
+  DDX_Text(pDX, IDC_STC_DS, m_sStr_DS);
+  DDX_Text(pDX, IDC_IMAGEINFO, m_sStr_ImageInfo);
+  DDX_Text(pDX, IDC_EXTIMAGEINFO, m_sStr_ExtImageInfo);
   DDX_Check(pDX, IDC_SHOWUI, m_bShowUI);
   DDX_Control(pDX, IDLC_CAPS, m_ListCtrl_Caps);
+  DDX_Control(pDX, IDC_EDIT1, m_EdtSavePath);
 }
 
 BEGIN_MESSAGE_MAP(CmfcDlgConfigure, CDialog)
@@ -137,6 +144,7 @@ BEGIN_MESSAGE_MAP(CmfcDlgConfigure, CDialog)
   ON_NOTIFY(NM_DBLCLK, IDLC_CAPS, &CmfcDlgConfigure::OnNMDblclkCaps)
   ON_NOTIFY(NM_CUSTOMDRAW, IDLC_CAPS, &CmfcDlgConfigure::OnNMCustomdrawCaps)
   ON_BN_CLICKED(IDB_UIONLY, &CmfcDlgConfigure::OnBnClickedUIOnly)
+  ON_BN_CLICKED(IDB_PATH, &CmfcDlgConfigure::OnBnClickedPath)
 END_MESSAGE_MAP()
 
 
@@ -151,6 +159,9 @@ BOOL CmfcDlgConfigure::OnInitDialog()
   SetIcon(m_hIcon, TRUE);     // Set big icon
   SetIcon(m_hIcon, FALSE);    // Set small icon
 
+  GetSavePath();
+  m_EdtSavePath.SetWindowText(m_strSavePath.c_str());
+
   g_pTWAINApp = this;
 
   connectDSM();
@@ -158,7 +169,7 @@ BOOL CmfcDlgConfigure::OnInitDialog()
 
   if( NULL != m_pDataSource )
   {
-    m_sStc_DS.Format( "Scanner: %s\nManufacturer: %s\nProductFamily: %s\nInfo: %s", 
+    m_sStr_DS.Format( "Scanner: %s\nManufacturer: %s\nProductFamily: %s\nInfo: %s", 
       m_pDataSource->ProductName, m_pDataSource->Manufacturer, m_pDataSource->ProductFamily, 
       m_pDataSource->Version.Info);
     UpdateData(false);
@@ -800,6 +811,9 @@ void CmfcDlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CmfcDlgConfigure::OnBnClickedScan()
 {
+  if(m_DSMState > 4)
+    return; // Already Enabled
+
   m_DSMessage = (TW_UINT16)-1;
 
   UpdateData(true);
@@ -890,6 +904,9 @@ void CmfcDlgConfigure::OnBnClickedScan()
 
 void CmfcDlgConfigure::OnBnClickedUIOnly()
 {
+  if(m_DSMState > 4)
+    return; // Already Enabled
+
   m_DSMessage = (TW_UINT16)-1;
 
   UpdateData(true);
@@ -1020,6 +1037,8 @@ void CmfcDlgConfigure::StartScan()
 void CmfcDlgConfigure::OnBnClickedCancel()
 {
   // TODO: Add your control notification handler code here
+  m_DSMessage = MSG_NULL;
+
   exit();
   OnCancel();
 }
@@ -1028,7 +1047,7 @@ void CmfcDlgConfigure::OnBnClickedCancel()
 void CmfcDlgConfigure::UpdateImageInfo()
 {
   pTW_IMAGEINFO pII = getIMAGEINFO();
-  m_sStc_ImageInfo.Format( 
+  m_sStr_ImageInfo.Format( 
                           "Width: \t%d \tBitsPerPixel: \t%d\r\n"
                           "Length:\t%d \tPlanar:       \t%s\r\n"
                           "Res x: \t%d \tPixelType:    \t%s\r\n"
@@ -1045,8 +1064,8 @@ void CmfcDlgConfigure::updateEXTIMAGEINFO()
 {
   // Call base class first
   TwainApp::updateEXTIMAGEINFO();
-  m_sStc_ExtImageInfo += getEXIMAGEINFO().c_str();
-  m_sStc_ExtImageInfo += "\r\n";
+  m_sStr_ExtImageInfo += getEXIMAGEINFO().c_str();
+  m_sStr_ExtImageInfo += "\r\n";
   UpdateData(false);
 }
 
@@ -1126,3 +1145,109 @@ void CmfcDlgConfigure::OnNMCustomdrawCaps(NMHDR *pNMHDR, LRESULT *pResult)
   }
 }
 
+#define KEYPATH _T("SOFTWARE\\TWAIN Working Group\\TWAIN2 Sample\\") 
+
+bool CmfcDlgConfigure::GetSavePath()
+{
+  bool      bReturn = false;
+  TCHAR     szSavePath[MAX_PATH];
+  HKEY      hKey;
+  DWORD     disposition;	//create the key; show if we have errors or not
+
+  if(ERROR_SUCCESS == RegCreateKeyEx(HKEY_CURRENT_USER, KEYPATH, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hKey, &disposition))
+  {
+    DWORD dataType  = REG_EXPAND_SZ;
+    DWORD dataSize  = sizeof(szSavePath);
+    
+    memset(szSavePath, 0, dataSize);
+
+    //Read it if we can
+    if( ERROR_SUCCESS == RegQueryValueEx(hKey, _T("SavePath"), NULL, &dataType, (BYTE*)&szSavePath, &dataSize) )
+    {
+      m_strSavePath = szSavePath;
+      bReturn = true;
+    }
+    RegCloseKey(hKey);
+  }
+
+  return bReturn;
+}
+
+bool CmfcDlgConfigure::SetSavePath(const TCHAR *pPath)
+{
+  bool      bReturn = false;
+  TCHAR     szSavePath[MAX_PATH];
+  HKEY      hKey;
+  DWORD     disposition;	//create the key; show if we have errors or not
+
+  _tcscpy_s( szSavePath, sizeof(szSavePath), pPath );
+
+  if( ERROR_SUCCESS == RegCreateKeyEx(HKEY_CURRENT_USER, KEYPATH, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, &disposition) )
+  {
+    if( ERROR_SUCCESS == RegSetValueEx( hKey, _T("SavePath"), 0, REG_EXPAND_SZ, (CONST BYTE *)szSavePath, _tcslen(szSavePath) ) )
+    {
+      bReturn = true;
+    }
+    RegCloseKey(hKey);
+  }
+
+  return bReturn;
+}
+
+int CALLBACK BrowseForFolderCallback(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
+{
+	char szPath[MAX_PATH];
+
+	switch(uMsg)
+	{
+		case BFFM_INITIALIZED:
+			SendMessage(hwnd, BFFM_SETSELECTION, TRUE, pData);
+			break;
+
+		case BFFM_SELCHANGED: 
+			if (SHGetPathFromIDList((LPITEMIDLIST) lp ,szPath)) 
+			{
+				SendMessage(hwnd, BFFM_SETSTATUSTEXT,0,(LPARAM)szPath);	
+			}
+			break;
+	}
+
+	return 0;
+}
+
+void CmfcDlgConfigure::OnBnClickedPath()
+{
+  bool          bReturn       = false;
+  LPITEMIDLIST  pidlRoot      = NULL;
+  char          szPath[MAX_PATH + 1];
+  BROWSEINFO    bi            = {0};  // This struct holds the various options for the dialog
+  LPMALLOC      pMalloc       = NULL; // Get the elusive Shell Task Allocator!!!
+
+  if (SUCCEEDED(SHGetMalloc(&pMalloc)))
+  {
+    bi.hwndOwner = m_hWnd;
+    bi.pszDisplayName = NULL;
+    bi.lpszTitle = "Select Folder to Save Files";
+    bi.ulFlags = BIF_NEWDIALOGSTYLE | BIF_RETURNONLYFSDIRS;
+    bi.lpfn = BrowseForFolderCallback;
+    bi.lParam = (LPARAM)m_strSavePath.c_str();
+
+    // Now cause the dialog to appear.
+    if(NULL!=(pidlRoot = SHBrowseForFolder(&bi)))
+    {
+      // Get a ASCII pathname from the LPITEMIDLIST struct.
+      bReturn = SHGetPathFromIDList(pidlRoot, szPath)?true:false;
+
+      // Free the returned item identifier list using the shell's task allocator
+      pMalloc->Free(pidlRoot);
+      pMalloc->Release();
+    }
+  }
+
+  if(bReturn)
+  {
+    SetSavePath(szPath);
+    GetSavePath();
+    m_EdtSavePath.SetWindowText(szPath);
+  }
+}
