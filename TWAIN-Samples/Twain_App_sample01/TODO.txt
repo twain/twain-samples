@@ -23,8 +23,6 @@ BASE Class - TwainApp
 
 
 MFC Sample Application
-- Impliment the control for setting the desination to save files to.
-
 - Check CAP_ENABLEDSUIONLY before enabling the button for Showing the DS with UI Only.
 
 - Add dialogs to set Current when MSG_GET returns OneValue, Range, and Arrays
