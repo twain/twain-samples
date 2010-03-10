@@ -119,4 +119,5 @@ public:
   CString     m_sStr_ExtImageInfo;
   CListCtrl   m_ListCtrl_Caps;
   BOOL        m_bShowUI;
+  BOOL        m_bKeepEnabled;
 };

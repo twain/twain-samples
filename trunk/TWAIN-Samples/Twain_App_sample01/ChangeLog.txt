@@ -1,3 +1,7 @@
+2010-03-10 JFL Peripheral Solutions jimw@jflinc.com
+
+    * mfcDlgConfigure.cpp  Add option of KeepUIEnabled if scanning with UI
+
 2010-02-16 JFL Peripheral Solutions jimw@jflinc.com
 
     * TwainApp.cpp, TwainApp.h, mfcDlgConfigure.cpp, & mfcDlgConfigure.h
