@@ -111,6 +111,7 @@ CmfcDlgConfigure::CmfcDlgConfigure(CWnd* pParent, int nIndex)
   ,m_sStr_ImageInfo(_T(""))
   ,m_sStr_ExtImageInfo(_T(""))
   ,m_bShowUI(FALSE)
+  ,m_bKeepEnabled(FALSE)
   ,m_pCapSettings(NULL)
 {
   // fill our identity structure
@@ -129,8 +130,9 @@ void CmfcDlgConfigure::DoDataExchange(CDataExchange* pDX)
   DDX_Text(pDX, IDC_IMAGEINFO, m_sStr_ImageInfo);
   DDX_Text(pDX, IDC_EXTIMAGEINFO, m_sStr_ExtImageInfo);
   DDX_Check(pDX, IDC_SHOWUI, m_bShowUI);
+  DDX_Check(pDX, IDC_KEEPOPEN, m_bKeepEnabled);
   DDX_Control(pDX, IDLC_CAPS, m_ListCtrl_Caps);
-  DDX_Control(pDX, IDC_EDIT1, m_EdtSavePath);
+  DDX_Control(pDX, IDC_SAVEPATH, m_EdtSavePath);
 }
 
 BEGIN_MESSAGE_MAP(CmfcDlgConfigure, CDialog)
@@ -814,8 +816,6 @@ void CmfcDlgConfigure::OnBnClickedScan()
   if(m_DSMState > 4)
     return; // Already Enabled
 
-  m_DSMessage = (TW_UINT16)-1;
-
   UpdateData(true);
 
   // -Enable the data source. This puts us in state 5 which means that we
@@ -829,68 +829,74 @@ void CmfcDlgConfigure::OnBnClickedScan()
     return;
   }
 
-  // now we have to wait until we hear something back from the DS.
-  while((TW_UINT16)-1 == m_DSMessage)
+  do // If showing UI and KeepUIOpen is Enabled then we will loop here until cancle
   {
 
-    // If we are using callbacks, there is nothing to do here except sleep
-    // and wait for our callback from the DS.  If we are not using them, 
-    // then we have to poll the DSM.
-	  MSG Msg;
+    m_DSMessage = (TW_UINT16)-1;
 
-	  if(!GetMessage((LPMSG)&Msg, NULL, 0, 0))
+    // now we have to wait until we hear something back from the DS.
+    while((TW_UINT16)-1 == m_DSMessage)
     {
-      break;//WM_QUIT
-    }
-    TW_EVENT twEvent = {0};
-    twEvent.pEvent = (TW_MEMREF)&Msg;
-    twEvent.TWMessage = MSG_NULL;
-    TW_UINT16  twRC = TWRC_NOTDSEVENT;
-    twRC = _DSM_Entry( getAppIdentity(),
-                m_pDataSource,
-                DG_CONTROL,
-                DAT_EVENT,
-                MSG_PROCESSEVENT,
-                (TW_MEMREF)&twEvent);
 
-    if(!gUSE_CALLBACKS && twRC==TWRC_DSEVENT)
-    {
-      // check for message from Source
-      switch (twEvent.TWMessage)
+      // If we are using callbacks, there is nothing to do here except sleep
+      // and wait for our callback from the DS.  If we are not using them, 
+      // then we have to poll the DSM.
+	    MSG Msg;
+
+	    if(!GetMessage((LPMSG)&Msg, NULL, 0, 0))
       {
-        case MSG_XFERREADY:
-        case MSG_CLOSEDSREQ:
-        case MSG_NULL:
-          m_DSMessage = twEvent.TWMessage;
-          break;
-
-        case MSG_CLOSEDSOK:
-          TRACE("\nError - MSG_CLOSEDSOK in MSG_PROCESSEVENT loop for Scan\n");
-          break;
-
-        default:
-          TRACE("\nError - Unknown message in MSG_PROCESSEVENT loop for Scan\n");
-          break;
+        break;//WM_QUIT
       }
+      TW_EVENT twEvent = {0};
+      twEvent.pEvent = (TW_MEMREF)&Msg;
+      twEvent.TWMessage = MSG_NULL;
+      TW_UINT16  twRC = TWRC_NOTDSEVENT;
+      twRC = _DSM_Entry( getAppIdentity(),
+                  m_pDataSource,
+                  DG_CONTROL,
+                  DAT_EVENT,
+                  MSG_PROCESSEVENT,
+                  (TW_MEMREF)&twEvent);
+
+      if(!gUSE_CALLBACKS && twRC==TWRC_DSEVENT)
+      {
+        // check for message from Source
+        switch (twEvent.TWMessage)
+        {
+          case MSG_XFERREADY:
+          case MSG_CLOSEDSREQ:
+          case MSG_NULL:
+            m_DSMessage = twEvent.TWMessage;
+            break;
+
+          case MSG_CLOSEDSOK:
+            TRACE("\nError - MSG_CLOSEDSOK in MSG_PROCESSEVENT loop for Scan\n");
+            break;
+
+          default:
+            TRACE("\nError - Unknown message in MSG_PROCESSEVENT loop for Scan\n");
+            break;
+        }
+      }
+      if(twRC!=TWRC_DSEVENT)
+	    {   
+		    TranslateMessage ((LPMSG)&Msg);
+		    DispatchMessage ((LPMSG)&Msg);
+	    }
     }
-    if(twRC!=TWRC_DSEVENT)
-	  {   
-		  TranslateMessage ((LPMSG)&Msg);
-		  DispatchMessage ((LPMSG)&Msg);
-	  }
-  }
 
-  // At this point the source has sent us a callback saying that it is ready to
-  // transfer the image.
+    // At this point the source has sent us a callback saying that it is ready to
+    // transfer the image.
 
-  if(m_DSMessage == MSG_XFERREADY)
-  {
-    // move to state 6 as a result of the data source. We can start a scan now.
-    m_DSMState = 6;
-    updateIMAGEINFO();
-    UpdateImageInfo();
-    StartScan();
-  }
+    if(m_DSMessage == MSG_XFERREADY)
+    {
+      // move to state 6 as a result of the data source. We can start a scan now.
+      m_DSMState = 6;
+      updateIMAGEINFO();
+      UpdateImageInfo();
+      StartScan();
+    }
+  }while(m_bShowUI && m_bKeepEnabled && m_DSMessage != MSG_CLOSEDSREQ);
 
   // Scan is done, disable the ds, thus moving us back to state 4 where we
   // can negotiate caps again.
