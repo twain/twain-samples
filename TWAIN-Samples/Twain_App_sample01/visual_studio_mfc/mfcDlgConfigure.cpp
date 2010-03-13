@@ -113,6 +113,7 @@ CmfcDlgConfigure::CmfcDlgConfigure(CWnd* pParent, int nIndex)
   ,m_bShowUI(FALSE)
   ,m_bKeepEnabled(FALSE)
   ,m_pCapSettings(NULL)
+  ,m_bBusy(false)
 {
   // fill our identity structure
   SSTRCPY(m_MyInfo.Manufacturer, sizeof(m_MyInfo.Manufacturer), "TWAIN Working Group");
@@ -361,6 +362,8 @@ void CmfcDlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
   BOOL              bReadOnly;
   CWaitCursor       wait;
 
+  m_bBusy = true;
+  UpdateButtons();
   for(nItem=0; nItem<nCount; nItem++)
   {
     memset(&Item, 0, sizeof(Item));
@@ -666,6 +669,8 @@ void CmfcDlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
     pCapSetting->byChanged = byChanged;
     pCapSetting->bReadOnly = bReadOnly;
   }
+  m_bBusy = false;
+  UpdateButtons();
   m_ListCtrl_Caps.Invalidate(FALSE);
 }
 
@@ -678,6 +683,18 @@ void CmfcDlgConfigure::MarkUnchanged()
     m_pCapSettings[nItem].byChanged  = 0;
   }
   m_ListCtrl_Caps.Invalidate(FALSE);
+}
+
+void CmfcDlgConfigure::UpdateButtons()
+{
+  CWnd *pWnd = NULL;
+
+  BOOL bEnable = m_bBusy && m_DSMState <= 4? FALSE:TRUE;
+
+  GetDlgItem(IDB_SCAN)->EnableWindow(bEnable);
+  GetDlgItem(IDB_UIONLY)->EnableWindow(bEnable);
+  GetDlgItem(IDCANCEL)->EnableWindow(bEnable); // If the Scanner has crashed the Close button is still available.
+
 }
 
 // This method sets the new current value.
@@ -818,6 +835,11 @@ void CmfcDlgConfigure::OnBnClickedScan()
 
   UpdateData(true);
 
+  m_bBusy = true;
+  UpdateButtons();
+
+  m_DSMessage = (TW_UINT16)-1;
+
   // -Enable the data source. This puts us in state 5 which means that we
   // have to wait for the data source to tell us to move to state 6 and
   // start the transfer.  Once in state 5, no more set ops can be done on the
@@ -826,13 +848,13 @@ void CmfcDlgConfigure::OnBnClickedScan()
   // that was registered earlier.
   if( !enableDS(GetSafeHwnd(), m_bShowUI) )
   {
+    m_bBusy = false;
+    UpdateButtons();
     return;
   }
 
   do // If showing UI and KeepUIOpen is Enabled then we will loop here until cancle
   {
-
-    m_DSMessage = (TW_UINT16)-1;
 
     // now we have to wait until we hear something back from the DS.
     while((TW_UINT16)-1 == m_DSMessage)
@@ -895,6 +917,7 @@ void CmfcDlgConfigure::OnBnClickedScan()
       updateIMAGEINFO();
       UpdateImageInfo();
       StartScan();
+      m_DSMessage = (TW_UINT16)-1;
     }
   }while(m_bShowUI && m_bKeepEnabled && m_DSMessage != MSG_CLOSEDSREQ);
 
@@ -902,8 +925,12 @@ void CmfcDlgConfigure::OnBnClickedScan()
   // can negotiate caps again.
   disableDS();
 
+  m_bBusy = false;
+
   // update showing new values
   PopulateCurentValues(true);
+
+  UpdateButtons();
 
   return;
 }
@@ -917,11 +944,16 @@ void CmfcDlgConfigure::OnBnClickedUIOnly()
 
   UpdateData(true);
 
+  m_bBusy = true;
+  UpdateButtons();
+
   // Enable the data source. This puts us in state 5 which means that we
   // have to wait for the data source to tell us close.
   // Once in state 5, no more set ops can be done on the caps, only get ops.
   if( !enableDSUIOnly(GetSafeHwnd()) )
   {
+    m_bBusy = false;
+    UpdateButtons();
     return;
   }
 
@@ -980,8 +1012,12 @@ void CmfcDlgConfigure::OnBnClickedUIOnly()
   // can negotiate caps again.
   disableDS();
 
+  m_bBusy = false;
+
   // update showing new values
   PopulateCurentValues(true);
+
+  UpdateButtons();
 
   return;
 }

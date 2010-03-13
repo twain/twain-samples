@@ -77,6 +77,7 @@ public:
   void ListSupportedCaps();
   void PopulateCurentValues(bool bCheckForChange = true);
   void StartScan();
+  void UpdateButtons();
 
 // Implementation
 protected:
@@ -112,12 +113,16 @@ public:
 */
   virtual void updateEXTIMAGEINFO();
 
+/**
+* Mark all the SupportedCaps as unchanged
+*/
   void MarkUnchanged();
 
-  CString     m_sStr_DS;
-  CString     m_sStr_ImageInfo;
-  CString     m_sStr_ExtImageInfo;
-  CListCtrl   m_ListCtrl_Caps;
-  BOOL        m_bShowUI;
-  BOOL        m_bKeepEnabled;
+  CString     m_sStr_DS;              /**< The string to display of the opened DS */
+  CString     m_sStr_ImageInfo;       /**< The string to display of the last ImageInfo returned by the scanner */
+  CString     m_sStr_ExtImageInfo;    /**< The string to display of the extImageInfo returned by the scanner */
+  CListCtrl   m_ListCtrl_Caps;        /**< The Dialog Control that displays all supported Capabilites and their current values */
+  BOOL        m_bShowUI;              /**< Scan with the GUI visable */
+  BOOL        m_bKeepEnabled;         /**< Keep the DS GUI displayed after a scan - User press cancel to finish scanning */
+  bool        m_bBusy;                /**< The application is waiting for a responce from TWAIN messages*/
 };
