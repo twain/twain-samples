@@ -436,7 +436,12 @@ int main(int argc, char *argv[])
   int ret = EXIT_SUCCESS;
 
   // Instantiate the TWAIN application CMD class
-  gpTwainApplicationCMD = new TwainAppCMD;
+  HWND parentWindow = NULL;
+
+#ifdef TWH_CMP_MSC
+  parentWindow = GetConsoleWindow();
+#endif
+  gpTwainApplicationCMD = new TwainAppCMD(parentWindow);
 
   // setup a signal handler for SIGINT that will allow the program to stop
   signal(SIGINT, &onSigINT);
