@@ -229,6 +229,12 @@ public:
   void initiateTransfer_Memory();
 
 /**
+* Abort the scanning process.
+* @return a valid TWRC_xxxx return code.
+*/
+  TW_UINT16 DoAbortXfer();
+
+/**
 * Try to sets a OneValue Capability of any of the TW_INT or TW_UINT types to the value passed
 * @param[in] Cap the capability to update to set
 * @param[in] _value the value to set
