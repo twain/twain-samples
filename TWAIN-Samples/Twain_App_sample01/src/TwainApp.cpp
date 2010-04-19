@@ -193,16 +193,7 @@ void TwainApp::exit()
         // if it did NOT succeed, try to cancle any pending transfers.
         if( 5 <= m_DSMState )
         {
-          TW_PENDINGXFERS pendxfers;
-          memset( &pendxfers, 0, sizeof(pendxfers) );
-          DSM_Entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
-
-          // We need to get rid of any pending transfers
-          if(0 != pendxfers.Count)
-          {
-            memset( &pendxfers, 0, sizeof(pendxfers) );
-            DSM_Entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_RESET, (TW_MEMREF)&pendxfers);
-          }
+          DoAbortXfer();
           
           // Any pending transfers should now be cancled
           m_DSMState = 5;
@@ -860,6 +851,9 @@ void TwainApp::initiateTransfer_Native()
     {
       break;
     }
+    // The data returned by ImageInfo can be used to determine if this image is wanted.
+    // If it is not then DG_CONTROL / DAT_PENDINGXFERS / MSG_ENDXFER can be 
+    // used to skip to the next image.
 
     TW_MEMREF hImg = 0;
 
@@ -986,19 +980,7 @@ void TwainApp::initiateTransfer_Native()
   // to transfer more images
   if(bPendingXfers == true)
   {
-      PrintCMDMessage("app: Stop any transfer we may have started but could not finish...\n");
-      TW_PENDINGXFERS pendxfers;
-      memset( &pendxfers, 0, sizeof(pendxfers) );
-
-      twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
-
-      // We need to get rid of any pending transfers
-      if(0 != pendxfers.Count)
-      {
-        memset( &pendxfers, 0, sizeof(pendxfers) );
-
-        DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_RESET, (TW_MEMREF)&pendxfers);
-      }
+    twrc = DoAbortXfer();
   }
 
   // adjust our state now that the scanning session is done
@@ -1008,6 +990,28 @@ void TwainApp::initiateTransfer_Native()
 
   return;
 }
+
+TW_UINT16 TwainApp::DoAbortXfer()
+{
+  TW_UINT16   twrc          = TWRC_SUCCESS;
+
+  PrintCMDMessage("app: Stop any transfer we may have started but could not finish...\n");
+  TW_PENDINGXFERS pendxfers;
+  memset( &pendxfers, 0, sizeof(pendxfers) );
+
+  twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
+
+  // We need to get rid of any pending transfers
+  if(0 != pendxfers.Count)
+  {
+    memset( &pendxfers, 0, sizeof(pendxfers) );
+
+    twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_RESET, (TW_MEMREF)&pendxfers);
+  }
+
+  return twrc;
+}
+
 void TwainApp::updateEXTIMAGEINFO()
 {
   int TableBarCodeExtImgInfo[] = { 
@@ -1328,6 +1332,10 @@ void TwainApp::initiateTransfer_File(TW_UINT16 fileformat /*= TWFF_TIFF*/)
     {
       break;
     }
+    // The data returned by ImageInfo can be used to determine if this image is wanted.
+    // If it is not then DG_CONTROL / DAT_PENDINGXFERS / MSG_ENDXFER can be 
+    // used to skip to the next image.
+
     if(fileformat!=TWFF_TIFFMULTI)
     {
       SSNPRINTF(filexfer.FileName, sizeof(filexfer.FileName), sizeof(filexfer.FileName), "%sFROM_SCANNER_%06dF%s", strPath.c_str(), m_nXferNum, pExt);
@@ -1405,17 +1413,7 @@ void TwainApp::initiateTransfer_File(TW_UINT16 fileformat /*= TWFF_TIFF*/)
   // to transfer more images
   if(bPendingXfers == true)
   {
-      PrintCMDMessage("app: Stop any transfer we may have started but could not finish...\n");
-      TW_PENDINGXFERS pendxfers;
-      memset( &pendxfers, 0, sizeof(pendxfers) );
-      twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
-
-      // We need to get rid of any pending transfers
-      if(0 != pendxfers.Count)
-      {
-        memset( &pendxfers, 0, sizeof(pendxfers) );
-        DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_RESET, (TW_MEMREF)&pendxfers);
-      }
+    twrc = DoAbortXfer();
   }
 
   // adjust our state now that the scanning session is done
@@ -1461,6 +1459,9 @@ void TwainApp::initiateTransfer_Memory()
     {
       break;
     }
+    // The data returned by ImageInfo can be used to determine if this image is wanted.
+    // If it is not then DG_CONTROL / DAT_PENDINGXFERS / MSG_ENDXFER can be 
+    // used to skip to the next image.
 
     // Set the filename to save to
     SSNPRINTF(szOutFileName, sizeof(szOutFileName), sizeof(szOutFileName), "%sFROM_SCANNER_%06dM.tif", strPath.c_str(), m_nXferNum);
@@ -1631,17 +1632,7 @@ void TwainApp::initiateTransfer_Memory()
   // to transfer more images
   if(bPendingXfers == true)
   {
-      PrintCMDMessage("app: Stop any transfer we may have started but could not finish...\n");
-      TW_PENDINGXFERS pendxfers;
-      memset( &pendxfers, 0, sizeof(pendxfers) );
-      twrc = DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF)&pendxfers);
-
-      // We need to get rid of any pending transfers
-      if(0 != pendxfers.Count)
-      {
-        memset( &pendxfers, 0, sizeof(pendxfers) );
-        DSM_Entry( DG_CONTROL, DAT_PENDINGXFERS, MSG_RESET, (TW_MEMREF)&pendxfers);
-      }
+    twrc = DoAbortXfer();
   }
 
   // adjust our state now that the scanning session is done
