@@ -44,8 +44,10 @@
 CTWAINContainerInt::CTWAINContainerInt(const TW_UINT16 _unCapID, 
                                        const TW_UINT16 _unItemType, 
                                        const TW_UINT16 _unGetType, 
-                                       const TW_INT32  _nSupportedQueries /*=TWQC_ALL*/)
-  : CTWAINContainer(_unCapID, _unItemType, _unGetType, _nSupportedQueries)
+                                       const TW_INT32  _nSupportedQueries/* = TWQC_ALL*/,
+                                       const TW_UINT16 _unGetCurrentType/* = TWON_ONEVALUE*/,
+                                       const TW_UINT16 _unGetDefaultType/* = TWON_ONEVALUE*/)
+  : CTWAINContainer(_unCapID, _unItemType, _unGetType, _nSupportedQueries,_unGetCurrentType,_unGetDefaultType)
 {
 }
 
@@ -56,30 +58,43 @@ CTWAINContainerInt::~CTWAINContainerInt()
 TW_HANDLE CTWAINContainerInt::GetContainer(const TW_UINT16 _unMsg)
 {
   TW_HANDLE hContainer = 0;
-
-  if((TWON_ONEVALUE == m_unGetType) ||
-     (MSG_GETCURRENT == _unMsg) ||
-     (MSG_GETDEFAULT == _unMsg))
+  TW_UINT16 unGetType=TWON_ONEVALUE;
+  switch(_unMsg)
   {
-    hContainer = _DSM_Alloc(sizeof(TW_ONEVALUE));
-
-    if(0 != hContainer)
-    {
-      pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(hContainer);
-
-      pCap->ItemType = m_unItemType;
-      // If the Cap has been constrained the default may only be in the defaultlist.
-      pCap->Item = (MSG_GETDEFAULT == _unMsg)?m_listIntsDefault[m_nDefault]:m_listInts[m_nCurrent];
-
-      _DSM_UnlockMemory(hContainer);
-    }
+    case MSG_GET:
+      unGetType = m_unGetType;
+      break;
+    case MSG_GETCURRENT:
+      unGetType = m_unGetCurrentType;
+      break;
+    case MSG_GETDEFAULT:
+      unGetType = m_unGetDefaultType;
+      break;
   }
-  else if(MSG_GET == _unMsg)
-  {
-    unsigned int unSize = getTWTYSize(m_unItemType);
 
-    if(TWON_ENUMERATION == m_unGetType)
+  switch(unGetType)
+  {
+    default:
+    case TWON_ONEVALUE:
     {
+      hContainer = _DSM_Alloc(sizeof(TW_ONEVALUE));
+
+      if(0 != hContainer)
+      {
+        pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(hContainer);
+
+        pCap->ItemType = m_unItemType;
+        // If the Cap has been constrained the default may only be in the defaultlist.
+        pCap->Item = (MSG_GETDEFAULT == _unMsg)?m_listIntsDefault[m_nDefault]:m_listInts[m_nCurrent];
+
+        _DSM_UnlockMemory(hContainer);
+      }
+    }
+    break;
+
+    case TWON_ENUMERATION:
+    {
+      unsigned int unSize = getTWTYSize(m_unItemType);
       hContainer = _DSM_Alloc(sizeof(TW_ENUMERATION) -1 + (unSize * m_listInts.size()));
 
       if(0 != hContainer)
@@ -114,8 +129,11 @@ TW_HANDLE CTWAINContainerInt::GetContainer(const TW_UINT16 _unMsg)
         _DSM_UnlockMemory(hContainer);
       }
     }
-    else if(TWON_ARRAY == m_unGetType)
+    break;
+
+    case TWON_ARRAY:
     {
+      unsigned int unSize = getTWTYSize(m_unItemType);
       hContainer = _DSM_Alloc(sizeof(TW_ARRAY)-1 + (unSize * m_listInts.size()));
 
       if(0 != hContainer)
@@ -129,7 +147,7 @@ TW_HANDLE CTWAINContainerInt::GetContainer(const TW_UINT16 _unMsg)
         _DSM_UnlockMemory(hContainer);
       }
     }
-  } // else if(MSG_GET == _unMsg)
+  } // switch(unGetType)
 
   return hContainer;
 }

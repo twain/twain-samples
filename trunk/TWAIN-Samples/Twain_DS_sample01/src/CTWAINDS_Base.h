@@ -166,7 +166,7 @@ public:
   * @return a valid TWRC_xxxx return code.
   */
   virtual TW_INT16 dat_imagenativexfer(TW_UINT16    _MSG,
-                                       TW_MEMREF*   _pData);
+                                       TW_HANDLE&   _pData);
 
   /**
   * handles DAT_IMAGEFILEXFER requests.
@@ -371,10 +371,10 @@ public:
   /**
   * Start the transfer of image data natively.
   * Called when a DG_IMAGE / DAT_IMAGENATIVEXFER / MSG_GET op is sent.
-  * @param[out] _pData a pointer to store the image locaton.
+  * @param[out] _hData a handle to store the image locaton.
   * @return a valid TWRC_xxxx return code.
   */
-  virtual TW_INT16 transferNativeImage(TW_MEMREF* _pData);
+  virtual TW_INT16 transferNativeImage(TW_HANDLE &_hData);
 
   /**
   * Return info about the file that the Source will write the acquired data into
@@ -427,11 +427,21 @@ public:
   * get the Internal Image format.
   * Called when a DG_IMAGE / DAT_IMAGENATIVEXFER / MSG_GET op is sent.
   * also used when creating a BMP for saving when DG_IMAGE / DAT_IMAGEFILEXFER / MSG_GET op is sent.
-  * @param[out] _pImage a pointer to store the image locaton.
+  * @param[out] _hImage a handle to store the image locaton.
   * @return a valid TWRC_xxxx return code.
   */
-  TW_INT16 getDIBImage(TW_MEMREF* _pImage);
-
+  TW_INT16 getDIBImage(TW_HANDLE &_hImage);
+ #ifdef TWNDS_OS_APPLE 
+  /** 
+     * MAC only
+	 * get the Internal Image format.
+	 * Called when a DG_IMAGE / DAT_IMAGENATIVEXFER / MSG_GET op is sent.
+	 * also used when creating a BMP for saving when DG_IMAGE / DAT_IMAGEFILEXFER / MSG_GET op is sent.
+	 * @param[out] _hImage a handle to store the image locaton.
+	 * @return a valid TWRC_xxxx return code.
+	 */
+  TW_INT16 getPICTImage(TW_HANDLE &_hPICTImage);
+#endif	
   /**
   * Save the current image data as a BMP file
   * @return a valid TWRC_xxxx return code, TWRC_XFERDONE on success.
@@ -472,10 +482,10 @@ public:
   * get the Internal Image format. For Linux Only
   * Called when a DG_IMAGE / DAT_IMAGENATIVEXFER / MSG_GET op is sent.
   * also used when creating a BMP for saving when DG_IMAGE / DAT_IMAGEFILEXFER / MSG_GET op is sent.
-  * @param[out] _pImage a pointer to store the image locaton.
+  * @param[out] _hImage a handle to store the image locaton.
   * @return a valid TWRC_xxxx return code.
   */
-  TW_INT16 getTIFFImage(TW_MEMREF* _pImage);
+  TW_INT16 getTIFFImage(TW_HANDLE &_hImage);
 
   // END Capabilities 
   /**
@@ -554,6 +564,21 @@ public:
   * @return a valid TWRC_xxxx return code.
   */
   virtual TW_INT16 validateCapabilitySet(TW_UINT16 _Cap, TW_UINT16  _ConType, BYTE* _pContainer);
+  
+  /**
+  * Update Capability Container after the operation
+  * Override this function in base class to support more capabilities
+  * @param[in] _pCap the capability
+  * @return a valid TWRC_xxxx return code.
+  */
+  virtual TW_INT16 updatePostContainer(pTW_CAPABILITY _pCap);
+  /**
+  * Update Capability Container before the operation
+  * Override this function in base class to support more capabilities
+  * @param[in] _pCap the capability
+  * @return a valid TWRC_xxxx return code.
+  */
+  virtual TW_INT16 updatePreContainer(pTW_CAPABILITY _pCap);
 
   /**
   * if the CTWAINContainer is dependend on another Capabiltiy. 
@@ -570,7 +595,7 @@ public:
   * @param[in out] _frame the frame to update.
   * @return true if the frame is not change, false if changed.
   */
-  virtual bool ConstrainFrameToScanner(InternalFrame& _frame);
+  virtual bool ConstrainFrameToScanner(InternalFrame& _frame,bool &bConstrained);
 
   /**
   * get the current unit and resolution.  A helper function used by Unit dependent cap

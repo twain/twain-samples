@@ -1,0 +1,860 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		005D200A96D660D6389AB5C2 /* TWAINContainerFix32.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 487C67F0687FA1D25DAB467F /* TWAINContainerFix32.cpp */; settings = {ATTRIBUTES = (); }; };
+		069D05B0128AE5DC7EE31738 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 7BC2E65A5E699A5E5D834CA2 /* QtCore.framework */; };
+		078B7AE5DD53E5C1ED870658 /* DSMInterface.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = D0786B44F0232C078FC378FF /* DSMInterface.cpp */; settings = {ATTRIBUTES = (); }; };
+		1654BA3FD22F3FB6036D7BF3 /* moc_Qt_ProfileName.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = BFD2BC897C4F2A67E66073E4 /* moc_Qt_ProfileName.cpp */; settings = {ATTRIBUTES = (); }; };
+		24F644902AB1D313A3AA4B80 /* CommonTWAIN.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5AE01F91BF74AD84BDDDA82E /* CommonTWAIN.cpp */; settings = {ATTRIBUTES = (); }; };
+		288E2C0F8CC654A8DFD25818 /* CTWAINDS_Base.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 963A6F3DF695C78091956010 /* CTWAINDS_Base.cpp */; settings = {ATTRIBUTES = (); }; };
+		316F5212149529D3F41CE3C2 /* CTiffWriter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4175F9BD78CB657F7CE5269A /* CTiffWriter.cpp */; settings = {ATTRIBUTES = (); }; };
+		35865C440B96D482C8CDEA62 /* TWAIN_UI.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 2C9293634F5AD6EC6FEC3ECB /* TWAIN_UI.cpp */; settings = {ATTRIBUTES = (); }; };
+		3D63B0335870148AE214E2D2 /* Qt_MainForm.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E18DF10BFDFFB67156187101 /* Qt_MainForm.cpp */; settings = {ATTRIBUTES = (); }; };
+		3EF2B97CD776A63BE7D971BE /* QT_UI.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 9280BCA4DBF4DEA48BD44EC8 /* QT_UI.cpp */; settings = {ATTRIBUTES = (); }; };
+		4E96D8F118B5A19D9F0C9FDF /* CTWAINDS_Sample1.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CFF1DBF56D6AC94FF4C0EDC5 /* CTWAINDS_Sample1.cpp */; settings = {ATTRIBUTES = (); }; };
+		501667F26B3C1FF6767A7C12 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B36DA7E32F0304E780E7972 /* QtGui.framework */; };
+		520DFC6111650F4C002B8D21 /* QuickTime.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 520DFC6011650F4C002B8D21 /* QuickTime.framework */; };
+		5273223D1164F21B005639B3 /* TWAIN_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 5273223C1164F21B005639B3 /* TWAIN_logo.png */; };
+		527323231164F5CA005639B3 /* CoreFoundation.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 527323221164F5CA005639B3 /* CoreFoundation.framework */; };
+		527323251164F5D8005639B3 /* TWAIN.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 527323241164F5D8005639B3 /* TWAIN.framework */; };
+		55A3E14068EC2DC03F816299 /* Qt_About.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A532E3852878F7A8AFFBB0EC /* Qt_About.cpp */; settings = {ATTRIBUTES = (); }; };
+		57EE1A032461C76CAD31C074 /* moc_Qt_About.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 31F0AA90BB87A15A24BE35EC /* moc_Qt_About.cpp */; settings = {ATTRIBUTES = (); }; };
+		5D6BAAF33522241E420892A4 /* CommonDS.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = D00122FF46C21B8E9586B41F /* CommonDS.cpp */; settings = {ATTRIBUTES = (); }; };
+		66E9960C4B51BBC1F028DF42 /* TWAINContainerBool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0AC509038D23C1EBCB7F4957 /* TWAINContainerBool.cpp */; settings = {ATTRIBUTES = (); }; };
+		7B4AEF34D8EF8720576F2DF7 /* moc_Qt_MainForm.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 654033B18DB47E1C5B8E4C32 /* moc_Qt_MainForm.cpp */; settings = {ATTRIBUTES = (); }; };
+		7BD4D919BEB9395181CB127C /* TWAINContainerFrame.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E17492F1A2EA4335CD6EF12F /* TWAINContainerFrame.cpp */; settings = {ATTRIBUTES = (); }; };
+		87AFC235AB19499105E7CCDA /* TWAINContainerFix32Range.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8D2983CDF821BDE85F36F0D0 /* TWAINContainerFix32Range.cpp */; settings = {ATTRIBUTES = (); }; };
+		8E467FD594122C513B0C79BD /* qrc_qtresources.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = DFFBE6FB70F7766C1B5060AD /* qrc_qtresources.cpp */; settings = {ATTRIBUTES = (); }; };
+		9F979569222F7BEAF892CCC9 /* TWAINContainerString.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4C3941E7A709D9BB531219D1 /* TWAINContainerString.cpp */; settings = {ATTRIBUTES = (); }; };
+		B0C3CF68EBAD9BB153667787 /* CTWAINDS_FreeImage.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = AEB186903094378AF471EDEC /* CTWAINDS_FreeImage.cpp */; settings = {ATTRIBUTES = (); }; };
+		D2D54C2804DFEDAA0C9C2E8C /* TWAINContainerInt.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = D6465989ABA86AFE965C1137 /* TWAINContainerInt.cpp */; settings = {ATTRIBUTES = (); }; };
+		D3105B777788281057A874B6 /* Qt_ProfileName.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C0AC64A664F3EF34DE67C829 /* Qt_ProfileName.cpp */; settings = {ATTRIBUTES = (); }; };
+		D7EC258B11614AB9009EEC64 /* TWAINDS_Mac in Copy Product */ = {isa = PBXBuildFile; fileRef = D7EC21E71160F251009EEC64 /* TWAINDS_Mac */; };
+		D7EC28E1116241C5009EEC64 /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B36DA7E32F0304E780E7972 /* QtGui.framework */; };
+		D7EC28E2116241C5009EEC64 /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BC2E65A5E699A5E5D834CA2 /* QtCore.framework */; };
+		D7EC2903116244D2009EEC64 /* libfreeimage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D7EC2902116244D2009EEC64 /* libfreeimage.a */; };
+		D7EC2904116244D2009EEC64 /* libfreeimage.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = D7EC2902116244D2009EEC64 /* libfreeimage.a */; };
+		D7EC2B7A1163C48A009EEC64 /* TWAINDS_Mac.ds in Copy Files to TDS */ = {isa = PBXBuildFile; fileRef = D7EC2573116148C9009EEC64 /* TWAINDS_Mac.ds */; };
+		D7EC2BDE1163D787009EEC64 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7EC2BDD1163D787009EEC64 /* Carbon.framework */; };
+		D7EC2DCE1164E441009EEC64 /* Carbon.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = D7EC2BDD1163D787009EEC64 /* Carbon.framework */; };
+		E3A65BE93ECFFB0B4D775CA9 /* TWAINContainer.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 9538E9CFFBF1C83B02928B66 /* TWAINContainer.cpp */; settings = {ATTRIBUTES = (); }; };
+		EAE69B5B0BC412B19F77F606 /* CScanner_FreeImage.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 531C43C2CE27FD9AF0D621A6 /* CScanner_FreeImage.cpp */; settings = {ATTRIBUTES = (); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D7EC258011614A58009EEC64 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 91B15E841AA80083484172DE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 402F0687DD4D01134A33DAEF;
+			remoteInfo = TWAINDS_FreeImage;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D7EC257F116149EA009EEC64 /* Copy Product */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				D7EC258B11614AB9009EEC64 /* TWAINDS_Mac in Copy Product */,
+			);
+			name = "Copy Product";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D7EC2B721163C39E009EEC64 /* Copy Files to TDS */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "/Library/Image Capture/TWAIN Data Sources";
+			dstSubfolderSpec = 0;
+			files = (
+				D7EC2B7A1163C48A009EEC64 /* TWAINDS_Mac.ds in Copy Files to TDS */,
+			);
+			name = "Copy Files to TDS";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0AC509038D23C1EBCB7F4957 /* TWAINContainerBool.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TWAINContainerBool.cpp; sourceTree = "<group>"; };
+		125D369A31FFAE38CC6633AB /* qtresources.qrc */ = {isa = PBXFileReference; lastKnownFileType = text; path = qtresources.qrc; sourceTree = "<group>"; };
+		2C9293634F5AD6EC6FEC3ECB /* TWAIN_UI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TWAIN_UI.cpp; sourceTree = "<group>"; };
+		31F0AA90BB87A15A24BE35EC /* moc_Qt_About.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_Qt_About.cpp; sourceTree = "<group>"; };
+		36A7CDF5BD7CD5E943459D26 /* ProfileName.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = ProfileName.ui; sourceTree = "<group>"; };
+		410CE69B4E17A35029285439 /* TWAINContainerFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TWAINContainerFrame.h; sourceTree = "<group>"; };
+		4175F9BD78CB657F7CE5269A /* CTiffWriter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CTiffWriter.cpp; path = ../../common/CTiffWriter.cpp; sourceTree = "<group>"; };
+		43972102C903295BA3D07585 /* TWAINContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TWAINContainer.h; sourceTree = "<group>"; };
+		487C67F0687FA1D25DAB467F /* TWAINContainerFix32.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TWAINContainerFix32.cpp; sourceTree = "<group>"; };
+		4AAEC6435445D34AD29EE60D /* CTWAINDS_Sample1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CTWAINDS_Sample1.h; sourceTree = "<group>"; };
+		4C3941E7A709D9BB531219D1 /* TWAINContainerString.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TWAINContainerString.cpp; sourceTree = "<group>"; };
+		50291FFBB2F47FB89E5DF664 /* TWAIN_UI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TWAIN_UI.h; sourceTree = "<group>"; };
+		520DFC6011650F4C002B8D21 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
+		5273223C1164F21B005639B3 /* TWAIN_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = TWAIN_logo.png; path = ../images/TWAIN_logo.png; sourceTree = SOURCE_ROOT; };
+		527323221164F5CA005639B3 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
+		527323241164F5D8005639B3 /* TWAIN.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TWAIN.framework; path = /System/Library/Frameworks/TWAIN.framework; sourceTree = "<absolute>"; };
+		531C43C2CE27FD9AF0D621A6 /* CScanner_FreeImage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CScanner_FreeImage.cpp; sourceTree = "<group>"; };
+		5AE01F91BF74AD84BDDDA82E /* CommonTWAIN.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CommonTWAIN.cpp; path = ../../common/CommonTWAIN.cpp; sourceTree = "<group>"; };
+		654033B18DB47E1C5B8E4C32 /* moc_Qt_MainForm.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_Qt_MainForm.cpp; sourceTree = "<group>"; };
+		6672FC4FD772FD0BC446BF17 /* TWAINContainerString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TWAINContainerString.h; sourceTree = "<group>"; };
+		6E722806EF71BE515707B2AC /* TWAINContainerBool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TWAINContainerBool.h; sourceTree = "<group>"; };
+		715CE81D386880E4AE08E29F /* ui_MainForm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui_MainForm.h; sourceTree = "<group>"; };
+		7190656A8C4126E5484D8532 /* src.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = src.pro; sourceTree = "<group>"; };
+		79DA6227D6774B678BD78213 /* TWAINContainerInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TWAINContainerInt.h; sourceTree = "<group>"; };
+		7BC2E65A5E699A5E5D834CA2 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = /Library/Frameworks/QtCore.framework; sourceTree = "<absolute>"; };
+		828C8F70DE2867FAE3488827 /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Common.h; path = ../../common/Common.h; sourceTree = "<group>"; };
+		8AF22C560383A7426D9035CA /* MainForm.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MainForm.ui; sourceTree = "<group>"; };
+		8D2983CDF821BDE85F36F0D0 /* TWAINContainerFix32Range.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TWAINContainerFix32Range.cpp; sourceTree = "<group>"; };
+		9280BCA4DBF4DEA48BD44EC8 /* QT_UI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = QT_UI.cpp; sourceTree = "<group>"; };
+		9538E9CFFBF1C83B02928B66 /* TWAINContainer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TWAINContainer.cpp; sourceTree = "<group>"; };
+		963A6F3DF695C78091956010 /* CTWAINDS_Base.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CTWAINDS_Base.cpp; sourceTree = "<group>"; };
+		96BF06C1319F998780E69AC5 /* CommonTWAIN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CommonTWAIN.h; path = ../../common/CommonTWAIN.h; sourceTree = "<group>"; };
+		9B36DA7E32F0304E780E7972 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = /Library/Frameworks/QtGui.framework; sourceTree = "<absolute>"; };
+		A532E3852878F7A8AFFBB0EC /* Qt_About.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Qt_About.cpp; sourceTree = "<group>"; };
+		AEB186903094378AF471EDEC /* CTWAINDS_FreeImage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CTWAINDS_FreeImage.cpp; sourceTree = "<group>"; };
+		B00D05D6497609FC64099A1E /* ui_About.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui_About.h; sourceTree = "<group>"; };
+		BFBF3F304F62E8086DDFF10A /* TWAINContainerFix32Range.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TWAINContainerFix32Range.h; sourceTree = "<group>"; };
+		BFD2BC897C4F2A67E66073E4 /* moc_Qt_ProfileName.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_Qt_ProfileName.cpp; sourceTree = "<group>"; };
+		C0AC64A664F3EF34DE67C829 /* Qt_ProfileName.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Qt_ProfileName.cpp; sourceTree = "<group>"; };
+		C25414E78B0AA52EB82BF328 /* ui_ProfileName.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui_ProfileName.h; sourceTree = "<group>"; };
+		C61EFE70F143EE5EAFAF351D /* Qt_ProfileName.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Qt_ProfileName.h; sourceTree = "<group>"; };
+		C95EBA87AC4852BEC1AF244D /* QT_UI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QT_UI.h; sourceTree = "<group>"; };
+		C981D126A9B0E5BCB4AD9BD4 /* CTWAINDS_FreeImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CTWAINDS_FreeImage.h; sourceTree = "<group>"; };
+		C9913B8092AF3495D1088A49 /* Qt_About.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Qt_About.h; sourceTree = "<group>"; };
+		CE6F2DBDEEE3EFD054BBF72F /* Qt_MainForm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Qt_MainForm.h; sourceTree = "<group>"; };
+		CFF1DBF56D6AC94FF4C0EDC5 /* CTWAINDS_Sample1.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CTWAINDS_Sample1.cpp; sourceTree = "<group>"; };
+		D00122FF46C21B8E9586B41F /* CommonDS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CommonDS.cpp; sourceTree = "<group>"; };
+		D0786B44F0232C078FC378FF /* DSMInterface.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DSMInterface.cpp; sourceTree = "<group>"; };
+		D1415C08309D775233B99FF0 /* CommonDS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonDS.h; sourceTree = "<group>"; };
+		D410C40E6DF43CE94AA6177C /* TWAINContainerFix32.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TWAINContainerFix32.h; sourceTree = "<group>"; };
+		D6465989ABA86AFE965C1137 /* TWAINContainerInt.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TWAINContainerInt.cpp; sourceTree = "<group>"; };
+		D6BB3E261B13509BEF4E06FC /* CTiffWriter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CTiffWriter.h; path = ../../common/CTiffWriter.h; sourceTree = "<group>"; };
+		D7EC21E71160F251009EEC64 /* TWAINDS_Mac */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TWAINDS_Mac; sourceTree = BUILT_PRODUCTS_DIR; };
+		D7EC251F11614275009EEC64 /* DSDebug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = DSDebug.plist; path = ../Resources/DSDebug.plist; sourceTree = SOURCE_ROOT; };
+		D7EC252011614275009EEC64 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../Resources/Info.plist; sourceTree = SOURCE_ROOT; };
+		D7EC252111614275009EEC64 /* mach-o-icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "mach-o-icon.icns"; path = "../Resources/mach-o-icon.icns"; sourceTree = SOURCE_ROOT; };
+		D7EC2573116148C9009EEC64 /* TWAINDS_Mac.ds */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TWAINDS_Mac.ds; sourceTree = BUILT_PRODUCTS_DIR; };
+		D7EC2574116148C9009EEC64 /* TWAINDS_Mac-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TWAINDS_Mac-Info.plist"; sourceTree = "<group>"; };
+		D7EC2902116244D2009EEC64 /* libfreeimage.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreeimage.a; path = ../../pub/external/lib/libfreeimage.a; sourceTree = SOURCE_ROOT; };
+		D7EC2BDD1163D787009EEC64 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		DE961E536D85866EB7E94F73 /* CTWAINDS_Base.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CTWAINDS_Base.h; sourceTree = "<group>"; };
+		DFFBE6FB70F7766C1B5060AD /* qrc_qtresources.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = qrc_qtresources.cpp; sourceTree = "<group>"; };
+		E17492F1A2EA4335CD6EF12F /* TWAINContainerFrame.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TWAINContainerFrame.cpp; sourceTree = "<group>"; };
+		E1784604FF4F2D466A3EAB8B /* CScanner_FreeImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CScanner_FreeImage.h; sourceTree = "<group>"; };
+		E18DF10BFDFFB67156187101 /* Qt_MainForm.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Qt_MainForm.cpp; sourceTree = "<group>"; };
+		E62224D16D312AF5F9555360 /* About.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = About.ui; sourceTree = "<group>"; };
+		FAD697666F78572E9C18BE73 /* DSMInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DSMInterface.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2A1043669E6E5A7426EA502A /* Frameworks & Libraries */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D7EC2DCE1164E441009EEC64 /* Carbon.framework in Frameworks & Libraries */,
+				501667F26B3C1FF6767A7C12 /* QtGui.framework in Frameworks & Libraries */,
+				069D05B0128AE5DC7EE31738 /* QtCore.framework in Frameworks & Libraries */,
+				D7EC2904116244D2009EEC64 /* libfreeimage.a in Frameworks & Libraries */,
+				527323231164F5CA005639B3 /* CoreFoundation.framework in Frameworks & Libraries */,
+				527323251164F5D8005639B3 /* TWAIN.framework in Frameworks & Libraries */,
+				520DFC6111650F4C002B8D21 /* QuickTime.framework in Frameworks & Libraries */,
+			);
+			name = "Frameworks & Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D7EC2571116148C9009EEC64 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D7EC28E1116241C5009EEC64 /* QtGui.framework in Frameworks */,
+				D7EC28E2116241C5009EEC64 /* QtCore.framework in Frameworks */,
+				D7EC2903116244D2009EEC64 /* libfreeimage.a in Frameworks */,
+				D7EC2BDE1163D787009EEC64 /* Carbon.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05596AB53D8D521C69802C27 /* TWAINDS_FreeImage */ = {
+			isa = PBXGroup;
+			children = (
+				5273223C1164F21B005639B3 /* TWAIN_logo.png */,
+				D7EC22FB11612B4D009EEC64 /* Resources */,
+				FB61758D0F0FDA4BA867C3D5 /* Sources */,
+				46E892BBB6BB6952967E0561 /* Temporary Sources */,
+				883D7615C4D2DE3FA1218F12 /* Headers */,
+				7CABE3C80E79AD2B307756D2 /* Sources [qmake] */,
+				52C235EBF1C9B07808119459 /* Sources [RCC] */,
+				EEC299C65D5017EB9DD513B0 /* Sources [UIC] */,
+				ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */,
+				D7EC21E81160F251009EEC64 /* Products */,
+				D7EC2574116148C9009EEC64 /* TWAINDS_Mac-Info.plist */,
+				527323241164F5D8005639B3 /* TWAIN.framework */,
+				520DFC6011650F4C002B8D21 /* QuickTime.framework */,
+			);
+			name = TWAINDS_FreeImage;
+			sourceTree = "<group>";
+		};
+		4458B98565818D7E2682FA2D /* .. */ = {
+			isa = PBXGroup;
+			children = (
+				E11BEA6A53EB481066C2098B /* .. */,
+			);
+			name = ..;
+			sourceTree = "<group>";
+		};
+		46E892BBB6BB6952967E0561 /* Temporary Sources */ = {
+			isa = PBXGroup;
+			children = (
+				654033B18DB47E1C5B8E4C32 /* moc_Qt_MainForm.cpp */,
+				31F0AA90BB87A15A24BE35EC /* moc_Qt_About.cpp */,
+				BFD2BC897C4F2A67E66073E4 /* moc_Qt_ProfileName.cpp */,
+				DFFBE6FB70F7766C1B5060AD /* qrc_qtresources.cpp */,
+				715CE81D386880E4AE08E29F /* ui_MainForm.h */,
+				B00D05D6497609FC64099A1E /* ui_About.h */,
+				C25414E78B0AA52EB82BF328 /* ui_ProfileName.h */,
+			);
+			name = "Temporary Sources";
+			sourceTree = "<group>";
+		};
+		52C235EBF1C9B07808119459 /* Sources [RCC] */ = {
+			isa = PBXGroup;
+			children = (
+				125D369A31FFAE38CC6633AB /* qtresources.qrc */,
+			);
+			name = "Sources [RCC]";
+			sourceTree = "<group>";
+		};
+		7CABE3C80E79AD2B307756D2 /* Sources [qmake] */ = {
+			isa = PBXGroup;
+			children = (
+				7190656A8C4126E5484D8532 /* src.pro */,
+			);
+			name = "Sources [qmake]";
+			sourceTree = "<group>";
+		};
+		883D7615C4D2DE3FA1218F12 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				4458B98565818D7E2682FA2D /* .. */,
+				E1784604FF4F2D466A3EAB8B /* CScanner_FreeImage.h */,
+				DE961E536D85866EB7E94F73 /* CTWAINDS_Base.h */,
+				C981D126A9B0E5BCB4AD9BD4 /* CTWAINDS_FreeImage.h */,
+				D1415C08309D775233B99FF0 /* CommonDS.h */,
+				FAD697666F78572E9C18BE73 /* DSMInterface.h */,
+				D410C40E6DF43CE94AA6177C /* TWAINContainerFix32.h */,
+				410CE69B4E17A35029285439 /* TWAINContainerFrame.h */,
+				43972102C903295BA3D07585 /* TWAINContainer.h */,
+				79DA6227D6774B678BD78213 /* TWAINContainerInt.h */,
+				4AAEC6435445D34AD29EE60D /* CTWAINDS_Sample1.h */,
+				50291FFBB2F47FB89E5DF664 /* TWAIN_UI.h */,
+				6672FC4FD772FD0BC446BF17 /* TWAINContainerString.h */,
+				BFBF3F304F62E8086DDFF10A /* TWAINContainerFix32Range.h */,
+				6E722806EF71BE515707B2AC /* TWAINContainerBool.h */,
+				C95EBA87AC4852BEC1AF244D /* QT_UI.h */,
+				CE6F2DBDEEE3EFD054BBF72F /* Qt_MainForm.h */,
+				C9913B8092AF3495D1088A49 /* Qt_About.h */,
+				C61EFE70F143EE5EAFAF351D /* Qt_ProfileName.h */,
+				B00D05D6497609FC64099A1E /* ui_About.h */,
+				715CE81D386880E4AE08E29F /* ui_MainForm.h */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		BFA3A29D17FD123C907B6E35 /* .. */ = {
+			isa = PBXGroup;
+			children = (
+				DCB318ABE7A96AA736975C2A /* .. */,
+			);
+			name = ..;
+			sourceTree = "<group>";
+		};
+		CE9FFC6F7A95233DE24FF5B0 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				828C8F70DE2867FAE3488827 /* Common.h */,
+				96BF06C1319F998780E69AC5 /* CommonTWAIN.h */,
+				D6BB3E261B13509BEF4E06FC /* CTiffWriter.h */,
+			);
+			name = common;
+			sourceTree = "<group>";
+		};
+		D7EC21E81160F251009EEC64 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D7EC21E71160F251009EEC64 /* TWAINDS_Mac */,
+				D7EC2573116148C9009EEC64 /* TWAINDS_Mac.ds */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D7EC22FB11612B4D009EEC64 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D7EC251F11614275009EEC64 /* DSDebug.plist */,
+				D7EC252011614275009EEC64 /* Info.plist */,
+				D7EC252111614275009EEC64 /* mach-o-icon.icns */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		DCB318ABE7A96AA736975C2A /* .. */ = {
+			isa = PBXGroup;
+			children = (
+				DE799585F3CF3C271337F3D3 /* common */,
+			);
+			name = ..;
+			sourceTree = "<group>";
+		};
+		DE799585F3CF3C271337F3D3 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				4175F9BD78CB657F7CE5269A /* CTiffWriter.cpp */,
+				5AE01F91BF74AD84BDDDA82E /* CommonTWAIN.cpp */,
+			);
+			name = common;
+			sourceTree = "<group>";
+		};
+		E11BEA6A53EB481066C2098B /* .. */ = {
+			isa = PBXGroup;
+			children = (
+				CE9FFC6F7A95233DE24FF5B0 /* common */,
+			);
+			name = ..;
+			sourceTree = "<group>";
+		};
+		ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				527323221164F5CA005639B3 /* CoreFoundation.framework */,
+				D7EC2902116244D2009EEC64 /* libfreeimage.a */,
+				9B36DA7E32F0304E780E7972 /* QtGui.framework */,
+				7BC2E65A5E699A5E5D834CA2 /* QtCore.framework */,
+				D7EC2BDD1163D787009EEC64 /* Carbon.framework */,
+			);
+			name = "External Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		EEC299C65D5017EB9DD513B0 /* Sources [UIC] */ = {
+			isa = PBXGroup;
+			children = (
+				8AF22C560383A7426D9035CA /* MainForm.ui */,
+				E62224D16D312AF5F9555360 /* About.ui */,
+				36A7CDF5BD7CD5E943459D26 /* ProfileName.ui */,
+			);
+			name = "Sources [UIC]";
+			sourceTree = "<group>";
+		};
+		FB61758D0F0FDA4BA867C3D5 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				BFA3A29D17FD123C907B6E35 /* .. */,
+				CFF1DBF56D6AC94FF4C0EDC5 /* CTWAINDS_Sample1.cpp */,
+				D00122FF46C21B8E9586B41F /* CommonDS.cpp */,
+				531C43C2CE27FD9AF0D621A6 /* CScanner_FreeImage.cpp */,
+				963A6F3DF695C78091956010 /* CTWAINDS_Base.cpp */,
+				AEB186903094378AF471EDEC /* CTWAINDS_FreeImage.cpp */,
+				D0786B44F0232C078FC378FF /* DSMInterface.cpp */,
+				9538E9CFFBF1C83B02928B66 /* TWAINContainer.cpp */,
+				487C67F0687FA1D25DAB467F /* TWAINContainerFix32.cpp */,
+				E17492F1A2EA4335CD6EF12F /* TWAINContainerFrame.cpp */,
+				D6465989ABA86AFE965C1137 /* TWAINContainerInt.cpp */,
+				2C9293634F5AD6EC6FEC3ECB /* TWAIN_UI.cpp */,
+				4C3941E7A709D9BB531219D1 /* TWAINContainerString.cpp */,
+				8D2983CDF821BDE85F36F0D0 /* TWAINContainerFix32Range.cpp */,
+				0AC509038D23C1EBCB7F4957 /* TWAINContainerBool.cpp */,
+				9280BCA4DBF4DEA48BD44EC8 /* QT_UI.cpp */,
+				E18DF10BFDFFB67156187101 /* Qt_MainForm.cpp */,
+				A532E3852878F7A8AFFBB0EC /* Qt_About.cpp */,
+				C0AC64A664F3EF34DE67C829 /* Qt_ProfileName.cpp */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		402F0687DD4D01134A33DAEF /* TWAINDS_FreeImage */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D7EC21F41160F276009EEC64 /* Build configuration list for PBXNativeTarget "TWAINDS_FreeImage" */;
+			buildPhases = (
+				A0A52A2ADF7A1E2A99738674 /* Qt Preprocessors */,
+				C29B8785722055ED95EF7B57 /* Build Sources */,
+				2A1043669E6E5A7426EA502A /* Frameworks & Libraries */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TWAINDS_FreeImage;
+			productName = libTWAINDS_FreeImage;
+			productReference = D7EC21E71160F251009EEC64 /* TWAINDS_Mac */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		D7EC2572116148C9009EEC64 /* TWAINDS_Mac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D7EC2577116148C9009EEC64 /* Build configuration list for PBXNativeTarget "TWAINDS_Mac" */;
+			buildPhases = (
+				D7EC256F116148C9009EEC64 /* Resources */,
+				D7EC2570116148C9009EEC64 /* Sources */,
+				D7EC2571116148C9009EEC64 /* Frameworks */,
+				D7EC257F116149EA009EEC64 /* Copy Product */,
+				D7EC2B721163C39E009EEC64 /* Copy Files to TDS */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D7EC258111614A58009EEC64 /* PBXTargetDependency */,
+			);
+			name = TWAINDS_Mac;
+			productName = TWAINDS_Mac;
+			productReference = D7EC2573116148C9009EEC64 /* TWAINDS_Mac.ds */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		91B15E841AA80083484172DE /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 2A951308CDB28F104D0A4BD2 /* Build configuration list for PBXProject "TWAINDS_FreeImage" */;
+			compatibilityVersion = "Xcode 2.4";
+			hasScannedForEncodings = 1;
+			mainGroup = 05596AB53D8D521C69802C27 /* TWAINDS_FreeImage */;
+			productRefGroup = D7EC21E81160F251009EEC64 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				402F0687DD4D01134A33DAEF /* TWAINDS_FreeImage */,
+				D7EC2572116148C9009EEC64 /* TWAINDS_Mac */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D7EC256F116148C9009EEC64 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5273223D1164F21B005639B3 /* TWAIN_logo.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A0A52A2ADF7A1E2A99738674 /* Qt Preprocessors */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "Qt Preprocessors";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C ./ -f TWAINDS_FreeImage.xcodeproj/qt_preprocess.mak";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C29B8785722055ED95EF7B57 /* Build Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				316F5212149529D3F41CE3C2 /* CTiffWriter.cpp in Build Sources */,
+				24F644902AB1D313A3AA4B80 /* CommonTWAIN.cpp in Build Sources */,
+				5D6BAAF33522241E420892A4 /* CommonDS.cpp in Build Sources */,
+				EAE69B5B0BC412B19F77F606 /* CScanner_FreeImage.cpp in Build Sources */,
+				288E2C0F8CC654A8DFD25818 /* CTWAINDS_Base.cpp in Build Sources */,
+				B0C3CF68EBAD9BB153667787 /* CTWAINDS_FreeImage.cpp in Build Sources */,
+				078B7AE5DD53E5C1ED870658 /* DSMInterface.cpp in Build Sources */,
+				E3A65BE93ECFFB0B4D775CA9 /* TWAINContainer.cpp in Build Sources */,
+				005D200A96D660D6389AB5C2 /* TWAINContainerFix32.cpp in Build Sources */,
+				7BD4D919BEB9395181CB127C /* TWAINContainerFrame.cpp in Build Sources */,
+				D2D54C2804DFEDAA0C9C2E8C /* TWAINContainerInt.cpp in Build Sources */,
+				4E96D8F118B5A19D9F0C9FDF /* CTWAINDS_Sample1.cpp in Build Sources */,
+				35865C440B96D482C8CDEA62 /* TWAIN_UI.cpp in Build Sources */,
+				9F979569222F7BEAF892CCC9 /* TWAINContainerString.cpp in Build Sources */,
+				87AFC235AB19499105E7CCDA /* TWAINContainerFix32Range.cpp in Build Sources */,
+				66E9960C4B51BBC1F028DF42 /* TWAINContainerBool.cpp in Build Sources */,
+				3EF2B97CD776A63BE7D971BE /* QT_UI.cpp in Build Sources */,
+				3D63B0335870148AE214E2D2 /* Qt_MainForm.cpp in Build Sources */,
+				55A3E14068EC2DC03F816299 /* Qt_About.cpp in Build Sources */,
+				D3105B777788281057A874B6 /* Qt_ProfileName.cpp in Build Sources */,
+				7B4AEF34D8EF8720576F2DF7 /* moc_Qt_MainForm.cpp in Build Sources */,
+				57EE1A032461C76CAD31C074 /* moc_Qt_About.cpp in Build Sources */,
+				1654BA3FD22F3FB6036D7BF3 /* moc_Qt_ProfileName.cpp in Build Sources */,
+				8E467FD594122C513B0C79BD /* qrc_qtresources.cpp in Build Sources */,
+			);
+			name = "Build Sources";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D7EC2570116148C9009EEC64 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D7EC258111614A58009EEC64 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 402F0687DD4D01134A33DAEF /* TWAINDS_FreeImage */;
+			targetProxy = D7EC258011614A58009EEC64 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		8DB1DD96F65B1BF1FFC506E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = "";
+			};
+			name = Debug;
+		};
+		95E1EB2E5DDD587BE5B3E548 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+			};
+			name = Release;
+		};
+		D7EC21ED1160F252009EEC64 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				BUILD_ROOT = /source/TWG_TWAIN_Samples/TWAIN_Samples/Twain_DS_sample01/src;
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1.0;
+				DYLIB_CURRENT_VERSION = 1.0.0;
+				EXECUTABLE_EXTENSION = "";
+				EXECUTABLE_SUFFIX = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					/Library/Frameworks/QtCore.framework/Versions/4/Headers,
+					/usr/include/QtCore,
+					/Library/Frameworks/QtGui.framework/Versions/4/Headers,
+					/usr/include/QtGui,
+					/usr/include,
+					/usr/local/include,
+					../../pub/external/include,
+					../../pub/include,
+					../../common,
+					.,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/usr/local/Qt4.6/mkspecs/macx-xcode",
+				);
+				INSTALL_PATH = "";
+				LEXFLAGS = "";
+				LIBRARY_SEARCH_PATHS = (
+					/Library/Frameworks,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../pub/external/lib\"";
+				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-fPIC",
+					"-DUNIX",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-fPIC",
+					"-DUNIX",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-single_module",
+					"-dynamiclib",
+					"-L/Library/Frameworks",
+					"-F/Library/Frameworks",
+					"-lfreeimage",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = TWAINDS_Mac;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "";
+				YACCFLAGS = "-d";
+			};
+			name = Debug;
+		};
+		D7EC21EE1160F252009EEC64 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				BUILD_ROOT = /source/TWG_TWAIN_Samples/TWAIN_Samples/Twain_DS_sample01/src;
+				COPY_PHASE_STRIP = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1.0;
+				DYLIB_CURRENT_VERSION = 1.0.0;
+				EXECUTABLE_EXTENSION = "";
+				EXECUTABLE_SUFFIX = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				HEADER_SEARCH_PATHS = (
+					/Library/Frameworks/QtCore.framework/Versions/4/Headers,
+					/usr/include/QtCore,
+					/Library/Frameworks/QtGui.framework/Versions/4/Headers,
+					/usr/include/QtGui,
+					/usr/include,
+					/usr/local/include,
+					../../pub/external/include,
+					../../pub/include,
+					../../common,
+					.,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/usr/local/Qt4.6/mkspecs/macx-xcode",
+				);
+				INSTALL_PATH = "";
+				LEXFLAGS = "";
+				LIBRARY_SEARCH_PATHS = (
+					/Library/Frameworks,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../pub/external/lib\"";
+				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-fPIC",
+					"-DUNIX",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-fPIC",
+					"-DUNIX",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-single_module",
+					"-dynamiclib",
+					"-L/Library/Frameworks",
+					"-F/Library/Frameworks",
+					"-lfreeimage",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = TWAINDS_Mac;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "";
+				YACCFLAGS = "-d";
+			};
+			name = Release;
+		};
+		D7EC21EF1160F252009EEC64 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				BUILD_ROOT = /source/TWG_TWAIN_Samples/TWAIN_Samples/Twain_DS_sample01/src;
+				DYLIB_COMPATIBILITY_VERSION = 1.0;
+				DYLIB_CURRENT_VERSION = 1.0.0;
+				EXECUTABLE_EXTENSION = "";
+				EXECUTABLE_SUFFIX = "";
+				HEADER_SEARCH_PATHS = (
+					/Library/Frameworks/QtCore.framework/Versions/4/Headers,
+					/usr/include/QtCore,
+					/Library/Frameworks/QtGui.framework/Versions/4/Headers,
+					/usr/include/QtGui,
+					/usr/include,
+					/usr/local/include,
+					../../pub/external/include,
+					../../pub/include,
+					../../common,
+					.,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/usr/local/Qt4.6/mkspecs/macx-xcode",
+				);
+				INSTALL_PATH = "";
+				LEXFLAGS = "";
+				LIBRARY_SEARCH_PATHS = (
+					/Library/Frameworks,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../pub/external/lib\"";
+				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-fPIC",
+					"-DUNIX",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-fPIC",
+					"-DUNIX",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-single_module",
+					"-dynamiclib",
+					"-L/Library/Frameworks",
+					"-F/Library/Frameworks",
+					"-lfreeimage",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = TWAINDS_Mac;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "";
+				YACCFLAGS = "-d";
+			};
+			name = Default;
+		};
+		D7EC2575116148C9009EEC64 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "TWAINDS_Mac-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../pub/external/lib\"";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = TWAINDS_Mac;
+				WRAPPER_EXTENSION = ds;
+			};
+			name = Debug;
+		};
+		D7EC2576116148C9009EEC64 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "TWAINDS_Mac-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../pub/external/lib\"";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = TWAINDS_Mac;
+				WRAPPER_EXTENSION = ds;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2A951308CDB28F104D0A4BD2 /* Build configuration list for PBXProject "TWAINDS_FreeImage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8DB1DD96F65B1BF1FFC506E0 /* Debug */,
+				95E1EB2E5DDD587BE5B3E548 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D7EC21F41160F276009EEC64 /* Build configuration list for PBXNativeTarget "TWAINDS_FreeImage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D7EC21ED1160F252009EEC64 /* Debug */,
+				D7EC21EE1160F252009EEC64 /* Release */,
+				D7EC21EF1160F252009EEC64 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		D7EC2577116148C9009EEC64 /* Build configuration list for PBXNativeTarget "TWAINDS_Mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D7EC2575116148C9009EEC64 /* Debug */,
+				D7EC2576116148C9009EEC64 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 91B15E841AA80083484172DE /* Project object */;
+}

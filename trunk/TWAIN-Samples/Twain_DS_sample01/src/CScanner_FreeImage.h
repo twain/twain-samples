@@ -110,8 +110,10 @@ struct SFreeImage
   WORD              m_nPaperSource;           /**< the current paper source ADF or Flatbed*/
   bool              m_bDuplex;                /**< True to use duplex false for simplex, ignored if flatbed*/
   WORD              m_nPixelType;             /**< type of pixels to transfer image as */
-  int               m_nWidth;                 /**< frame left edge */
-  int               m_nHeight;                /**< frame top edge */
+  int               m_nRight;                 /**< frame right edge */
+  int               m_nBottom;                /**< frame bottom edge */
+  int               m_nLeft;                  /**< frame left edge */
+  int               m_nTop;                   /**< frame top edge */
   float             m_fXResolution;           /**< horizontal resolution */
   float             m_fYResolution;           /**< vertical resolution */
   float             m_fGamma;                 /**< Gamma */
@@ -226,8 +228,9 @@ protected:
   WORD              m_nScanLine;              /**< Current scan line of image in FreeImage */
   bool              m_bReadOnly;              /**< current mode */
   DWORD             m_nDestBytesPerRow;       /**< number of bytes needed for a row of data */
+  DWORD             m_nRowOffset;             /**< offset of the first byte on every row*/
   short             m_nDocCount;              /**< number of documents waiting to transfer */
-  short             m_nMaxDocCount;              /**< Max number of documents waiting to transfer */
+  short             m_nMaxDocCount;           /**< Max number of documents waiting to transfer */
   WORD              m_nSourceWidth;           /**< Width of image in FreeImage */
   WORD              m_nSourceHeight;          /**< Height of image in FreeImage */
   char              m_szSourceImagePath[PATH_MAX];  /**< image used with FreeImage */

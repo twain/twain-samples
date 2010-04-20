@@ -1,5 +1,5 @@
 /***************************************************************************
-* Copyright © 2007 TWAIN Working Group:  
+* Copyright ï¿½ 2007 TWAIN Working Group:  
 *   Adobe Systems Incorporated, AnyDoc Software Inc., Eastman Kodak Company, 
 *   Fujitsu Computer Products of America, JFL Peripheral Solutions Inc., 
 *   Ricoh Corporation, and Xerox Corporation.
@@ -71,7 +71,10 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
     1,                                    // TW_UINT16  MinorNum;         Incremental revision number of the software
     TWLG_ENGLISH,                         // TW_UINT16  Language;         e.g. TWLG_SWISSFRENCH
     TWCY_USA,                             // TW_UINT16  Country;          e.g. TWCY_SWITZERLAND
-    "2.1.3 sample"                        // TW_STR32   Info;             e.g. "1.0b3 Beta release"
+#ifdef __APPLE__
+     "\p"
+#endif
+    "2.1.4 sample"                        // TW_STR32   Info;             e.g. "1.0b3 Beta release"
 #ifdef _DEBUG
     " debug"
 #else
@@ -86,9 +89,18 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
   2,                                  // TW_UINT16  ProtocolMajor;    Application and DS must set to TWON_PROTOCOLMAJOR
   1,                                  // TW_UINT16  ProtocolMinor;    Application and DS must set to TWON_PROTOCOLMINOR
   DG_IMAGE | DG_CONTROL | DF_DS2,     // TW_UINT32  SupportedGroups;  Bit field OR combination of DG_ constants
-  "TWAIN Working Group",              // TW_STR32   Manufacturer;     Manufacturer name, e.g. "Hewlett-Packard"
-  "Software Scan",                    // TW_STR32   ProductFamily;    Product family name, e.g. "ScanJet"
-  "TWAIN2 FreeImage Software Scanner" // TW_STR32   ProductName;      Product name, e.g. "ScanJet Plus"
+#ifdef __APPLE__
+   "\p"
+#endif
+   "TWAIN Working Group",              // TW_STR32   Manufacturer;     Manufacturer name, e.g. "Hewlett-Packard"
+#ifdef __APPLE__
+   "\p"
+#endif
+   "Software Scan",                    // TW_STR32   ProductFamily;    Product family name, e.g. "ScanJet"
+#ifdef __APPLE__
+   "\p"
+#endif
+   "TWAIN2 FreeImage Software Scanner" // TW_STR32   ProductName;      Product name, e.g. "ScanJet Plus"
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -286,7 +298,8 @@ bool CTWAINDS_FreeImage::ReadCapFromStream(stringstream &_DsData, TW_UINT16 _unC
     frmVal.nLeft   = pCapCon->dwVal[1];
     frmVal.nRight  = pCapCon->dwVal[2];
     frmVal.nTop    = pCapCon->dwVal[3];
-    ConstrainFrameToScanner(frmVal);
+    bool bConstrained;
+    ConstrainFrameToScanner(frmVal,bConstrained);
     CTWAINContainerFrame *pfFrameCap = (CTWAINContainerFrame*)pCap;
     bRes = pfFrameCap->Set(frmVal);
   } 
@@ -369,7 +382,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   CTWAINContainerString* pstrCap = 0;
   CTWAINContainerFix32* pfixCap = 0;
 
-  m_IndependantCapMap[CAP_SUPPORTEDCAPS] = new CTWAINContainerInt(CAP_SUPPORTEDCAPS, TWTY_UINT16, TWON_ARRAY, TWQC_GETS);
+  m_IndependantCapMap[CAP_SUPPORTEDCAPS] = new CTWAINContainerInt(CAP_SUPPORTEDCAPS, TWTY_UINT16, TWON_ARRAY, TWQC_GETS,TWON_ARRAY,TWON_ARRAY);
   if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_SUPPORTEDCAPS]))
    || !pnCap->Add(CAP_DEVICEONLINE)
    || !pnCap->Add(CAP_INDICATORS)
@@ -742,15 +755,16 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     return TWRC_FAILURE;
   }
   // expressed internally as pixels per inch
-  if( NULL == (m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION] = new CTWAINContainerFix32(ICAP_XRESOLUTION, TWON_ENUMERATION, TWQC_ALL))
-   || !m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION]->Add(50)
-   || !m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION]->Add(100)
-   || !m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION]->Add(150)
-   || !m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION]->Add(200, true)
-   || !m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION]->Add(300)
-   || !m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION]->Add(400)
-   || !m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION]->Add(500)
-   || !m_ICAP_UNIT_Dependant[ICAP_XRESOLUTION]->Add(600) )
+  m_IndependantCapMap[ICAP_XRESOLUTION] = new CTWAINContainerFix32(ICAP_XRESOLUTION, TWON_ENUMERATION, TWQC_ALL);
+  if( NULL == (pfixCap = dynamic_cast<CTWAINContainerFix32*>(m_IndependantCapMap[ICAP_XRESOLUTION]))
+   || !pfixCap->Add(50)
+   || !pfixCap->Add(100)
+   || !pfixCap->Add(150)
+   || !pfixCap->Add(200, true)
+   || !pfixCap->Add(300)
+   || !pfixCap->Add(400)
+   || !pfixCap->Add(500)
+   || !pfixCap->Add(600) )
   {
     cerr << "Could not create ICAP_XRESOLUTION" << endl;
     setConditionCode(TWCC_LOWMEMORY);
@@ -758,15 +772,16 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   }
 
   // expressed internally as pixels per inch
-  if( NULL == (m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION] = new CTWAINContainerFix32(ICAP_YRESOLUTION, TWON_ENUMERATION, TWQC_ALL))
-   || !m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION]->Add(50)
-   || !m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION]->Add(100)
-   || !m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION]->Add(150)
-   || !m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION]->Add(200, true)
-   || !m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION]->Add(300)
-   || !m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION]->Add(400)
-   || !m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION]->Add(500)
-   || !m_ICAP_UNIT_Dependant[ICAP_YRESOLUTION]->Add(600) )
+  m_IndependantCapMap[ICAP_YRESOLUTION] = new CTWAINContainerFix32(ICAP_YRESOLUTION, TWON_ENUMERATION, TWQC_ALL);
+  if( NULL == (pfixCap = dynamic_cast<CTWAINContainerFix32*>(m_IndependantCapMap[ICAP_YRESOLUTION]))
+   || !pfixCap->Add(50)
+   || !pfixCap->Add(100)
+   || !pfixCap->Add(150)
+   || !pfixCap->Add(200, true)
+   || !pfixCap->Add(300)
+   || !pfixCap->Add(400)
+   || !pfixCap->Add(500)
+   || !pfixCap->Add(600) )
   {
     cerr << "Could not create ICAP_YRESOLUTION" << endl;
     setConditionCode(TWCC_LOWMEMORY);
@@ -779,16 +794,16 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   //  Flatbed   - A4 letter paper
   //  ConvertUnits(29.7f, TWUN_CENTIMETERS, TWUN_INCHES, 1000);
   //  ConvertUnits(21.0f, TWUN_CENTIMETERS, TWUN_INCHES, 1000);
-  if( NULL == (m_ICAP_UNIT_Dependant[ICAP_PHYSICALWIDTH] = new CTWAINContainerFix32(ICAP_PHYSICALWIDTH, TWON_ONEVALUE, TWQC_GETS))
-   || !m_ICAP_UNIT_Dependant[ICAP_PHYSICALWIDTH]->Add(8.5, true) )
+  if( NULL == (m_IndependantCapMap[ICAP_PHYSICALWIDTH] = new CTWAINContainerFix32(ICAP_PHYSICALWIDTH, TWON_ONEVALUE, TWQC_GETS))
+   || !(dynamic_cast<CTWAINContainerFix32*>(m_IndependantCapMap[ICAP_PHYSICALWIDTH]))->Add(8.5, true) )
   {
     cerr << "Could not create ICAP_PHYSICALWIDTH" << endl;
     setConditionCode(TWCC_LOWMEMORY);
     return TWRC_FAILURE;
   }
 
-  if( NULL == (m_ICAP_UNIT_Dependant[ICAP_PHYSICALHEIGHT] = new CTWAINContainerFix32(ICAP_PHYSICALHEIGHT, TWON_ONEVALUE, TWQC_GETS))
-   || !m_ICAP_UNIT_Dependant[ICAP_PHYSICALHEIGHT]->Add(14.0, true) )
+  if( NULL == (m_IndependantCapMap[ICAP_PHYSICALHEIGHT] = new CTWAINContainerFix32(ICAP_PHYSICALHEIGHT, TWON_ONEVALUE, TWQC_GETS))
+   || !(dynamic_cast<CTWAINContainerFix32*>(m_IndependantCapMap[ICAP_PHYSICALHEIGHT]))->Add(14.0, true) )
   {
     cerr << "Could not create ICAP_PHYSICALHEIGHT" << endl;
     setConditionCode(TWCC_LOWMEMORY);
@@ -836,13 +851,6 @@ CTWAINDS_FreeImage::~CTWAINDS_FreeImage()
     cur_int++;
   }
 
-  TWAINCapabilitiesMap_FIX32::iterator cur_Fix32 = m_ICAP_UNIT_Dependant.begin();
-  while(cur_Fix32 != m_ICAP_UNIT_Dependant.end())
-  {
-    delete cur_Fix32->second;
-    cur_Fix32++;
-  }
-
   if(m_pICAP_FRAMES)
   {
     delete m_pICAP_FRAMES;
@@ -873,11 +881,21 @@ TW_INT16 CTWAINDS_FreeImage::getImageInfo(pTW_IMAGEINFO _pImageInfo)
 
   // Get the actual values used by the scanner.
   SFreeImage settings = m_Scanner.getSetting();
+  
+  int nUnit = TWUN_INCHES;
+  CTWAINContainerInt    *pnCap = 0;
+  if( 0 == (pnCap = dynamic_cast<CTWAINContainerInt*>(findCapability(ICAP_UNITS)))
+   || false == pnCap->GetCurrent(nUnit) )
+  {
+    setConditionCode(TWCC_OPERATIONERROR);
+    return TWRC_FAILURE;
+  }
 
-  _pImageInfo->XResolution = FloatToFIX32(settings.m_fXResolution);
-  _pImageInfo->YResolution = FloatToFIX32(settings.m_fYResolution);
-  _pImageInfo->ImageWidth  = settings.m_nWidth;
-  _pImageInfo->ImageLength = settings.m_nHeight;
+  
+  _pImageInfo->XResolution = FloatToFIX32(ConvertUnits(float(settings.m_fXResolution), nUnit, TWUN_INCHES, settings.m_fXResolution));
+  _pImageInfo->YResolution = FloatToFIX32(ConvertUnits(float(settings.m_fYResolution), nUnit, TWUN_INCHES, settings.m_fYResolution));
+  _pImageInfo->ImageWidth  = settings.m_nRight-settings.m_nLeft;
+  _pImageInfo->ImageLength = settings.m_nBottom - settings.m_nTop;
   
   // Our sample scanner only does one combination for each PixelType.
   switch(settings.m_nPixelType)
@@ -984,7 +1002,6 @@ TW_INT16 CTWAINDS_FreeImage::enableDS(pTW_USERINTERFACE _pData)
     pnCap->GetCurrent(Count);
   }
   m_Xfers.Count = Count;
-
   // Indicate we have not transferred any images yet
   m_DocumentNumber = 0;
   m_PageNumber     = 0;
@@ -1321,13 +1338,12 @@ TW_INT16 CTWAINDS_FreeImage::endXfer(pTW_PENDINGXFERS _pXfers)
       }
     }
 
-    m_CurrentState = dsState_XferReady;
   }
   else
   {
-    m_CurrentState = dsState_Enabled;
     m_Scanner.Unlock();
   }
+    m_CurrentState = dsState_Enabled;
 
   if( _pXfers == 0 )
   {
@@ -1335,9 +1351,12 @@ TW_INT16 CTWAINDS_FreeImage::endXfer(pTW_PENDINGXFERS _pXfers)
     // Did everyting but return the currect count.
     return TWRC_CHECKSTATUS;
   }
-
   *_pXfers = m_Xfers;
-
+	if(0 != m_Xfers.Count)
+	{
+		DoXferReadyEvent();
+		m_CurrentState = dsState_XferReady;
+	}
   return twrc;
 }
 
@@ -1456,8 +1475,10 @@ bool CTWAINDS_FreeImage::updateScannerFromCaps()
     *    left or top then need to crop the image as it is coming off the scanner.
     *    Should be passing to the scanner the width as the right and height as bottom; not the diff.
     */
-    settings.m_nWidth  = int(FIX32ToFloat(TWframe.Right)  - FIX32ToFloat(TWframe.Left));
-    settings.m_nHeight = int(FIX32ToFloat(TWframe.Bottom) - FIX32ToFloat(TWframe.Top));
+    settings.m_nRight  = int(FIX32ToFloat(TWframe.Right));
+    settings.m_nBottom = int(FIX32ToFloat(TWframe.Bottom));
+    settings.m_nLeft  = int(FIX32ToFloat(TWframe.Left));
+    settings.m_nTop = int(FIX32ToFloat(TWframe.Top));
   }
 
   if(0 == (pfRCap = dynamic_cast<CTWAINContainerFix32Range*>(findCapability(ICAP_THRESHOLD))))
@@ -1577,20 +1598,6 @@ CTWAINContainer* CTWAINDS_FreeImage::findCapability(const TW_UINT16 _unCap)
           pRet = pBoolCon;
         }
       }
-    break;
-
-    case ICAP_XRESOLUTION:
-    case ICAP_YRESOLUTION:
-    case ICAP_PHYSICALWIDTH:
-    case ICAP_PHYSICALHEIGHT:
-    {
-      TWAINCapabilitiesMap_FIX32::iterator itCap = m_ICAP_UNIT_Dependant.find(_unCap);
-
-      if(itCap != m_ICAP_UNIT_Dependant.end())
-      {
-        pRet = itCap->second;
-      }
-    }
     break;
 
     default:
@@ -1743,7 +1750,13 @@ TW_INT16 CTWAINDS_FreeImage::dat_imagelayout(TW_UINT16         _MSG,
         float Yres = 100;
         twrc = getCurrentUnits(unit, Xres, Yres);
         InternalFrame frame(pCap->Item, unit, Xres, Yres);
-        if(ConstrainFrameToScanner(frame))
+        bool bConstrained;
+        if(!ConstrainFrameToScanner(frame,bConstrained))
+        {
+          setConditionCode(TWCC_BADVALUE);
+          twrc = TWRC_FAILURE;
+        }
+        else if(bConstrained)
         {
           pCap->Item = frame.AsTW_FRAME(unit, Xres, Yres);
           twrc = TWRC_CHECKSTATUS;

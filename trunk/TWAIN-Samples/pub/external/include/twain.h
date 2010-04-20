@@ -106,11 +106,6 @@
       #define TWH_32BIT
     #endif
 
-/* Apple Compiler (which is GNU now) */
-#elif defined(__APPLE__)
-    #define TWH_CMP_XCODE
-    #define TWH_32BIT
-
 /* GNU C/C++ Compiler */
 #elif defined(__GNUC__)
     #define TWH_CMP_GNU
@@ -124,6 +119,7 @@
       #define TWH_32BIT
     #endif
 
+
 /* Borland C/C++ Compiler */
 #elif defined(__BORLAND__)
     #define TWH_CMP_BORLAND
@@ -131,6 +127,16 @@
 /* Unrecognized */
 #else
     #error Unrecognized compiler
+#endif
+
+/* Apple Compiler (which is GNU now) */
+#if defined(__APPLE__)
+  #define TWH_CMP_XCODE
+  #ifdef __MWERKS__
+    #include <Carbon.h>
+  #else
+    #include <Carbon/Carbon.h>
+  #endif
 #endif
 
 /* Win32 and Win64 systems */
@@ -145,6 +151,7 @@
     #define FAR
     typedef Handle   TW_HANDLE;
     typedef char    *TW_MEMREF;
+    typedef unsigned char BYTE;
 
     #ifdef TWH_32BIT
       //32 bit GNU
@@ -177,18 +184,14 @@
     #pragma pack (push, before_twain)
     #pragma pack (2)
 #elif defined(TWH_CMP_GNU)
-    #pragma pack (push, before_twain)
-    #pragma pack (2)
+   #pragma pack (push, before_twain)
+   #ifdef __APPLE__
+      //#pragma pack (4)
+   #else
+      #pragma pack (2)
+   #endif
 #elif defined(TWH_CMP_BORLAND)
     #pragma option -a2
-#elif defined(TWH_CMP_XCODE)
-    #if PRAGMA_STRUCT_ALIGN
-        #pragma options align=mac68k
-    #elif PRAGMA_STRUCT_PACKPUSH
-        #pragma pack (push, 2)
-    #elif PRAGMA_STRUCT_PACK
-        #pragma pack (2)
-    #endif
 #endif
 
 
@@ -2176,17 +2179,17 @@ typedef struct {
 #ifdef TWH_CMP_MSC
     #pragma pack (pop, before_twain)
 #elif defined(TWH_CMP_GNU)
-    #pragma pack (pop, before_twain)
+   #pragma pack (pop, before_twain)
 #elif defined(TWH_CMP_BORLAND)
     #pragma option –a.
-#elif defined(TWH_CMP_XCODE)
-    #if PRAGMA_STRUCT_ALIGN
-        #pragma options align=reset
-    #elif PRAGMA_STRUCT_PACKPUSH
-        #pragma pack (pop)
-    #elif PRAGMA_STRUCT_PACK
-        #pragma pack()
-    #endif
+//#elif defined(TWH_CMP_XCODE)
+//    #if PRAGMA_STRUCT_ALIGN
+//        #pragma options align=reset
+//    #elif PRAGMA_STRUCT_PACKPUSH
+//        #pragma pack (pop)
+//    #elif PRAGMA_STRUCT_PACK
+//        #pragma pack()
+//    #endif
 #endif
 
 #endif  /* TWAIN */

@@ -1,5 +1,5 @@
 /***************************************************************************
-* Copyright © 2007 TWAIN Working Group:  
+* Copyright ï¿½ 2007 TWAIN Working Group:  
 *   Adobe Systems Incorporated, AnyDoc Software Inc., Eastman Kodak Company, 
 *   Fujitsu Computer Products of America, JFL Peripheral Solutions Inc., 
 *   Ricoh Corporation, and Xerox Corporation.
@@ -44,8 +44,10 @@
 CTWAINContainerString::CTWAINContainerString(const TW_UINT16 _unCapID, 
                                          const TW_UINT16 _unItemType, 
                                          const TW_UINT16 _unGetType, 
-                                         const TW_INT32  _nSupportedQueries /*=TWQC_ALL*/)
-  : CTWAINContainer(_unCapID, _unItemType, _unGetType, _nSupportedQueries)
+                                         const TW_INT32  _nSupportedQueries/* = TWQC_ALL*/,
+                                         const TW_UINT16 _unGetCurrentType/* = TWON_ONEVALUE*/,
+                                         const TW_UINT16 _unGetDefaultType/* = TWON_ONEVALUE*/)
+  : CTWAINContainer(_unCapID, _unItemType, _unGetType, _nSupportedQueries,_unGetCurrentType,_unGetDefaultType)
 {
   m_unItemSize = getTWTYSize(_unItemType);
 }
@@ -57,28 +59,46 @@ CTWAINContainerString::~CTWAINContainerString()
 TW_HANDLE CTWAINContainerString::GetContainer(const TW_UINT16 _unMsg)
 {
   TW_HANDLE hContainer = 0;
-
-  if((TWON_ONEVALUE == m_unGetType) ||
-     (MSG_GETCURRENT == _unMsg) ||
-     (MSG_GETDEFAULT == _unMsg))
+  TW_UINT16 unGetType=TWON_ONEVALUE;
+  switch(_unMsg)
   {
-    hContainer = _DSM_Alloc(sizeof(TW_ONEVALUE)+m_unItemSize-sizeof(TW_UINT32));
-
-    if(0 != hContainer)
-    {
-      pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(hContainer);
-
-      pCap->ItemType = m_unItemType;
-      // If the Cap has been constrained the default may only be in the defaultlist.
-      string strTemp = ((MSG_GETDEFAULT == _unMsg)?m_listStrsDefault[m_nDefault]:m_listStrs[m_nCurrent]);
-      memset((char*)&pCap->Item,0,m_unItemSize);
-      memcpy((char*)&pCap->Item, strTemp.c_str(),MIN(m_unItemSize, strTemp.length()));
-      _DSM_UnlockMemory(hContainer);
-    }
+    case MSG_GET:
+      unGetType = m_unGetType;
+      break;
+    case MSG_GETCURRENT:
+      unGetType = m_unGetCurrentType;
+      break;
+    case MSG_GETDEFAULT:
+      unGetType = m_unGetDefaultType;
+      break;
   }
-  else if(MSG_GET == _unMsg)
+
+  switch(unGetType)
   {
-    if(TWON_ENUMERATION == m_unGetType)
+    default:
+    case TWON_ONEVALUE:
+    {
+      hContainer = _DSM_Alloc(sizeof(TW_ONEVALUE)+m_unItemSize-sizeof(TW_UINT32));
+      if(0 != hContainer)
+      {
+        pTW_ONEVALUE pCap = (pTW_ONEVALUE)_DSM_LockMemory(hContainer);
+
+        pCap->ItemType = m_unItemType;
+        // If the Cap has been constrained the default may only be in the defaultlist.
+        string strTemp = ((MSG_GETDEFAULT == _unMsg)?m_listStrsDefault[m_nDefault]:m_listStrs[m_nCurrent]);
+        memset((char*)&pCap->Item,0,m_unItemSize);
+#ifdef __APPLE__ 
+		  memcpy(((char*)&pCap->Item)+1, strTemp.c_str(),MIN(m_unItemSize, strTemp.length()));
+		  ((char*)&pCap->Item)[0]=strTemp.length();
+#else
+		  memcpy((char*)&pCap->Item, strTemp.c_str(),MIN(m_unItemSize, strTemp.length()));
+#endif
+        _DSM_UnlockMemory(hContainer);
+      }
+    }
+    break;
+
+    case TWON_ENUMERATION:
     {
       hContainer = _DSM_Alloc(sizeof(TW_ENUMERATION) -1 + (m_unItemSize * m_listStrs.size()));
 
@@ -114,7 +134,9 @@ TW_HANDLE CTWAINContainerString::GetContainer(const TW_UINT16 _unMsg)
         _DSM_UnlockMemory(hContainer);
       }
     }
-    else if(TWON_ARRAY == m_unGetType)
+    break;
+
+    case TWON_ARRAY:
     {
       hContainer = _DSM_Alloc(sizeof(TW_ARRAY)-1 + (m_unItemSize * m_listStrs.size()));
 
@@ -129,7 +151,7 @@ TW_HANDLE CTWAINContainerString::GetContainer(const TW_UINT16 _unMsg)
         _DSM_UnlockMemory(hContainer);
       }
     }
-  } // else if(MSG_GET == _unMsg)
+  } // switch(unGetType)
 
   return hContainer;
 }
@@ -141,7 +163,12 @@ void CTWAINContainerString::fillValues(void* _pItemList, const TW_UINT32 _unNumI
     string strTemp = m_listStrs[x];
     char *pItem = (char*)_pItemList + m_unItemSize*x;
     memset(pItem,0,m_unItemSize);
-    memcpy(pItem, strTemp.c_str(),MIN(m_unItemSize, strTemp.length()));
+#ifdef __APPLE__ 
+	  memcpy(((char*)pItem)+1, strTemp.c_str(),MIN(m_unItemSize, strTemp.length()));
+	  ((char*)pItem)[0]=strTemp.length();
+#else
+	  memcpy(pItem, strTemp.c_str(),MIN(m_unItemSize, strTemp.length()));
+#endif
   }
 }
 

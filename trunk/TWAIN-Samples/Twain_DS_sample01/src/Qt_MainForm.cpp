@@ -130,6 +130,7 @@ void MainForm::on_pComboBox_Resolution_activated(int _nIndex)
 {
   QVariant val  = ui->pComboBox_Resolution->itemData(_nIndex);
   m_pUI->SetCapValueFloat(ICAP_XRESOLUTION,val.toInt());
+  m_pUI->SetCapValueFloat(ICAP_YRESOLUTION,val.toInt());
   UpdateControls(); 
   return;
 }

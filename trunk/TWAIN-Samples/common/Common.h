@@ -1,5 +1,5 @@
 /***************************************************************************
-* Copyright © 2007 TWAIN Working Group:  
+* Copyright Â© 2007 TWAIN Working Group:  
 *   Adobe Systems Incorporated, AnyDoc Software Inc., Eastman Kodak Company, 
 *   Fujitsu Computer Products of America, JFL Peripheral Solutions Inc., 
 *   Ricoh Corporation, and Xerox Corporation.
@@ -47,10 +47,14 @@
   #include <windows.h>
 #endif
 
+#if defined(__APPLE__)
+  #define TWNDS_OS_APPLE
+#endif
+
 #include "twain.h"
 
 #ifdef TWH_CMP_GNU
-  #ifndef TWNDS_OS_WIN
+  #if !(defined(TWNDS_OS_WIN) || defined(TWNDS_OS_APPLE))
     #define TWNDS_OS_LINUX
   #endif
   #include <wchar.h>
@@ -78,6 +82,7 @@
 */
 #define TWNDS_CMP_VISUALCPP     0x1001 // Preferably 2005+
 #define TWNDS_CMP_GNUGPP        0x1002 // Preferably v4.x+
+#define TWNDS_CMP_XCODE         0x1003 // Xcode 
 
 /**
 * If the user defines TWNDS_CMP in their make file or project,
@@ -91,7 +96,7 @@
 #ifndef TWNDS_CMP
 
   // GNU g++
-  #if defined(TWH_CMP_GNU)
+  #if defined(TWH_CMP_GNU) || defined(TWH_CMP_XCODE)
     #define TWNDS_CMP             TWNDS_CMP_GNUGPP
     #define TWNDS_CMP_VERSION     __GNUC__
 
@@ -103,6 +108,12 @@
     #define TWNDS_CMP_VERSION      _MSC_VER
     // Not neccessary it is in Windows path
     #define kTWAIN_DSM_DIR         ""
+
+  // Xcode
+  #elif defined (TWH_CMP_XCODE)
+    #define TWNDS_CMP              TWNDS_CMP_XCODE
+    #define TWNDS_CMP_VERSION      
+
   // ruh-roh...
   #else
     #error Sorry, we don't recognize this system...

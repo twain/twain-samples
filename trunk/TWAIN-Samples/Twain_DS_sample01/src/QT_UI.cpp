@@ -1,5 +1,5 @@
 /***************************************************************************
-* Copyright © 2007 TWAIN Working Group:  
+* Copyright ï¿½ 2007 TWAIN Working Group:  
 *   Adobe Systems Incorporated, AnyDoc Software Inc., Eastman Kodak Company, 
 *   Fujitsu Computer Products of America, JFL Peripheral Solutions Inc., 
 *   Ricoh Corporation, and Xerox Corporation.
@@ -84,6 +84,7 @@ QT_UI::~QT_UI()
   }
 }
 
+
 TW_INT16 QT_UI::DisplayTWAINGUI(TW_USERINTERFACE Data, bool bSetup, bool bIndicators)
 {
   TW_INT16 nRes = CTWAIN_UI::DisplayTWAINGUI(Data, bSetup, bIndicators);
@@ -113,26 +114,28 @@ TW_INT16 QT_UI::DisplayTWAINGUI(TW_USERINTERFACE Data, bool bSetup, bool bIndica
       return TWRC_FAILURE;
     }
   }
-#ifdef TWNDS_OS_WIN
+#if defined (TWNDS_OS_WIN) || defined (TWNDS_OS_APPLE)
   if (!pApp)
   {
     int argc = 0;
     pApp = m_pQtApp = new QApplication(argc, 0);
+//	  m_pQtApp->setAttribute(Qt::AA_DontUseNativeMenuBar,true);
+	  m_pQtApp->setAttribute(Qt::AA_MacPluginApplication,true);
   }
 #endif
   m_pChildWnd = NULL;
   if(!pApp)
   {
-#ifdef TWNDS_OS_WIN
+#if defined (TWNDS_OS_WIN)
     return TWRC_FAILURE;
-#elif defined(TWNDS_OS_LINUX)
+#elif defined(TWNDS_OS_LINUX)// || defined (TWNDS_OS_APPLE)
     m_pUIThread = new UIThread(this, Data);
     m_pUIThread->start();   
 #endif
   }
   else
   {
-#ifdef TWNDS_OS_WIN
+#if defined(TWNDS_OS_WIN) //|| defined (TWNDS_OS_APPLE)
     if(Data.hParent)
     {
       m_pChildWnd = new QWidget();
@@ -172,18 +175,23 @@ void QT_UI::DestroyTWAINGUI()
     delete m_pChildWnd;
     m_pChildWnd = NULL;
   }
-
-#ifdef TWNDS_OS_LINUX
   if(m_pUIThread)
   {
     QEvent *pQEvent = new QEvent(QEvent::Quit);
    // pQEvent->setAccepted(false);
     m_pUIThread->m_pApp->postEvent(m_pUIThread->m_pApp,pQEvent);
 
-    while(m_pUIThread->isRunning());
+    while(m_pUIThread->isRunning())
+       ;
     delete m_pUIThread;
   }
-#endif
+	if(m_pQtApp)
+	{
+		m_pQtApp->flush();
+		m_pQtApp->exit();
+		delete m_pQtApp;
+		m_pQtApp = NULL;
+	}
 }
 
 void QT_UI::UpdateProgress(bool bShow, unsigned char ucProgress, unsigned int unPageNo, string strProgressTitle)
@@ -199,7 +207,7 @@ unsigned int QT_UI::MessageBox(string strMessage,string strTitle, unsigned int u
 
 bool QT_UI::processEvent(pTW_EVENT _pEvent)
 {
-#ifdef TWNDS_OS_WIN
+#if defined (TWNDS_OS_WIN)
   if(qApp)
   {
     qApp->sendPostedEvents();

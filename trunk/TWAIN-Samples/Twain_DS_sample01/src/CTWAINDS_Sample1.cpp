@@ -1,5 +1,5 @@
 /***************************************************************************
-* Copyright © 2007 TWAIN Working Group:  
+* Copyright Â© 2007 TWAIN Working Group:  
 *   Adobe Systems Incorporated, AnyDoc Software Inc., Eastman Kodak Company, 
 *   Fujitsu Computer Products of America, JFL Peripheral Solutions Inc., 
 *   Ricoh Corporation, and Xerox Corporation.
@@ -74,7 +74,6 @@ DS_Entry( pTW_IDENTITY _pOrigin,
           TW_MEMREF    _pData)
 {
   CTWAINDS_Base* pTWAINLayer = 0;
-
   if(_pOrigin)
   {
     lstDS::iterator llIter=g_lstDS.begin();
@@ -154,7 +153,6 @@ DS_Entry( pTW_IDENTITY _pOrigin,
       llIter++;
     }
   }
-
   return result;
 }
 

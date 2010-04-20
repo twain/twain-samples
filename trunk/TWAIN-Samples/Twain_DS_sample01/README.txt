@@ -47,6 +47,11 @@ QT Open Source distribution.  Please see http://www.trolltech.com for more info.
 directory.  
 - Or use the provided Visual Studio project files.
 
+[MAC] - *** It is TWAIN 1.9 complient
+- install QT 4.6.2 SDK for MAC
+- install Xcode
+- build the project
+- build will automatically copy DS bundle to /Library/Image Capture/TWAIN Data Sources/
 
 
 - original: fredh@jflinc.com, May 14, 2005
@@ -54,3 +59,4 @@ directory.
 - updated:  jimw@jflin.com, Dec 10, 2007
 - updated:  mihailm@jflin.com, Dec 23, 2009
 - updated:  mihailm@jflin.com, Dec 30, 2009
+- updated:  mihailm@jflin.com, Apr 20, 2010
