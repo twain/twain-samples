@@ -252,7 +252,6 @@ protected:
   CScanner_FreeImage          m_Scanner;                 /**< The main scanner. */
 
   TWAINCapabilitiesMap_int    m_BitDepthMap;             /**< Capability for various Bit Depths */
-  TWAINCapabilitiesMap_FIX32  m_ICAP_UNIT_Dependant;     /**< Capability for any Fix32 based TWAIN container */
   CTWAINContainerFrame       *m_pICAP_FRAMES;            /**< Capabiltiy for a FRAMES based container */
   TW_IDENTITY m_AppID;
   bool                        m_bCanceled;

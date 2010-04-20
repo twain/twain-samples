@@ -1,5 +1,5 @@
 /***************************************************************************
-* Copyright © 2007 TWAIN Working Group:  
+* Copyright ï¿½ 2007 TWAIN Working Group:  
 *   Adobe Systems Incorporated, AnyDoc Software Inc., Eastman Kodak Company, 
 *   Fujitsu Computer Products of America, JFL Peripheral Solutions Inc., 
 *   Ricoh Corporation, and Xerox Corporation.
@@ -43,8 +43,10 @@
 
 CTWAINContainerFix32::CTWAINContainerFix32(const TW_UINT16 _unCapID, 
                                            const TW_UINT16 _unGetType, 
-                                           const TW_INT32  _nSupportedQueries /*=TWQC_ALL*/)
-  : CTWAINContainer(_unCapID, TWTY_FIX32, _unGetType, _nSupportedQueries)
+                                           const TW_INT32  _nSupportedQueries/* = TWQC_ALL*/,
+                                           const TW_UINT16 _unGetCurrentType/* = TWON_ONEVALUE*/,
+                                           const TW_UINT16 _unGetDefaultType/* = TWON_ONEVALUE*/)
+  : CTWAINContainer(_unCapID, TWTY_FIX32, _unGetType, _nSupportedQueries,_unGetCurrentType,_unGetDefaultType)
 {
 }
 
@@ -55,28 +57,42 @@ CTWAINContainerFix32::~CTWAINContainerFix32()
 TW_HANDLE CTWAINContainerFix32::GetContainer(const TW_UINT16 _unMsg)
 {
   TW_HANDLE hContainer = 0;
-
-  if((TWON_ONEVALUE == m_unGetType) ||
-     (MSG_GETCURRENT == _unMsg) ||
-     (MSG_GETDEFAULT == _unMsg))
+  TW_UINT16 unGetType=TWON_ONEVALUE;
+  switch(_unMsg)
   {
-    hContainer = _DSM_Alloc(sizeof(TW_ONEVALUE_FIX32));
-
-    if(0 != hContainer)
-    {
-      pTW_ONEVALUE_FIX32 pCap = (pTW_ONEVALUE_FIX32)_DSM_LockMemory(hContainer);
-
-      pCap->ItemType = TWTY_FIX32;
-      // If the Cap has been constrained the default may only be in the m_listFloatsDefault.
-      const float flVal = (MSG_GETDEFAULT == _unMsg)?m_listFloatsDefault[m_nDefault]:m_listFloats[m_nCurrent];
-      
-      pCap->Item = FloatToFIX32(flVal);
-      _DSM_UnlockMemory(hContainer);
-    }
+    case MSG_GET:
+      unGetType = m_unGetType;
+      break;
+    case MSG_GETCURRENT:
+      unGetType = m_unGetCurrentType;
+      break;
+    case MSG_GETDEFAULT:
+      unGetType = m_unGetDefaultType;
+      break;
   }
-  else if(MSG_GET == _unMsg)
+
+  switch(unGetType)
   {
-    if(TWON_ENUMERATION == m_unGetType)
+    default:
+    case TWON_ONEVALUE:
+    {
+      hContainer = _DSM_Alloc(sizeof(TW_ONEVALUE_FIX32));
+
+      if(0 != hContainer)
+      {
+        pTW_ONEVALUE_FIX32 pCap = (pTW_ONEVALUE_FIX32)_DSM_LockMemory(hContainer);
+
+        pCap->ItemType = TWTY_FIX32;
+        // If the Cap has been constrained the default may only be in the m_listFloatsDefault.
+        const float flVal = (MSG_GETDEFAULT == _unMsg)?m_listFloatsDefault[m_nDefault]:m_listFloats[m_nCurrent];
+        
+        pCap->Item = FloatToFIX32(flVal);
+        _DSM_UnlockMemory(hContainer);
+      }
+    }
+    break;
+
+    case TWON_ENUMERATION:
     {
       hContainer = _DSM_Alloc(sizeof(TW_ENUMERATION_FIX32) + (sizeof(TW_FIX32) * (m_listFloats.size()-1))); // -1 because already contains 1 element
 
@@ -115,7 +131,9 @@ TW_HANDLE CTWAINContainerFix32::GetContainer(const TW_UINT16 _unMsg)
         _DSM_UnlockMemory(hContainer);
       }
     }
-    else if(TWON_ARRAY == m_unGetType)
+    break;
+
+    case TWON_ARRAY:
     {
       hContainer = _DSM_Alloc(sizeof(TW_ARRAY_FIX32) + (sizeof(TW_FIX32) * (m_listFloats.size()-1))); // -1 because a TW_ARRAY_FIX32 already includes 1 element
 
@@ -381,7 +399,7 @@ int CTWAINContainerFix32::getIndexForValue(const float _flVal)
 
   for(int x = 0; x < nSize; ++x)
   {
-    if(_flVal == m_listFloats[x]) //@TODO remove float comparison
+    if(_flVal >= m_listFloats[x]-1.0/65536.0 && _flVal <= m_listFloats[x]+1.0/65536.0) //@TODO remove float comparison
     {
       ret = x; 
       break;

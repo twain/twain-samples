@@ -42,6 +42,10 @@
   #include <io.h>
 #endif
 
+#ifdef TWNDS_OS_APPLE
+  #import <QuickTime/QuickTime.h>		// for GraphicsImporter
+#endif
+
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sstream>
@@ -172,7 +176,12 @@ TW_UINT16 CTWAINDS_Base::DS_Entry( pTW_IDENTITY _pOrigin,
           break;
 
           case DAT_IMAGENATIVEXFER:
-            twrc = dat_imagenativexfer(_MSG, (TW_MEMREF*)_pData);
+			if(0 == _pData)
+			{
+			  setConditionCode(TWCC_BADVALUE);
+			  return TWRC_FAILURE;
+			}
+			twrc = dat_imagenativexfer(_MSG, *((TW_HANDLE*)_pData));
           break;
 
           case DAT_IMAGEFILEXFER:
@@ -449,14 +458,14 @@ TW_INT16 CTWAINDS_Base::dat_setupmemxfer(TW_UINT16        _MSG,
 
 //////////////////////////////////////////////////////////////////////////////
 TW_INT16 CTWAINDS_Base::dat_imagenativexfer(TW_UINT16    _MSG,
-                                            TW_MEMREF*   _pData)
+                                            TW_HANDLE&    _hData)
 {
   TW_INT16 twrc = TWRC_SUCCESS;
 
   switch(_MSG)
   {
     case MSG_GET:
-      twrc = transferNativeImage(_pData);
+      twrc = transferNativeImage(_hData);
       break;
 
     default:
@@ -732,6 +741,17 @@ bool CTWAINDS_Base::DoXferReadyEvent()
   m_CurrentState = dsState_XferReady;
   getImageInfo(&m_ImageInfo);
 
+#ifdef TWNDS_OS_APPLE
+  TW_CALLBACK callback = {};
+  callback.Message = MSG_XFERREADY;
+		
+  bRC = TWRC_SUCCESS==_DSM_Entry(getIdentity(),
+						   (pTW_IDENTITY)NULL,
+						   (TW_UINT32)DG_CONTROL,
+						   (TW_UINT16)DAT_CALLBACK,
+						   (TW_UINT16)MSG_INVOKE_CALLBACK,
+						   (TW_MEMREF) &callback);
+#else
   // Tell the DSM that we are ready to send images
   if(TWRC_SUCCESS==_DSM_Entry(getIdentity(),
                               getApp(),
@@ -742,6 +762,7 @@ bool CTWAINDS_Base::DoXferReadyEvent()
   {
     bRC = true;
   }
+#endif	
   return bRC;
 }
 
@@ -755,7 +776,17 @@ bool CTWAINDS_Base::DoCloseDSRequestEvent()
     setConditionCode(TWCC_SEQERROR);
     return bRC;
   }
-
+#ifdef TWNDS_OS_APPLE
+	TW_CALLBACK callback = {};
+	callback.Message = MSG_CLOSEDSREQ;
+	
+	bRC = TWRC_SUCCESS==_DSM_Entry(getIdentity(),
+					   (pTW_IDENTITY)NULL,
+					   (TW_UINT32)DG_CONTROL,
+					   (TW_UINT16)DAT_CALLBACK,
+					   (TW_UINT16)MSG_INVOKE_CALLBACK,
+					   (TW_MEMREF) &callback);
+#else
   // Tell the DSM that DS request to close or disable our user interface
   // most likly user clicks on the “CLOSE” button on GUI
   if(TWRC_SUCCESS==_DSM_Entry(getIdentity(),
@@ -767,6 +798,7 @@ bool CTWAINDS_Base::DoCloseDSRequestEvent()
   {
     bRC = true;
   }
+#endif
   return bRC;
 }
 
@@ -781,7 +813,18 @@ bool CTWAINDS_Base::DoCloseDSOkEvent()
     return bRC;
   }
 
-  // Tell the DSM that we are ready to send images
+#ifdef TWNDS_OS_APPLE
+	TW_CALLBACK callback = {};
+	callback.Message = MSG_CLOSEDSOK;
+	
+	bRC = TWRC_SUCCESS==_DSM_Entry(getIdentity(),
+								   (pTW_IDENTITY)NULL,
+								   (TW_UINT32)DG_CONTROL,
+								   (TW_UINT16)DAT_CALLBACK,
+								   (TW_UINT16)MSG_INVOKE_CALLBACK,
+								   (TW_MEMREF) &callback);
+#else
+	// Tell the DSM that we are ready to send images
   // most likly user clicks on the “OK” button on GUI
   if(TWRC_SUCCESS==_DSM_Entry(getIdentity(),
                               getApp(),
@@ -792,6 +835,7 @@ bool CTWAINDS_Base::DoCloseDSOkEvent()
   {
     bRC = true;
   }
+#endif
   return bRC;
 }
 
@@ -890,8 +934,8 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
             break;
           }
 
-         _pCap->hContainer = _pContainer->GetContainer(_MSG);
-          twrc = TWRC_SUCCESS;
+          _pCap->hContainer = _pContainer->GetContainer(_MSG);
+          twrc = updatePostContainer(_pCap);
           break;
 
         case MSG_SET:
@@ -907,7 +951,11 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
             {
               break;
             }
-
+            twrc = updatePreContainer(_pCap);
+            if(twrc!=TWRC_SUCCESS)
+            {
+              break;
+            }
             BYTE * pContainer = (BYTE*)_DSM_LockMemory(_pCap->hContainer);
             if(pContainer==0)
             {
@@ -1004,7 +1052,13 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(TW_UINT16 _Cap, TW_UINT16  _ConTyp
         if(pCap && pCap->ItemType == TWTY_FRAME)
         {
           InternalFrame frame(pCap->Item, unit, Xres, Yres);
-          if(ConstrainFrameToScanner(frame))
+          bool bConstrained;
+          if(!ConstrainFrameToScanner(frame,bConstrained))
+          {
+            setConditionCode(TWCC_BADVALUE);
+            twrc = TWRC_FAILURE;
+          }
+          else if(bConstrained)
           {
             pCap->Item = frame.AsTW_FRAME(unit, Xres, Yres);
             twrc = TWRC_CHECKSTATUS;
@@ -1035,7 +1089,13 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(TW_UINT16 _Cap, TW_UINT16  _ConTyp
               for(TW_UINT32 x = 0; x < pCap->NumItems; ++x)
               {
                 InternalFrame frame(pCap->ItemList[x], unit, Xres, Yres);
-                if(ConstrainFrameToScanner(frame))
+                bool bConstrained;
+                if(!ConstrainFrameToScanner(frame,bConstrained))
+                {
+                  setConditionCode(TWCC_BADVALUE);
+                  twrc = TWRC_FAILURE;
+                }
+                else if(bConstrained)
                 {
                   pCap->ItemList[x] = frame.AsTW_FRAME(unit, Xres, Yres);
                   twrc = TWRC_CHECKSTATUS;
@@ -1047,22 +1107,6 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(TW_UINT16 _Cap, TW_UINT16  _ConTyp
       }
       break;
     }
-    case CAP_FEEDERENABLED:
-      if(TWON_ONEVALUE == _ConType)
-      {
-        TW_ONEVALUE *pCap = (TW_ONEVALUE*)_pContainer;
-
-        if(!pCap || pCap->ItemType != TWTY_BOOL)// || pCap->Item==0)
-        {
-          twrc = TWRC_FAILURE;
-        }
-      }
-      else
-      {
-        setConditionCode(TWCC_CAPBADOPERATION);
-        twrc = TWRC_FAILURE;
-      }
-      break;
     case ICAP_MAXFRAMES:
       if(TWON_ONEVALUE == _ConType)
       {
@@ -1085,7 +1129,177 @@ TW_INT16 CTWAINDS_Base::validateCapabilitySet(TW_UINT16 _Cap, TW_UINT16  _ConTyp
 
   return twrc;
 }
+//////////////////////////////////////////////////////////////////////////////
+TW_INT16 CTWAINDS_Base::updatePreContainer(pTW_CAPABILITY _pCap)
+{
+  TW_INT16 twrc  = TWRC_SUCCESS;
+  BYTE * pContainer = (BYTE*)_DSM_LockMemory(_pCap->hContainer);
+  if(pContainer==0)
+  {
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
 
+  switch(_pCap->Cap)
+  {
+    case ICAP_XRESOLUTION:
+    case ICAP_YRESOLUTION:
+    {
+      int nUnit = TWUN_INCHES;
+      CTWAINContainerInt    *pnCap = 0;
+      if( 0 == (pnCap = dynamic_cast<CTWAINContainerInt*>(findCapability(ICAP_UNITS)))
+       || false == pnCap->GetCurrent(nUnit))
+      {
+        setConditionCode(TWCC_OPERATIONERROR);
+        twrc = TWRC_FAILURE;
+      }
+      else
+      {
+        if(nUnit==TWUN_PIXELS)
+        {
+          setConditionCode(TWCC_CAPSEQERROR);
+          twrc = TWRC_FAILURE;
+        }
+        else
+        {
+          if(TWON_ONEVALUE == _pCap->ConType)
+          {
+            pTW_ONEVALUE_FIX32 pCap = (pTW_ONEVALUE_FIX32)pContainer;
+
+            if(pCap==0 || pCap->ItemType != TWTY_FIX32)
+            {
+              setConditionCode(TWCC_BADVALUE);
+              twrc = TWRC_FAILURE;
+            }
+            else
+            {
+              pCap->Item = ConvertUnits(pCap->Item,TWUN_INCHES,nUnit,1.0);
+            }
+          }
+          else if(TWON_ENUMERATION == _pCap->ConType)
+          {
+            pTW_ENUMERATION_FIX32 pCap = (pTW_ENUMERATION_FIX32)pContainer;
+            if(pCap==0 || pCap->ItemType != TWTY_FIX32)
+            {
+              setConditionCode(TWCC_BADVALUE);
+              twrc = TWRC_FAILURE;
+            }
+            else
+            {
+              for(TW_UINT32 x = 0; x < pCap->NumItems; ++x)
+              {
+                pCap->ItemList[x] = ConvertUnits(pCap->ItemList[x],TWUN_INCHES,nUnit,1.0);
+              }
+            }
+          }
+        }
+      }
+    }
+    break;
+  }
+  _DSM_UnlockMemory(_pCap->hContainer);
+
+  return twrc;
+}
+//////////////////////////////////////////////////////////////////////////////
+TW_INT16 CTWAINDS_Base::updatePostContainer(pTW_CAPABILITY _pCap)
+{
+  TW_INT16 twrc  = TWRC_SUCCESS;
+  BYTE * pContainer = (BYTE*)_DSM_LockMemory(_pCap->hContainer);
+  if(pContainer==0)
+  {
+    setConditionCode(TWCC_LOWMEMORY);
+    return TWRC_FAILURE;
+  }
+
+  switch(_pCap->Cap)
+  {
+    case ICAP_XRESOLUTION:
+    case ICAP_YRESOLUTION:
+    {
+      int   nUnit = TWUN_PIXELS;
+      float Xres = 100;
+      float Yres = 100;
+      twrc = getCurrentUnits(nUnit, Xres, Yres);
+      if(_pCap->Cap==ICAP_YRESOLUTION)
+      {
+        Xres = Yres;
+      }
+      if(twrc==TWRC_SUCCESS)
+      {
+        if(TWON_ONEVALUE == _pCap->ConType)
+        {
+          pTW_ONEVALUE_FIX32 pCap = (pTW_ONEVALUE_FIX32)pContainer;
+
+          if(pCap==0 || pCap->ItemType != TWTY_FIX32)
+          {
+            setConditionCode(TWCC_BADVALUE);
+            twrc = TWRC_FAILURE;
+          }
+          else
+          {
+            pCap->Item = ConvertUnits(pCap->Item,nUnit,TWUN_INCHES,Xres);
+          }
+        }
+        else if(TWON_ENUMERATION == _pCap->ConType)
+        {
+          pTW_ENUMERATION_FIX32 pCap = (pTW_ENUMERATION_FIX32)pContainer;
+          if(pCap==0 || pCap->ItemType != TWTY_FIX32)
+          {
+            setConditionCode(TWCC_BADVALUE);
+            twrc = TWRC_FAILURE;
+          }
+          else
+          {
+            for(TW_UINT32 x = 0; x < pCap->NumItems; ++x)
+            {
+              pCap->ItemList[x] = ConvertUnits(pCap->ItemList[x],nUnit,TWUN_INCHES,Xres);
+            }
+          }
+        }
+      }
+    }
+    break;
+    case ICAP_PHYSICALHEIGHT:
+    case ICAP_PHYSICALWIDTH:
+    {
+      int   nUnit = TWUN_PIXELS;
+      float Xres = 100;
+      float Yres = 100;
+      twrc = getCurrentUnits(nUnit, Xres, Yres);
+      if(_pCap->Cap==ICAP_PHYSICALHEIGHT)
+      {
+        Xres = Yres;
+      }
+      if(twrc==TWRC_SUCCESS)
+      {
+        if(TWON_ONEVALUE == _pCap->ConType)
+        {
+          pTW_ONEVALUE_FIX32 pCap = (pTW_ONEVALUE_FIX32)pContainer;
+
+          if(pCap==0 || pCap->ItemType != TWTY_FIX32)
+          {
+            setConditionCode(TWCC_BADVALUE);
+            twrc = TWRC_FAILURE;
+          }
+          else
+          {
+            pCap->Item = ConvertUnits(pCap->Item,TWUN_INCHES,nUnit,Xres);
+          }
+        }
+        else
+        {
+          setConditionCode(TWCC_OPERATIONERROR);
+          twrc = TWRC_FAILURE;
+        }
+      }
+    }
+    break;
+  }
+  _DSM_UnlockMemory(_pCap->hContainer);
+
+  return twrc;
+}
 //////////////////////////////////////////////////////////////////////////////
 TW_INT16 CTWAINDS_Base::updatePreDependencies(CTWAINContainer* _pContainer)
 {
@@ -1149,7 +1363,8 @@ TW_INT16 CTWAINDS_Base::updatePostDependencies(TW_UINT16 MSG, TW_UINT16 Cap)
         int ss;
         pDepCapSS->GetCurrent(ss);
         InternalFrame frame(ss);
-        ConstrainFrameToScanner(frame);
+        bool bConstrained;
+        ConstrainFrameToScanner(frame,bConstrained);
         pDepCapFrames->Set(frame);
       }        
     }
@@ -1242,9 +1457,9 @@ TW_INT16 CTWAINDS_Base::updatePostDependencies(TW_UINT16 MSG, TW_UINT16 Cap)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-bool CTWAINDS_Base::ConstrainFrameToScanner(InternalFrame& _frame)
+bool CTWAINDS_Base::ConstrainFrameToScanner(InternalFrame& _frame, bool &bConstrained)
 {
-  bool bChanged = false;
+  bConstrained = false;
   int nMaxHValue = 0x7FFFFFFF; //max frame size fit in InternalFrame
   int nMinHValue = 0;
   int nMaxWValue = 0x7FFFFFFF; //max frame size fit in InternalFrame
@@ -1289,53 +1504,63 @@ bool CTWAINDS_Base::ConstrainFrameToScanner(InternalFrame& _frame)
   // Constrain the width
   if(_frame.nLeft < 0)
   {
+    /*
     _frame.nLeft = 0;
-    bChanged = true;
+    bConstrained = true;
+    */
+    return false;
   }
   if(_frame.nRight <= 0 || _frame.nRight > nMaxWValue)
   {
+    /*
     _frame.nRight = nMaxWValue;
-    bChanged = true;
+    bConstrained = true;
+    */
+    return false;
   }
   if(_frame.nLeft >= _frame.nRight)
   {
     _frame.nLeft = 0;
     _frame.nRight = nMaxWValue;
-    bChanged = true;
+    bConstrained = true;
   }
 
   if((_frame.nRight-_frame.nLeft) < nMinWValue)
   {
     _frame.nLeft  = max( 0, _frame.nLeft - (nMinWValue - (_frame.nRight-_frame.nLeft)) );
     _frame.nRight = _frame.nLeft + max(nMinWValue, _frame.nRight-_frame.nLeft);
-    bChanged = true;
+    bConstrained = true;
   }
 
   // Constrain the height
   if(_frame.nTop < 0)
   {
-    _frame.nTop = 0;
-    bChanged = true;
+    /*_frame.nTop = 0;
+    bConstrained = true;*/
+    return false;
   }
   if(_frame.nBottom <= 0 || _frame.nBottom>nMaxHValue)
   {
+    /*
     _frame.nBottom = nMaxHValue;
-    bChanged = true;
+    bConstrained = true;
+    */
+    return false;
   }
   if(_frame.nTop >= _frame.nBottom)
   {
     _frame.nTop = 0;
     _frame.nBottom = nMaxHValue;
-    bChanged = true;
+    bConstrained = true;
   }  
   if(( _frame.nBottom-_frame.nTop)< nMinHValue)
   {
     _frame.nTop  = max( 0, _frame.nTop - (nMinHValue - (_frame.nBottom-_frame.nTop)) );
     _frame.nBottom = _frame.nTop + max(nMinHValue, _frame.nBottom-_frame.nTop);
-    bChanged = true;
+    bConstrained = true;
   }
 
-  return bChanged;
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1656,8 +1881,8 @@ TW_INT16 CTWAINDS_Base::saveImageFileAsBMP()
     return TWRC_FAILURE;
   }
 
-  TW_MEMREF hDIB = 0;
-  if( TWRC_SUCCESS != getDIBImage(&hDIB) )
+  TW_HANDLE hDIB = 0;
+  if( TWRC_SUCCESS != getDIBImage(hDIB) )
   {
     setConditionCode(TWCC_LOWMEMORY);
     return TWRC_FAILURE;
@@ -1692,16 +1917,16 @@ TW_INT16 CTWAINDS_Base::saveImageFileAsBMP()
 }
 
 //////////////////////////////////////////////////////////////////////////////
-TW_INT16 CTWAINDS_Base::getDIBImage(TW_MEMREF* _pImage)
+TW_INT16 CTWAINDS_Base::getDIBImage(TW_HANDLE& _hImage)
 {
-  if(0 == m_hImageData || 0 == _pImage )
+  if( 0 == m_hImageData )
   {
     setConditionCode(TWCC_BADVALUE);
     return TWRC_FAILURE;
   }
 
   TW_INT16 twrc = TWRC_FAILURE;
-  *_pImage = 0;
+  _hImage = 0;
 
   TW_HANDLE       hDIB                = NULL; //create a handle to a bitmap, which we'll allocate
   BYTE           *pSourceBuff         = NULL;
@@ -1833,14 +2058,14 @@ TW_INT16 CTWAINDS_Base::getDIBImage(TW_MEMREF* _pImage)
     }
 
     twrc = TWRC_SUCCESS;
-    *_pImage = hDIB;
+    _hImage = hDIB;
   
   } // try
   catch (WORD wConditionCodeError)
   {
     setConditionCode(wConditionCodeError);
     // in the future we will have logging implemented and the wConditionCodeError will be recorded 
-    *_pImage = 0;
+    _hImage = 0;
   }
 
   // cleanup
@@ -1862,17 +2087,75 @@ TW_INT16 CTWAINDS_Base::getDIBImage(TW_MEMREF* _pImage)
 
   return twrc;
 }
+#ifdef TWNDS_OS_APPLE
+//////////////////////////////////////////////////////////////////////////////
+TW_INT16 CTWAINDS_Base::getPICTImage(TW_HANDLE &_hPICTImage)
+{
+	TW_INT16 twrc = TWRC_FAILURE;	
+	if( 0 == m_hImageData )
+	{
+	  setConditionCode(TWCC_BADVALUE);
+	  return TWRC_FAILURE;
+	}  
+	
+	TW_HANDLE _hTIFFdata;
+	twrc = getTIFFImage(_hTIFFdata);
+	if(twrc!=TWRC_SUCCESS)
+	{
+		return twrc;
+	}
+	
+	twrc = TWRC_FAILURE;
+	setConditionCode(TWCC_BUMMER);
+	
+	Handle    dataRef = nil;
+    OSErr err = PtrToHand( &_hTIFFdata, &dataRef, sizeof(Handle));
+	if(err)
+	{
+	  return twrc;
+	}
+		
+	GraphicsImportComponent gi; 
+	GetGraphicsImporterForDataRef(dataRef, HandleDataHandlerSubType, &gi); 
+
+	if(gi)
+	{
+	  PicHandle ph; 
+
+		if (GraphicsImportGetAsPicture(gi, &ph) == noErr)
+		{
+			// Whew! We now have a PicHandle. Unfortunately, the caller
+			// expects a normal Handle. Copy the data and kill the picture.
+			UInt32	pictSize = GetHandleSize((Handle) ph);
+			Handle	dataHandle = NewHandle(pictSize);
+			
+			if (dataHandle && MemError() == noErr)
+			{
+				BlockMoveData(*ph, *dataHandle, pictSize);
+				_hPICTImage = dataHandle;
+				twrc = TWRC_SUCCESS;
+				setConditionCode(TWCC_SUCCESS);
+			}
+			KillPicture(ph);
+		}
+		
+		CloseComponent(gi);		
+	}
+	_DSM_Free(_hTIFFdata);
+	return twrc;
+}
+#endif
 
 //////////////////////////////////////////////////////////////////////////////
-TW_INT16 CTWAINDS_Base::getTIFFImage(TW_MEMREF* _pTIFFImage)
+TW_INT16 CTWAINDS_Base::getTIFFImage(TW_HANDLE &_hTIFFImage)
 {
-  if(0 == m_hImageData || 0 == _pTIFFImage )
+  if( 0 == m_hImageData )
   {
     setConditionCode(TWCC_BADVALUE);
     return TWRC_FAILURE;
   }  
 
-  *_pTIFFImage = 0;
+  _hTIFFImage = 0;
   BYTE *pImage = (BYTE *)_DSM_LockMemory(m_hImageData);
   if(pImage == NULL)
   {
@@ -1962,10 +2245,11 @@ TW_INT16 CTWAINDS_Base::getTIFFImage(TW_MEMREF* _pTIFFImage)
   delete pTifImg;
   _DSM_UnlockMemory(m_hImageData);
   _DSM_UnlockMemory(hTiff);
-  *_pTIFFImage = hTiff;
+  _hTIFFImage = hTiff;
 
   return TWRC_SUCCESS;
 }
+
 //////////////////////////////////////////////////////////////////////////////
 TW_INT16 CTWAINDS_Base::transferMemoryBuffers(pTW_IMAGEMEMXFER _ImageXfer)
 {
@@ -2013,7 +2297,7 @@ TW_INT16 CTWAINDS_Base::transferMemoryBuffers(pTW_IMAGEMEMXFER _ImageXfer)
   }
   else if(TWMF_HANDLE & _ImageXfer->Memory.Flags)
   {
-    pDestBuff   = (BYTE*)_DSM_LockMemory(_ImageXfer->Memory.TheMem);
+    pDestBuff   = (BYTE*)_DSM_LockMemory((TW_HANDLE)(_ImageXfer->Memory.TheMem));
   }
   if(pDestBuff == NULL)
   {
@@ -2023,7 +2307,7 @@ TW_INT16 CTWAINDS_Base::transferMemoryBuffers(pTW_IMAGEMEMXFER _ImageXfer)
 
   m_CurrentState = dsState_Xferring;
 
-  DWORD nRows = min(_ImageXfer->Memory.Length / nDestBytesPerRow, m_ImageInfo.ImageLength-m_nDestScanLine);
+  DWORD nRows = MIN(_ImageXfer->Memory.Length / nDestBytesPerRow, m_ImageInfo.ImageLength-m_nDestScanLine);
 
   bool bSwitch = true;
   CTWAINContainerInt *pnCap = dynamic_cast<CTWAINContainerInt*>(findCapability(ICAP_BITORDER));
@@ -2095,26 +2379,20 @@ TW_INT16 CTWAINDS_Base::transferMemoryBuffers(pTW_IMAGEMEMXFER _ImageXfer)
 
   if(TWMF_HANDLE & _ImageXfer->Memory.Flags)
   {
-     _DSM_UnlockMemory(_ImageXfer->Memory.TheMem);
+     _DSM_UnlockMemory((TW_HANDLE)(_ImageXfer->Memory.TheMem));
   }
 
   return twrc;
 }
 
 //////////////////////////////////////////////////////////////////////////////
-TW_INT16 CTWAINDS_Base::transferNativeImage(TW_MEMREF* _pData)
+TW_INT16 CTWAINDS_Base::transferNativeImage(TW_HANDLE &_hData)
 {
   TW_INT16 twrc = TWRC_FAILURE;
 
   if( dsState_XferReady != m_CurrentState )
   {
     setConditionCode(TWCC_SEQERROR);
-    return TWRC_FAILURE;
-  }
-  
-  if(0 == _pData)
-  {
-    setConditionCode(TWCC_BADVALUE);
     return TWRC_FAILURE;
   }
 
@@ -2124,16 +2402,20 @@ TW_INT16 CTWAINDS_Base::transferNativeImage(TW_MEMREF* _pData)
   {
     // Native is basicaly an image file transfered by memory
     // Windows is a Device independent BMP
-    // Mac is a PICT - !!!!
+    // Mac has changed from a PICT to a TIFF
     // Linux is a TIFF
-#ifdef TWNDS_OS_LINUX
-    twrc = getTIFFImage(_pData);
+#if defined(TWNDS_OS_LINUX) 
+	twrc = getTIFFImage(_hData);
+#elif defined(TWNDS_OS_APPLE)
+	twrc = getPICTImage(_hData);	  
 #else
-    twrc = getDIBImage(_pData);
+    twrc = getDIBImage(_hData);
 #endif
     if( TWRC_SUCCESS == twrc )
     {
-      twrc = TWRC_XFERDONE;
+#if !defined(TWNDS_OS_APPLE)
+		twrc = TWRC_XFERDONE;
+#endif
       m_CurrentState = dsState_Xferring;
     }
   }

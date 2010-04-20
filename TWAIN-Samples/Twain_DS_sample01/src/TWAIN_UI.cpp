@@ -1,5 +1,5 @@
 /***************************************************************************
-* Copyright © 2007 TWAIN Working Group:  
+* Copyright ï¿½ 2007 TWAIN Working Group:  
 *   Adobe Systems Incorporated, AnyDoc Software Inc., Eastman Kodak Company, 
 *   Fujitsu Computer Products of America, JFL Peripheral Solutions Inc., 
 *   Ricoh Corporation, and Xerox Corporation.
@@ -41,7 +41,7 @@
 #include "TWAIN_UI.h"
 #include <typeinfo>
 
-#ifdef TWNDS_OS_LINUX
+#ifdef TWH_CMP_GNU
   #include <unistd.h>
   #include <sys/stat.h>
   #include <sys/types.h>
@@ -63,7 +63,7 @@ CTWAIN_UI::CTWAIN_UI(CTWAINDS_FreeImage *pDS)
 
   char strProfilesPath[MAX_PATH];
   char strOldPath[MAX_PATH];
-#ifdef TWNDS_OS_LINUX
+#ifdef TWH_CMP_GNU
   getcwd(strOldPath,MAX_PATH);
 
   strcpy(strProfilesPath , getenv ("HOME"));
@@ -95,7 +95,7 @@ CTWAIN_UI::CTWAIN_UI(CTWAINDS_FreeImage *pDS)
   }
 
   // Set current directory to profiles directory 
-#ifdef TWNDS_OS_LINUX
+#ifdef TWH_CMP_GNU
   if(chdir(strProfilesPath))
 #elif defined(TWNDS_OS_WIN)
   if(!SetCurrentDirectory(strProfilesPath))
@@ -117,7 +117,7 @@ CTWAIN_UI::CTWAIN_UI(CTWAINDS_FreeImage *pDS)
       SSTRCPY(szTempPath, MAX_PATH, pPath);
       SSTRCAT(szTempPath, MAX_PATH, "/");
 
-#ifdef TWNDS_OS_LINUX
+#ifdef TWH_CMP_GNU
       if(chdir(szTempPath))
 #elif defined(TWNDS_OS_WIN)
       if(!SetCurrentDirectory(szTempPath))
@@ -125,7 +125,7 @@ CTWAIN_UI::CTWAIN_UI(CTWAINDS_FreeImage *pDS)
 
 #endif
       {
-#ifdef TWNDS_OS_LINUX
+#ifdef TWH_CMP_GNU
         if(mkdir(szTempPath,S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH))
 #elif defined(TWNDS_OS_WIN)
         if( !CreateDirectory(szTempPath, NULL) )
@@ -135,7 +135,7 @@ CTWAIN_UI::CTWAIN_UI(CTWAINDS_FreeImage *pDS)
         {
           return;
         }
-#ifdef TWNDS_OS_LINUX
+#ifdef TWH_CMP_GNU
         chmod(szTempPath,S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
         if(chdir(szTempPath))
 #elif defined(TWNDS_OS_WIN)
@@ -153,7 +153,7 @@ CTWAIN_UI::CTWAIN_UI(CTWAINDS_FreeImage *pDS)
 
   m_strProfilesDirectory = strProfilesPath;
 
-#ifdef TWNDS_OS_LINUX
+#ifdef TWH_CMP_GNU
   chdir(strOldPath);
 #elif defined(TWNDS_OS_WIN)
   SetCurrentDirectory(strOldPath);
@@ -308,7 +308,6 @@ float CTWAIN_UI::GetCapValueFloat(const TW_UINT16 _unCap)
 
 bool CTWAIN_UI::SetCurrentFrame(float fTop, float fLeft, float fBottom, float fRight)
 {
-
   TW_CAPABILITY cap;
   cap.Cap = ICAP_FRAMES;
   cap.ConType = TWON_ONEVALUE;
@@ -441,7 +440,7 @@ bool CTWAIN_UI::ResetAllCaps()
   return false;
 }
 
-#ifdef TWNDS_OS_LINUX
+#ifdef TWH_CMP_GNU
 void CTWAIN_UI::TW_GetAllProfiles(lstString& strFileNames)
 {
   strFileNames.clear();

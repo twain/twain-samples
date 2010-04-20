@@ -1,5 +1,5 @@
 /***************************************************************************
-* Copyright © 2007 TWAIN Working Group:  
+* Copyright ï¿½ 2007 TWAIN Working Group:  
 *   Adobe Systems Incorporated, AnyDoc Software Inc., Eastman Kodak Company, 
 *   Fujitsu Computer Products of America, JFL Peripheral Solutions Inc., 
 *   Ricoh Corporation, and Xerox Corporation.
@@ -65,6 +65,11 @@ TW_ENTRYPOINT g_DSM_Entry =
   #include <dlfcn.h>
 #endif
 
+#ifdef TWNDS_OS_APPLE
+//  #include "CarbonCore/MacMemory.h"
+#include <Carbon/Carbon.h>
+#endif
+
 /**
 * This is the same as the main DS_Entry function. Routes traffic
 * to the proper location.
@@ -86,16 +91,25 @@ TW_UINT16 _DSM_Entry( pTW_IDENTITY _pOrigin,
 {
   TW_UINT16 ret = TWRC_FAILURE;
 
-  // With DSM2 we do not need to load the DSM we a
+  // With DSM2 we do not need to load the DSM.  We should have recieved
   // Message with the entry points that we use.
-  // So in windows with DSM1(twain_32.dll) we will
-  // need to first laod the dll then find the entry point
-  // First check to see if you have an entry point
+  // On windows with DSM1(twain_32.dll) we will need to first laod the dll
+  // then find the entry point First check to see if you have an entry point.
+  // On Mac we will use the dynamicaly linked at build time dll.
 
   if(0 == g_DSM_Entry.DSM_Entry)
   {
-    // We do not already have the entry point for regisry callback
-    #ifdef TWH_CMP_MSC
+     // We do not already have the entry point for regisry callback
+     
+#ifdef TWNDS_OS_APPLE
+     // This should only happen if not being called by the DSM2
+     // Other words only on Mac with an older DSM
+     // So we use the old dll
+     g_DSM_Entry.DSM_Entry = DSM_Entry;
+    // ret = DSM_Entry(_pOrigin, _pDest, _DG, _DAT, _MSG, _pData);   
+     
+#elif defined (TWH_CMP_MSC)
+     
       // This should only happen if not being called by the DSM2
       // Other words only on Windows with an older DSM
       // So we load the old dll
@@ -126,20 +140,18 @@ TW_UINT16 _DSM_Entry( pTW_IDENTITY _pOrigin,
         cerr << "Could not load the DSM" << endl;
         return TWRC_FAILURE;
       }
-
-      if(0 == g_DSM_Entry.DSM_Entry)
-      {
-        cerr << "No Entry Point for DSM_Entry" << endl;
-        return TWRC_FAILURE;
-      }
-    #else
-      cerr << "No Entry Point for DSM_Entry" << endl;
-      return TWRC_FAILURE;
-    #endif
+#endif // TWNDS_OS_APPLE & TWH_CMP_MSC
   }
-
+   
+  if(0 == g_DSM_Entry.DSM_Entry)
+  {
+    cerr << "No Entry Point for DSM_Entry" << endl;
+    return TWRC_FAILURE;
+  }
+   
   // If we did not have an enty point before we do now.
-  ret = g_DSM_Entry.DSM_Entry(_pOrigin, _pDest, _DG, _DAT, _MSG, _pData);
+  ret = g_DSM_Entry.DSM_Entry(_pOrigin, _pDest, _DG, _DAT, _MSG, _pData);   
+   
   return ret;
 }
 
@@ -224,6 +236,8 @@ TW_HANDLE _DSM_Alloc(TW_UINT32 _size)
 
 #ifdef TWH_CMP_MSC
   return ::GlobalAlloc(GPTR, _size);
+#elif defined (TWNDS_OS_APPLE)
+  return NewHandle(_size);
 #endif
 
   return 0;
@@ -239,6 +253,8 @@ void _DSM_Free(TW_HANDLE _hMemory)
 
 #ifdef TWH_CMP_MSC
   ::GlobalFree(_hMemory);
+#elif defined (TWNDS_OS_APPLE)
+  DisposeHandle(_hMemory);
 #endif
 
   return;
@@ -254,6 +270,8 @@ TW_MEMREF _DSM_LockMemory(TW_HANDLE _hMemory)
 
 #ifdef TWH_CMP_MSC
   return (TW_MEMREF)::GlobalLock(_hMemory);
+#elif defined (TWNDS_OS_APPLE)
+   return (TW_MEMREF)(*_hMemory);
 #endif
 
   return 0;
@@ -269,6 +287,8 @@ void _DSM_UnlockMemory(TW_HANDLE _hMemory)
 
 #ifdef TWH_CMP_MSC
   ::GlobalUnlock(_hMemory);
+#elif defined (TWNDS_OS_APPLE)
+  // do nothing
 #endif
 
   return;

@@ -53,7 +53,21 @@ CTWAINContainerBool::~CTWAINContainerBool()
 
 TW_UINT16 CTWAINContainerBool::GetGetType(const TW_UINT16 _unMsg)
 {
-  return  (MSG_GET==_unMsg)?(m_bApp2?m_unGetType:TWON_ONEVALUE):TWON_ONEVALUE;
+  switch(_unMsg)
+  {
+    case MSG_GET:
+      return m_bApp2?m_unGetType:TWON_ONEVALUE;
+      break;
+    case MSG_GETCURRENT:
+      return m_unGetCurrentType;
+      break;
+    case MSG_GETDEFAULT:
+      return m_unGetDefaultType;
+      break;
+    default:
+      break;
+  }
+  return TWON_ONEVALUE;
 }
 
 TW_HANDLE CTWAINContainerBool::GetContainer(const TW_UINT16 _unMsg)

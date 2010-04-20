@@ -42,12 +42,16 @@
 CTWAINContainer::CTWAINContainer(const TW_UINT16 _unCapID, 
                                  const TW_UINT16 _unItemType, 
                                  const TW_UINT16 _unGetType, 
-                                 const TW_INT32  _nSupportedQueries /*=TWQC_ALL*/)
+                                 const TW_INT32  _nSupportedQueries, /*=TWQC_ALL*/
+                                 const TW_UINT16 _unGetCurrentType,  /*=TWON_ONEVALUE*/
+                                 const TW_UINT16 _unGetDefaultType) /*=TWON_ONEVALUE*/
 {
   m_unCapID           = _unCapID;
   m_unItemType        = _unItemType;
   m_unGetType         = _unGetType;
   m_nMSG_QUERYSUPPORT = _nSupportedQueries;
+  m_unGetCurrentType = _unGetCurrentType;
+  m_unGetDefaultType = _unGetDefaultType;
 
   m_nCurrent          = -1;
   m_nDefault          = -1;
@@ -69,7 +73,21 @@ TW_UINT16 CTWAINContainer::GetItemType()
 
 TW_UINT16 CTWAINContainer::GetGetType(const TW_UINT16 _unMsg)
 {
-  return  (MSG_GET==_unMsg)?m_unGetType:TWON_ONEVALUE;
+  switch(_unMsg)
+  {
+    case MSG_GET:
+      return m_unGetType;
+      break;
+    case MSG_GETCURRENT:
+      return m_unGetCurrentType;
+      break;
+    case MSG_GETDEFAULT:
+      return m_unGetDefaultType;
+      break;
+    default:
+      break;
+  }
+  return TWON_ONEVALUE;
 }
 
 unsigned int CTWAINContainer::getTWTYSize(TW_UINT16 _TWType)

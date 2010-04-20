@@ -102,8 +102,10 @@ public:
   CTWAINContainer(const TW_UINT16 _unCapID, 
                   const TW_UINT16 _unItemType, 
                   const TW_UINT16 _unGetType, 
-                  const TW_INT32  _nSupportedQueries = TWQC_ALL);
-  virtual ~CTWAINContainer();
+                  const TW_INT32  _nSupportedQueries = TWQC_ALL,
+                  const TW_UINT16 _unGetCurrentType = TWON_ONEVALUE,
+                  const TW_UINT16 _unGetDefaultType = TWON_ONEVALUE);
+virtual ~CTWAINContainer();
 
   /**
   * Return the capability ID.
@@ -194,6 +196,8 @@ protected:
   TW_UINT16 m_unCapID;          /**< Capability ID */
   TW_UINT16 m_unItemType;       /**< Item TWTY_xxxx Type */
   TW_UINT16 m_unGetType;        /**< Prefered Containor TWON_xxxx Type.  Used with MSG_GET */
+  TW_UINT16 m_unGetCurrentType;        /**< Prefered Containor TWON_xxxx Type.  Used with MSG_GETCURRENT */
+  TW_UINT16 m_unGetDefaultType;        /**< Prefered Containor TWON_xxxx Type.  Used with MSG_GETCURRENT */
 
   int       m_nCurrent;         /**< Holds an index of the currently set value.  An Index into the appropriate Vector array. */
   int       m_nDefault;         /**< Holds an index of the default value.  An Index into the appropriate Vector array. */

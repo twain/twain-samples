@@ -1,5 +1,5 @@
 /***************************************************************************
-* Copyright � 2007 TWAIN Working Group:  
+* Copyright © 2007 TWAIN Working Group:  
 *   Adobe Systems Incorporated, AnyDoc Software Inc., Eastman Kodak Company, 
 *   Fujitsu Computer Products of America, JFL Peripheral Solutions Inc., 
 *   Ricoh Corporation, and Xerox Corporation.
@@ -85,12 +85,20 @@ TW_FIX32 FloatToFIX32 (float floater);
 float FIX32ToFloat(const TW_FIX32& _fix32);
 
 
+/* Set the packing: this occurs before any structures are defined */
 #ifdef TWH_CMP_MSC
 #pragma pack (push, before_twain)
 #pragma pack (2)
+#elif defined(TWH_CMP_GNU)
+#pragma pack (push, before_twain)
+#ifdef __APPLE__ 
+//#pragma pack (4)
 #else
-#pragma pack(2)
-#endif // TWH_CMP_MSC
+#pragma pack (2)
+#endif
+#elif defined(TWH_CMP_BORLAND)
+#pragma option -a2
+#endif
 
 // The following structures combinations are implimented and found in the TWAIN specifications
 //              BOOL  INT8  INT16  INT32  UINT8  UINT16  UINT32  STR32  STR64  STR128  STR255  STR1024  UNI512  FIX32  FRAME
@@ -99,6 +107,16 @@ float FIX32ToFloat(const TW_FIX32& _fix32);
 // Enumeration   x           x                    x       x       x                     x                        x      x
 // Range                     x      x             x       x                                                      x      
 
+/**
+ * TW_ONEVALUE that holds a TW_FIX32 item
+ */
+typedef struct {
+	TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_FIX32 */
+#ifdef __APPLE__ 
+	TW_UINT16  Dummy;
+#endif
+	TW_FIX32   Item;                                /**< TW_FIX32 value being passed */
+} TW_ONEVALUE_FIX32, FAR * pTW_ONEVALUE_FIX32;     /**< Pointer to TW_ONEVALUE that holds a TW_FIX32 item */
 
 /**
 * TW_ONEVALUE that holds a TW_STR32 item
@@ -132,20 +150,16 @@ typedef struct {
    TW_STR255  Item;                                /**< TW_STR255 value being passed */
 } TW_ONEVALUE_STR255, FAR * pTW_ONEVALUE_STR255;   /**< Pointer to TW_ONEVALUE that holds a TW_STR255 item */
 
-/**
-* TW_ONEVALUE that holds a TW_FIX32 item
-*/
-typedef struct {
-   TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_FIX32 */
-   TW_FIX32   Item;                                /**< TW_FIX32 value being passed */
-} TW_ONEVALUE_FIX32, FAR * pTW_ONEVALUE_FIX32;     /**< Pointer to TW_ONEVALUE that holds a TW_FIX32 item */
 
 /**
 * TW_ONEVALUE that holds a TW_FRAME item
 */
 typedef struct {
    TW_UINT16  ItemType;                            /**< Assigned TWAIN Type TWTY_FRAME */
-   TW_FRAME   Item;                                /**< TW_FRAME structure being passed */
+#ifdef __APPLE__ 
+	TW_UINT16  Dummy;
+#endif
+	TW_FRAME   Item;                                /**< TW_FRAME structure being passed */
 } TW_ONEVALUE_FRAME, FAR * pTW_ONEVALUE_FRAME;     /**< Pointer to TW_ONEVALUE that holds a TW_FRAME item */
 
 /**
@@ -328,18 +342,32 @@ typedef struct {
 */
 typedef struct {
    TW_UINT16  ItemType;
-   TW_FIX32  MinValue;                             /* Starting value in the range.           */
+#ifdef __APPLE__ 
+	TW_UINT16  Dummy;
+#endif
+	TW_FIX32  MinValue;                             /* Starting value in the range.           */
    TW_FIX32  MaxValue;                             /* Final value in the range.              */
    TW_FIX32  StepSize;                             /* Increment from MinValue to MaxValue.   */
    TW_FIX32  DefaultValue;                         /* Power-up value.                        */
    TW_FIX32  CurrentValue;                         /* The value that is currently in effect. */
 } TW_RANGE_FIX32, FAR * pTW_RANGE_FIX32;           /**< Pointer to TW_RANGE that holds an array TW_FIX32 items */
 
+/* Restore the previous packing alignment: this occurs after all structures are defined */
 #ifdef TWH_CMP_MSC
 #pragma pack (pop, before_twain)
-#else
-#pragma pack() // reset
-#endif // TWH_CMP_MSC
+#elif defined(TWH_CMP_GNU)
+#pragma pack (pop, before_twain) 
+#elif defined(TWH_CMP_BORLAND)
+#pragma option ña.
+//#elif defined(TWH_CMP_XCODE)
+//    #if PRAGMA_STRUCT_ALIGN
+//        #pragma options align=reset
+//    #elif PRAGMA_STRUCT_PACKPUSH
+//        #pragma pack (pop)
+//    #elif PRAGMA_STRUCT_PACK
+//        #pragma pack()
+//    #endif
+#endif
 
 #ifdef TWH_CMP_GNU
 #pragma pack(1)

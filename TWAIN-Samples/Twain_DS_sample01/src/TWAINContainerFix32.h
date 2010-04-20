@@ -61,7 +61,9 @@ public:
   */
   CTWAINContainerFix32(const TW_UINT16 _unCapID, 
                        const TW_UINT16 _unGetType, 
-                       const TW_INT32  _nSupportedQueries = TWQC_ALL);
+                       const TW_INT32  _nSupportedQueries = TWQC_ALL,
+                       const TW_UINT16 _unGetCurrentType = TWON_ONEVALUE,
+                       const TW_UINT16 _unGetDefaultType = TWON_ONEVALUE);
   virtual ~CTWAINContainerFix32();
 
   virtual TW_HANDLE GetContainer(const TW_UINT16 _unMsg);

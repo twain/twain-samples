@@ -1,5 +1,5 @@
 /***************************************************************************
-* Copyright © 2007 TWAIN Working Group:  
+* Copyright ï¿½ 2007 TWAIN Working Group:  
 *   Adobe Systems Incorporated, AnyDoc Software Inc., Eastman Kodak Company, 
 *   Fujitsu Computer Products of America, JFL Peripheral Solutions Inc., 
 *   Ricoh Corporation, and Xerox Corporation.
@@ -48,17 +48,26 @@
 #include <fcntl.h>
 #ifdef TWH_CMP_MSC
 #include <io.h>
+#elif __APPLE__
+//#include <io.h>
 #else //#ifdef TWH_CMP_MSC
 #include <sys/io.h>
 #endif //#ifdef TWH_CMP_MSC
 
 #ifdef TWNDS_OS_LINUX
-#define kTWAIN_DS_DIR "/usr/local/lib/twain/sample2"
+  #define kTWAIN_DS_DIR "/usr/local/lib/twain/sample2"
 #endif
 
 #include "DSMInterface.h"
 
 using namespace std;
+
+#ifdef TWNDS_OS_APPLE
+  #include "CoreFoundation/CoreFoundation.h"
+  #include "CoreFoundation/CFBundle.h"
+  #include "CoreFoundation/CFURL.h"
+  #include <Carbon/Carbon.h>
+#endif
 
 /**
 * Environment vars to get the Xfer Count.  Create this enviroment Varable on your system to simulate the 
@@ -86,15 +95,17 @@ CScanner_FreeImage::CScanner_FreeImage() :
   m_nScanLine(0),
   m_bReadOnly(false),
   m_nDestBytesPerRow(0),
+  m_nRowOffset(0),
   m_nDocCount(0),
   m_nSourceWidth(0),
   m_nSourceHeight(0)
 {
   memset(m_szSourceImagePath, 0, PATH_MAX);
 
-  char szTWAIN_DS_DIR[PATH_MAX];
+
 
 #ifdef TWH_CMP_MSC
+  char szTWAIN_DS_DIR[PATH_MAX];
   GetModuleFileName(g_hinstance, szTWAIN_DS_DIR, PATH_MAX);
   // strip filename from path
   size_t x = strlen(szTWAIN_DS_DIR);
@@ -107,12 +118,28 @@ CScanner_FreeImage::CScanner_FreeImage() :
 	  }
 	  --x;
   }
+  SSNPRINTF(m_szSourceImagePath, sizeof(m_szSourceImagePath), PATH_MAX, "%s%cTWAIN_logo.png", szTWAIN_DS_DIR, PATH_SEPERATOR);
+#elif defined(TWNDS_OS_APPLE)	
+  CFURLRef		fileURL = NULL;
+  CFBundleRef		bundle;
+		
+  // find the sample.pict in our bundle...
+  bundle = CFBundleGetBundleWithIdentifier ( CFSTR( "com.yourcompany.TWAINDS-Mac" ) );
+  fileURL = CFBundleCopyResourceURL(bundle, CFSTR("TWAIN_logo"), CFSTR("png"), NULL);
+  if (fileURL)
+  {	
+    FSRef 				fsRef;
+	if ( CFURLGetFSRef(fileURL, &fsRef) )
+	{
+	  FSRefMakePath(&fsRef, (UInt8*)m_szSourceImagePath, PATH_MAX);
+	}
+	CFRelease(fileURL);
+  }
 #else
-  // In non-windows, kTWAIN_DS_DIR is set on the compiler command line
-  strncpy(szTWAIN_DS_DIR, kTWAIN_DS_DIR, PATH_MAX);
+  // In Linux, kTWAIN_DS_DIR is set on the compiler command line
+  SSNPRINTF(m_szSourceImagePath, sizeof(m_szSourceImagePath), PATH_MAX, "%s%cTWAIN_logo.png", kTWAIN_DS_DIR, PATH_SEPERATOR);
 #endif
 
-  SSNPRINTF(m_szSourceImagePath, sizeof(m_szSourceImagePath), PATH_MAX, "%s%cTWAIN_logo.png", szTWAIN_DS_DIR, PATH_SEPERATOR);
 
   // set default caps
   resetScanner();
@@ -143,13 +170,16 @@ bool CScanner_FreeImage::resetScanner()
 
   m_nScanLine        = 0;
   m_nDestBytesPerRow = 0;
+  m_nRowOffset       = 0;
 
   m_nDocCount     = m_nMaxDocCount = getDocumentCount();// Reloaded the scanner with paper
   m_nPixelType    = TWPT_RGB;
   m_nPaperSource  = SFI_PAPERSOURCE_ADF;
   m_bDuplex       = false;
-  m_nWidth        = 0;
-  m_nHeight       = 0;
+  m_nRight        = 0;
+  m_nBottom       = 0;
+  m_nLeft         = 0;
+  m_nTop          = 0;
   m_fXResolution  = 200.0;
   m_fYResolution  = 200.0;
 
@@ -174,8 +204,10 @@ void CScanner_FreeImage::setSetting(SFreeImage settings)
   m_nPaperSource = settings.m_nPaperSource;
   m_bDuplex      = settings.m_bDuplex;
   m_nPixelType   = settings.m_nPixelType;
-  m_nWidth       = settings.m_nWidth;
-  m_nHeight      = settings.m_nHeight;
+  m_nRight       = settings.m_nRight;
+  m_nBottom      = settings.m_nBottom;
+  m_nLeft        = settings.m_nLeft;
+  m_nTop         = settings.m_nTop;
   m_fXResolution = settings.m_fXResolution;
   m_fYResolution = settings.m_fYResolution;
   m_fGamma       = settings.m_fGamma;
@@ -278,10 +310,12 @@ bool CScanner_FreeImage::preScanPrep()
     m_pDIB = pDib;
   }
 
-  if(m_nWidth <= 0 || m_nHeight <= 0)
+  if(m_nRight <= 0 || m_nBottom <= 0)
   {
-    m_nWidth  = m_nSourceWidth  = FreeImage_GetWidth(m_pDIB);
-    m_nHeight = m_nSourceHeight = FreeImage_GetHeight(m_pDIB);
+    m_nRight  = m_nSourceWidth  = FreeImage_GetWidth(m_pDIB);
+    m_nBottom = m_nSourceHeight = FreeImage_GetHeight(m_pDIB);
+    m_nLeft = 0;
+    m_nTop = 0;
   }
   else
   {
@@ -329,21 +363,24 @@ bool CScanner_FreeImage::preScanPrep()
   switch(m_nPixelType)
   {
     case TWPT_BW:
-      m_nDestBytesPerRow = BYTES_PERLINE(m_nWidth, 1);
+      m_nDestBytesPerRow = BYTES_PERLINE(m_nRight-m_nLeft, 1);
+      m_nRowOffset = BYTES_PERLINE(m_nLeft, 1);
       break;
 
     case TWPT_GRAY:
-      m_nDestBytesPerRow = BYTES_PERLINE(m_nWidth, 8);
+      m_nDestBytesPerRow = BYTES_PERLINE(m_nRight-m_nLeft, 8);
+      m_nRowOffset = BYTES_PERLINE(m_nLeft, 8);
       break;
 
     case TWPT_RGB:
-      m_nDestBytesPerRow = BYTES_PERLINE(m_nWidth, 24);
+      m_nDestBytesPerRow = BYTES_PERLINE(m_nRight-m_nLeft, 24);
+      m_nRowOffset = BYTES_PERLINE(m_nLeft, 24);
       break;
   }
 
   // setup some convenience vars because they are used during 
   // every strip request
-  m_nScanLine       = 0;
+  m_nScanLine       = m_nTop;
 
   return true;
 }
@@ -367,7 +404,7 @@ bool CScanner_FreeImage::getScanStrip(BYTE *pTransferBuffer, DWORD dwRead, DWORD
   WORD    nRow      = 0;
   WORD    nMaxRows  = (WORD)(dwRead / m_nDestBytesPerRow); //number of rows to be transfered during this call (function of buffer size and line size)
 
-  if( m_nScanLine < MIN(m_nSourceHeight, m_nHeight) )
+  if( m_nScanLine < MIN(m_nSourceHeight, m_nBottom) )
   {
     //fill the buffer line by line to take care of alignment differences
     for(nRow = 0; nRow<nMaxRows; nRow++)
@@ -375,7 +412,7 @@ bool CScanner_FreeImage::getScanStrip(BYTE *pTransferBuffer, DWORD dwRead, DWORD
       //get the next scan line position and copy it
       pBits = (BYTE*)FreeImage_GetScanLine(m_pDIB, m_nSourceHeight-m_nScanLine-1);
 
-      memcpy( pTransferBuffer, pBits, MIN(m_nDestBytesPerRow, FreeImage_GetLine(m_pDIB)) );
+      memcpy( pTransferBuffer, pBits+m_nRowOffset, MIN(m_nDestBytesPerRow, FreeImage_GetLine(m_pDIB)) );
 
       // Check to see if the result image width is wider than what we have.
       // If it is wider fill it in with 0es
@@ -395,7 +432,7 @@ bool CScanner_FreeImage::getScanStrip(BYTE *pTransferBuffer, DWORD dwRead, DWORD
 
       // check for finished scan
       if( m_nScanLine >= m_nSourceHeight ||
-          m_nScanLine >= m_nHeight )
+          m_nScanLine >= m_nBottom )
       {
         //we are done early
         break;
@@ -405,7 +442,7 @@ bool CScanner_FreeImage::getScanStrip(BYTE *pTransferBuffer, DWORD dwRead, DWORD
 
   // Check to see if the result image length is longer than we have.
   // If it is longer fill it in with 0es
-  if(m_nHeight > m_nScanLine )
+  if(m_nBottom > m_nScanLine )
   {
     nMaxRows  = (WORD)((dwRead-dwReceived) / m_nDestBytesPerRow);
     memset( pTransferBuffer, 0, m_nDestBytesPerRow * nMaxRows );

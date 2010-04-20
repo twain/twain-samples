@@ -277,8 +277,10 @@ bool operator== (const InternalFrame& _frame1, const InternalFrame& _frame2)
 
 CTWAINContainerFrame::CTWAINContainerFrame(const TW_UINT16 _unCapID, 
                                            const TW_UINT16 _unGetType, 
-                                           const TW_INT32  _nSupportedQueries /*=TWQC_ALL*/) 
-  : CTWAINContainer(_unCapID, TWTY_FRAME, _unGetType, _nSupportedQueries)
+                                           const TW_INT32  _nSupportedQueries/* = TWQC_ALL*/,
+                                           const TW_UINT16 _unGetCurrentType/* = TWON_ONEVALUE*/,
+                                           const TW_UINT16 _unGetDefaultType/* = TWON_ONEVALUE*/)
+  : CTWAINContainer(_unCapID, TWTY_FRAME, _unGetType, _nSupportedQueries,_unGetCurrentType,_unGetDefaultType)
 {
   m_Unit = TWUN_PIXELS;
   m_Xres = 100;
@@ -292,28 +294,42 @@ CTWAINContainerFrame::~CTWAINContainerFrame()
 TW_HANDLE CTWAINContainerFrame::GetContainer(const TW_UINT16 _unMsg)
 {
   TW_HANDLE hContainer = 0;
-
-  if((TWON_ONEVALUE == m_unGetType) ||
-     (MSG_GETCURRENT == _unMsg) ||
-     (MSG_GETDEFAULT == _unMsg))
+  TW_UINT16 unGetType=TWON_ONEVALUE;
+  switch(_unMsg)
   {
-    hContainer = _DSM_Alloc(sizeof(TW_ONEVALUE_FRAME));
-
-    if(0 != hContainer)
-    {
-      pTW_ONEVALUE_FRAME pCap = (pTW_ONEVALUE_FRAME)_DSM_LockMemory(hContainer);
-      // If the Cap has been constrained the default may only be in the defaultlist.
-      InternalFrame frame = (MSG_GETDEFAULT == _unMsg)?m_listFramesDefault[m_nDefault]:m_listFrames[m_nCurrent];
-
-      pCap->Item = frame.AsTW_FRAME(m_Unit, m_Xres, m_Yres);
-      pCap->ItemType = m_unItemType;
-
-      _DSM_UnlockMemory(hContainer);
-    }
+    case MSG_GET:
+      unGetType = m_unGetType;
+      break;
+    case MSG_GETCURRENT:
+      unGetType = m_unGetCurrentType;
+      break;
+    case MSG_GETDEFAULT:
+      unGetType = m_unGetDefaultType;
+      break;
   }
-  else if(MSG_GET == _unMsg)
+
+  switch(unGetType)
   {
-    if(TWON_ENUMERATION == m_unGetType)
+    default:
+    case TWON_ONEVALUE:
+    {
+      hContainer = _DSM_Alloc(sizeof(TW_ONEVALUE_FRAME));
+
+      if(0 != hContainer)
+      {
+        pTW_ONEVALUE_FRAME pCap = (pTW_ONEVALUE_FRAME)_DSM_LockMemory(hContainer);
+        // If the Cap has been constrained the default may only be in the defaultlist.
+        InternalFrame frame = (MSG_GETDEFAULT == _unMsg)?m_listFramesDefault[m_nDefault]:m_listFrames[m_nCurrent];
+
+        pCap->Item = frame.AsTW_FRAME(m_Unit, m_Xres, m_Yres);
+        pCap->ItemType = m_unItemType;
+
+        _DSM_UnlockMemory(hContainer);
+      }
+    }
+    break;
+
+    case TWON_ENUMERATION:
     {
       hContainer = _DSM_Alloc(sizeof(TW_ENUMERATION_FRAME) + (sizeof(TW_FRAME) * (m_listFrames.size()-1))); // -1 because already contains 1 element
 
@@ -352,7 +368,9 @@ TW_HANDLE CTWAINContainerFrame::GetContainer(const TW_UINT16 _unMsg)
         _DSM_UnlockMemory(hContainer);
       }
     }
-    else if(TWON_ARRAY == m_unGetType)
+    break;
+
+    case TWON_ARRAY:
     {
       hContainer = _DSM_Alloc(sizeof(TW_ARRAY_FRAME) + (sizeof(TW_FRAME) * (m_listFrames.size()-1))); // -1 because a TW_ARRAY_FIX32 already includes 1 element
 
@@ -370,7 +388,7 @@ TW_HANDLE CTWAINContainerFrame::GetContainer(const TW_UINT16 _unMsg)
         _DSM_UnlockMemory(hContainer);
       }
     }
-  }
+  }// switch(unGetType)
 
   return hContainer;
 }
