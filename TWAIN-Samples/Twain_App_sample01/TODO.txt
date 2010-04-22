@@ -2,6 +2,7 @@ April 22, 2010 JFL Peripheral Solutions jimw@jflinc.com
 ===============================
 
 BASE Class - TwainApp
+
 - extend capability negotiations
   -  Add set_CapabilityArray for TW_FIX32
   -  Add set_CapabilityArray for TW_STRxxx
@@ -25,6 +26,7 @@ BASE Class - TwainApp
 
 
 MFC Sample Application
+
 - Check CAP_ENABLEDSUIONLY before enabling the button for Showing the DS with UI Only.
 
 - Add dialogs to set Current when MSG_GET returns OneValue, Range, and Arrays
@@ -41,4 +43,4 @@ MFC Sample Application
 
 - Add controls for setting and displaying DAT_FILESYSTEM
 
-- Add control for displaying the last or curent status.
+- Add control for displaying the last or current status.
