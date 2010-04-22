@@ -1,21 +1,5 @@
-December 10, 2007 JFL Peripheral Solutions jimw@jflinc.com 
+April 22, 2010 JFL Peripheral Solutions jimw@jflinc.com 
 ===============================
-
-1.5 compliancy requires adding
-DG_CONTROL / DAT_USERINTERFACE / MSG_DISABLEDS (need to add UI implementation)
-DG_CONTROL / DAT_USERINTERFACE / MSG_ENABLEDS (need to add UI implementation)
-DG_CONTROL / DAT_EVENT / MSG_PROCESSEVENT (need to add UI hook).
-DG_IMAGE / DAT_IMAGENATIVEXFER / MSG_GET (needs to implement TIFF memory transfer for Linux only)
-
-1.9 compliancy requires
-DG_CONTROL / DAT_USERINTERFACE / MSG_ENABDSUIONLY
-DG_CONTROL / DAT_CUSTOMDATA / MSG_GET
-DG_CONTROL / DAT_CUSTOMDATA / MSG_SET
-
-Containers:
- - TWTY_STRnnn not implemented.  Add TWAINContainerString container class.
- 
- - TW_RANGE not implemented.  Add TW_RANGE handling
 
 Base class:
  - Create a mechanism for handling multiple dependent capabilities efficiently.
@@ -34,13 +18,4 @@ functions to determine if migration is possible.
 
 
 For UI separation / Implementation:
- - Need to be able to drop in a text UI or QT GUI with minimal effort
- - It would be nice if _both_ text and QT GUI’s could be supported at the same time
- - Verify that the Linux UI is separated just as equally
- - How will the DS react when it does not have a UI present?
- - Create a QT UI
- - Create a text based UI
  - Create Windows Form UI
- - There are individual  function in the DS that will be called to show and destroy the UI
- - Passed a handle to the CTwainDS class
- - Use DisplayTWAINGUI (TW_USERINTERFACE &twUI), and DestroyTWAINGUI();
