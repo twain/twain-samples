@@ -1,4 +1,4 @@
-November 27, 2009 JFL Peripheral Solutions jimw@jflinc.com 
+April 22, 2010 JFL Peripheral Solutions jimw@jflinc.com 
 ===============================
 
 BASE Class - TwainApp
@@ -9,7 +9,7 @@ BASE Class - TwainApp
   -  Add set_CapabilityRange for TW_INTxxx
   -  Add set_CapabilityRange for TW_FIX32
 
-- Better handling of errro, warning, and status messages with condition codes
+- Better handling of error, warning, and status messages with condition codes
   -  printError used throughout base class retrieves the last condition code and discards it
   -  make printError virtual so derived classes can display the message plus have access to the condition code.
 
@@ -20,6 +20,8 @@ BASE Class - TwainApp
 - Support DAT_IMAGELAYOUT
 
 - Support DAT_DEVICEEVENT
+
+- Support DAT_FILESYSTEM
 
 
 MFC Sample Application
@@ -36,5 +38,7 @@ MFC Sample Application
 - Add controls for setting and display info for DAT_IMAGELAYOUT
 
 - Add controls for setting and displaying DAT_DEVICEEVENTs
+
+- Add controls for setting and displaying DAT_FILESYSTEM
 
 - Add control for displaying the last or curent status.
