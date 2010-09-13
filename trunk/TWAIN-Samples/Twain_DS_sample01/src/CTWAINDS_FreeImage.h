@@ -157,9 +157,10 @@ public:
   /**
   * Enable the Data Source in setup mode.
   * Called when a DG_CONTROL / DAT_USERINTERFACE / MSG_ENABLEDS op is sent.
+  * @param[in] _pData a pointer to a TW_USERINTERFACE structure.
   * @return a valid TWRC_xxxx return code.
   */
-  TW_INT16 enableDSOnly();
+  TW_INT16 enableDSOnly(pTW_USERINTERFACE _pData);
 
   /**
   * Called by the base class when the data source is disabled.

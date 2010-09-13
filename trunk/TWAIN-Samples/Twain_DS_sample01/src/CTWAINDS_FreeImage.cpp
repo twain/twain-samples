@@ -1060,7 +1060,7 @@ TW_INT16 CTWAINDS_FreeImage::enableDS(pTW_USERINTERFACE _pData)
   return TWRC_SUCCESS;
 }
 //////////////////////////////////////////////////////////////////////////////
-TW_INT16 CTWAINDS_FreeImage::enableDSOnly()
+TW_INT16 CTWAINDS_FreeImage::enableDSOnly(pTW_USERINTERFACE _pData)
 {
   if( dsState_Open != m_CurrentState )
   {
@@ -1069,12 +1069,7 @@ TW_INT16 CTWAINDS_FreeImage::enableDSOnly()
   }
   m_CurrentState = dsState_Enabled;
 
-  TW_USERINTERFACE Data;
-  memset(&Data,0,sizeof(TW_USERINTERFACE));
-  Data.ShowUI = 1;
-
-
-  if(m_pGUI->DisplayTWAINGUI(Data,true,false)!=TWRC_SUCCESS)
+  if(m_pGUI->DisplayTWAINGUI(*_pData,true,false)!=TWRC_SUCCESS)
   {
     // A user interface is not supported as of right now because we are
     // in text mode.
@@ -1354,7 +1349,6 @@ TW_INT16 CTWAINDS_FreeImage::endXfer(pTW_PENDINGXFERS _pXfers)
   *_pXfers = m_Xfers;
 	if(0 != m_Xfers.Count)
 	{
-		DoXferReadyEvent();
 		m_CurrentState = dsState_XferReady;
 	}
   return twrc;

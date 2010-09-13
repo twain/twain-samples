@@ -383,7 +383,7 @@ TW_INT16 CTWAINDS_Base::dat_userinterface(TW_UINT16         _MSG,
       break;
 
     case MSG_ENABLEDSUIONLY:
-      twrc = enableDSOnly();
+      twrc = enableDSOnly(_pData);
       break;
 
     case MSG_DISABLEDS:
