@@ -10,13 +10,43 @@
   #include "stdafx.h"
 #endif
 
-#include <afx.h>
+#include <windows.h>
 #include <tchar.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <Softpub.h>
 #include <wincrypt.h>
 #include <wintrust.h>
+
+void OutputDebugStringFmt2(LPCTSTR lpOutputString, ...)
+{
+  //setup the variable argument list
+  va_list args;
+  va_start(args, lpOutputString);
+  int nCount = _vsctprintf(lpOutputString, args ) + 1;
+
+  //allocate the fromatted string
+  TCHAR *pszFormatted = new TCHAR[nCount];
+  if(pszFormatted)
+  {  
+    //format the string
+    _vstprintf_s(pszFormatted, nCount, lpOutputString, args);
+    //copy to the output buffer
+    OutputDebugString(pszFormatted);
+    //cleanup local pointers
+    delete [] pszFormatted;
+    pszFormatted = NULL;
+  }
+  return;
+}
+
+#ifndef TRACE
+#ifdef _DEBUG
+#define TRACE OutputDebugStringFmt2
+#else //#ifdef _DEBUG
+#define TRACE
+#endif //#ifdef _DEBUG
+#endif //#ifndef TRACE
 
 // Link with the Wintrust.lib file.
 #pragma comment (lib, "wintrust")
@@ -122,14 +152,14 @@ BOOL VerifyEmbeddedSignature( LPCWSTR pwszSourceFile )
       // The hash that represents the subject or the publisher was not explicitly trusted 
       // by the admin and the admin policy has disabled user trust. No signature, publisher 
       // or time stamp errors.
-      TRACE( "CRYPT_E_SECURITY_SETTINGS - The hash representing the subject or the "
-             "publisher wasn't explicitly trusted by the admin and admin policy has "
-             "disabled user trust. No signature, publisher or timestamp errors.\n" );
+      TRACE( _T("CRYPT_E_SECURITY_SETTINGS - The hash representing the subject or the ")
+             _T("publisher wasn't explicitly trusted by the admin and admin policy has ")
+             _T("disabled user trust. No signature, publisher or timestamp errors.\n") );
       break;
 
     case CERT_E_UNTRUSTEDROOT:
-      TRACE( "A certificate chain processed, but terminated in a root "
-             "certificate which is not trusted by the trust provider.\n" );
+      TRACE( _T("A certificate chain processed, but terminated in a root ")
+             _T("certificate which is not trusted by the trust provider.\n") );
       break;
 
     default:

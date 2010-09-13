@@ -271,9 +271,10 @@ public:
   /**
   * Enable the Data Source in setup mode.
   * Called when a DG_CONTROL / DAT_USERINTERFACE / MSG_ENABLEDS op is sent.
+  * @param[in] _pData a pointer to a TW_USERINTERFACE structure.
   * @return a valid TWRC_xxxx return code.
   */
-  virtual TW_INT16 enableDSOnly() = 0;
+  virtual TW_INT16 enableDSOnly(pTW_USERINTERFACE _pData) = 0;
 
   /**
   * Disable the Data Source.

@@ -5,7 +5,7 @@
 	Name="TWAINDS_Sample"
 	ProjectGUID="{1E73CADF-90D9-45E9-97E2-CD25E3532DB4}"
 	RootNamespace="TWAINDS_VS2005_mfc32"
-	Keyword="Win32Proj"
+	Keyword="Qt4VSv1.0"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -495,7 +495,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -D_DEBUG -D_WINDOWS -DSTRICT -D_USRDLL -D_WINDLL -D_MBCS  -I&quot;.\.&quot; -I&quot;.\..\.&quot; -I&quot;.\..\src\GeneratedFiles\.&quot; -I&quot;.\..\..\pub\external\include\.&quot; -I&quot;.\..\..\Common\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; &quot;..\src\Qt_About.h&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -506,7 +506,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -D_DEBUG -D_WINDOWS -DSTRICT -D_USRDLL -D_WINDLL -D_MBCS  -I&quot;.\.&quot; -I&quot;.\..\.&quot; -I&quot;.\..\src\GeneratedFiles\.&quot; -I&quot;.\..\..\pub\external\include\.&quot; -I&quot;.\..\..\Common\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; &quot;..\src\Qt_About.h&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -517,7 +517,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DNDEBUG -D_WINDOWS -DSTRICT -D_USRDLL -D_WINDLL -D_MBCS  -I&quot;.\.&quot; -I&quot;.\..\.&quot; -I&quot;.\..\src\GeneratedFiles\.&quot; -I&quot;.\..\..\pub\external\include\.&quot; -I&quot;.\..\..\Common\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; &quot;..\src\Qt_About.h&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -528,7 +528,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DNDEBUG -D_WINDOWS -DSTRICT -D_USRDLL -D_WINDLL -D_MBCS  -I&quot;.\.&quot; -I&quot;.\..\.&quot; -I&quot;.\..\src\GeneratedFiles\.&quot; -I&quot;.\..\..\pub\external\include\.&quot; -I&quot;.\..\..\Common\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; &quot;..\src\Qt_About.h&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -543,7 +543,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -D_DEBUG -D_WINDOWS -DSTRICT -D_USRDLL -D_WINDLL -D_MBCS  -I&quot;.\.&quot; -I&quot;.\..\.&quot; -I&quot;.\..\src\GeneratedFiles\.&quot; -I&quot;.\..\..\pub\external\include\.&quot; -I&quot;.\..\..\Common\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; &quot;..\src\Qt_MainForm.h&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -554,7 +554,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -D_DEBUG -D_WINDOWS -DSTRICT -D_USRDLL -D_WINDLL -D_MBCS  -I&quot;.\.&quot; -I&quot;.\..\.&quot; -I&quot;.\..\src\GeneratedFiles\.&quot; -I&quot;.\..\..\pub\external\include\.&quot; -I&quot;.\..\..\Common\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; &quot;..\src\Qt_MainForm.h&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -565,7 +565,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DNDEBUG -D_WINDOWS -DSTRICT -D_USRDLL -D_WINDLL -D_MBCS  -I&quot;.\.&quot; -I&quot;.\..\.&quot; -I&quot;.\..\src\GeneratedFiles\.&quot; -I&quot;.\..\..\pub\external\include\.&quot; -I&quot;.\..\..\Common\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; &quot;..\src\Qt_MainForm.h&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -576,7 +576,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DNDEBUG -D_WINDOWS -DSTRICT -D_USRDLL -D_WINDLL -D_MBCS  -I&quot;.\.&quot; -I&quot;.\..\.&quot; -I&quot;.\..\src\GeneratedFiles\.&quot; -I&quot;.\..\..\pub\external\include\.&quot; -I&quot;.\..\..\Common\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; &quot;..\src\Qt_MainForm.h&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -591,7 +591,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -D_DEBUG -D_WINDOWS -DSTRICT -D_USRDLL -D_WINDLL -D_MBCS  -I&quot;.\.&quot; -I&quot;.\..\.&quot; -I&quot;.\..\src\GeneratedFiles\.&quot; -I&quot;.\..\..\pub\external\include\.&quot; -I&quot;.\..\..\Common\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; &quot;..\src\Qt_ProfileName.h&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -602,7 +602,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -D_DEBUG -D_WINDOWS -DSTRICT -D_USRDLL -D_WINDLL -D_MBCS  -I&quot;.\.&quot; -I&quot;.\..\.&quot; -I&quot;.\..\src\GeneratedFiles\.&quot; -I&quot;.\..\..\pub\external\include\.&quot; -I&quot;.\..\..\Common\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; &quot;..\src\Qt_ProfileName.h&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -613,7 +613,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DNDEBUG -D_WINDOWS -DSTRICT -D_USRDLL -D_WINDLL -D_MBCS  -I&quot;.\.&quot; -I&quot;.\..\.&quot; -I&quot;.\..\src\GeneratedFiles\.&quot; -I&quot;.\..\..\pub\external\include\.&quot; -I&quot;.\..\..\Common\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; &quot;..\src\Qt_ProfileName.h&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -624,7 +624,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot; -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\.&quot; -I&quot;..\src\GeneratedFiles\.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DNDEBUG -D_WINDOWS -DSTRICT -D_USRDLL -D_WINDLL -D_MBCS  -I&quot;.\.&quot; -I&quot;.\..\.&quot; -I&quot;.\..\src\GeneratedFiles\.&quot; -I&quot;.\..\..\pub\external\include\.&quot; -I&quot;.\..\..\Common\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; &quot;..\src\Qt_ProfileName.h&quot; -o &quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\src\GeneratedFiles\$(PlatformName)\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -885,34 +885,6 @@
 			Name="Generated Files"
 			>
 			<File
-				RelativePath="..\src\GeneratedFiles\x64\Release\moc_Qt_About.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\src\GeneratedFiles\x64\Debug\moc_Qt_About.cpp"
 				>
 				<FileConfiguration
@@ -997,7 +969,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\src\GeneratedFiles\Win32\Release\moc_Qt_MainForm.cpp"
+				RelativePath="..\src\GeneratedFiles\x64\Release\moc_Qt_About.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1016,7 +988,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|x64"
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1093,6 +1065,34 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\GeneratedFiles\Win32\Release\moc_Qt_MainForm.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1240,8 +1240,36 @@
 	</Files>
 	<Globals>
 		<Global
+			Name="MocDir"
+			Value=".\GeneratedFiles\$(ConfigurationName)"
+		/>
+		<Global
+			Name="MocOptions"
+			Value=""
+		/>
+		<Global
+			Name="QtVersion"
+			Value="$(DefaultQtVersion)"
+		/>
+		<Global
+			Name="QtVersion Win32"
+			Value="$(DefaultQtVersion)"
+		/>
+		<Global
+			Name="QtVersion x64"
+			Value="$(DefaultQtVersion)"
+		/>
+		<Global
+			Name="RccDir"
+			Value=".\GeneratedFiles"
+		/>
+		<Global
 			Name="RESOURCE_FILE"
 			Value="TWAINDS_GUI.rc"
+		/>
+		<Global
+			Name="UicDir"
+			Value=".\GeneratedFiles"
 		/>
 	</Globals>
 </VisualStudioProject>

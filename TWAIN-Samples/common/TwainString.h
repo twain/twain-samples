@@ -431,5 +431,38 @@ const char* convertReturnCode_toString(const TW_UINT16 _unItem);
 * @return the equivalent string
 */
 const char* convertConditionCode_toString(const TW_UINT16 _unItem);
+/**
+* converts the TWAIN Message into string form
+* @param[in] _unItem the value
+* @return the equivalent string
+*/
+const char* convertMessage_toString(const TW_UINT16 _unItem);
+/**
+* converts the TWAIN Data Group to string form
+* @param[in] _unItem the value
+* @return the equivalent string
+*/
+const char* convertDataGroup_toString(const TW_UINT16 _unItem);
+/**
+* converts the TWAIN Data Argument Type to string form
+* @param[in] _unItem the value
+* @return the equivalent string
+*/
+const char* convertDataArgType_toString(const TW_UINT16 _unItem);
+/**
+* converts the TWAIN Container Type to string form
+* @param[in] _unItem the value
+* @return the equivalent string
+*/
+const char* convertContainerType_toString(const TW_UINT16 _unItem);
+/**
+* converts the TWAIN QuerySupport value to string form
+* @param[in] _unItem the value
+* @return the equivalent string
+*/
+const char* convertQuerySupport_toString(const TW_UINT32 _unItem);
+const char* convertFileFmt_toExtension(const TW_UINT16 _unItem);
+  
+const char *CapabilityValueToString(TW_UINT16 twCapId, TW_UINT16 twItemType, const void *pValue);
 
 #endif // __TWAINSTRING_H__

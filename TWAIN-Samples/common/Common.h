@@ -152,7 +152,7 @@
 #if (TWNDS_CMP == TWNDS_CMP_VISUALCPP)
   //#include "stdafx.h"
   #define DllExport   __declspec( dllexport )
-  #define LOADLIBRARY(lib) LoadLibrary(lib) 
+  #define LOADLIBRARY(lib) LoadLibraryA(lib) 
   #define LOADFUNCTION(lib, func) GetProcAddress(lib, func)
   #define UNLOADLIBRARY(lib) FreeLibrary(lib)
   #define UNLINK _unlink
