@@ -142,6 +142,7 @@ class TWAIN_App_QT : public QMainWindow, public CTWAINSession
   TW_SETUPFILEXFER m_twSetupFileXfer;
   TW_PENDINGXFERS m_twPendingXfers;
   TW_STATUS m_twStatus;
+  TW_FILESYSTEM m_twFileSystem;
   
   protected slots:
   //void on_<widget name>_<signal name>(<signal parameters>);

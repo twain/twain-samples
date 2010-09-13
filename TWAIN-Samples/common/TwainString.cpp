@@ -6884,3 +6884,46 @@ const char *CapabilityValueToString(TW_UINT16 twCapId, TW_UINT16 twItemType, con
   }
   return strRet;
 }
+
+const char *convertFileType_toString(const TW_INT32 _nItem)
+{
+  const char *strRet = NULL;
+  switch(_nItem)
+  {
+    case TWFY_CAMERA:
+      strRet = "TWFY_CAMERA";
+      break;
+    case TWFY_CAMERATOP:
+      strRet = "TWFY_CAMERATOP";
+      break;
+    case TWFY_CAMERABOTTOM:
+      strRet = "TWFY_CAMERABOTTOM";
+      break;
+    case TWFY_CAMERAPREVIEW:
+      strRet = "TWFY_CAMERAPREVIEW";
+      break;
+    case TWFY_DOMAIN:
+      strRet = "TWFY_DOMAIN";
+      break;
+    case TWFY_HOST:
+      strRet = "TWFY_HOST";
+      break;
+    case TWFY_DIRECTORY:
+      strRet = "TWFY_DIRECTORY";
+      break;
+    case TWFY_IMAGE:
+      strRet = "TWFY_IMAGE";
+      break;
+    case TWFY_UNKNOWN:
+      strRet = "TWFY_UNKNOWN";
+      break;
+    default:
+      {
+        char * buff = nextTempBuffer();
+        SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Un-recognized FileType 0x%04X", _nItem);
+        strRet = buff;
+      }
+      break;
+  }
+  return strRet;
+}

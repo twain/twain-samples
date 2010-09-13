@@ -465,4 +465,5 @@ const char* convertFileFmt_toExtension(const TW_UINT16 _unItem);
   
 const char *CapabilityValueToString(TW_UINT16 twCapId, TW_UINT16 twItemType, const void *pValue);
 
+const char *convertFileType_toString(const TW_INT32 _nItem);
 #endif // __TWAINSTRING_H__

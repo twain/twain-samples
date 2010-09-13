@@ -1779,6 +1779,72 @@ void TWAIN_App_QT::OnFileSystem(TW_UINT16 twMsg)
 {
   switch(twMsg)
   {
+    case MSG_GETINFO:
+      //Allow the user to edit the structure
+      //Execute the command
+      //Trace the result
+      break;
+    case MSG_CHANGEDIRECTORY:
+      //Allow the user to edit the structure
+      //Execute the command
+      //Trace the result
+      break;
+    case MSG_GETFIRSTFILE:
+      //Clear the structure
+      memset(&m_twFileSystem, 0, sizeof(m_twFileSystem));
+      //Execute the command
+      if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_FILESYSTEM, MSG_GETFIRSTFILE, &m_twFileSystem, &m_twSourceIdentity))
+      {
+        //Trace the result
+        TraceFileSystem(m_twFileSystem);
+      }
+      break;
+    case MSG_GETNEXTFILE:
+      //Execute the command
+      if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_FILESYSTEM, MSG_GETNEXTFILE, &m_twFileSystem, &m_twSourceIdentity))
+      {
+        //Trace the result
+        TraceFileSystem(m_twFileSystem);
+      }
+      break;
+    case MSG_GETCLOSE:
+      //Execute the command
+      if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_FILESYSTEM, MSG_GETCLOSE, &m_twFileSystem, &m_twSourceIdentity))
+      {
+        //Trace the result
+        TraceFileSystem(m_twFileSystem);
+      }
+      break;
+    case MSG_CREATEDIRECTORY:
+      //Allow the user to edit the structure
+      //Execute the command
+      //Trace the result
+      break;
+    case MSG_DELETE:
+      //Allow the user to edit the structure
+      //Execute the command
+      //Trace the result
+      break;
+    case MSG_FORMATMEDIA:
+      //Allow the user to edit the structure
+      //Execute the command
+      //Trace the result
+      break;
+    case MSG_RENAME:
+      //Allow the user to edit the structure
+      //Execute the command
+      //Trace the result
+      break;
+    case MSG_COPY:
+      //Allow the user to edit the structure
+      //Execute the command
+      //Trace the result
+      break;
+    case MSG_AUTOMATICCAPTUREDIRECTORY:
+      //Allow the user to edit the structure
+      //Execute the command
+      //Trace the result
+      break;
   }
   return;
 }
@@ -1904,6 +1970,8 @@ void TWAIN_App_QT::TraceDeviceEvent(const TW_DEVICEEVENT &twData)
 
 void TWAIN_App_QT::TraceFileSystem(const TW_FILESYSTEM &twData)
 {
+  TraceMessage("InputName = %s, OutputName = %s, Context = 0x%04X, FileType = %s", 
+    twData.InputName, twData.OutputName, twData.Context, convertFileType_toString(twData.FileType));
   return;
 }
 

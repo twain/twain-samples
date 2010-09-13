@@ -612,18 +612,6 @@
 			SourceControlFiles="false"
 			>
 			<File
-				RelativePath=".\GeneratedFiles\Debug\moc_enumset.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\GeneratedFiles\Release\moc_enumset.cpp"
 				>
 				<FileConfiguration
@@ -636,7 +624,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\GeneratedFiles\Debug\moc_meterdlg.cpp"
+				RelativePath=".\GeneratedFiles\Debug\moc_enumset.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -660,7 +648,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\GeneratedFiles\Debug\moc_setstate.cpp"
+				RelativePath=".\GeneratedFiles\Debug\moc_meterdlg.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -676,6 +664,18 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\GeneratedFiles\Debug\moc_setstate.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
