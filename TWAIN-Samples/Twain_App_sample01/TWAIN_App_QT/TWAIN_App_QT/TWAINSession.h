@@ -168,32 +168,138 @@ class CTWAINSession
   * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
   */
   TW_UINT16 SetCallback();
-
-  TW_UINT16 SetCapabilityOneValue(TW_UINT16 twCapId, const bool &bValue);
-  TW_UINT16 SetCapabilityOneValue(TW_UINT16 twCapId, const TW_INT16 &twVal);
-  TW_UINT16 SetCapabilityOneValue(TW_UINT16 twCapId, const TW_UINT16 &twVal);
-  TW_UINT16 SetCapabilityOneValue(TW_UINT16 twCapId, const TW_UINT32 &twVal);
-  TW_UINT16 SetCapabilityOneValue(TW_UINT16 twCapId, const TW_FIX32 &twVal);
-  TW_UINT16 SetCapabilityOneValue(TW_UINT16 twCapId, const TW_FRAME &twVal);
-  TW_UINT16 SetCapabilityAnyOneValue(TW_CAPABILITY &twCap, const void *pValue);
-
+  /**
+  * Basic method for setting a capability
+  * @param[in] twCap the description of the capability and container to set
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
   TW_UINT16 SetCapability(TW_CAPABILITY &twCap);
-
-
-  TW_UINT16 GetCapabilityOneValue(TW_UINT16 twCapId, bool &bValue, TW_UINT16 twMsg=MSG_GETCURRENT);  
-  TW_UINT16 GetCapabilityOneValue(TW_UINT16 twCapId, TW_INT16 &twValue, TW_UINT16 twMsg=MSG_GETCURRENT);  
-  TW_UINT16 GetCapabilityOneValue(TW_UINT16 twCapId, TW_UINT16 &twValue, TW_UINT16 twMsg=MSG_GETCURRENT);  
-  TW_UINT16 GetCapabilityOneValue(TW_UINT16 twCapId, TW_UINT32 &twValue, TW_UINT16 twMsg=MSG_GETCURRENT);  
-  TW_UINT16 GetCapabilityOneValue(TW_UINT16 twCapId, TW_FIX32 &twValue, TW_UINT16 twMsg=MSG_GETCURRENT);  
-  TW_UINT16 GetCapabilityOneValue(TW_UINT16 twCapId, TW_FRAME &twValue, TW_UINT16 twMsg=MSG_GETCURRENT);  
-  TW_UINT16 GetAnyCapabilityOneValue(TW_CAPABILITY twCap, void *pData, TW_UINT16 twMsg);
-
+  /**
+  * Utility method for getting supported capability values
+  * @param[in] twCapId the id of the capability to get
+  * @param[out] hContainer container resulting from the successful operation
+  * @param[out] twConType type of container resulting from the successful operation
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
   TW_UINT16 GetCapabilitySupported(TW_UINT16 twCapId, TW_HANDLE &hContainer, TW_UINT16 &twConType);
-
+  /**
+  * Basic method for performing any 'get' capability operation
+  * @param[in|out] twCap the description of the capability to get and to house the result
+  * @param[in] twMsg must be one of MSG_GET, MSG_GETCURRENT, MSG_GETDEFAULT, MSG_RESET
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
   TW_UINT16 GetCapability(TW_CAPABILITY &twCap, TW_UINT16 twMsg=MSG_GET);
-
+  /**
+  * Basic method to query what MSG_' operations are supported by a particular capability
+  * @param[in] twCapId the id of the capability to check
+  * @return a combination of TWQS_ flags or 0 if no operations are supported
+  */
   TW_UINT32 QuerySupportCapability(TW_UINT16 twCapId);
-
+  /**
+  * Utility method for setting current capability values when the item type is bool
+  * @param[in] twCapId the id of the capability to set
+  * @param[in] bValue the boolean value to set
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 SetCapabilityOneValue(TW_UINT16 twCapId, const bool &bValue);
+  /**
+  * Utility method for setting current capability values when the item type is TW_INT16
+  * @param[in] twCapId the id of the capability to set
+  * @param[in] twVal the value to set
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 SetCapabilityOneValue(TW_UINT16 twCapId, const TW_INT16 &twVal);
+  /**
+  * Utility method for setting current capability values when the item type is TW_UINT16
+  * @param[in] twCapId the id of the capability to set
+  * @param[in] twVal the value to set
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 SetCapabilityOneValue(TW_UINT16 twCapId, const TW_UINT16 &twVal);
+  /**
+  * Utility method for setting current capability values when the item type is TW_UINT32
+  * @param[in] twCapId the id of the capability to set
+  * @param[in] twVal the value to set
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 SetCapabilityOneValue(TW_UINT16 twCapId, const TW_UINT32 &twVal);
+  /**
+  * Utility method for setting current capability values when the item type is TW_FIX32
+  * @param[in] twCapId the id of the capability to set
+  * @param[in] twVal the value to set
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 SetCapabilityOneValue(TW_UINT16 twCapId, const TW_FIX32 &twVal);
+  /**
+  * Utility method for setting current capability values when the item type is TW_FRAME
+  * @param[in] twCapId the id of the capability to set
+  * @param[in] twVal the value to set
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 SetCapabilityOneValue(TW_UINT16 twCapId, const TW_FRAME &twVal);
+  /**
+  * Utility method for getting current or default capability values when the item type is bool
+  * @param[in] twCapId the id of the capability to get
+  * @param[in] bValue the value to get
+  * @param[in] twMsg must be one of MSG_GETCURRENT, MSG_GETDEFAULT, MSG_RESET
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 GetCapabilityOneValue(TW_UINT16 twCapId, bool &bValue, TW_UINT16 twMsg=MSG_GETCURRENT);  
+  /**
+  * Utility method for getting current or default capability values when the item type is TW_INT16
+  * @param[in] twCapId the id of the capability to get
+  * @param[in] twValue the value to get
+  * @param[in] twMsg must be one of MSG_GETCURRENT, MSG_GETDEFAULT, MSG_RESET
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 GetCapabilityOneValue(TW_UINT16 twCapId, TW_INT16 &twValue, TW_UINT16 twMsg=MSG_GETCURRENT);  
+  /**
+  * Utility method for getting current or default capability values when the item type is TW_UINT16
+  * @param[in] twCapId the id of the capability to get
+  * @param[in] twValue the value to get
+  * @param[in] twMsg must be one of MSG_GETCURRENT, MSG_GETDEFAULT, MSG_RESET
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 GetCapabilityOneValue(TW_UINT16 twCapId, TW_UINT16 &twValue, TW_UINT16 twMsg=MSG_GETCURRENT);  
+  /**
+  * Utility method for getting current or default capability values when the item type is TW_UINT32
+  * @param[in] twCapId the id of the capability to get
+  * @param[in] twValue the value to get
+  * @param[in] twMsg must be one of MSG_GETCURRENT, MSG_GETDEFAULT, MSG_RESET
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 GetCapabilityOneValue(TW_UINT16 twCapId, TW_UINT32 &twValue, TW_UINT16 twMsg=MSG_GETCURRENT);  
+  /**
+  * Utility method for getting current or default capability values when the item type is TW_FIX32
+  * @param[in] twCapId the id of the capability to get
+  * @param[in] twValue the value to get
+  * @param[in] twMsg must be one of MSG_GETCURRENT, MSG_GETDEFAULT, MSG_RESET
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 GetCapabilityOneValue(TW_UINT16 twCapId, TW_FIX32 &twValue, TW_UINT16 twMsg=MSG_GETCURRENT);  
+  /**
+  * Utility method for getting current or default capability values when the item type is TW_FRAME
+  * @param[in] twCapId the id of the capability to get
+  * @param[in] twValue the value to get
+  * @param[in] twMsg must be one of MSG_GETCURRENT, MSG_GETDEFAULT, MSG_RESET
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 GetCapabilityOneValue(TW_UINT16 twCapId, TW_FRAME &twValue, TW_UINT16 twMsg=MSG_GETCURRENT);  
+  /**
+  * General method for setting a capability item of any type
+  * @param[in] twCap structure describing the capabability to set and a pre-allocated TW_ONEVALUE container
+  * @param[in] pValue the value of the type described by the twCap structure to be set
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 SetCapabilityAnyOneValue(TW_CAPABILITY &twCap, const void *pValue);
+  /**
+  * General method for getting a capability item of any type
+  * @param[in] twCap structure describing the capabability to get
+  * @param[out] pData pointer to the value to accept the resulting data
+  * @param[in] twMsg must be one of MSG_GETCURRENT, MSG_GETDEFAULT, MSG_RESET
+  * @return TWRC_SUCCESS if successful, otherwise TWRC_FAILURE, GetLastStatus for details
+  */
+  TW_UINT16 GetAnyCapabilityOneValue(TW_CAPABILITY twCap, void *pData, TW_UINT16 twMsg);
   /**
   * Method to Enable the DataSource with intent to transfer
   * Must be called in State 4
@@ -219,8 +325,7 @@ class CTWAINSession
   */
   TW_UINT16 DisableDS();
   /**
-  * Method called to give DataSource an opportunity to process events, examine the DataSource request queue and act on them
-  * An alternative to this method is calling the GetDSRequest, ClearDSRequest and DoTransfer methods manually
+  * Method that MUST be cranked in Windows by the thread event loop for proper UI keyboard handling and signaling events when callbacks are not used
   * @param twEvent a reference to a structure containing event information to be relayed to the DataSource
   * @return TWRC_DSEVENT if the event was consumed by the DataSource or TWRC_NOTDSEVENT if the event did not belong to the DataSource
   */
@@ -253,14 +358,19 @@ class CTWAINSession
   virtual void OnError(const TW_STATUS &twStatus) = 0;
   /**
   * Optional Implementation specifical handler that is called right before an image transfer begins (state 6)
+  * @param[in] twInfo contains information obtained by DAT_IMAGEINFO/MSG_GET call in State 6
+  * @param[in] twXferMech contains the transfer mode being used
   */
   inline virtual void OnImageBegin(const TW_IMAGEINFO &twInfo, TW_UINT16 twXferMech);
   /**
   * Optional Implementation specifical handler that is called after TWRC_XFERDONE is recieved (state 7)
+  * @param[in] twInfo contains information obtained by DAT_IMAGEINFO/MSG_GET call in State 6 (if UNDEFINEDIMAGESIZE==true then State 7)
+  * @param[in] twXferMech contains the transfer mode being used
   */
   inline virtual void OnImageEnd(const TW_IMAGEINFO &twInfo, TW_UINT16 twXferMech);
   /**
   * Optional Implementation specifical handler that is called after MSG_ENDXFER is called (state 6 or 5)
+  * @param[in] twXfer contains information obtained during DAT_PENDINGXFERS/MSG_ENDXFER operation during State 7
   */
   inline virtual void OnEndXfer(const TW_PENDINGXFERS &twXfer);
   /**
@@ -299,9 +409,15 @@ class CTWAINSession
   */
   inline virtual void PostDSMCall();
   /**
-  * Method used to shutdown the session from any state
+  * Method used to move the session down to the specified state
+  * @param[in] twDesiredState the state requested
+  * @return true if successfully transitioned to the requested state
   */
   bool ReturnToState(TW_UINT16 twDesiredState);
+  /**
+  * Method used to transition to one state lower
+  * @return TWRC_SUCCESS if successful, TWRC_FAILURE on failure, GetLastStatus will contain details about the last executed Triplet
+  */
   TW_UINT16 DownOneState();
 
   /**
@@ -330,21 +446,37 @@ class CTWAINSession
   * @param[in]twMsg the current DS Request
   */
   void SignalDSRequest(TW_UINT16 twMsg);
-
+  /**
+  * Method used to initialize a TW_CAPABILITY structure and allocate a container of the appropriate size
+  * @param[in] twCapId the ID of the capability being initialized
+  * @param[in] twConType TWON_ type of container to use
+  * @param[in] twItemType TWTY_ type of items to be housed in the container
+  * @param[out] twCap reference to the TW_CAPABILITY structure used to house the result
+  * @param[in] twCount optional parameter that specifies the number of items, valid only for TWON_ENUMERATION and TWON_ARRAY containers
+  * @return true if successful
+  */
+  bool FillCapability(TW_UINT16 twCapId, TW_UINT16 twConType, TW_UINT16 twItemType, TW_CAPABILITY &twCap, TW_UINT32 twCount=1);
+  /**
+  * Method to allocate a TWAIN Container that results in a handle
+  * @param[in] twConType TWON_ type of container to use
+  * @param[in] twItemType TWTY_ type of items to be housed in the container
+  * @param[in] twCount optional parameter that specifies the number of items, valid only for TWON_ENUMERATION and TWON_ARRAY containers
+  * @return NULL if un-successful, otherwise a valid handle to a TWAIN Container
+  */
+  TW_HANDLE AllocateContainer(TW_UINT16 twConType, TW_UINT16 twItemType, TW_UINT32 twCount=1);
   /**
   * Global callback for all instances of this class
   * Invokes SignalDSRequest in the appropriate class instance
   * @return TWRC_FAILURE if unable to signal the appropriate class instance
   */
   static TW_UINT16 FAR PASCAL DSMCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData);
+
   static map<TW_UINT32, CTWAINSession *> m_mapInstance; /**< contains all instances of this class mapped by unique identifiers */
   static TW_UINT32 m_uiInstCount; /**< always contains the value of the next 'unique' identifier (has practical unsigned 16 bit integer limits) */
   static int m_nRefCount; /**< current number of instances of this class */
   static CRITICAL_SECTION m_csProtectInstanceMap; /**< critical section used to control access to the class instance map */
+  bool m_bInTWAIN; /**< flag used to detect and prevent DSM re-entrancy */
 
-  bool FillCapability(TW_UINT16 twCapId, TW_UINT16 twConType, TW_UINT16 twItemType, TW_CAPABILITY &twCap, TW_UINT32 twCount=1);
-  TW_HANDLE AllocateContainer(TW_UINT16 twConType, TW_UINT16 twItemType, TW_UINT32 twCount=1);
-  bool m_bInTWAIN;
 };
 
 inline void CTWAINSession::PreDSMCall()
@@ -377,6 +509,9 @@ inline void CTWAINSession::OnEndXfer(const TW_PENDINGXFERS &twXfer)
   return;
 }
 
+/**
+* Class to automatically manage the state of a boolean flag within the scope / existance of the object
+*/
 class CAutoFlag
 {
   public:
@@ -408,6 +543,9 @@ inline CAutoFlag::~CAutoFlag()
   return;
 }
 
+/**
+* Utility class to automatically manage the state of a critical section within the scope / existance of the object
+*/
 class CAutoCriticalSection
 {
   public:
@@ -427,7 +565,7 @@ class CAutoCriticalSection
 inline CAutoCriticalSection::CAutoCriticalSection(CRITICAL_SECTION *pCriticalSection)
   : m_pCriticalSection(pCriticalSection)
 {
-  //set the flag and keep a reference to it
+  //Enter the critical section
   if(m_pCriticalSection)
   {
     EnterCriticalSection(m_pCriticalSection);
@@ -437,7 +575,7 @@ inline CAutoCriticalSection::CAutoCriticalSection(CRITICAL_SECTION *pCriticalSec
 
 inline CAutoCriticalSection::~CAutoCriticalSection()
 {
-  //reset the flag
+  //Leave the critical section
   if(m_pCriticalSection)
   {
     LeaveCriticalSection(m_pCriticalSection);

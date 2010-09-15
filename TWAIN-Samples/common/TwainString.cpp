@@ -5646,6 +5646,9 @@ const char *CapabilityValueToString(TW_UINT16 twCapId, TW_UINT16 twItemType, con
           case TWFF_JP2:
             strRet = "TWFF_JP2";
             break;
+          case TWFF_JPN:
+            strRet = "TWFF_JPN";
+            break;
           case TWFF_JPX:
             strRet = "TWFF_JPX";
             break;
@@ -6885,7 +6888,7 @@ const char *CapabilityValueToString(TW_UINT16 twCapId, TW_UINT16 twItemType, con
   return strRet;
 }
 
-const char *convertFileType_toString(const TW_INT32 _nItem)
+const char *convertFileType_toString(const TW_UINT16 _nItem)
 {
   const char *strRet = NULL;
   switch(_nItem)
@@ -6926,4 +6929,9 @@ const char *convertFileType_toString(const TW_INT32 _nItem)
       break;
   }
   return strRet;
+}
+
+const char *convertFileFormat_toString(const TW_UINT16 _nItem)
+{
+  return CapabilityValueToString(ICAP_IMAGEFILEFORMAT, TWTY_UINT16, &_nItem);
 }

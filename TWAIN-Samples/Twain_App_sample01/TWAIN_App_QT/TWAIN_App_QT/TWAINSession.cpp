@@ -4,6 +4,9 @@
 #pragma message("TODO: Fix")
 #include "..\..\Src\DSMInterface.h"
 
+/**
+* Private utility class for calling Pre and Post DSM calls during DSM_Entry calls
+*/
 class CDSMPrePostCaller
 {
   public:
@@ -33,6 +36,9 @@ inline CDSMPrePostCaller::~CDSMPrePostCaller()
   return;
 }
 
+/**
+* Static instance data for the CTWAINSession class
+*/
 map<TW_UINT32, CTWAINSession *> CTWAINSession::m_mapInstance;
 TW_UINT32 CTWAINSession::m_uiInstCount = 0;
 CRITICAL_SECTION CTWAINSession::m_csProtectInstanceMap;

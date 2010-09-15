@@ -6,6 +6,7 @@
 #include "MeterDlg.h"
 #include "EnumSet.h"
 #include "SetState.h"
+#include "StructureEdit.h"
 
 /**
 * Event handler for relaying events to the TWAIN DS (required for TWAIN versions below 2.2
@@ -119,6 +120,15 @@ TWAIN_App_QT::TWAIN_App_QT(QWidget *parent, Qt::WFlags flags)
     }
   }
 
+  memset(&m_twFileSystem, 0, sizeof(m_twFileSystem));
+  memset(&m_twCustomDSData, 0, sizeof(m_twCustomDSData));
+  memset(&m_twSetupMemXfer, 0, sizeof(m_twSetupMemXfer));
+  memset(&m_twSetupFileXfer, 0, sizeof(m_twSetupFileXfer));
+  memset(&m_twPendingXfers, 0, sizeof(m_twPendingXfers));
+  memset(&m_twStatus, 0, sizeof(m_twStatus));
+  memset(&m_twDeviceEvent, 0, sizeof(m_twDeviceEvent));
+  memset(&m_twImageLayout, 0, sizeof(m_twImageLayout));
+
   //Configure the GUI for startup
   EnableGUIByCurrentState();
 
@@ -150,7 +160,6 @@ void TWAIN_App_QT::EnableGUIByCurrentState()
   //must be in state 2 for these operations 
   ui.btnUnloadDSM->setEnabled( (2==m_uiState)?true:false );
   ui.btnOpenDSM->setEnabled( (2==m_uiState)?true:false );
-  ui.treTriplet->setEnabled( (2<=m_uiState)?true:false );
   ui.btnRecover->setEnabled( (2<=m_uiState)?true:false );
 
   //must be in state 3 for these operations 
@@ -168,6 +177,7 @@ void TWAIN_App_QT::EnableGUIByCurrentState()
   ui.radShowUI->setEnabled( (4==m_uiState)?true:false );
   ui.radUIOnly->setEnabled( (4==m_uiState)?true:false );
   ui.treCapability->setEnabled( (4<=m_uiState)?true:false );
+  ui.treTriplet->setEnabled( (4<=m_uiState)?true:false );
 
   //must be in state 5 for this operation
   ui.btnDisable->setEnabled( (5==m_uiState)?true:false );
@@ -951,17 +961,17 @@ const TW_UINT16 kCONTROL_TABLE[][2] =
   DAT_CUSTOMDSDATA, MSG_GET,
   DAT_CUSTOMDSDATA, MSG_SET,
   DAT_DEVICEEVENT, MSG_GET,
-  DAT_FILESYSTEM, MSG_AUTOMATICCAPTUREDIRECTORY,
   DAT_FILESYSTEM, MSG_CHANGEDIRECTORY,
-  DAT_FILESYSTEM, MSG_CREATEDIRECTORY,
-  DAT_FILESYSTEM, MSG_DELETE,
-  DAT_FILESYSTEM, MSG_FORMATMEDIA,
-  DAT_FILESYSTEM, MSG_GETCLOSE,
   DAT_FILESYSTEM, MSG_GETFIRSTFILE,
-  DAT_FILESYSTEM, MSG_GETINFO,
   DAT_FILESYSTEM, MSG_GETNEXTFILE,
+  DAT_FILESYSTEM, MSG_GETCLOSE,
+  DAT_FILESYSTEM, MSG_GETINFO,
+  DAT_FILESYSTEM, MSG_FORMATMEDIA,
+  DAT_FILESYSTEM, MSG_CREATEDIRECTORY,
   DAT_FILESYSTEM, MSG_RENAME,
+  DAT_FILESYSTEM, MSG_DELETE,
   DAT_FILESYSTEM, MSG_COPY,
+  DAT_FILESYSTEM, MSG_AUTOMATICCAPTUREDIRECTORY,
   DAT_PASSTHRU, MSG_PASSTHRU,
 //  * DAT_CALLBACK omitted / handled by app
 //  DAT_CALLBACK, MSG_REGISTER_CALLBACK,
@@ -1632,7 +1642,7 @@ void TWAIN_App_QT::OnSetupMemXfer(TW_UINT16 twMsg)
     case MSG_GET:
       if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_SETUPMEMXFER, MSG_GET, &m_twSetupMemXfer, &m_twSourceIdentity))
       {
-        TraceSetupMemXfer(m_twSetupMemXfer);
+        TraceStruct(m_twSetupMemXfer);
       }
       break;
   }
@@ -1641,16 +1651,28 @@ void TWAIN_App_QT::OnSetupMemXfer(TW_UINT16 twMsg)
 
 void TWAIN_App_QT::OnSetupFileXfer(TW_UINT16 twMsg)
 {
-  memset(&m_twSetupFileXfer, 0, sizeof(m_twSetupFileXfer));
+  StructureEdit seDialog(this);
   switch(twMsg)
   {
     case MSG_GET:
+      memset(&m_twSetupFileXfer, 0, sizeof(m_twSetupFileXfer));
       if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_GET, &m_twSetupFileXfer, &m_twSourceIdentity))
       {
-        TraceSetupFileXfer(m_twSetupFileXfer);
+        TraceStruct(m_twSetupFileXfer);
       }
       break;
     case MSG_SET:
+      //apply the structure
+      seDialog.SetTWAINStructure(&m_twSetupFileXfer, DAT_SETUPFILEXFER);
+      if(QDialog::Accepted==seDialog.exec())
+      {
+        //Execute the command
+        if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, &m_twSetupFileXfer, &m_twSourceIdentity))
+        {
+          //Trace the result
+          TraceStruct(m_twSetupFileXfer);
+        }
+      }
       break;
   }
   return;
@@ -1664,7 +1686,7 @@ void TWAIN_App_QT::OnStatus(TW_UINT16 twMsg)
     case MSG_GET:
       //just pull the last known status
       GetLastStatus(m_twStatus);
-      TraceStatus(m_twStatus);
+      TraceStruct(m_twStatus);
       break;
   }
   return;
@@ -1697,7 +1719,7 @@ void TWAIN_App_QT::OnCustomDSData(TW_UINT16 twMsg)
             if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_CUSTOMDSDATA, MSG_GET, &m_twCustomDSData, &m_twSourceIdentity))
             {
               //trace the structure for the user
-              TraceCustomDSData(m_twCustomDSData);
+              TraceStruct(m_twCustomDSData);
               //Obtain a pointer to the custom DS Data block
               char *pBuffer = static_cast<char*>(_DSM_LockMemory(m_twCustomDSData.hData));
               if(pBuffer)
@@ -1750,7 +1772,7 @@ void TWAIN_App_QT::OnCustomDSData(TW_UINT16 twMsg)
                 if(-1!=(int)m_twCustomDSData.InfoLength)
                 {
                   //trace the structure for the user
-                  TraceCustomDSData(m_twCustomDSData);
+                  TraceStruct(m_twCustomDSData);
                   DSM_Entry(DG_CONTROL, DAT_CUSTOMDSDATA, MSG_SET, &m_twCustomDSData, &m_twSourceIdentity);
                 }
                 img.close();
@@ -1771,79 +1793,46 @@ void TWAIN_App_QT::OnDeviceEvent(TW_UINT16 twMsg)
 {
   switch(twMsg)
   {
+    case MSG_GET:
+      memset(&m_twDeviceEvent, 0, sizeof(m_twDeviceEvent));
+      if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_DEVICEEVENT, MSG_GET, &m_twDeviceEvent, &m_twSourceIdentity))
+      {
+        TraceStruct(m_twDeviceEvent);
+      }
+      break;
   }
   return;
 }
 
 void TWAIN_App_QT::OnFileSystem(TW_UINT16 twMsg)
 {
+  //Allow the user to edit the structure
+  StructureEdit seDialog(this);
   switch(twMsg)
   {
-    case MSG_GETINFO:
-      //Allow the user to edit the structure
-      //Execute the command
-      //Trace the result
-      break;
-    case MSG_CHANGEDIRECTORY:
-      //Allow the user to edit the structure
-      //Execute the command
-      //Trace the result
-      break;
-    case MSG_GETFIRSTFILE:
-      //Clear the structure
-      memset(&m_twFileSystem, 0, sizeof(m_twFileSystem));
-      //Execute the command
-      if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_FILESYSTEM, MSG_GETFIRSTFILE, &m_twFileSystem, &m_twSourceIdentity))
-      {
-        //Trace the result
-        TraceFileSystem(m_twFileSystem);
-      }
-      break;
-    case MSG_GETNEXTFILE:
-      //Execute the command
-      if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_FILESYSTEM, MSG_GETNEXTFILE, &m_twFileSystem, &m_twSourceIdentity))
-      {
-        //Trace the result
-        TraceFileSystem(m_twFileSystem);
-      }
-      break;
-    case MSG_GETCLOSE:
-      //Execute the command
-      if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_FILESYSTEM, MSG_GETCLOSE, &m_twFileSystem, &m_twSourceIdentity))
-      {
-        //Trace the result
-        TraceFileSystem(m_twFileSystem);
-      }
-      break;
     case MSG_CREATEDIRECTORY:
-      //Allow the user to edit the structure
-      //Execute the command
-      //Trace the result
-      break;
     case MSG_DELETE:
-      //Allow the user to edit the structure
-      //Execute the command
-      //Trace the result
-      break;
     case MSG_FORMATMEDIA:
-      //Allow the user to edit the structure
-      //Execute the command
-      //Trace the result
-      break;
     case MSG_RENAME:
-      //Allow the user to edit the structure
-      //Execute the command
-      //Trace the result
-      break;
     case MSG_COPY:
-      //Allow the user to edit the structure
-      //Execute the command
-      //Trace the result
-      break;
     case MSG_AUTOMATICCAPTUREDIRECTORY:
-      //Allow the user to edit the structure
+    case MSG_CHANGEDIRECTORY:
+    case MSG_GETINFO:
+      //apply the structure
+      seDialog.SetTWAINStructure(&m_twFileSystem, DAT_FILESYSTEM);
+      if(QDialog::Accepted!=seDialog.exec())
+      {
+        break;
+      }
+    case MSG_GETCLOSE:
+    case MSG_GETNEXTFILE:
+    case MSG_GETFIRSTFILE:
       //Execute the command
-      //Trace the result
+      if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_FILESYSTEM, twMsg, &m_twFileSystem, &m_twSourceIdentity))
+      {
+        //Trace the result
+        TraceStruct(m_twFileSystem);
+      }
       break;
   }
   return;
@@ -1867,8 +1856,24 @@ void TWAIN_App_QT::OnStatusUTF8(TW_UINT16 twMsg)
 
 void TWAIN_App_QT::OnImageLayout(TW_UINT16 twMsg)
 {
+  StructureEdit seDialog(this);
   switch(twMsg)
   {
+    case MSG_SET:
+      //apply the structure
+      seDialog.SetTWAINStructure(&m_twImageLayout, DAT_IMAGELAYOUT);
+      if(QDialog::Accepted!=seDialog.exec())
+      {
+        break;
+      }
+    case MSG_GET:
+    case MSG_GETDEFAULT:
+    case MSG_RESET:
+      if(TWRC_SUCCESS==DSM_Entry(DG_IMAGE, DAT_IMAGELAYOUT, twMsg, &m_twImageLayout, &m_twSourceIdentity))
+      {
+        TraceStruct(m_twImageLayout);
+      }
+      break;
   }
   return;
 }
@@ -1929,93 +1934,101 @@ void TWAIN_App_QT::OnICCProfile(TW_UINT16 twMsg)
   return;
 }
 
-void TWAIN_App_QT::TracePendingXfers(const TW_PENDINGXFERS &twData)
+void TWAIN_App_QT::TraceStruct(const TW_PENDINGXFERS &twData)
 {
   return;
 }
 
-void TWAIN_App_QT::TraceSetupMemXfer(const TW_SETUPMEMXFER &twData)
+void TWAIN_App_QT::TraceStruct(const TW_SETUPMEMXFER &twData)
 {
   TraceMessage("MinBufSize = %d, MaxBufSize = %d, Preferred = %d", twData.MinBufSize, twData.MaxBufSize, twData.Preferred);
   return;
 }
 
-void TWAIN_App_QT::TraceSetupFileXfer(const TW_SETUPFILEXFER &twData)
+void TWAIN_App_QT::TraceStruct(const TW_SETUPFILEXFER &twData)
 {
-  TraceMessage("Format = %s, FileName = %s", CapabilityValueToString(ICAP_IMAGEFILEFORMAT, TWTY_UINT16, &twData.Format), twData.FileName);
+  TraceMessage("Format = %s, FileName = \"%s\"", CapabilityValueToString(ICAP_IMAGEFILEFORMAT, TWTY_UINT16, &twData.Format), twData.FileName);
   return;
 }
 
-void TWAIN_App_QT::TraceStatus(const TW_STATUS &twData)
+void TWAIN_App_QT::TraceStruct(const TW_STATUS &twData)
 {
   TraceMessage("ConditionCode = %s, Data = 0x%02X", convertConditionCode_toString(twData.ConditionCode), twData.Data);
   return;
 }
 
-void TWAIN_App_QT::TraceXferGroup(const DWORD &twData)
+void TWAIN_App_QT::TraceStruct(const DWORD &twData)
 {
   return;
 }
 
-void TWAIN_App_QT::TraceCustomDSData(const TW_CUSTOMDSDATA &twData)
+void TWAIN_App_QT::TraceStruct(const TW_CUSTOMDSDATA &twData)
 {
   TraceMessage("InfoLength = %d, hData = 0x%0X", twData.InfoLength, twData.hData);
   return;
 }
 
-void TWAIN_App_QT::TraceDeviceEvent(const TW_DEVICEEVENT &twData)
+void TWAIN_App_QT::TraceStruct(const TW_DEVICEEVENT &twData)
+{
+  TW_UINT16 twEventId = twData.Event;
+  TraceMessage("Event = %s, DeviceName = \"%s\", BatteryMinutes = %d, BatteryPercentage = %d, PowerSupply = %d,",
+    CapabilityValueToString(CAP_DEVICEEVENT, TWTY_UINT16, &twEventId), twData.DeviceName, twData.BatteryMinutes, twData.BatteryPercentage, twData.PowerSupply);
+  TraceMessage("\tXRes = %.2f, YRes = %.2f, FlashUsed2 = %d, AutmaticCapture = %d, TimeBeforeFirstCapture = %d, TimeBetweenCaptures = %d",
+    FIX32ToFloat(twData.XResolution), FIX32ToFloat(twData.YResolution), twData.FlashUsed2, twData.AutomaticCapture, twData.TimeBeforeFirstCapture, twData.TimeBetweenCaptures);
+  return;
+}
+
+void TWAIN_App_QT::TraceStruct(const TW_FILESYSTEM &twData)
+{
+  TraceMessage("InputName = \"%s\", OutputName = \"%s\", Context = 0x%04X, FileType = %s, DeviceGroupMask = %d",
+    twData.InputName, twData.OutputName, twData.Context, convertFileType_toString(twData.FileType), twData.DeviceGroupMask);
+  return;
+}
+
+void TWAIN_App_QT::TraceStruct(const TW_PASSTHRU &twData)
 {
   return;
 }
 
-void TWAIN_App_QT::TraceFileSystem(const TW_FILESYSTEM &twData)
-{
-  TraceMessage("InputName = %s, OutputName = %s, Context = 0x%04X, FileType = %s", 
-    twData.InputName, twData.OutputName, twData.Context, convertFileType_toString(twData.FileType));
-  return;
-}
-
-void TWAIN_App_QT::TracePassThru(const TW_PASSTHRU &twData)
+void TWAIN_App_QT::TraceStruct(const TW_STATUSUTF8 &twData)
 {
   return;
 }
 
-void TWAIN_App_QT::TraceStatusUTF8(const TW_STATUSUTF8 &twData)
+void TWAIN_App_QT::TraceStruct(const TW_IMAGELAYOUT &twData)
+{
+  TraceMessage("Left = %.2f, Top = %.2f, Right = %.2f, Bottom = %.2f, DocumentNumber = %d, PageNumber = %d, FrameNumber = %d",
+    FIX32ToFloat(twData.Frame.Left), FIX32ToFloat(twData.Frame.Top), FIX32ToFloat(twData.Frame.Right), FIX32ToFloat(twData.Frame.Bottom), 
+      twData.DocumentNumber, twData.PageNumber, twData.FrameNumber);
+  return;
+}
+
+void TWAIN_App_QT::TraceStruct(const TW_CIECOLOR &twData)
 {
   return;
 }
 
-void TWAIN_App_QT::TraceImageLayout(const TW_IMAGELAYOUT &twData)
+void TWAIN_App_QT::TraceStruct(const TW_GRAYRESPONSE &twData)
 {
   return;
 }
 
-void TWAIN_App_QT::TraceCIEColor(const TW_CIECOLOR &twData)
+void TWAIN_App_QT::TraceStruct(const TW_RGBRESPONSE &twData)
 {
   return;
 }
 
-void TWAIN_App_QT::TraceGrayReponse(const TW_GRAYRESPONSE &twData)
+void TWAIN_App_QT::TraceStruct(const TW_PALETTE8 &twData)
 {
   return;
 }
 
-void TWAIN_App_QT::TraceRGBResponse(const TW_RGBRESPONSE &twData)
+void TWAIN_App_QT::TraceStruct(const TW_EXTIMAGEINFO &twData)
 {
   return;
 }
 
-void TWAIN_App_QT::TracePalette8(const TW_PALETTE8 &twData)
-{
-  return;
-}
-
-void TWAIN_App_QT::TraceExtImageInfo(const TW_EXTIMAGEINFO &twData)
-{
-  return;
-}
-
-void TWAIN_App_QT::TraceICCProfile(const TW_MEMORY &twData)
+void TWAIN_App_QT::TraceStruct(const TW_MEMORY &twData)
 {
   return;
 }
