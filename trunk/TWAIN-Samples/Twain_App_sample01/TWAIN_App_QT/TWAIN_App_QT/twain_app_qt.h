@@ -109,23 +109,23 @@ class TWAIN_App_QT : public QMainWindow, public CTWAINSession
   void OnExtImageInfo(TW_UINT16 twMsg);
   void OnICCProfile(TW_UINT16 twMsg);
 
-  void TracePendingXfers(const TW_PENDINGXFERS &twData);
-  void TraceSetupMemXfer(const TW_SETUPMEMXFER &twData);
-  void TraceSetupFileXfer(const TW_SETUPFILEXFER &twData);
-  void TraceStatus(const TW_STATUS &twData);
-  void TraceXferGroup(const DWORD &twData);
-  void TraceCustomDSData(const TW_CUSTOMDSDATA &twData);
-  void TraceDeviceEvent(const TW_DEVICEEVENT &twData);
-  void TraceFileSystem(const TW_FILESYSTEM &twData);
-  void TracePassThru(const TW_PASSTHRU &twData);
-  void TraceStatusUTF8(const TW_STATUSUTF8 &twData);
-  void TraceImageLayout(const TW_IMAGELAYOUT &twData);
-  void TraceCIEColor(const TW_CIECOLOR &twData);
-  void TraceGrayReponse(const TW_GRAYRESPONSE &twData);
-  void TraceRGBResponse(const TW_RGBRESPONSE &twData);
-  void TracePalette8(const TW_PALETTE8 &twData);
-  void TraceExtImageInfo(const TW_EXTIMAGEINFO &twData);
-  void TraceICCProfile(const TW_MEMORY &twData);
+  void TraceStruct(const TW_PENDINGXFERS &twData);
+  void TraceStruct(const TW_SETUPMEMXFER &twData);
+  void TraceStruct(const TW_SETUPFILEXFER &twData);
+  void TraceStruct(const TW_STATUS &twData);
+  void TraceStruct(const DWORD &twData);
+  void TraceStruct(const TW_CUSTOMDSDATA &twData);
+  void TraceStruct(const TW_DEVICEEVENT &twData);
+  void TraceStruct(const TW_FILESYSTEM &twData);
+  void TraceStruct(const TW_PASSTHRU &twData);
+  void TraceStruct(const TW_STATUSUTF8 &twData);
+  void TraceStruct(const TW_IMAGELAYOUT &twData);
+  void TraceStruct(const TW_CIECOLOR &twData);
+  void TraceStruct(const TW_GRAYRESPONSE &twData);
+  void TraceStruct(const TW_RGBRESPONSE &twData);
+  void TraceStruct(const TW_PALETTE8 &twData);
+  void TraceStruct(const TW_EXTIMAGEINFO &twData);
+  void TraceStruct(const TW_MEMORY &twData);
 
   vector<TW_UINT16> m_lstExtImageInfo; /**< list of extended image info structures expected to be dispatched after a transfer */
   bool m_bSignalCalledInTWAIN; /**< flag that indicates a signal was called at a time when processing was not possible */
@@ -143,6 +143,8 @@ class TWAIN_App_QT : public QMainWindow, public CTWAINSession
   TW_PENDINGXFERS m_twPendingXfers;
   TW_STATUS m_twStatus;
   TW_FILESYSTEM m_twFileSystem;
+  TW_DEVICEEVENT m_twDeviceEvent;
+  TW_IMAGELAYOUT m_twImageLayout;
   
   protected slots:
   //void on_<widget name>_<signal name>(<signal parameters>);

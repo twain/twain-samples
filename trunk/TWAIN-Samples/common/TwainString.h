@@ -44,6 +44,8 @@
 
 #include "CommonTWAIN.h"
 
+typedef const char*(*pfnStringCvrtFuncType)(const TW_UINT16 _unItem);
+
 /**
 * converts the integer CAP value into string form
 * @param[in] _unCap the cap
@@ -461,9 +463,31 @@ const char* convertContainerType_toString(const TW_UINT16 _unItem);
 * @return the equivalent string
 */
 const char* convertQuerySupport_toString(const TW_UINT32 _unItem);
+/**
+* converts a TWAIN TWFF_ to the corresponding extension
+* @param[in] _unItem the value
+* @return the corresponding file extension
+*/
 const char* convertFileFmt_toExtension(const TW_UINT16 _unItem);
-  
+/**
+* converts a TWAIN Capability Item value to string form
+* @param[in] twCapId the Id of the capability to convert
+* @param[in] twItemType the type of the capability item
+* @param[in] pValue a pointer to the item
+* @return the equivalent string
+*/
 const char *CapabilityValueToString(TW_UINT16 twCapId, TW_UINT16 twItemType, const void *pValue);
+/**
+* converts the TWAIN TWFY_ value to string form
+* @param[in] _unItem the value
+* @return the equivalent string
+*/
+const char *convertFileType_toString(const TW_UINT16 _nItem);
+/**
+* converts the TWAIN TWFF_ value to string form
+* @param[in] _unItem the value
+* @return the equivalent string
+*/
+const char *convertFileFormat_toString(const TW_UINT16 _unItem);
 
-const char *convertFileType_toString(const TW_INT32 _nItem);
 #endif // __TWAINSTRING_H__
