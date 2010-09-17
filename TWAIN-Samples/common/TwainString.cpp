@@ -280,7 +280,7 @@ const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT32 _un
 const char* convertEI_Item_toString(const TW_UINT16 _unEI, const TW_UINT32 _unItem)
 {
   const char* pszString = NULL;
-
+  TW_UINT16 twItem = (TW_UINT16)_unItem;
   switch(_unEI)
   {
     case TWEI_BARCODEROTATION:
@@ -288,11 +288,11 @@ const char* convertEI_Item_toString(const TW_UINT16 _unEI, const TW_UINT32 _unIt
       break;
 
     case TWEI_BARCODETYPE:
-      pszString = convertICAP_SUPPORTEDBARCODETYPES_toString((TW_UINT16)_unItem);
+      pszString = CapabilityValueToString(ICAP_SUPPORTEDBARCODETYPES, TWTY_UINT16, &twItem);//convertICAP_SUPPORTEDBARCODETYPES_toString((TW_UINT16)_unItem);
       break;
 
-    case TWEI_PAGESIDE:
-      pszString = convertTWEI_PAGESIDE_toString((TW_UINT16)_unItem);
+    case TWEI_PAGESIDE: //CAP_CAMERASIDE
+      pszString = CapabilityValueToString(CAP_CAMERASIDE, TWTY_UINT16, &twItem);//convertTWEI_PAGESIDE_toString((TW_UINT16)_unItem);
       break;
 
     case TWEI_DESKEWSTATUS:
@@ -300,11 +300,11 @@ const char* convertEI_Item_toString(const TW_UINT16 _unEI, const TW_UINT32 _unIt
       break;
 
     case TWEI_FILESYSTEMSOURCE:
-      pszString = convertTWEI_FILESYSTEM_toString((TW_UINT16)_unItem);
+      pszString = convertFileType_toString((TW_UINT16)_unItem);
       break;
 
     case TWEI_PIXELFLAVOR:
-      pszString = convertICAP_PIXELFLAVOR_toString((TW_UINT16)_unItem);
+      pszString = CapabilityValueToString(ICAP_PIXELFLAVOR, TWTY_UINT16, &twItem);//convertICAP_PIXELFLAVOR_toString((TW_UINT16)_unItem);
       break;
 
     case TWEI_MAGTYPE:
@@ -1402,23 +1402,23 @@ const char* convertTWEI_BARCODEROTATION_toString(const TW_UINT16 InfoID)
   switch(InfoID)
   {
 	case TWBCOR_ROT0:
-    text = "Rotation 0 deg";
+    text = "TWBCOR_ROT0";
     break;
 
 	case TWBCOR_ROT90:
-    text = "Rotation 90 deg";
+    text = "TWBCOR_ROT90";
     break;
 
 	case TWBCOR_ROT180:
-    text = "Rotation 180 deg";
+    text = "TWBCOR_ROT180";
     break;
 
 	case TWBCOR_ROT270:
-    text = "Rotation 270 deg";
+    text = "TWBCOR_ROT270";
     break;
 
 	case TWBCOR_ROTX:
-    text = "Rotation x deg";
+    text = "TWBCOR_ROTX";
     break;
 
   default:
@@ -1775,11 +1775,11 @@ const char* convertTWEI_PAGESIDE_toString(const TW_UINT16 InfoID)
   switch(InfoID)
   {
 	case TWCS_TOP:
-    text = "Front";
+    text = "TWCS_TOP";
     break;
 
 	case TWCS_BOTTOM:
-    text = "Back";
+    text = "TWCS_BOTTOM";
     break;
 
   default:
@@ -1927,19 +1927,19 @@ const char* convertTWEI_DESKEWSTATUS_toString(const TW_UINT16 InfoID)
   switch(InfoID)
   {
 	case TWDSK_SUCCESS:
-    text = "Success";
+    text = "TWDSK_SUCCESS";
     break;
 
 	case TWDSK_REPORTONLY:
-    text = "Report Only";
+    text = "TWDSK_REPORTONLY";
     break;
 
 	case TWDSK_FAIL:
-    text = "Fail";
+    text = "TWDSK_FAIL";
     break;
 
 	case TWDSK_DISABLED:
-    text = "Disabled";
+    text = "TWDSK_DISABLED";
     break;
 
   default:
@@ -2786,15 +2786,15 @@ const char* convertTWEI_MAGTYPE_toString(const TW_UINT16 InfoID)
   switch(InfoID)
   {
 	case TWMD_MICR:
-    text = "MICR";
+    text = "TWMD_MICR";
     break;
 
 	case TWMD_RAW:
-    text = "RAW";
+    text = "TWMD_RAW";
     break;
 
 	case TWMD_INVALID:
-    text = "Invalid";
+    text = "TWMD_INVALID";
     break;
 
   default:
@@ -2978,27 +2978,27 @@ const char* convertTWEI_PATCHCODE_toString(const TW_UINT16 InfoID)
   switch(InfoID)
   {
 	case TWPCH_PATCH1:
-    text = "Patch 1";
+    text = "TWPCH_PATCH1";
     break;
 
 	case TWPCH_PATCH2:
-    text = "Patch 2";
+    text = "TWPCH_PATCH2";
     break;
 
 	case TWPCH_PATCH3:
-    text = "Patch 3";
+    text = "TWPCH_PATCH3";
     break;
 
 	case TWPCH_PATCH4:
-    text = "Patch 4";
+    text = "TWPCH_PATCH4";
     break;
 
 	case TWPCH_PATCH6:
-    text = "Patch 6";
+    text = "TWPCH_PATCH6";
     break;
 
 	case TWPCH_PATCHT:
-    text = "Patch T";
+    text = "TWPCH_PATCHT";
     break;
 
   default:
@@ -3560,11 +3560,11 @@ const char* convertICAP_UNITS_toString(const TW_UINT16 _unItem)
 }
 
 
-const char* convertExtImageInfoItem_toString(TW_INFO &ImgInfo)
+const char* convertExtImageInfoItem_toString(const TW_INFO &ImgInfo)
 {
    char * buff = nextTempBuffer();
 
-   if(TWRC_SUCCESS == ImgInfo.CondCode)
+   if(TWRC_SUCCESS == ImgInfo.ReturnCode)
    {
       switch(ImgInfo.ItemType)
       {

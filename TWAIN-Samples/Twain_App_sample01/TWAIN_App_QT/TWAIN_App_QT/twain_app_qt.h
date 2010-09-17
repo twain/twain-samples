@@ -109,6 +109,9 @@ class TWAIN_App_QT : public QMainWindow, public CTWAINSession
   void OnExtImageInfo(TW_UINT16 twMsg);
   void OnICCProfile(TW_UINT16 twMsg);
 
+  pTW_EXTIMAGEINFO CreateExtImageInfo(const vector<TW_UINT16> &lstExtIInfo);
+  void CleanupExtImageInfo(pTW_EXTIMAGEINFO &pInfo);
+
   void TraceStruct(const TW_PENDINGXFERS &twData);
   void TraceStruct(const TW_SETUPMEMXFER &twData);
   void TraceStruct(const TW_SETUPFILEXFER &twData);
@@ -134,8 +137,9 @@ class TWAIN_App_QT : public QMainWindow, public CTWAINSession
   QFile *m_pMemoryFile;
   QDataStream *m_pMemoryDataStream;
   TW_UINT16 m_twMemoryFileFormat;
-  bool m_bUpdateHeaderOnImageEnd;
-  int m_nPaletteOffset;
+  BITMAPFILEHEADER m_bmfhBitmap; /**< used when in memory transfer mode and the output format is .bmp */
+  BITMAPINFOHEADER m_bmihBitmap; /**< used when in memory transfer mode and the output format is .bmp */
+  int m_nPaletteOffset; /**< used when in memory transfer mode and the output format is .bmp */
 
   TW_CUSTOMDSDATA m_twCustomDSData;
   TW_SETUPMEMXFER m_twSetupMemXfer;

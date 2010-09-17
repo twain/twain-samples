@@ -48,6 +48,10 @@ CTWAINSession::CTWAINSession()
   : m_uiState(1)
   , m_twInstID(0)
   , m_bInTWAIN(false)
+  , m_bStartOfStack(true)
+  , m_bSupportsExtImageInfo(false)
+  , m_bUsingUndefinedImageSize(false)
+  , m_twXferMech(TWSX_NATIVE)
 {
   //Find out if this is the first time through
   if(0==m_nRefCount)
@@ -267,6 +271,17 @@ TW_UINT16 CTWAINSession::DSM_Entry(TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 ui
         {
           //state transition was detected
           TraceMessage("* State transition %d -> %d *", twPrevState, m_uiState);
+
+          if((6==twPrevState)&&(7==m_uiState))
+          {
+            //indicates we are no longer at the start of a transfer session
+            m_bStartOfStack = false;
+          }
+          else if((6>twPrevState)&&(6==m_uiState))
+          {
+            //indicates we are just starting a transfer session
+            m_bStartOfStack = true;
+          }
         }
       }
     }
@@ -619,127 +634,136 @@ TW_UINT16 CTWAINSession::DoTransfer()
   TW_SETUPMEMXFER twSetupMemXfer = {0};
   TW_IMAGEMEMXFER twImageMemXfer = {0};
 
-  //Time to inspect and figure out a few things
-  TW_UINT16 twXferMech = TWSX_NATIVE;
-  if(TWRC_SUCCESS==GetCapabilityOneValue(ICAP_XFERMECH, twXferMech))
+  if(m_bStartOfStack)
   {
-    TW_IMAGEINFO twInfo = {0};
-    //This is to be called before any transfer
-    if(TWRC_SUCCESS==DSM_Entry(DG_IMAGE, DAT_IMAGEINFO, MSG_GET, &twInfo, &m_twSourceIdentity))
-    {
-      //signal the derived class
-      OnImageBegin(twInfo, twXferMech);
+    //update key information used throughout the transfer
+    GetCapabilityOneValue(ICAP_XFERMECH, m_twXferMech);
+    GetCapabilityOneValue(ICAP_UNDEFINEDIMAGESIZE, m_bUsingUndefinedImageSize);
+    GetCapabilityOneValue(ICAP_EXTIMAGEINFO, m_bSupportsExtImageInfo);
+  }
 
-      bool bAbort = false;
-      do
+  TW_IMAGEINFO twInfo = {0};
+  //This is to be called before any transfer
+  if(TWRC_SUCCESS==DSM_Entry(DG_IMAGE, DAT_IMAGEINFO, MSG_GET, &twInfo, &m_twSourceIdentity))
+  {
+    //signal the derived class
+    OnImageBegin(twInfo, m_twXferMech);
+
+    bool bAbort = false;
+    do
+    {
+      switch(m_twXferMech)
       {
-        switch(twXferMech)
-        {
-          case TWSX_NATIVE:
+        case TWSX_NATIVE:
+          {
+            TW_HANDLE hImage = NULL;
+            //Perform a Native transfer
+            twRC = DSM_Entry(DG_IMAGE, DAT_IMAGENATIVEXFER, MSG_GET, &hImage, &m_twSourceIdentity);
+            if((TWRC_XFERDONE==twRC)||(TWRC_SUCCESS==twRC))
             {
-              TW_HANDLE hImage = NULL;
-              //Perform a Native transfer
-              twRC = DSM_Entry(DG_IMAGE, DAT_IMAGENATIVEXFER, MSG_GET, &hImage, &m_twSourceIdentity);
-              if((TWRC_XFERDONE==twRC)||(TWRC_SUCCESS==twRC))
+              //Assume we are to free the image
+              bool bFree = true;
+              //Notify the derived class
+              OnNativeTransfer(&hImage, bAbort, bFree);
+              if(bFree)
               {
-                //Assume we are to free the image
-                bool bFree = true;
-                //Notify the derived class
-                OnNativeTransfer(&hImage, bAbort, bFree);
-                if(bFree)
-                {
-                  //Discard the result
-                  _DSM_Free(hImage);
-                  hImage = NULL;
-                }
-                
-                if(TWRC_SUCCESS==twRC)
-                {
-                  TraceMessage("*** Note: DS responded with invalid TWRC_SUCCESS for DAT_IMAGENATIVEXFER/MSG_GET Expected: TWRC_XFERDONE ***");
-                  twRC = TWRC_XFERDONE;
-                }
+                //Discard the result
+                _DSM_Free(hImage);
+                hImage = NULL;
+              }
+              
+              if(TWRC_SUCCESS==twRC)
+              {
+                TraceMessage("*** Note: DS responded with invalid TWRC_SUCCESS for DAT_IMAGENATIVEXFER/MSG_GET Expected: TWRC_XFERDONE ***");
+                twRC = TWRC_XFERDONE;
               }
             }
-            break;
-          case TWSX_FILE:
+          }
+          break;
+        case TWSX_FILE:
+            {
+              TW_SETUPFILEXFER twSetupFileXfer = {0};
+              twRC = DSM_Entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_GET, &twSetupFileXfer, &m_twSourceIdentity);
+              if(TWRC_SUCCESS==twRC)
               {
-                TW_SETUPFILEXFER twSetupFileXfer = {0};
-                twRC = DSM_Entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_GET, &twSetupFileXfer, &m_twSourceIdentity);
-                if(TWRC_SUCCESS==twRC)
+                //Perform a File transfer
+                twRC = DSM_Entry(DG_IMAGE, DAT_IMAGEFILEXFER, MSG_GET, NULL, &m_twSourceIdentity);
+                if((TWRC_XFERDONE==twRC)||(TWRC_SUCCESS==twRC))
                 {
-                  //Perform a File transfer
-                  twRC = DSM_Entry(DG_IMAGE, DAT_IMAGEFILEXFER, MSG_GET, NULL, &m_twSourceIdentity);
-                  if((TWRC_XFERDONE==twRC)||(TWRC_SUCCESS==twRC))
+                  //Notify the derived class
+                  OnFileTransfer(twSetupFileXfer, bAbort);
+                  if(TWRC_SUCCESS==twRC)
                   {
-                    //Notify the derived class
-                    OnFileTransfer(twSetupFileXfer, bAbort);
-                    if(TWRC_SUCCESS==twRC)
-                    {
-                      TraceMessage("*** Note: DS responded with invalid TWRC_SUCCESS for DAT_IMAGEFILEXFER/MSG_GET Expected: TWRC_XFERDONE ***");
-                      twRC = TWRC_XFERDONE;
-                    }
+                    TraceMessage("*** Note: DS responded with invalid TWRC_SUCCESS for DAT_IMAGEFILEXFER/MSG_GET Expected: TWRC_XFERDONE ***");
+                    twRC = TWRC_XFERDONE;
                   }
                 }
               }
-            break;
-          case TWSX_MEMORY:
-          case TWSX_MEMFILE:
+            }
+          break;
+        case TWSX_MEMORY:
+        case TWSX_MEMFILE:
+          {
+            if(6==m_uiState)
             {
-              if(6==m_uiState)
+              //Find out how we are supposed to setup the memory
+              twRC = DSM_Entry(DG_CONTROL, DAT_SETUPMEMXFER, MSG_GET, &twSetupMemXfer, &m_twSourceIdentity);
+              if(TWRC_SUCCESS==twRC)
               {
-                //Find out how we are supposed to setup the memory
-                twRC = DSM_Entry(DG_CONTROL, DAT_SETUPMEMXFER, MSG_GET, &twSetupMemXfer, &m_twSourceIdentity);
-                if(TWRC_SUCCESS==twRC)
-                {
-                  //Allocate the memory
-                  twImageMemXfer.Memory.Flags = TWMF_APPOWNS|TWMF_POINTER;
-                  twImageMemXfer.Memory.Length = twSetupMemXfer.Preferred;
-                  twImageMemXfer.Memory.TheMem = new BYTE[twSetupMemXfer.Preferred];
-                }
-              }
-              if(6<=m_uiState)
-              {
-                //perform a Memory transfer
-                twRC = DSM_Entry(DG_IMAGE, DAT_IMAGEMEMXFER, MSG_GET, &twImageMemXfer, &m_twSourceIdentity);
-              }
-              if((TWRC_XFERDONE==twRC)||(TWRC_SUCCESS==twRC))
-              {
-                if(TWSX_MEMORY==twXferMech)
-                {
-                  //Notify the derived class that a memory transfer occured
-                  OnMemoryTransfer(twInfo, twImageMemXfer, twRC, bAbort);
-                }
-                else if(TWSX_MEMFILE==twXferMech)
-                {
-                  //Notify the derived class that a file in memory transfer occured
-                  OnFileMemTransfer(twImageMemXfer, twRC, bAbort);
-                }
-
-                if(TWRC_XFERDONE==twRC)
-                {
-                  //finished, discard the memory used
-                  delete [] reinterpret_cast<BYTE*>(twImageMemXfer.Memory.TheMem);
-                  twImageMemXfer.Memory.TheMem = NULL;
-                }
+                //Allocate the memory
+                twImageMemXfer.Memory.Flags = TWMF_APPOWNS|TWMF_POINTER;
+                twImageMemXfer.Memory.Length = twSetupMemXfer.Preferred;
+                twImageMemXfer.Memory.TheMem = new BYTE[twSetupMemXfer.Preferred];
               }
             }
-            break;
-        }
-      }while(TWRC_SUCCESS==twRC);
+            if(6<=m_uiState)
+            {
+              //perform a Memory transfer
+              twRC = DSM_Entry(DG_IMAGE, DAT_IMAGEMEMXFER, MSG_GET, &twImageMemXfer, &m_twSourceIdentity);
+            }
+            if((TWRC_XFERDONE==twRC)||(TWRC_SUCCESS==twRC))
+            {
+              if(TWSX_MEMORY==m_twXferMech)
+              {
+                //Notify the derived class that a memory transfer occured
+                OnMemoryTransfer(twInfo, twImageMemXfer, twRC, bAbort);
+              }
+              else if(TWSX_MEMFILE==m_twXferMech)
+              {
+                //Notify the derived class that a file in memory transfer occured
+                OnFileMemTransfer(twImageMemXfer, twRC, bAbort);
+              }
+
+              if(TWRC_XFERDONE==twRC)
+              {
+                //finished, discard the memory used
+                delete [] reinterpret_cast<BYTE*>(twImageMemXfer.Memory.TheMem);
+                twImageMemXfer.Memory.TheMem = NULL;
+              }
+            }
+          }
+          break;
+      }
+    }while(TWRC_SUCCESS==twRC);
+  }
+  
+  if(7==m_uiState)
+  {
+    if(m_bUsingUndefinedImageSize)
+    {
+      //means the correct image information is available now (width and length are now known)
+      DSM_Entry(DG_IMAGE, DAT_IMAGEINFO, MSG_GET, &twInfo, &m_twSourceIdentity);
     }
-    
-    if(7==m_uiState)
+
+    //signal the derived class (opportunity to call DAT_EXTIMAGEINFO/MSG_GET)
+    OnImageEnd(twInfo,m_twXferMech);
+    //transition a state
+    TW_PENDINGXFERS twPendingXfers = {0};
+    twRC = DSM_Entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, &twPendingXfers, &m_twSourceIdentity);
+    if(TWRC_SUCCESS==twRC)
     {
       //signal the derived class
-      OnImageEnd(twInfo, twXferMech);
-      //transition a state
-      TW_PENDINGXFERS twPendingXfers = {0};
-      twRC = DSM_Entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, &twPendingXfers, &m_twSourceIdentity);
-      if(TWRC_SUCCESS==twRC)
-      {
-        //signal the derived class
-        OnEndXfer(twPendingXfers);
-      }
+      OnEndXfer(twPendingXfers);
     }
   }
   return twRC;
@@ -809,6 +833,12 @@ void CTWAINSession::SignalDSRequest(TW_UINT16 twMsg)
   {
     //state transition was detected
     TraceMessage("* State transition %d -> %d *", twPrevState, m_uiState);
+
+    if((6>twPrevState)&&(6==m_uiState))
+    {
+      //indicates we are just starting a transfer session
+      m_bStartOfStack = true;
+    }
   }
   //Signal parent
   OnSignalDSRequest();

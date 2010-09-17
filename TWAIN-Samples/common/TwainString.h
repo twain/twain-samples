@@ -418,7 +418,7 @@ const char* convertExtImageInfoName_toString(int InfoID);
 * @param[in] ImgInfo the TW_INFO to retrieve the extended image info of
 * @return string of the extended image info value
 */
-const char* convertExtImageInfoItem_toString(TW_INFO &ImgInfo);
+const char* convertExtImageInfoItem_toString(const TW_INFO &ImgInfo);
 
 /**
 * converts the TWAIN Return Code into string form
