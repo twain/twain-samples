@@ -7,6 +7,7 @@
 #include "EnumSet.h"
 #include "SetState.h"
 #include "StructureEdit.h"
+#include "ExtImageInfoSel.h"
 
 /**
 * Event handler for relaying events to the TWAIN DS (required for TWAIN versions below 2.2
@@ -53,7 +54,6 @@ TWAIN_App_QT::TWAIN_App_QT(QWidget *parent, Qt::WFlags flags)
   , m_nImageCount(0)
   , m_pMemoryFile(NULL)
   , m_pMemoryDataStream(NULL)
-  , m_bUpdateHeaderOnImageEnd(false)
 {
   ui.setupUi(this);
 
@@ -363,55 +363,47 @@ void TWAIN_App_QT::OnImageBegin(const TW_IMAGEINFO &twInfo, TW_UINT16 twXferMech
         {
           case TWFF_BMP:
             {
-              BITMAPFILEHEADER bmfh;
-              memset(&bmfh, 0, sizeof(bmfh));
-
-              BITMAPINFOHEADER bmih;
-              memset(&bmih, 0, sizeof(bmih));
+              memset(&m_bmfhBitmap, 0, sizeof(m_bmfhBitmap));
+              memset(&m_bmihBitmap, 0, sizeof(m_bmihBitmap));
 
               //fill in the bitmap info structure
-              bmih.biSize = sizeof(BITMAPINFOHEADER);
-              bmih.biPlanes = 1;
-              bmih.biBitCount = twInfo.BitsPerPixel;
-              bmih.biXPelsPerMeter = FIX32ToFloat(twInfo.XResolution) * 39.37F + 0.5;
-              bmih.biYPelsPerMeter = FIX32ToFloat(twInfo.YResolution) * 39.37F + 0.5;
-              bmih.biCompression = BI_RGB;
+              m_bmihBitmap.biSize = sizeof(BITMAPINFOHEADER);
+              m_bmihBitmap.biPlanes = 1;
+              m_bmihBitmap.biBitCount = twInfo.BitsPerPixel;
+              m_bmihBitmap.biXPelsPerMeter = FIX32ToFloat(twInfo.XResolution) * 39.37F + 0.5;
+              m_bmihBitmap.biYPelsPerMeter = FIX32ToFloat(twInfo.YResolution) * 39.37F + 0.5;
+              m_bmihBitmap.biCompression = BI_RGB;
               switch(twInfo.PixelType)
               {
                 case TWPT_RGB:
                   //in the case of RGB there is no Palette in a DIB
-                  bmih.biClrUsed = 0;
+                  m_bmihBitmap.biClrUsed = 0;
                   break;
                 case TWPT_BW:
                 case TWPT_GRAY:
                 case TWPT_PALETTE:
                   //compute the palette size
-                  bmih.biClrUsed = 1<<twInfo.BitsPerPixel;
+                  m_bmihBitmap.biClrUsed = 1<<twInfo.BitsPerPixel;
                   m_nPaletteOffset = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
                   break;
               }
               //fill in the bitmap file header
-              bmfh.bfType    = ( (WORD) ('M' << 8) | 'B');
-              bmfh.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + (sizeof(RGBQUAD)*bmih.biClrUsed);
-              if((TWON_DONTCARE16 == twInfo.ImageWidth)
-                ||(TWON_DONTCARE16 == twInfo.ImageLength))
+              m_bmfhBitmap.bfType    = ( (WORD) ('M' << 8) | 'B');
+              m_bmfhBitmap.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + (sizeof(RGBQUAD)*m_bmihBitmap.biClrUsed);
+              if(false==m_bUsingUndefinedImageSize)
               {
-                m_bUpdateHeaderOnImageEnd = true;
-              }
-              else
-              {
-                bmih.biWidth = twInfo.ImageWidth;
-                bmih.biHeight = -twInfo.ImageLength;
-                bmih.biSizeImage = (((bmih.biWidth * bmih.biBitCount + 31)/32) * 4) * bmih.biHeight;
-                bmfh.bfSize    = sizeof(BITMAPFILEHEADER) + bmih.biSizeImage;
+                m_bmihBitmap.biWidth = twInfo.ImageWidth;
+                m_bmihBitmap.biHeight = -twInfo.ImageLength;
+                m_bmihBitmap.biSizeImage = (((m_bmihBitmap.biWidth * m_bmihBitmap.biBitCount + 31)/32) * 4) * m_bmihBitmap.biHeight;
+                m_bmfhBitmap.bfSize    = sizeof(BITMAPFILEHEADER) + m_bmihBitmap.biSizeImage;
               }
               RGBQUAD *pbmiColors = NULL;
               //check if a palette is required
-              if(bmih.biClrUsed)
+              if(m_bmihBitmap.biClrUsed)
               {
                 //for now just dump an empty palette in here
-                pbmiColors = new RGBQUAD[bmih.biClrUsed];
-                memset(pbmiColors, 0, sizeof(RGBQUAD)*bmih.biClrUsed);
+                pbmiColors = new RGBQUAD[m_bmihBitmap.biClrUsed];
+                memset(pbmiColors, 0, sizeof(RGBQUAD)*m_bmihBitmap.biClrUsed);
                 if(TWPT_PALETTE==twInfo.PixelType)
                 {
                   TW_PALETTE8 twPalette = {0};
@@ -421,13 +413,13 @@ void TWAIN_App_QT::OnImageBegin(const TW_IMAGEINFO &twInfo, TW_UINT16 twXferMech
                     if((TWPA_RGB==twPalette.PaletteType)||(TWPA_GRAY==twPalette.PaletteType))
                     {
                       //just in case the palette sizes are different
-                      if(bmih.biClrUsed!=twPalette.NumColors)
+                      if(m_bmihBitmap.biClrUsed!=twPalette.NumColors)
                       {
                         //realistically this should never happen
-                        bmih.biClrUsed = twPalette.NumColors;
+                        m_bmihBitmap.biClrUsed = twPalette.NumColors;
                         delete [] pbmiColors;
-                        pbmiColors = new RGBQUAD[bmih.biClrUsed];
-                        memset(pbmiColors, 0, sizeof(RGBQUAD)*bmih.biClrUsed);
+                        pbmiColors = new RGBQUAD[m_bmihBitmap.biClrUsed];
+                        memset(pbmiColors, 0, sizeof(RGBQUAD)*m_bmihBitmap.biClrUsed);
                       }
                       //copy the palette
                       for(int nIndex = 0; nIndex < twPalette.NumColors; nIndex++)
@@ -442,9 +434,9 @@ void TWAIN_App_QT::OnImageBegin(const TW_IMAGEINFO &twInfo, TW_UINT16 twXferMech
                 else
                 {
                   //assume our palette is TWPF_CHOCOLATE (black is zero) - can be corrected at image end if necessary
-							    int nIncr = 0xFF / ( bmih.biClrUsed - 1 );
+							    int nIncr = 0xFF / ( m_bmihBitmap.biClrUsed - 1 );
 							    int nVal = 0;
-							    for (int nIndex=0; nIndex<bmih.biClrUsed; nIndex++)
+							    for (int nIndex=0; nIndex<m_bmihBitmap.biClrUsed; nIndex++)
 							    {
                     //create the palette
 								    nVal = nIndex * nIncr;
@@ -456,15 +448,15 @@ void TWAIN_App_QT::OnImageBegin(const TW_IMAGEINFO &twInfo, TW_UINT16 twXferMech
                 }
               }
               //all the colors used are important
-              bmih.biClrImportant = bmih.biClrUsed;
+              m_bmihBitmap.biClrImportant = m_bmihBitmap.biClrUsed;
               //dump the file header
-              m_pMemoryDataStream->writeRawData(reinterpret_cast<char*>(&bmfh), sizeof(bmfh));
+              m_pMemoryDataStream->writeRawData(reinterpret_cast<char*>(&m_bmfhBitmap), sizeof(m_bmfhBitmap));
               //dump the bitmap info header
-              m_pMemoryDataStream->writeRawData(reinterpret_cast<char*>(&bmih), sizeof(bmih));
+              m_pMemoryDataStream->writeRawData(reinterpret_cast<char*>(&m_bmihBitmap), sizeof(m_bmihBitmap));
               if(pbmiColors)
               {
                 //dump the palette in the file
-                m_pMemoryDataStream->writeRawData(reinterpret_cast<char*>(pbmiColors), sizeof(RGBQUAD)*bmih.biClrUsed);
+                m_pMemoryDataStream->writeRawData(reinterpret_cast<char*>(pbmiColors), sizeof(RGBQUAD)*m_bmihBitmap.biClrUsed);
                 //delete the palette memory
                 delete [] pbmiColors;
                 pbmiColors = NULL;
@@ -486,10 +478,49 @@ void TWAIN_App_QT::OnImageBegin(const TW_IMAGEINFO &twInfo, TW_UINT16 twXferMech
 
 void TWAIN_App_QT::OnImageEnd(const TW_IMAGEINFO &twInfo, TW_UINT16 twXferMech)
 {
+  pTW_EXTIMAGEINFO pInfo = NULL;
+  if(m_bSupportsExtImageInfo && (Qt::Checked == ui.chkExtImageInfo->checkState()))
+  {
+    pInfo = CreateExtImageInfo(m_lstExtImageInfo);
+    if(pInfo)
+    {
+      if(TWRC_SUCCESS==DSM_Entry(DG_IMAGE, DAT_EXTIMAGEINFO, MSG_GET, pInfo, &m_twSourceIdentity))
+      {
+        TraceStruct(*pInfo);
+      }
+    }
+  }
+
   //Construct info
   if((TWSX_MEMORY==twXferMech)&&ui.chkSave)
   {
-    
+    if(m_bUsingUndefinedImageSize)
+    {
+      //go back and update some file information
+      switch(m_twMemoryFileFormat)
+      {
+        case TWFF_BMP:
+          m_bmihBitmap.biWidth = twInfo.ImageWidth;
+          m_bmihBitmap.biHeight = -twInfo.ImageLength;
+          m_bmihBitmap.biSizeImage = (((m_bmihBitmap.biWidth * m_bmihBitmap.biBitCount + 31)/32) * 4) * m_bmihBitmap.biHeight;
+          m_bmfhBitmap.bfSize = sizeof(BITMAPFILEHEADER) + m_bmihBitmap.biSizeImage;
+          //go back to the beginning of the file
+          m_pMemoryFile->seek(0);
+          //dump the file header
+          m_pMemoryDataStream->writeRawData(reinterpret_cast<char*>(&m_bmfhBitmap), sizeof(m_bmfhBitmap));
+          //dump the bitmap info header
+          m_pMemoryDataStream->writeRawData(reinterpret_cast<char*>(&m_bmihBitmap), sizeof(m_bmihBitmap));
+          break;
+        case TWFF_TIFF:
+          #pragma message("TODO: implement TIFF undefined image size")
+          break;
+      }
+    }
+  }
+
+  if(pInfo)
+  {
+    CleanupExtImageInfo(pInfo);
   }
   
   if(m_pMemoryDataStream)
@@ -723,6 +754,8 @@ void TWAIN_App_QT::on_btnClose_clicked(bool bChecked)
 void TWAIN_App_QT::on_btnSet_clicked(bool bChecked)
 {
   //Display a UI for selecting EXTIMAGEINFO values to read
+  ExtImageInfoSel dlg(m_lstExtImageInfo, this);
+  dlg.exec();
   return;
 }
 
@@ -1478,82 +1511,6 @@ void TWAIN_App_QT::PostDSMCall()
   }
   return;
 }
-const TW_UINT16 kTWEI_TABLE[] =
-{
-  TWEI_BARCODEX,
-  TWEI_BARCODEY,
-  TWEI_BARCODETEXT,
-  TWEI_BARCODETYPE,
-  TWEI_DESHADETOP,
-  TWEI_DESHADELEFT,
-  TWEI_DESHADEHEIGHT,
-  TWEI_DESHADEWIDTH,
-  TWEI_DESHADESIZE,
-  TWEI_SPECKLESREMOVED,
-  TWEI_HORZLINEXCOORD,
-  TWEI_HORZLINEYCOORD,
-  TWEI_HORZLINELENGTH,
-  TWEI_HORZLINETHICKNESS,
-  TWEI_VERTLINEXCOORD,
-  TWEI_VERTLINEYCOORD,
-  TWEI_VERTLINELENGTH,
-  TWEI_VERTLINETHICKNESS,
-  TWEI_PATCHCODE,
-  TWEI_ENDORSEDTEXT,
-  TWEI_FORMCONFIDENCE,
-  TWEI_FORMTEMPLATEMATCH,
-  TWEI_FORMTEMPLATEPAGEMATCH,
-  TWEI_FORMHORZDOCOFFSET,
-  TWEI_FORMVERTDOCOFFSET,
-  TWEI_BARCODECOUNT,
-  TWEI_BARCODECONFIDENCE,
-  TWEI_BARCODEROTATION,
-  TWEI_BARCODETEXTLENGTH,
-  TWEI_DESHADECOUNT,
-  TWEI_DESHADEBLACKCOUNTOLD,
-  TWEI_DESHADEBLACKCOUNTNEW,
-  TWEI_DESHADEBLACKRLMIN,
-  TWEI_DESHADEBLACKRLMAX,
-  TWEI_DESHADEWHITECOUNTOLD,
-  TWEI_DESHADEWHITECOUNTNEW,
-  TWEI_DESHADEWHITERLMIN,
-  TWEI_DESHADEWHITERLAVE,
-  TWEI_DESHADEWHITERLMAX,
-  TWEI_BLACKSPECKLESREMOVED,
-  TWEI_WHITESPECKLESREMOVED,
-  TWEI_HORZLINECOUNT,
-  TWEI_VERTLINECOUNT,
-  TWEI_DESKEWSTATUS,
-  TWEI_SKEWORIGINALANGLE,
-  TWEI_SKEWFINALANGLE,
-  TWEI_SKEWCONFIDENCE,
-  TWEI_SKEWWINDOWX1,
-  TWEI_SKEWWINDOWY1,
-  TWEI_SKEWWINDOWX2,
-  TWEI_SKEWWINDOWY2,
-  TWEI_SKEWWINDOWX3,
-  TWEI_SKEWWINDOWY3,
-  TWEI_SKEWWINDOWX4,
-  TWEI_SKEWWINDOWY4,
-  TWEI_BOOKNAME,
-  TWEI_CHAPTERNUMBER,
-  TWEI_DOCUMENTNUMBER,
-  TWEI_PAGENUMBER,
-  TWEI_CAMERA,
-  TWEI_FRAMENUMBER,
-  TWEI_FRAME,
-  TWEI_PIXELFLAVOR,
-  TWEI_ICCPROFILE,
-  TWEI_LASTSEGMENT,
-  TWEI_SEGMENTNUMBER,
-  TWEI_MAGDATA,
-  TWEI_MAGTYPE,
-  TWEI_PAGESIDE,
-  TWEI_FILESYSTEMSOURCE,
-  TWEI_IMAGEMERGED,
-  TWEI_MAGDATALENGTH,
-  TWON_DONTCARE16,
-};
 
 void TWAIN_App_QT::on_btnSelPath_clicked(bool bChecked)
 {
@@ -2025,10 +1982,47 @@ void TWAIN_App_QT::TraceStruct(const TW_PALETTE8 &twData)
 
 void TWAIN_App_QT::TraceStruct(const TW_EXTIMAGEINFO &twData)
 {
+  TraceMessage("NumInfos = %d", twData.NumInfos);
+  for(int nIndex = 0; nIndex < twData.NumInfos; nIndex++)
+  {
+    if(TWRC_SUCCESS==twData.Info[nIndex].ReturnCode)
+    {
+      TraceMessage("\tInfoID = %s, NumItems = %d, ItemType = %s, ReturnCode = %s, Item = %s", 
+        convertExtImageInfoName_toString(twData.Info[nIndex].InfoID), twData.Info[nIndex].NumItems, convertTWTY_toString(twData.Info[nIndex].ItemType), convertReturnCode_toString(twData.Info[nIndex].ReturnCode), convertExtImageInfoItem_toString(twData.Info[nIndex]));
+    }
+  }
   return;
 }
 
 void TWAIN_App_QT::TraceStruct(const TW_MEMORY &twData)
 {
+  return;
+}
+
+pTW_EXTIMAGEINFO TWAIN_App_QT::CreateExtImageInfo(const vector<TW_UINT16> &lstExtIInfo)
+{
+  size_t nStructSize = sizeof(TW_EXTIMAGEINFO) + (sizeof(TW_INFO) * lstExtIInfo.size());
+  pTW_EXTIMAGEINFO pRet = reinterpret_cast<pTW_EXTIMAGEINFO>(new BYTE[nStructSize]);
+  memset(pRet, 0, nStructSize);
+  if(pRet)
+  {
+    pRet->NumInfos = lstExtIInfo.size();
+    for(int nIndex = 0; nIndex < pRet->NumInfos; nIndex++)
+    {
+      pRet->Info[nIndex].InfoID = lstExtIInfo[nIndex];
+      pRet->Info[nIndex].ItemType = TWON_DONTCARE16;
+      pRet->Info[nIndex].ReturnCode = TWRC_INFONOTSUPPORTED;
+    }
+  }
+  return pRet;
+}
+
+void TWAIN_App_QT::CleanupExtImageInfo(pTW_EXTIMAGEINFO &pInfo)
+{
+  if(pInfo)
+  {
+    delete [] reinterpret_cast<BYTE*>(pInfo);
+    pInfo = NULL;
+  }
   return;
 }

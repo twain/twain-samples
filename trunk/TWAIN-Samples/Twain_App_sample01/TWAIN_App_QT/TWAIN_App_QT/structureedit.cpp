@@ -285,6 +285,7 @@ void StructureEdit::accept()
       free(pStruct);
     }
   }
+  m_pStructure = NULL;
   QDialog::accept();
   return;
 }
@@ -300,6 +301,7 @@ void StructureEdit::reject()
       free(pStruct);
     }
   }
+  m_pStructure = NULL;
   QDialog::reject();
   return;
 }

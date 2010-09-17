@@ -435,6 +435,15 @@ class CTWAINSession
   TW_UINT32 m_twInstID; /**< ID assigned to the current class instance */
   CRITICAL_SECTION m_csProtectRequestQueue; /**< critical section used to control access to the DataSource request queue */
   queue<TW_UINT16> m_twDSRequestQueue; /**< Queue of DataSource requests */
+  
+  bool m_bStartOfStack; /**< flag is set to true on each state 5-6 transition and false on each 6 to 7 transition */
+  /**
+  * The following are upated updated by Transfer method once per batch (once after every state 5-6 transition)
+  */
+  bool m_bSupportsExtImageInfo; /**< indicates data source reports support for DAT_EXTIMAGEINFO, cached for use in state 7 */
+  bool m_bUsingUndefinedImageSize; /** indicates the data source is using ICAP_UNDEFINEDIMAGESIZE transfer technique, cached for use in state 7 */
+  TW_UINT16 m_twXferMech; /** indicates what transfer mode is currently being used, cached for use in state 7 */
+
   /**
   * Optional method for changing the destination of trace messages
   * @param[in] pszFormat a printf style format string
