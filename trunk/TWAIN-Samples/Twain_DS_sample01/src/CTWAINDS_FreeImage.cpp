@@ -100,7 +100,7 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
 #ifdef __APPLE__
    "\p"
 #endif
-   "TWAIN2 FreeImage Software Scanner" // TW_STR32   ProductName;      Product name, e.g. "ScanJet Plus"
+   "TWAIN2 Software Scanner" // TW_STR32   ProductName;      Product name, e.g. "ScanJet Plus"
 };
 
 //////////////////////////////////////////////////////////////////////////////
