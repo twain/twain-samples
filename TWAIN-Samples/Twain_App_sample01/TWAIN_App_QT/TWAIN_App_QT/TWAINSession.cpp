@@ -75,6 +75,7 @@ CTWAINSession::CTWAINSession()
   memset(&m_twAppIdentity, 0, sizeof(m_twAppIdentity));
   memset(&m_twLastStatus, 0, sizeof(m_twLastStatus));
   memset(&m_twSourceIdentity, 0, sizeof(m_twSourceIdentity));
+  memset(&m_twPendingXfers, 0, sizeof(m_twPendingXfers));
   TW_UINT16 m_uiState = 1;
 
   //Start with some default Application information
@@ -757,14 +758,12 @@ TW_UINT16 CTWAINSession::DoTransfer()
 
     //signal the derived class (opportunity to call DAT_EXTIMAGEINFO/MSG_GET)
     OnImageEnd(twInfo,m_twXferMech);
-    //transition a state
-    TW_PENDINGXFERS twPendingXfers = {0};
-    twRC = DSM_Entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, &twPendingXfers, &m_twSourceIdentity);
-    if(TWRC_SUCCESS==twRC)
-    {
-      //signal the derived class
-      OnEndXfer(twPendingXfers);
-    }
+  }
+
+  if(TWRC_XFERDONE==twRC)
+  {
+    //transfer was successful
+    twRC = TWRC_SUCCESS;
   }
   return twRC;
 }
@@ -1339,4 +1338,16 @@ TW_UINT16 CTWAINSession::GetCapabilitySupported(TW_UINT16 twCapId, TW_HANDLE &hC
 TW_UINT16 CTWAINSession::GetCapability(TW_CAPABILITY &twCap, TW_UINT16 twMsg/*=MSG_GET*/)
 {
   return DSM_Entry(DG_CONTROL, DAT_CAPABILITY, twMsg, &twCap, &m_twSourceIdentity);
+}
+
+TW_UINT16 CTWAINSession::DoEndXfer()
+{
+  //transition a state
+  TW_UINT16 twRC = DSM_Entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, &m_twPendingXfers, &m_twSourceIdentity);
+  if(TWRC_SUCCESS==twRC)
+  {
+    //signal the derived class
+    OnEndXfer(m_twPendingXfers);
+  }
+  return twRC;
 }

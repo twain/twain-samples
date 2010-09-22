@@ -48,8 +48,9 @@ CQTWAINApp::~CQTWAINApp()
   return;
 }
 
-TWAIN_App_QT::TWAIN_App_QT(QWidget *parent, Qt::WFlags flags)
+TWAIN_App_QT::TWAIN_App_QT(QScriptEngine *pEngine, QWidget *parent, Qt::WFlags flags)
   : QMainWindow(parent, flags)
+  , m_pEngine(pEngine)
   , m_bSignalCalledInTWAIN(false)
   , m_nImageCount(0)
   , m_pMemoryFile(NULL)
@@ -91,7 +92,6 @@ TWAIN_App_QT::TWAIN_App_QT(QWidget *parent, Qt::WFlags flags)
   PopulateTripletList();
   //Populate the capability list with all known capabilities, only needs to be done once
   PopulateCapabilityList();
-
   //Restore the geometry of the Window
   QSettings settings(QSettings::NativeFormat, QSettings::UserScope, m_twAppIdentity.Manufacturer, m_twAppIdentity.ProductName, this);
   int nVersion = settings.value("Version", -1).toInt();
@@ -120,6 +120,7 @@ TWAIN_App_QT::TWAIN_App_QT(QWidget *parent, Qt::WFlags flags)
     }
   }
 
+  //Clear members used for operations
   memset(&m_twFileSystem, 0, sizeof(m_twFileSystem));
   memset(&m_twCustomDSData, 0, sizeof(m_twCustomDSData));
   memset(&m_twSetupMemXfer, 0, sizeof(m_twSetupMemXfer));
@@ -131,11 +132,51 @@ TWAIN_App_QT::TWAIN_App_QT(QWidget *parent, Qt::WFlags flags)
 
   //Configure the GUI for startup
   EnableGUIByCurrentState();
+  //Display the items in the edit box
+  FillExtImageInfoEdit();
 
   //Make this always a queued connection to avoid re-entrancy issues
   connect( this, SIGNAL( customDataSourceSignal() ), this, SLOT( DataSourceSignal() ), Qt::QueuedConnection);
   //Make this an auto-connection so that status is updated immediately whenever possible
   connect( this, SIGNAL( customAppendStatusText(QString&) ), this, SLOT( AppendStatusText(QString&) ), Qt::AutoConnection);
+
+  if(pEngine)
+  {
+    //add all the objects that are to be exposed for scripting
+    pEngine->globalObject().setProperty("btnLoadDSM", pEngine->newQObject(ui.btnLoadDSM));
+    pEngine->globalObject().setProperty("btnUnloadDSM", pEngine->newQObject(ui.btnUnloadDSM));
+
+    pEngine->globalObject().setProperty("btnOpenDSM", pEngine->newQObject(ui.btnOpenDSM));
+    pEngine->globalObject().setProperty("btnCloseDSM", pEngine->newQObject(ui.btnCloseDSM));
+
+    pEngine->globalObject().setProperty("btnSetDefault", pEngine->newQObject(ui.btnSetDefault));
+    pEngine->globalObject().setProperty("btnOpen", pEngine->newQObject(ui.btnOpen));
+    pEngine->globalObject().setProperty("btnClose", pEngine->newQObject(ui.btnClose));
+
+    pEngine->globalObject().setProperty("btnEnable", pEngine->newQObject(ui.btnEnable));
+    pEngine->globalObject().setProperty("btnDisable", pEngine->newQObject(ui.btnDisable));
+
+    pEngine->globalObject().setProperty("radNoUI", pEngine->newQObject(ui.radNoUI));
+    pEngine->globalObject().setProperty("radShowUI", pEngine->newQObject(ui.radShowUI));
+    pEngine->globalObject().setProperty("radUIOnly", pEngine->newQObject(ui.radUIOnly));
+
+    pEngine->globalObject().setProperty("treCapability", pEngine->newQObject(ui.treCapability));
+    pEngine->globalObject().setProperty("treTriplet", pEngine->newQObject(ui.treTriplet));
+
+    pEngine->globalObject().setProperty("chkSave", pEngine->newQObject(ui.chkSave));
+    pEngine->globalObject().setProperty("edtSavePath", pEngine->newQObject(ui.edtSavePath));
+    pEngine->globalObject().setProperty("chkExtImageInfo", pEngine->newQObject(ui.chkExtImageInfo));
+    pEngine->globalObject().setProperty("chkSave", pEngine->newQObject(ui.chkSave));
+
+    pEngine->globalObject().setProperty("chkAutoDisable", pEngine->newQObject(ui.chkAutoDisable));
+    pEngine->globalObject().setProperty("radAuto", pEngine->newQObject(ui.radAuto));
+    pEngine->globalObject().setProperty("radManual", pEngine->newQObject(ui.radManual));
+
+    pEngine->globalObject().setProperty("btnTransfer", pEngine->newQObject(ui.btnTransfer));
+    pEngine->globalObject().setProperty("btnAbort", pEngine->newQObject(ui.btnAbort));
+    pEngine->globalObject().setProperty("edtStatus", pEngine->newQObject(ui.edtStatus));
+    pEngine->globalObject().setProperty("wndMain", pEngine->newQObject(this));
+  }
   return;
 }
 
@@ -171,23 +212,28 @@ void TWAIN_App_QT::EnableGUIByCurrentState()
 
   //must be in or at least state 4 for these operations 
   ui.btnClose->setEnabled( (4==m_uiState)?true:false );
-//  ui.btnSetCallback->setEnabled( (4==m_uiState)?true:false );
   ui.btnEnable->setEnabled( (4==m_uiState)?true:false );
   ui.radNoUI->setEnabled( (4==m_uiState)?true:false );
   ui.radShowUI->setEnabled( (4==m_uiState)?true:false );
   ui.radUIOnly->setEnabled( (4==m_uiState)?true:false );
   ui.treCapability->setEnabled( (4<=m_uiState)?true:false );
   ui.treTriplet->setEnabled( (4<=m_uiState)?true:false );
+  ui.btnAllSupported->setEnabled( (4==m_uiState)?true:false );
+
+  //must be in state 4 or 5 for this operation
+  ui.chkAutoDisable->setEnabled( ((4==m_uiState)||(5==m_uiState))?true:false );
+  ui.radAuto->setEnabled( ((4==m_uiState)||(5==m_uiState))?true:false );
+  ui.radManual->setEnabled( ((4==m_uiState)||(5==m_uiState))?true:false );
 
   //must be in state 5 for this operation
   ui.btnDisable->setEnabled( (5==m_uiState)?true:false );
-  ui.chkAutoDisable->setEnabled( (5==m_uiState)?true:false );
-  ui.radAuto->setEnabled( (5==m_uiState)?true:false );
-  ui.radManual->setEnabled( (5==m_uiState)?true:false );
 
+  //must be in state 6 for this operation
+  ui.btnTransfer->setEnabled( (ui.radManual->isChecked() && (6==m_uiState))?true:false );
   //must be in at least state 6 for this operation
-  ui.btnTransfer->setEnabled( (ui.radManual->isChecked() && (6<=m_uiState))?true:false );
   ui.btnAbort->setEnabled( (6<=m_uiState)?true:false );
+  //must be in state 7 for this operation
+  ui.btnNext->setEnabled( (ui.radManual->isChecked() && (7==m_uiState))?true:false );
   return;
 }
 
@@ -478,15 +524,15 @@ void TWAIN_App_QT::OnImageBegin(const TW_IMAGEINFO &twInfo, TW_UINT16 twXferMech
 
 void TWAIN_App_QT::OnImageEnd(const TW_IMAGEINFO &twInfo, TW_UINT16 twXferMech)
 {
-  pTW_EXTIMAGEINFO pInfo = NULL;
+  pTW_EXTIMAGEINFO pExtInfo = NULL;
   if(m_bSupportsExtImageInfo && (Qt::Checked == ui.chkExtImageInfo->checkState()))
   {
-    pInfo = CreateExtImageInfo(m_lstExtImageInfo);
-    if(pInfo)
+    pExtInfo = CreateExtImageInfo(m_lstExtImageInfo);
+    if(pExtInfo)
     {
-      if(TWRC_SUCCESS==DSM_Entry(DG_IMAGE, DAT_EXTIMAGEINFO, MSG_GET, pInfo, &m_twSourceIdentity))
+      if(TWRC_SUCCESS==DSM_Entry(DG_IMAGE, DAT_EXTIMAGEINFO, MSG_GET, pExtInfo, &m_twSourceIdentity))
       {
-        TraceStruct(*pInfo);
+        TraceStruct(*pExtInfo);
       }
     }
   }
@@ -510,6 +556,46 @@ void TWAIN_App_QT::OnImageEnd(const TW_IMAGEINFO &twInfo, TW_UINT16 twXferMech)
           m_pMemoryDataStream->writeRawData(reinterpret_cast<char*>(&m_bmfhBitmap), sizeof(m_bmfhBitmap));
           //dump the bitmap info header
           m_pMemoryDataStream->writeRawData(reinterpret_cast<char*>(&m_bmihBitmap), sizeof(m_bmihBitmap));
+          if(m_bmihBitmap.biClrUsed && (TWPT_PALETTE!=twInfo.PixelType)) /*TWPT_GRAY or TWPT_BW*/
+          {
+            RGBQUAD *pbmiColors = new RGBQUAD[m_bmihBitmap.biClrUsed];
+            //for now just dump an empty palette in here
+            memset(pbmiColors, 0, sizeof(RGBQUAD)*m_bmihBitmap.biClrUsed);
+            //Get the pixelflavor
+            TW_UINT16 twPixelFlavor = TWPF_CHOCOLATE;
+            pTW_INFO pInfo = FindInfo(pExtInfo, TWEI_PIXELFLAVOR);
+            if(pInfo && (TWRC_SUCCESS==pInfo->ReturnCode))
+            {
+              //we got it from the ExtendedImageInfo
+              twPixelFlavor = static_cast<TW_UINT16>(pInfo->Item);
+            }
+            else
+            {
+              //not found there get try the capability
+              GetCapabilityOneValue(ICAP_PIXELFLAVOR, twPixelFlavor);
+            }
+            //if it is not chocolate then we have to rethink the palette
+            if(TWPF_CHOCOLATE!=twPixelFlavor)
+            {
+              //assume our palette is TWPF_CHOCOLATE (black is zero) - can be corrected at image end if necessary
+				      int nIncr = 0xFF / ( m_bmihBitmap.biClrUsed - 1 );
+				      int nVal = 0;
+				      for (int nIndex=0; nIndex<m_bmihBitmap.biClrUsed; nIndex++)
+				      {
+                //create the palette
+                nVal = 0xFF - nIndex * nIncr; 
+					      pbmiColors[nIndex].rgbRed = static_cast<BYTE>(nVal);
+					      pbmiColors[nIndex].rgbGreen = static_cast<BYTE>(nVal);
+					      pbmiColors[nIndex].rgbBlue = static_cast<BYTE>(nVal);
+					      pbmiColors[nIndex].rgbReserved = 0;
+				      }
+              //dump the palette in the file
+              m_pMemoryDataStream->writeRawData(reinterpret_cast<char*>(pbmiColors), sizeof(RGBQUAD)*m_bmihBitmap.biClrUsed);
+            }
+            //cleanup the variables
+            delete [] pbmiColors;
+            pbmiColors = NULL;
+          }
           break;
         case TWFF_TIFF:
           #pragma message("TODO: implement TIFF undefined image size")
@@ -518,9 +604,9 @@ void TWAIN_App_QT::OnImageEnd(const TW_IMAGEINFO &twInfo, TW_UINT16 twXferMech)
     }
   }
 
-  if(pInfo)
+  if(pExtInfo)
   {
-    CleanupExtImageInfo(pInfo);
+    CleanupExtImageInfo(pExtInfo);
   }
   
   if(m_pMemoryDataStream)
@@ -727,8 +813,12 @@ void TWAIN_App_QT::on_btnCloseDSM_clicked(bool bChecked)
 
 void TWAIN_App_QT::on_btnOpen_clicked(bool bChecked)
 {
+  //Display the wait cursor, this could take a while
+  QApplication::setOverrideCursor(Qt::WaitCursor);
   //Open the current DataSource
   OpenDS( ui.cbxSources->currentText().toAscii() );
+  //Restore the cursor
+  QApplication::restoreOverrideCursor();
   //Populate or re-populate the Capability list
   RefreshCapabilityList();
   //Update the state of the GUI
@@ -756,6 +846,7 @@ void TWAIN_App_QT::on_btnSet_clicked(bool bChecked)
   //Display a UI for selecting EXTIMAGEINFO values to read
   ExtImageInfoSel dlg(m_lstExtImageInfo, this);
   dlg.exec();
+  FillExtImageInfoEdit();
   return;
 }
 
@@ -882,7 +973,7 @@ void TWAIN_App_QT::DataSourceSignal()
         if(ui.radAuto->isChecked())
         {
           //Automatically transfer all the images
-          while((TWRC_SUCCESS==DoTransfer())&&(6==m_uiState));
+          while((TWRC_SUCCESS==DoTransfer())&&(TWRC_SUCCESS==DoEndXfer())&&(6==m_uiState));
         }
         //Remove this signal from the queue
         ClearDSRequest();
@@ -1302,7 +1393,7 @@ enum CapabilityColumns
   ColLast,
 };
 
-void TWAIN_App_QT::RefreshCapabilityList()
+void TWAIN_App_QT::RefreshCapabilityList(bool bUpdateAll/*=false*/)
 {
   MeterDlg dlg;
 
@@ -1330,7 +1421,10 @@ void TWAIN_App_QT::RefreshCapabilityList()
           if(true==cwSupportedCaps.ContainsItem(static_cast<TW_UINT16>(pSubItem->data(0, Qt::UserRole).toUInt())))
           {
             pSubItem->setDisabled(false);
-//            FillItemFromCapability(pSubItem);
+            if(bUpdateAll)
+            {
+              FillItemFromCapability(pSubItem);
+            }
           }
           else
           {
@@ -1879,6 +1973,26 @@ void TWAIN_App_QT::OnExtImageInfo(TW_UINT16 twMsg)
 {
   switch(twMsg)
   {
+    case MSG_GET:
+      {
+        //make a copy of the extended info used for all operations
+        vector<TW_UINT16> lstExtImageInfo = m_lstExtImageInfo;
+        //Display a UI for selecting EXTIMAGEINFO values to read
+        ExtImageInfoSel dlg(lstExtImageInfo, this);
+        if(QDialog::Accepted==dlg.exec())
+        {
+          pTW_EXTIMAGEINFO pInfo = CreateExtImageInfo(m_lstExtImageInfo);
+          if(pInfo)
+          {
+            if(TWRC_SUCCESS==DSM_Entry(DG_IMAGE, DAT_EXTIMAGEINFO, MSG_GET, pInfo, &m_twSourceIdentity))
+            {
+              TraceStruct(*pInfo);
+            }
+            CleanupExtImageInfo(pInfo);
+          }
+        }
+      }
+      break;
   }
   return;
 }
@@ -2017,6 +2131,23 @@ pTW_EXTIMAGEINFO TWAIN_App_QT::CreateExtImageInfo(const vector<TW_UINT16> &lstEx
   return pRet;
 }
 
+pTW_INFO TWAIN_App_QT::FindInfo(pTW_EXTIMAGEINFO pInfo, TW_UINT16 twInfoID)
+{
+  pTW_INFO pRet = NULL;
+  if(pInfo)
+  {
+    for(int nIndex = 0; nIndex < pInfo->NumInfos; nIndex++)
+    {
+      if(twInfoID==pInfo->Info[nIndex].InfoID)
+      {
+        pRet = &pInfo->Info[nIndex];
+        break;
+      }
+    }
+  }
+  return pRet;
+}
+
 void TWAIN_App_QT::CleanupExtImageInfo(pTW_EXTIMAGEINFO &pInfo)
 {
   if(pInfo)
@@ -2024,5 +2155,136 @@ void TWAIN_App_QT::CleanupExtImageInfo(pTW_EXTIMAGEINFO &pInfo)
     delete [] reinterpret_cast<BYTE*>(pInfo);
     pInfo = NULL;
   }
+  return;
+}
+
+void TWAIN_App_QT::FillExtImageInfoEdit()
+{
+  QString strText;
+//m_lstExtImageInfo
+  for(vector<TW_UINT16>::iterator iter = m_lstExtImageInfo.begin(); iter != m_lstExtImageInfo.end(); iter++)
+  {
+    strText += convertExtImageInfoName_toString(*iter);
+    if(m_lstExtImageInfo.end()!=(iter+1))
+    {
+      strText += ", ";
+    }
+  }
+  ui.edtExtImageInfo->setText(strText);
+  return;
+}
+
+void TWAIN_App_QT::on_mnuLoadFromState1_triggered(bool bChecked)
+{
+  //what script to execute
+  QString strResult = QFileDialog::getOpenFileName(this, "Load Script", "", "Scripts *.js *.qs");
+  //Get the Custom DS Data
+  if(strResult.length() && QFile::exists(strResult))
+  {
+    QFile qfScript(strResult);
+    //try to load the script file
+    if(qfScript.open(QIODevice::ReadOnly))
+    {
+      //move to state 1
+      ReturnToState(1);
+      //Update the state of the GUI
+      EnableGUIByCurrentState();
+      //submit the script to the script engine
+      QScriptValue qsv = m_pEngine->evaluate(qfScript.readAll(), strResult);
+      qfScript.close();
+      //check for errors
+      if(m_pEngine->hasUncaughtException())
+      {
+        //notify the user
+        QMessageBox::warning(this, "Script Error", qsv.toString());
+      }
+    }
+  }
+  return;
+}
+
+void TWAIN_App_QT::on_mnuLoadFromCurrentState_triggered(bool bChecked)
+{
+  //what script to execute
+  QString strResult = QFileDialog::getOpenFileName(this, "Load Script", "", "Scripts *.js *.qs");
+  //Get the Custom DS Data
+  if(strResult.length() && QFile::exists(strResult))
+  {
+    QFile qfScript(strResult);
+    //try to load the script file
+    if(qfScript.open(QIODevice::ReadOnly))
+    {
+      //submit the script to the script engine
+      QScriptValue qsv = m_pEngine->evaluate(qfScript.readAll(), strResult);
+      qfScript.close();
+      //check for errors
+      if(m_pEngine->hasUncaughtException())
+      {
+        //notify the user
+        QMessageBox::warning(this, "Script Error", qsv.toString());
+      }
+    }
+  }
+  return;
+}
+
+QStringList TWAIN_App_QT::GetSourceList()
+{
+  QStringList lst;
+  for(int nIndex = 0; nIndex < ui.cbxSources->count(); nIndex++)
+  {
+    lst.push_back(ui.cbxSources->itemText(nIndex));
+  }
+  return lst;
+}
+
+QString TWAIN_App_QT::GetCurrentSource()
+{
+  return ui.cbxSources->currentText();
+}
+
+
+bool TWAIN_App_QT::SetCurrentSource(QString strNewSource)
+{
+  int nIndex = ui.cbxSources->findText(strNewSource);
+  if(-1!=nIndex)
+  {
+    ui.cbxSources->setCurrentIndex(nIndex);
+  }
+  return (ui.cbxSources->currentIndex()==nIndex)?true:false;
+}
+
+bool TWAIN_App_QT::LowerStateTo(int nState)
+{
+  bool bRC = ReturnToState(nState);
+  //Update the state of the GUI
+  EnableGUIByCurrentState();
+  return bRC;
+}
+
+int TWAIN_App_QT::GetCurrentState()
+{
+  return CTWAINSession::GetCurrentState();
+}
+
+void TWAIN_App_QT::AppendScriptStatusText(QString strText)
+{
+  TraceMessage(strText.toAscii());
+  return;
+}
+
+void TWAIN_App_QT::on_btnNext_clicked(bool bChecked)
+{
+  //Issue the DAT_PENDINGXFERS/MSG_ENDXFER call
+  DoEndXfer();
+  //Update the state of the GUI
+  EnableGUIByCurrentState();
+  return;
+}
+
+void TWAIN_App_QT::on_btnAllSupported_clicked(bool bChecked)
+{
+  //Iterate throught the capability list and force update the actual values
+  RefreshCapabilityList(true);
   return;
 }
