@@ -1,4 +1,5 @@
 #include <QtGui>
+#include <QtScript\QtScript>
 
 #ifdef _WIN32
 #include "windows.h"

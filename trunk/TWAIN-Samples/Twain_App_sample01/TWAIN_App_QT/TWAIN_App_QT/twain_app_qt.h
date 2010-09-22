@@ -5,17 +5,21 @@
 #include "ui_twain_app_qt.h"
 #include "TWAINSession.h"
 
-class TWAIN_App_QT : public QMainWindow, public CTWAINSession
+class TWAIN_App_QT : public QMainWindow, public CTWAINSession, public QScriptable
 {
   Q_OBJECT
 
   public:
-  TWAIN_App_QT(QWidget *parent = 0, Qt::WFlags flags = 0);
+  TWAIN_App_QT(QScriptEngine *pEngine, QWidget *parent = 0, Qt::WFlags flags = 0);
   ~TWAIN_App_QT();
 
   public slots:
-  void DataSourceSignal();
-  void AppendStatusText(QString &strText);
+  QStringList GetSourceList();
+  QString GetCurrentSource();
+  bool SetCurrentSource(QString strNewSource);
+  bool LowerStateTo(int nState);
+  int GetCurrentState();
+  void AppendScriptStatusText(QString strText);
 
   signals:
   void customDataSourceSignal();
@@ -87,8 +91,9 @@ class TWAIN_App_QT : public QMainWindow, public CTWAINSession
   void PopulateDSList();
   void PopulateTripletList();
   void PopulateCapabilityList();
-  void RefreshCapabilityList();
+  void RefreshCapabilityList(bool bUpdateAll=false);
   void FillItemFromCapability(QTreeWidgetItem *pItem);
+  void FillExtImageInfoEdit();
 
   void OnPendingXfers(TW_UINT16 twMsg);
   void OnSetupMemXfer(TW_UINT16 twMsg);
@@ -111,6 +116,7 @@ class TWAIN_App_QT : public QMainWindow, public CTWAINSession
 
   pTW_EXTIMAGEINFO CreateExtImageInfo(const vector<TW_UINT16> &lstExtIInfo);
   void CleanupExtImageInfo(pTW_EXTIMAGEINFO &pInfo);
+  pTW_INFO FindInfo(pTW_EXTIMAGEINFO pInfo, TW_UINT16 twInfoID);
 
   void TraceStruct(const TW_PENDINGXFERS &twData);
   void TraceStruct(const TW_SETUPMEMXFER &twData);
@@ -151,6 +157,8 @@ class TWAIN_App_QT : public QMainWindow, public CTWAINSession
   TW_IMAGELAYOUT m_twImageLayout;
   
   protected slots:
+  void DataSourceSignal();
+  void AppendStatusText(QString &strText);
   //void on_<widget name>_<signal name>(<signal parameters>);
   void on_treCapability_itemClicked(QTreeWidgetItem * item, int column);
   void on_treCapability_itemDoubleClicked(QTreeWidgetItem * item, int column);
@@ -168,10 +176,16 @@ class TWAIN_App_QT : public QMainWindow, public CTWAINSession
   void on_btnRecover_clicked(bool bChecked);
   void on_btnSetDefault_clicked(bool bChecked);
   void on_btnTransfer_clicked(bool bChecked);
+  void on_btnNext_clicked(bool bChecked);
   void on_btnAbort_clicked(bool bChecked);
   void on_radAuto_toggled(bool bChecked);
   void on_radManual_toggled(bool bChecked);
   void on_btnSelPath_clicked(bool bChecked);
+  void on_mnuLoadFromState1_triggered(bool bChecked);
+  void on_mnuLoadFromCurrentState_triggered(bool bChecked);
+  void on_btnAllSupported_clicked(bool bChecked);
+
+//mnuLoadFromCurrentState
 
   //Check boxes
   void on_chkExtImageInfo_clicked(bool bChecked);
@@ -179,6 +193,7 @@ class TWAIN_App_QT : public QMainWindow, public CTWAINSession
 
   private:
   Ui::TWAIN_App_QTClass ui;
+  QScriptEngine *m_pEngine;
 };
 
 class CQTWAINApp : public QApplication

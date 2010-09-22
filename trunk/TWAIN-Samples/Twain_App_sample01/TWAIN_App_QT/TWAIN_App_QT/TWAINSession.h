@@ -345,7 +345,12 @@ class CTWAINSession
   * Examines the current value of CAP_XFERMECH and invokes the appropriate transfer methods and signals
   */
   TW_UINT16 DoTransfer();
-  
+  /**
+  * Method to manually invoke a transfer
+  * Must be called in State 6
+  * Examines the current value of CAP_XFERMECH and invokes the appropriate transfer methods and signals
+  */
+  TW_UINT16 DoEndXfer();
   /**
   * Optional Implementation specific handler called when an event is signaled from the DS.
   * Do very little on this method as it may be in the context of a thread other than the TWAIN session.
@@ -435,6 +440,7 @@ class CTWAINSession
   TW_UINT32 m_twInstID; /**< ID assigned to the current class instance */
   CRITICAL_SECTION m_csProtectRequestQueue; /**< critical section used to control access to the DataSource request queue */
   queue<TW_UINT16> m_twDSRequestQueue; /**< Queue of DataSource requests */
+  TW_PENDINGXFERS m_twPendingXfers; /**< when transferring several images, this contains the last MSG_ENDXEER result */
   
   bool m_bStartOfStack; /**< flag is set to true on each state 5-6 transition and false on each 6 to 7 transition */
   /**
