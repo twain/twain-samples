@@ -1680,6 +1680,7 @@ void TWAIN_App_QT::on_treTriplet_itemDoubleClicked(QTreeWidgetItem *pItem, int n
 
 void TWAIN_App_QT::OnPendingXfers(TW_UINT16 twMsg)
 {
+  TraceMessage("OnPendingXfers / %s not implemented yet", convertMessage_toString(twMsg));
   switch(twMsg)
   {
   }
@@ -1745,6 +1746,7 @@ void TWAIN_App_QT::OnStatus(TW_UINT16 twMsg)
 
 void TWAIN_App_QT::OnXferGroup(TW_UINT16 twMsg)
 {
+  TraceMessage("OnXferGroup / %s not implemented yet", convertMessage_toString(twMsg));
   switch(twMsg)
   {
   }
@@ -1891,6 +1893,7 @@ void TWAIN_App_QT::OnFileSystem(TW_UINT16 twMsg)
 
 void TWAIN_App_QT::OnPassThru(TW_UINT16 twMsg)
 {
+  TraceMessage("OnPassThru / %s not implemented yet", convertMessage_toString(twMsg));
   switch(twMsg)
   {
   }
@@ -1899,6 +1902,7 @@ void TWAIN_App_QT::OnPassThru(TW_UINT16 twMsg)
 
 void TWAIN_App_QT::OnStatusUTF8(TW_UINT16 twMsg)
 {
+  TraceMessage("OnStatusUTF8 / %s not implemented yet", convertMessage_toString(twMsg));
   switch(twMsg)
   {
   }
@@ -1931,6 +1935,7 @@ void TWAIN_App_QT::OnImageLayout(TW_UINT16 twMsg)
 
 void TWAIN_App_QT::OnCIEColor(TW_UINT16 twMsg)
 {
+  TraceMessage("OnCIEColor / %s not implemented yet", convertMessage_toString(twMsg));
   switch(twMsg)
   {
   }
@@ -1939,6 +1944,7 @@ void TWAIN_App_QT::OnCIEColor(TW_UINT16 twMsg)
 
 void TWAIN_App_QT::OnGrayResponse(TW_UINT16 twMsg)
 {
+  TraceMessage("OnGrayResponse / %s not implemented yet", convertMessage_toString(twMsg));
   switch(twMsg)
   {
   }
@@ -1947,6 +1953,7 @@ void TWAIN_App_QT::OnGrayResponse(TW_UINT16 twMsg)
 
 void TWAIN_App_QT::OnRGBResponse(TW_UINT16 twMsg)
 {
+  TraceMessage("OnRGBResponse / %s not implemented yet", convertMessage_toString(twMsg));
   switch(twMsg)
   {
   }
@@ -1955,6 +1962,7 @@ void TWAIN_App_QT::OnRGBResponse(TW_UINT16 twMsg)
 
 void TWAIN_App_QT::OnJPEGCompression(TW_UINT16 twMsg)
 {
+  TraceMessage("OnJPEGCompression / %s not implemented yet", convertMessage_toString(twMsg));
   switch(twMsg)
   {
   }
@@ -1963,6 +1971,7 @@ void TWAIN_App_QT::OnJPEGCompression(TW_UINT16 twMsg)
 
 void TWAIN_App_QT::OnPalette8(TW_UINT16 twMsg)
 {
+  TraceMessage("OnPalette8 / %s not implemented yet", convertMessage_toString(twMsg));
   switch(twMsg)
   {
   }
@@ -1999,6 +2008,7 @@ void TWAIN_App_QT::OnExtImageInfo(TW_UINT16 twMsg)
 
 void TWAIN_App_QT::OnICCProfile(TW_UINT16 twMsg)
 {
+  TraceMessage("OnICCProfile / %s not implemented yet", convertMessage_toString(twMsg));
   switch(twMsg)
   {
   }
