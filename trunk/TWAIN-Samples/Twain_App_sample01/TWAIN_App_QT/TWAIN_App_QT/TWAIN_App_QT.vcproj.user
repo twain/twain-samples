@@ -9,8 +9,8 @@
 			Name="Release|Win32"
 			>
 			<DebugSettings
-				Command="$(TargetPath)"
-				WorkingDirectory=""
+				Command="&quot;$(ProjectDir)..\..\..\pub\bin\$(TargetFileName)&quot;"
+				WorkingDirectory="&quot;$(ProjectDir)..\..\..\pub\bin&quot;"
 				CommandArguments=""
 				Attach="false"
 				DebuggerType="3"
@@ -65,8 +65,8 @@
 			Name="Debug|Win32"
 			>
 			<DebugSettings
-				Command="$(TargetPath)"
-				WorkingDirectory=""
+				Command="&quot;$(ProjectDir)..\..\..\pub\bin\$(TargetFileName)&quot;"
+				WorkingDirectory="&quot;$(ProjectDir)..\..\..\pub\bin&quot;"
 				CommandArguments=""
 				Attach="false"
 				DebuggerType="3"
