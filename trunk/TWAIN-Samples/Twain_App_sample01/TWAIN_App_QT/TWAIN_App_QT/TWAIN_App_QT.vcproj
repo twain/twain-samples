@@ -88,13 +88,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot; &amp; copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;"
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)..\..\..\pub\bin&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)..\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)..\..\..\pub\bin&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
 			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)64"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -163,7 +163,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\pub\bin&quot; &amp; copy &quot;$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\pub\bin&quot;"
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)..\..\..\pub\bin&quot; &amp; copy &quot;$(ProjectDir)..\..\..\pub\external\bin\FreeImagex64.dll&quot; &quot;$(ProjectDir)..\..\..\pub\bin&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -237,13 +237,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\..\pub\bin&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\..\pub\bin&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)..\..\..\pub\bin&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)..\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)..\..\..\pub\bin&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
 			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)64"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -313,7 +313,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)\..\..\pub\bin&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\..\pub\external\bin\FreeImage.dll&quot; &quot;$(ProjectDir)\..\..\pub\bin&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(TargetPath)&quot;  &quot;$(ProjectDir)..\..\..\pub\bin&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)..\..\..\pub\external\bin\FreeImagedx64.dll&quot; &quot;$(ProjectDir)..\..\..\pub\bin&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -1260,26 +1260,6 @@
 			SourceControlFiles="false"
 			>
 			<File
-				RelativePath=".\GeneratedFiles\Release\moc_enumset.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\GeneratedFiles\Debug\moc_enumset.cpp"
 				>
 				<FileConfiguration
@@ -1300,7 +1280,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\GeneratedFiles\Release\moc_extimageinfosel.cpp"
+				RelativePath=".\GeneratedFiles\Release\moc_enumset.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1340,7 +1320,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\GeneratedFiles\Release\moc_meterdlg.cpp"
+				RelativePath=".\GeneratedFiles\Release\moc_extimageinfosel.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1380,10 +1360,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\GeneratedFiles\Debug\moc_setstate.cpp"
+				RelativePath=".\GeneratedFiles\Release\moc_meterdlg.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1391,7 +1371,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|x64"
+					Name="Debug|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1412,6 +1392,26 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\GeneratedFiles\Debug\moc_setstate.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1460,40 +1460,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\GeneratedFiles\Debug\moc_twain_app_qt.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\GeneratedFiles\Release\moc_twain_app_qt.cpp"
 				>
 				<FileConfiguration
@@ -1521,6 +1487,40 @@
 				<FileConfiguration
 					Name="Debug|x64"
 					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\GeneratedFiles\Debug\moc_twain_app_qt.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|x64"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -1612,7 +1612,7 @@
 		/>
 		<Global
 			Name="QtVersion Win32"
-			Value="4.6.3"
+			Value="$(DefaultQtVersion)"
 		/>
 		<Global
 			Name="RccDir"
