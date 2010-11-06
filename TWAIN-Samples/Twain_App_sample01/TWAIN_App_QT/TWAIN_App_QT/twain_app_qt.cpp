@@ -88,6 +88,9 @@ TWAIN_App_QT::TWAIN_App_QT(QScriptEngine *pEngine, QWidget *parent, Qt::WFlags f
   SSTRCPY(m_twAppIdentity.ProductFamily, sizeof(m_twAppIdentity.ProductFamily), "Sample Applications");
   SSTRCPY(m_twAppIdentity.ProductName, sizeof(m_twAppIdentity.ProductName), "QT Sample App");
 
+  //QMotifStyle
+  ui.splConfigAcquire->setStyle(new QCDEStyle());
+
   //Populate the triplet list, this never changes and only needs to be done once
   PopulateTripletList();
   //Populate the capability list with all known capabilities, only needs to be done once
@@ -1680,9 +1683,15 @@ void TWAIN_App_QT::on_treTriplet_itemDoubleClicked(QTreeWidgetItem *pItem, int n
 
 void TWAIN_App_QT::OnPendingXfers(TW_UINT16 twMsg)
 {
-  TraceMessage("OnPendingXfers / %s not implemented yet", convertMessage_toString(twMsg));
   switch(twMsg)
   {
+    case MSG_GET:
+    case MSG_STOPFEEDER:
+      if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_PENDINGXFERS, twMsg, &m_twPendingXfers, &m_twSourceIdentity))
+      {
+        TraceStruct(m_twSetupMemXfer);
+      }
+      break;
   }
   return;
 }
@@ -1692,7 +1701,7 @@ void TWAIN_App_QT::OnSetupMemXfer(TW_UINT16 twMsg)
   switch(twMsg)
   {
     case MSG_GET:
-      if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_SETUPMEMXFER, MSG_GET, &m_twSetupMemXfer, &m_twSourceIdentity))
+      if(TWRC_SUCCESS==DSM_Entry(DG_CONTROL, DAT_SETUPMEMXFER, twMsg, &m_twSetupMemXfer, &m_twSourceIdentity))
       {
         TraceStruct(m_twSetupMemXfer);
       }
@@ -2017,6 +2026,7 @@ void TWAIN_App_QT::OnICCProfile(TW_UINT16 twMsg)
 
 void TWAIN_App_QT::TraceStruct(const TW_PENDINGXFERS &twData)
 {
+  TraceMessage("Count = %d, EOJ = %s", twData.Count, convertEOJ_toString(twData.EOJ));
   return;
 }
 
