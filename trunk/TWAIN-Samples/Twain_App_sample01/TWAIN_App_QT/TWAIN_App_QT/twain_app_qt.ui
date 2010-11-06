@@ -155,8 +155,11 @@
       <property name="opaqueResize">
        <bool>true</bool>
       </property>
+      <property name="handleWidth">
+       <number>10</number>
+      </property>
       <property name="childrenCollapsible">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <widget class="QGroupBox" name="groupBox_2">
        <property name="sizePolicy">

@@ -482,12 +482,18 @@ const char *CapabilityValueToString(TW_UINT16 twCapId, TW_UINT16 twItemType, con
 * @param[in] _unItem the value
 * @return the equivalent string
 */
-const char *convertFileType_toString(const TW_UINT16 _nItem);
+const char *convertFileType_toString(const TW_UINT16 _unItem);
 /**
 * converts the TWAIN TWFF_ value to string form
 * @param[in] _unItem the value
 * @return the equivalent string
 */
 const char *convertFileFormat_toString(const TW_UINT16 _unItem);
+/**
+* converts the TWAIN TWEJ_ value to string form
+* @param[in] _unItem the value
+* @return the equivalent string
+*/
+const char *convertEOJ_toString(const TW_UINT16 _unItem);
 
 #endif // __TWAINSTRING_H__

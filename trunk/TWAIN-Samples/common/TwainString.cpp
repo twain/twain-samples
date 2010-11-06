@@ -6935,3 +6935,44 @@ const char *convertFileFormat_toString(const TW_UINT16 _nItem)
 {
   return CapabilityValueToString(ICAP_IMAGEFILEFORMAT, TWTY_UINT16, &_nItem);
 }
+
+const char *convertEOJ_toString(const TW_UINT16 _nItem)
+{
+  const char *strRet = NULL;
+  switch(_nItem)
+  {
+    case TWEJ_NONE:
+      strRet = "TWEJ_NONE";
+      break;
+    case TWEJ_MIDSEPARATOR:
+      strRet = "TWEJ_MIDSEPARATOR";
+      break;
+    case TWEJ_PATCH1:
+      strRet = "TWEJ_PATCH1";
+      break;
+    case TWEJ_PATCH2:
+      strRet = "TWEJ_PATCH2";
+      break;
+    case TWEJ_PATCH3:
+      strRet = "TWEJ_PATCH3";
+      break;
+    case TWEJ_PATCH4:
+      strRet = "TWEJ_PATCH4";
+      break;
+    case TWEJ_PATCH6:
+      strRet = "TWEJ_PATCH6";
+      break;
+    case TWEJ_PATCHT:
+      strRet = "TWEJ_PATCHT";
+      break;
+    default:
+      {
+        char * buff = nextTempBuffer();
+        SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Un-recognized FileType 0x%04X", _nItem);
+        strRet = buff;
+      }
+      break;
+  }
+  return strRet;
+}
+

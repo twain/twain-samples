@@ -8,6 +8,8 @@ int main(int argc, char *argv[])
   CQTWAINApp a(argc, argv);
   //Instantiate the scripting engine
   QScriptEngine qsEngine;
+
+  QString strStr = QLibraryInfo::location(QLibraryInfo::PluginsPath);
   //Create the main window
   TWAIN_App_QT w(&qsEngine);
   a.m_pMainWnd = &w;
