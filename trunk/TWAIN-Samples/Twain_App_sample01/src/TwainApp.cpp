@@ -1230,7 +1230,7 @@ void TwainApp::updateEXTIMAGEINFO()
               else
               {
                 // This is an unknown type so check to see if it is printable
-                for ( int i=0; i<min(StrLen-1, 255); i++ )
+                for ( int i=0; i < (int)(min(StrLen-1, 255)); i++ )
                 {
                   if ( !isprint( (int) pStrData[i] ) )
                   {
@@ -1242,7 +1242,7 @@ void TwainApp::updateEXTIMAGEINFO()
 
               if(bNonPrintableData)
               {
-                for ( int i=0; i<min(StrLen, 60); i++ )
+                for ( int i=0; i < (int)(min(StrLen, 60)); i++ )
                 {
                   SSNPRINTF(buff, 256, 256, "%2.2X ", pStrData[i]);
                   m_strExImageInfo += buff;
