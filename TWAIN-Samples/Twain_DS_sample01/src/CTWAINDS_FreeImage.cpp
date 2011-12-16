@@ -1112,6 +1112,13 @@ TW_INT16 CTWAINDS_FreeImage::getMemoryXfer(pTW_SETUPMEMXFER _pData)
     return TWRC_FAILURE;
   }
 
+  // Validate the pointer...
+  if (_pData==0)
+  {
+    setConditionCode(TWCC_BADVALUE);
+    return TWRC_FAILURE;
+  }
+
   // Min is the physical width at highest res and hishest bits/pixel count
   TW_UINT32 bytes = (TW_UINT32)BYTES_PERLINE_ALIGN4(8.5*600, 24);
   _pData->MinBufSize = bytes;
@@ -1798,6 +1805,11 @@ TW_INT16 CTWAINDS_FreeImage::dat_imagelayout(TW_UINT16         _MSG,
 TW_INT16 CTWAINDS_FreeImage::GetGustomDSData(pTW_CUSTOMDSDATA _pDSData)
 {
   stringstream DsData;
+  if (_pDSData==0)
+  {
+	  setConditionCode(TWCC_BADVALUE);
+      return TWRC_FAILURE;
+  }
   if(StoreCustomDSdata(DsData))
   {
     DsData.seekp(0, ios_base::end);
@@ -1831,7 +1843,7 @@ TW_INT16 CTWAINDS_FreeImage::GetGustomDSData(pTW_CUSTOMDSDATA _pDSData)
 //////////////////////////////////////////////////////////////////////////////
 TW_INT16 CTWAINDS_FreeImage::SetGustomDSData(pTW_CUSTOMDSDATA _pDSData)
 {
-  if(_pDSData->hData==0 || _pDSData->InfoLength<=sizeof(TW_GUID))
+  if(_pDSData==0 || _pDSData->hData==0 || _pDSData->InfoLength<=sizeof(TW_GUID))
   {
     setConditionCode(TWCC_BADVALUE);
     return TWRC_FAILURE;
