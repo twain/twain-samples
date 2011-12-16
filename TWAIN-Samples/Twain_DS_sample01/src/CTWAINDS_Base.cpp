@@ -225,17 +225,26 @@ TW_INT16 CTWAINDS_Base::dat_event(TW_UINT16    _MSG,
 {
   TW_INT16 twrc = TWRC_SUCCESS;
 
-  switch(_MSG)
+  if (_pEvent==0)
   {
-    case MSG_PROCESSEVENT:
-      twrc = processEvent(_pEvent);
-      break;
-
-    default:
-      setConditionCode(TWCC_BADPROTOCOL);
-      //assert(0);
+      setConditionCode(TWCC_BADVALUE);
       twrc = TWRC_FAILURE;
-      break;
+  }
+
+  else
+  {
+      switch(_MSG)
+      {
+        case MSG_PROCESSEVENT:
+          twrc = processEvent(_pEvent);
+          break;
+
+        default:
+          setConditionCode(TWCC_BADPROTOCOL);
+          //assert(0);
+          twrc = TWRC_FAILURE;
+          break;
+      }
   }
 
   return twrc;
@@ -282,7 +291,8 @@ TW_INT16 CTWAINDS_Base::dat_capability(TW_UINT16      _MSG,
 
   if(MSG_RESETALL == _MSG) // special case
   {
-    if(m_CurrentState >= dsState_XferReady)
+    // Reject anything state 5 or higher...
+    if(m_CurrentState >= dsState_Enabled)
     {
       setConditionCode(TWCC_SEQERROR);
       return TWRC_FAILURE;
@@ -375,26 +385,35 @@ TW_INT16 CTWAINDS_Base::dat_userinterface(TW_UINT16         _MSG,
 {
   TW_INT16 twrc = TWRC_SUCCESS;
 
-
-  switch(_MSG)
+  if (_pData==0)
   {
-    case MSG_ENABLEDS:
-      twrc = enableDS(_pData);
-      break;
-
-    case MSG_ENABLEDSUIONLY:
-      twrc = enableDSOnly(_pData);
-      break;
-
-    case MSG_DISABLEDS:
-      twrc = disableDS(_pData);
-      break;
-
-    default:
-      setConditionCode(TWCC_BADPROTOCOL);
+      setConditionCode(TWCC_BADVALUE);
       //assert(0);
       twrc = TWRC_FAILURE;
-      break;
+  }
+
+  else
+  {
+	  switch(_MSG)
+	  {
+		case MSG_ENABLEDS:
+		  twrc = enableDS(_pData);
+		  break;
+
+		case MSG_ENABLEDSUIONLY:
+		  twrc = enableDSOnly(_pData);
+		  break;
+
+		case MSG_DISABLEDS:
+		  twrc = disableDS(_pData);
+		  break;
+
+		default:
+		  setConditionCode(TWCC_BADPROTOCOL);
+		  //assert(0);
+		  twrc = TWRC_FAILURE;
+		  break;
+	  }
   }
 
   return twrc;
@@ -615,18 +634,27 @@ TW_INT16 CTWAINDS_Base::dat_status(TW_UINT16     _MSG,
 {
   TW_INT16 twrc = TWRC_SUCCESS;
 
-  switch(_MSG)
+  if (_pStatus==0)
   {
-    case MSG_GET:
-      _pStatus->ConditionCode = getConditionCode();
-      setConditionCode(TWCC_SUCCESS);
-      break;
+	  setConditionCode(TWCC_BADVALUE);
+	  twrc = TWRC_FAILURE;
+  }
 
-    default:
-      setConditionCode(TWCC_BADPROTOCOL);
-      //assert(0);
-      twrc = TWRC_FAILURE;
-      break;
+  else
+  {
+      switch(_MSG)
+      {
+        case MSG_GET:
+          _pStatus->ConditionCode = getConditionCode();
+          setConditionCode(TWCC_SUCCESS);
+          break;
+
+        default:
+          setConditionCode(TWCC_BADPROTOCOL);
+          //assert(0);
+          twrc = TWRC_FAILURE;
+          break;
+      }
   }
 
   return twrc;
@@ -915,7 +943,7 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
       {
         case MSG_RESET:
           //MSG_RESET is supposed to reset and then return the current value
-          if(m_CurrentState >= dsState_XferReady)
+          if(m_CurrentState >= dsState_Enabled)
           {
             setConditionCode(TWCC_SEQERROR);
             twrc = TWRC_FAILURE;
@@ -940,7 +968,7 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
 
         case MSG_SET:
           {
-            if(m_CurrentState >= dsState_XferReady)
+            if(m_CurrentState >= dsState_Enabled)
             {
               setConditionCode(TWCC_SEQERROR);
               twrc = TWRC_FAILURE;
@@ -1609,6 +1637,12 @@ TW_INT16 CTWAINDS_Base::getFileXfer(pTW_SETUPFILEXFER _pData)
     return TWRC_FAILURE;
   }
 
+  if(0 == _pData)
+  {
+    setConditionCode(TWCC_BADVALUE);
+    return TWRC_FAILURE;
+  }
+
   CTWAINContainerInt* pCap = dynamic_cast<CTWAINContainerInt*>(findCapability(ICAP_IMAGEFILEFORMAT));
   if(0 == pCap)
   {
@@ -1633,6 +1667,12 @@ TW_INT16 CTWAINDS_Base::getDefaultFileXfer(pTW_SETUPFILEXFER _pData)
         dsState_XferReady == m_CurrentState   ))
   {
     setConditionCode(TWCC_SEQERROR);
+    return TWRC_FAILURE;
+  }
+
+  if(0 == _pData)
+  {
+    setConditionCode(TWCC_BADVALUE);
     return TWRC_FAILURE;
   }
 
@@ -1661,6 +1701,12 @@ TW_INT16 CTWAINDS_Base::resetFileXfer(pTW_SETUPFILEXFER _pData)
     return TWRC_FAILURE;
   }
 
+  if(0 == _pData)
+  {
+    setConditionCode(TWCC_BADVALUE);
+    return TWRC_FAILURE;
+  }
+
   CTWAINContainerInt* pCap = dynamic_cast<CTWAINContainerInt*>(findCapability(ICAP_IMAGEFILEFORMAT));
   if(0 == pCap)
   {
@@ -1686,6 +1732,12 @@ TW_INT16 CTWAINDS_Base::setFileXfer(pTW_SETUPFILEXFER _pData)
         dsState_XferReady == m_CurrentState   ))
   {
     setConditionCode(TWCC_SEQERROR);
+    return TWRC_FAILURE;
+  }
+
+  if(0 == _pData)
+  {
+    setConditionCode(TWCC_BADVALUE);
     return TWRC_FAILURE;
   }
 
