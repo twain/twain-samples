@@ -507,14 +507,35 @@ void TwainApp::loadDS(const TW_INT32 _dsID)
        application class can be used, and the RefCon can be ignored as we do here. */
     callback.RefCon       = 0; 
 
-    if(TWRC_SUCCESS != (twrc = DSM_Entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF)&callback)))
-    {
-      PrintCMDMessage("DG_CONTROL / DAT_CALLBACK / MSG_REGISTER_CALLBACK Failed: %u\n", twrc);
-    }
-    else
-    {
-      gUSE_CALLBACKS = true;
-    }
+	// Windows...
+	#if defined(TWNDS_OS_WIN)
+		if ((getAppIdentity()->SupportedGroups & DF_DSM2) && (m_pDataSource->SupportedGroups & DF_DS2))
+		{
+		  if(TWRC_SUCCESS != (twrc = DSM_Entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF)&callback)))
+		  {
+		    PrintCMDMessage("DG_CONTROL / DAT_CALLBACK / MSG_REGISTER_CALLBACK Failed: %u\n", twrc);
+		  }
+		  else
+		  {
+		    gUSE_CALLBACKS = true;
+		  }
+		}
+		else
+		{
+          PrintCMDMessage("DG_CONTROL / DAT_CALLBACK / MSG_REGISTER_CALLBACK not supported\n");
+		}
+
+	// Linux and Mac OS X (if we ever support it)...
+	#else
+		if(TWRC_SUCCESS != (twrc = DSM_Entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF)&callback)))
+		{
+		  PrintCMDMessage("DG_CONTROL / DAT_CALLBACK / MSG_REGISTER_CALLBACK Failed: %u\n", twrc);
+		}
+		else
+		{
+		  gUSE_CALLBACKS = true;
+		}
+	#endif
 
     break;
 
@@ -1201,7 +1222,7 @@ void TwainApp::updateEXTIMAGEINFO()
 
             if( pExtImgInfo->Info[nIndex-1].NumItems == 1)
             {
-              StrLen = pExtImgInfo->Info[nIndex-1].Item;
+              StrLen = (TW_UINT32)pExtImgInfo->Info[nIndex-1].Item;
             }
             else
             {
