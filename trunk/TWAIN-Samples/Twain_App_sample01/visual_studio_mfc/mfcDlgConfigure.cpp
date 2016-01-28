@@ -98,6 +98,10 @@ TW_UINT16 FAR PASCAL DSMCallback(pTW_IDENTITY _pOrigin,
     }
   }
 
+  // Force a refresh, so that we process the message...
+  g_pTWAINApp->RedrawWindow();
+
+  // All done...
   return twrc;
 }
 
@@ -1226,7 +1230,7 @@ bool CmfcDlgConfigure::SetSavePath(const TCHAR *pPath)
 
   if( ERROR_SUCCESS == RegCreateKeyEx(HKEY_CURRENT_USER, KEYPATH, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, &disposition) )
   {
-    if( ERROR_SUCCESS == RegSetValueEx( hKey, _T("SavePath"), 0, REG_EXPAND_SZ, (CONST BYTE *)szSavePath, _tcslen(szSavePath) ) )
+    if( ERROR_SUCCESS == RegSetValueEx( hKey, _T("SavePath"), 0, REG_EXPAND_SZ, (CONST BYTE *)szSavePath, (DWORD)_tcslen(szSavePath) ) )
     {
       bReturn = true;
     }
