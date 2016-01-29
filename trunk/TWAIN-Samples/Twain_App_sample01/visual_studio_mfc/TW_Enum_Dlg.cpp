@@ -49,7 +49,7 @@ IMPLEMENT_DYNAMIC(CTW_Enum_Dlg, CDialog)
 CTW_Enum_Dlg::CTW_Enum_Dlg(CWnd* pParent /*=NULL*/)
   : CDialog(CTW_Enum_Dlg::IDD, pParent)
   ,m_pCap(NULL)
-  ,m_SelectionData(-1)
+  ,m_SelectionData((DWORD)-1)
   ,m_SelectionString(_T(""))
 {
 }

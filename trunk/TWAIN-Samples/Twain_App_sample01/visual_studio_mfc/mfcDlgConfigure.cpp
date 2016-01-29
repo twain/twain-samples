@@ -69,7 +69,12 @@ TW_UINT16 FAR PASCAL DSMCallback(pTW_IDENTITY _pOrigin,
             TW_UINT16    _MSG,
             TW_MEMREF    _pData)
 {
-  TW_UINT16 twrc      = TWRC_FAILURE;
+  UNUSEDARG(_pDest);
+  UNUSEDARG(_DG);
+  UNUSEDARG(_DAT);
+  UNUSEDARG(_pData);
+
+  TW_UINT16 twrc = TWRC_FAILURE;
   // _pData stores the RefCon from the when the callback was registered
   // RefCon is a TW_INT32 and can not store a pointer for 64bit
 
@@ -670,8 +675,8 @@ void CmfcDlgConfigure::PopulateCurentValues(bool bCheckForChange /*=true*/)
       bReadOnly = TRUE;
     }
 
-    pCapSetting->byChanged = byChanged;
-    pCapSetting->bReadOnly = bReadOnly;
+    pCapSetting->byChanged = (TW_UINT8)byChanged;
+    pCapSetting->bReadOnly = (TW_UINT8)bReadOnly;
   }
   m_bBusy = false;
   UpdateButtons();
@@ -691,8 +696,6 @@ void CmfcDlgConfigure::MarkUnchanged()
 
 void CmfcDlgConfigure::UpdateButtons()
 {
-  CWnd *pWnd = NULL;
-
   BOOL bEnable = m_bBusy && m_DSMState <= 4? FALSE:TRUE;
 
   GetDlgItem(IDB_SCAN)->EnableWindow(bEnable);
@@ -707,7 +710,6 @@ void CmfcDlgConfigure::OnNMDblclkCaps(NMHDR *pNMHDR, LRESULT *pResult)
 {
   LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 
-  TW_UINT16       CAPLstData  = 0;
   bool            bChange     = false;
   TW_CAPABILITY   Cap;
   LV_ITEM         Item;

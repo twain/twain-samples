@@ -175,9 +175,9 @@ TW_HANDLE _DSM_Alloc(TW_UINT32 _size)
 
 #ifdef TWH_CMP_MSC
   return ::GlobalAlloc(GPTR, _size);
-#endif
-
+#else
   return 0;
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -205,9 +205,9 @@ TW_MEMREF _DSM_LockMemory(TW_HANDLE _hMemory)
 
 #ifdef TWH_CMP_MSC
   return (TW_MEMREF)::GlobalLock(_hMemory);
-#endif
-
+#else
   return 0;
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////
