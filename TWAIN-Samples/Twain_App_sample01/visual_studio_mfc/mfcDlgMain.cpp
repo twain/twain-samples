@@ -259,7 +259,7 @@ void CmfcDlgMain::PopulateDSList()
     nDefault = pID->Id;
   }
 
-  while( NULL != (pID = _pTWAINApp->getDataSource(i)) )
+  while( NULL != (pID = _pTWAINApp->getDataSource((TW_INT16)i)) )
   {
     index = m_lst_DS.AddString( pID->ProductName );
     if(LB_ERR == index)
@@ -269,7 +269,7 @@ void CmfcDlgMain::PopulateDSList()
 
     m_lst_DS.SetItemData( index, i );
 
-    if(nDefault == pID->Id)
+    if(nDefault == (int)pID->Id)
     {
       m_lst_DS.SetCurSel(index);
     }
@@ -324,7 +324,7 @@ void CmfcDlgMain::OnBnClickedConnectDs()
   if(NULL != (pID = _pTWAINApp->getDataSource(index)) )
   {
     CmfcDlgConfigure dlg(this, pID->Id);
-    INT_PTR nResponse = dlg.DoModal();
+    dlg.DoModal();
   }
 }
 
@@ -332,7 +332,6 @@ void CmfcDlgMain::OnBnClickedDefaultDs()
 {
   int           sel   = m_lst_DS.GetCurSel();
   TW_INT16      index = (TW_INT16)m_lst_DS.GetItemData(sel);
-  pTW_IDENTITY  pID   = NULL;
   
   _pTWAINApp->connectDSM();
   if(3 == _pTWAINApp->m_DSMState)

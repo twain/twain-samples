@@ -124,7 +124,7 @@ TwainApp::TwainApp(HWND parent /*=NULL*/)
 : m_DSMState(1)
 , m_pDataSource(NULL)
 , m_pExtImageInfo(NULL)
-, m_DSMessage(-1)
+, m_DSMessage((TW_UINT16)-1)
 , m_nGetLableSupported(TWCC_SUCCESS)
 , m_nGetHelpSupported(TWCC_SUCCESS)
 , m_strSavePath("")
@@ -459,7 +459,7 @@ void TwainApp::loadDS(const TW_INT32 _dsID)
     unsigned int x = 0;
     for(; x < m_DataSources.size(); ++x)
     {
-      if(_dsID == m_DataSources[x].Id)
+      if(_dsID == (TW_INT32)m_DataSources[x].Id)
       {
         m_pDataSource = &(m_DataSources[x]);
         break;
@@ -743,7 +743,7 @@ bool TwainApp::enableDS(TW_HANDLE hWnd, BOOL bShowUI)
     return false;
   }
 
-  m_ui.ShowUI = bShowUI;
+  m_ui.ShowUI = (TW_BOOL)bShowUI;
   m_ui.ModalUI = TRUE;
   m_ui.hParent = hWnd;
   m_DSMState = 5;
@@ -1176,7 +1176,7 @@ void TwainApp::updateEXTIMAGEINFO()
     {
       for (int nItem = 0; nItem < num_OtherInfos; nItem++)
       {
-        pExtImgInfo->Info[cur_Info++].InfoID = TableOtherExtImgInfo[nItem];
+        pExtImgInfo->Info[cur_Info++].InfoID = (TW_UINT16)TableOtherExtImgInfo[nItem];
       }
     }
 
@@ -1189,7 +1189,7 @@ void TwainApp::updateEXTIMAGEINFO()
       {
         for (int nBarItem = 0; nBarItem < num_BarInfos; nBarItem++)
         {
-          pExtImgInfo->Info[cur_Info++].InfoID = TableBarCodeExtImgInfo[nBarItem];
+          pExtImgInfo->Info[cur_Info++].InfoID = (TW_UINT16)TableBarCodeExtImgInfo[nBarItem];
         }
       }
     }
@@ -1535,7 +1535,7 @@ void TwainApp::initiateTransfer_Memory()
 
     // now that the memory has been setup, get the data from the scanner
     PrintCMDMessage("app: starting the memory transfer...\n");
-    while(1)
+    for (;;)
     {
       // reset the xfer buffer
       memcpy(&memXferBuf, &memXferBufTemplate, sizeof(memXferBufTemplate));
@@ -1846,6 +1846,7 @@ TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const int _value, TW_U
   pTW_ONEVALUE pVal = (pTW_ONEVALUE)_DSM_LockMemory(cap.hContainer);
 
   pVal->ItemType  = _type;
+  // using memcpy fixes: error C2220: warning treated as error - no 'object' file generated
   switch(_type)
   {
     case TWTY_INT8:
@@ -1869,11 +1870,11 @@ TW_UINT16 TwainApp::set_CapabilityOneValue(TW_UINT16 Cap, const int _value, TW_U
     break;
 
     case TWTY_UINT32:
-      *(TW_UINT32*)&pVal->Item = (TW_UINT32)_value;
+	  memcpy(&pVal->Item,&_value,sizeof(TW_UINT32));
     break;
 
     case TWTY_BOOL:
-      *(TW_BOOL*)&pVal->Item = (TW_BOOL)_value;
+	  memcpy(&pVal->Item,&_value,sizeof(TW_BOOL));
     break;
   }
   // capability structure is set, make the call to the source now

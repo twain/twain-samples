@@ -71,6 +71,7 @@ extern bool   gUSE_CALLBACKS;         // defined in TwainApp.cpp
 */
 void onSigINT(int _sig)
 {
+  UNUSEDARG(_sig);
   cout << "\nGoodbye!" << endl;
   exit(0);
 }
@@ -90,7 +91,7 @@ void negotiate_CAP(const pTW_CAPABILITY _pCap)
   // of the caps instead of keeping a copy in the app like I'm doing.
   gpTwainApplicationCMD->initCaps();
 
-  while(1)
+  for (;;)
   {
     if((TWON_ENUMERATION == _pCap->ConType) || 
        (TWON_ONEVALUE == _pCap->ConType))
@@ -120,8 +121,8 @@ void negotiate_CAP(const pTW_CAPABILITY _pCap)
       {
         int n = atoi(input.c_str());
         TW_UINT16  valUInt16 = 0;
-        pTW_FIX32  pValFix32;
-        pTW_FRAME  pValFrame;
+		pTW_FIX32  pValFix32 = {0};
+		pTW_FRAME  pValFrame = {0};
 
         // print the caps current value
         if(TWON_ENUMERATION == _pCap->ConType)
@@ -203,7 +204,7 @@ void negotiateCaps()
 
   // Loop forever until either SIGINT is heard or user types done to go back
   // to the main menu.
-  while(1)
+  for (;;)
   {
     printMainCaps();
     cout << "\n(h for help) > ";
@@ -388,6 +389,11 @@ DSMCallback(pTW_IDENTITY _pOrigin,
             TW_UINT16    _MSG,
             TW_MEMREF    _pData)
 {
+  UNUSEDARG(_pDest);
+  UNUSEDARG(_DG);
+  UNUSEDARG(_DAT);
+  UNUSEDARG(_pData);
+
   TW_UINT16 twrc = TWRC_SUCCESS;
 
   // we are only waiting for callbacks from our datasource, so validate
@@ -433,6 +439,8 @@ int _tmain(int argc, _TCHAR* argv[])
 int main(int argc, char *argv[])
 #endif
 {
+  UNUSEDARG(argc);
+  UNUSEDARG(argv);
   int ret = EXIT_SUCCESS;
 
   // Instantiate the TWAIN application CMD class
@@ -451,7 +459,7 @@ int main(int argc, char *argv[])
   printOptions();
 
   // start the main event loop
-  while(1)
+  for (;;)
   {
     cout << "\n(h for help) > ";
     cin >> input;
