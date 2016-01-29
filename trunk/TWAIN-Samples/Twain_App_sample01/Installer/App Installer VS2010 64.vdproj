@@ -412,7 +412,7 @@
         "Subject" = "8:"
         "ARPCONTACT" = "8:TWAIN Working Group"
         "Keywords" = "8:TWAIN 2.3 App Sample"
-        "ARPCOMMENTS" = "8:Sample TWAIN 2.3 Application 64bit"
+        "ARPCOMMENTS" = "8:Sample TWAIN 2.3 Application 32bit and 64bit"
         "ARPURLINFOABOUT" = "8:http://twain.org"
         "ARPPRODUCTICON" = "8:_5B6EB5FCCECA4AAA97BDF758779B4E0F"
         "ARPIconIndex" = "3:0"
