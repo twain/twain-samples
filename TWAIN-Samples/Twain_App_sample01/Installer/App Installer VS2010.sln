@@ -1,9 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "App Installer 32", "App Installer 32.vdproj", "{B26F85C9-516D-446E-8641-C10962BA08D3}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "App Installer 32", "App Installer VS2010 32.vdproj", "{B26F85C9-516D-446E-8641-C10962BA08D3}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "App Installer 64", "App Installer 64.vdproj", "{29BC35A1-3970-4101-B9F6-59EBD08FD0C0}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "App Installer 64", "App Installer VS2010 64.vdproj", "{29BC35A1-3970-4101-B9F6-59EBD08FD0C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
