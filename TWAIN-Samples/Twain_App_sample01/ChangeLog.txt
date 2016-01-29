@@ -1,3 +1,13 @@
+2016-01-29 Kodak Alaris Inc. mlm@kodakalaris.com
+
+    * numerous files updated
+    * fixed to better determine when dsm callbacks are allowed
+    * add redraw to dsm callback to force processing of window messages
+    * bumped all versions to 2.3
+    * copied over the 2.3 twain.h
+    * added VS2010 solutions
+    * set warning level to 4 and set warnings to be treated as errors
+
 2010-03-10 JFL Peripheral Solutions jimw@jflinc.com
 
     * mfcDlgConfigure.cpp  Add option of KeepUIEnabled if scanning with UI
