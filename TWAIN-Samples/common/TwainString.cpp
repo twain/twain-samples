@@ -4375,7 +4375,7 @@ const char *CapabilityValueToString(TW_UINT16 twCapId, TW_UINT16 twItemType, con
   const TW_FRAME *pFrame = static_cast<const TW_FRAME *>(pValue);
   const TW_FIX32 *pFix32 = static_cast<const TW_FIX32 *>(pValue);
   const TW_UINT16 *pUint16 = static_cast<const TW_UINT16 *>(pValue);
-  const TW_UINT32 *pUint32 = static_cast<const TW_UINT32 *>(pValue);
+  //const TW_UINT32 *pUint32 = static_cast<const TW_UINT32 *>(pValue);
   const TW_INT16 *pInt16 = static_cast<const TW_INT16 *>(pValue);
   const TW_BOOL *pBool = static_cast<const TW_BOOL *>(pValue);
   const char *pStr = static_cast<const char *>(pValue);
