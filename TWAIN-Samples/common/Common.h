@@ -85,6 +85,11 @@
 #define TWNDS_CMP_XCODE         0x1003 // Xcode 
 
 /**
+* Solution for unused arguments...
+*/
+#define UNUSEDARG(x) (void*)x
+
+/**
 * If the user defines TWNDS_CMP in their make file or project,
 * then we'll assume they want to take responsibility for picking
 * how we'll build the system.  At this point it seems like the
