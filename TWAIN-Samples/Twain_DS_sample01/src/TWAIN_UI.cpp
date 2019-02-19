@@ -505,7 +505,7 @@ void CTWAIN_UI::TW_GetAllProfiles(lstString& strFileNames)
   char           szFileName[MAX_PATH];
   char           *pDot;
   
-  hFind = FindFirstFile("*"FILEEXTENTION, &FindFileData);
+  hFind = FindFirstFile("*" FILEEXTENTION, &FindFileData);
   while(hFind != INVALID_HANDLE_VALUE)
   {
     SSTRCPY(szFileName, MAX_PATH, FindFileData.cFileName);
