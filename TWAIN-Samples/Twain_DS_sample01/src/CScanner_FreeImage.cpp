@@ -82,14 +82,18 @@ extern HINSTANCE   g_hinstance;
 //////////////////////////////////////////////////////////////////////////////
 void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message)
 {
-  cout << "\n*** ";
-  cout << FreeImage_GetFormatFromFIF(fif) << " Format" << endl;
-  cout << message << " ***" << endl;
-  return;
+	if (CScanner_FreeImage::ms_blShowConsoleMessages)
+	{
+		cout << "\n*** ";
+		cout << FreeImage_GetFormatFromFIF(fif) << " Format" << endl;
+		cout << message << " ***" << endl;
+		return;
+	}
 }
 
 
 //////////////////////////////////////////////////////////////////////////////
+bool CScanner_FreeImage::ms_blShowConsoleMessages = false;
 CScanner_FreeImage::CScanner_FreeImage() :
   m_pDIB(0),
   m_nScanLine(0),
@@ -102,7 +106,12 @@ CScanner_FreeImage::CScanner_FreeImage() :
 {
   memset(m_szSourceImagePath, 0, PATH_MAX);
 
-
+#ifdef TWH_CMP_MSC
+  char szEnv[8];
+  CScanner_FreeImage::ms_blShowConsoleMessages = (::GetEnvironmentVariableA("TWAIN_SHOWCONSOLEMESSAGES", szEnv, sizeof(szEnv)) != 0);
+#else
+  CScanner_FreeImage::ms_blShowConsoleMessages = (getenv("TWAIN_SHOWCONSOLEMESSAGES") != 0);
+#endif
 
 #ifdef TWH_CMP_MSC
   char szTWAIN_DS_DIR[PATH_MAX];
@@ -172,7 +181,7 @@ bool CScanner_FreeImage::resetScanner()
   m_nDestBytesPerRow = 0;
   m_nRowOffset       = 0;
 
-  m_nDocCount     = m_nMaxDocCount = getDocumentCount();// Reloaded the scanner with paper
+  m_nDocCount = m_nMaxDocCount = getDocumentCount(); // Reloaded the scanner with paper
   m_nPixelType    = TWPT_RGB;
   m_nPaperSource  = SFI_PAPERSOURCE_ADF;
   m_bDuplex       = false;
@@ -214,8 +223,15 @@ void CScanner_FreeImage::setSetting(SFreeImage settings)
   m_fContrast    = settings.m_fContrast;
   m_fBrightness  = settings.m_fBrightness;
   m_fThreshold   = settings.m_fThreshold;
-  
-  m_nDocCount = m_nMaxDocCount;
+
+  if (m_nPaperSource == SFI_PAPERSOURCE_ADF)
+  {
+	  m_nDocCount = m_nMaxDocCount;
+  }
+  else
+  {
+	  m_nDocCount = 1;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -298,7 +314,10 @@ bool CScanner_FreeImage::preScanPrep()
   res = FreeImage_GetDotsPerMeterY( m_pDIB );
   WORD unNewHeight = WORD(m_nSourceHeight/(WORD)((float)res/39.37 + 0.5)* m_fYResolution);
 
-  cout << "ds: rescaling... to " << unNewWidth << " x " << unNewHeight << endl;
+  if (CScanner_FreeImage::ms_blShowConsoleMessages)
+  {
+	  cout << "ds: rescaling... to " << unNewWidth << " x " << unNewHeight << endl;
+  }
   pDib = FreeImage_Rescale( m_pDIB, unNewWidth, unNewHeight, FILTER_BILINEAR);
   if(0 == pDib)
   {
@@ -332,19 +351,28 @@ bool CScanner_FreeImage::preScanPrep()
     switch(m_nPixelType)
     {
       case TWPT_BW:
-        cout << "ds: converting to TWPT_BW..." << endl;
+		if (CScanner_FreeImage::ms_blShowConsoleMessages)
+		{
+			cout << "ds: converting to TWPT_BW..." << endl;
+		}
         /// @todo impliment Dithering
         /// @todo add Threshold setting
         pDib = FreeImage_Threshold(m_pDIB, (BYTE)m_fThreshold);
       break;
 
       case TWPT_GRAY:
-        cout << "ds: converting to TWPT_GRAY..." << endl;
+		if (CScanner_FreeImage::ms_blShowConsoleMessages)
+		{
+			cout << "ds: converting to TWPT_GRAY..." << endl;
+		}
         pDib = FreeImage_ConvertTo8Bits(m_pDIB);
       break;
 
       case TWPT_RGB:
-        cout << "ds: converting toTWPT_RGB..." << endl;
+		if (CScanner_FreeImage::ms_blShowConsoleMessages)
+		{
+			cout << "ds: converting toTWPT_RGB..." << endl;
+		}
         pDib = FreeImage_ConvertTo24Bits(m_pDIB);
       break;
     }
@@ -457,7 +485,7 @@ bool CScanner_FreeImage::getScanStrip(BYTE *pTransferBuffer, DWORD dwRead, DWORD
 short CScanner_FreeImage::getDocumentCount() const
 {
   // Simulate the number of pages sitting in the scanner.
-  int nCount = 1;
+  int nCount = 2;
 
   // Read this value from the environment. This will allow the simulation
   // of a sheet feeder.

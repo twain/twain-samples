@@ -65,6 +65,7 @@ void UIThread::run()
     m_pApp->exec();
   }
   delete m_pApp;
+  m_pApp = 0;
 }
 
 QT_UI::QT_UI(CTWAINDS_FreeImage *pDS):CTWAIN_UI(pDS)
@@ -80,6 +81,7 @@ QT_UI::~QT_UI()
   if(m_pQtApp)
   {
     delete m_pQtApp;
+	m_pQtApp = 0;
     //qApp = NULL; QT will do it in QCoreApplication destructor
   }
 }
@@ -184,6 +186,7 @@ void QT_UI::DestroyTWAINGUI()
     while(m_pUIThread->isRunning())
        ;
     delete m_pUIThread;
+	m_pUIThread = 0;
   }
 	if(m_pQtApp)
 	{

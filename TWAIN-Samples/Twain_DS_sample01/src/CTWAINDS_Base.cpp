@@ -919,7 +919,8 @@ TW_INT16 CTWAINDS_Base::handleCap(TW_UINT16 _MSG, TWAINContainerType* _pContaine
       case TWTY_INT32:
       case TWTY_UINT8:
       case TWTY_UINT16:
-      case TWTY_BOOL:
+	  case TWTY_UINT32:
+	  case TWTY_BOOL:
       case TWTY_FIX32:
       case TWTY_FRAME:
       case TWTY_STR32:

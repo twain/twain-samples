@@ -62,19 +62,19 @@ typedef union {
 
 using namespace std;
 
-//* Initialize global identiy for this DS. */
+//* Initialize global identity for this DS. */
 TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
 {
   0,                                  // TW_UINT32  Id;               Unique number.  In Windows, application hWnd
   {                                       // TW_VERSION Version;          Identifies the piece of code
     2,                                    // TW_UINT16  MajorNum;         Major revision number of the software
-    1,                                    // TW_UINT16  MinorNum;         Incremental revision number of the software
+    4,                                    // TW_UINT16  MinorNum;         Incremental revision number of the software
     TWLG_ENGLISH,                         // TW_UINT16  Language;         e.g. TWLG_SWISSFRENCH
     TWCY_USA,                             // TW_UINT16  Country;          e.g. TWCY_SWITZERLAND
 #ifdef __APPLE__
      "\p"
 #endif
-    "2.1.4 sample"                        // TW_STR32   Info;             e.g. "1.0b3 Beta release"
+    "2.4.0 sample"                        // TW_STR32   Info;             e.g. "1.0b3 Beta release"
 #ifdef _DEBUG
     " debug"
 #else
@@ -87,7 +87,7 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
 #endif
   },
   2,                                  // TW_UINT16  ProtocolMajor;    Application and DS must set to TWON_PROTOCOLMAJOR
-  1,                                  // TW_UINT16  ProtocolMinor;    Application and DS must set to TWON_PROTOCOLMINOR
+  4,                                  // TW_UINT16  ProtocolMinor;    Application and DS must set to TWON_PROTOCOLMINOR
   DG_IMAGE | DG_CONTROL | DF_DS2,     // TW_UINT32  SupportedGroups;  Bit field OR combination of DG_ constants
 #ifdef __APPLE__
    "\p"
@@ -382,7 +382,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
   CTWAINContainerString* pstrCap = 0;
   CTWAINContainerFix32* pfixCap = 0;
 
-  m_IndependantCapMap[CAP_SUPPORTEDCAPS] = new CTWAINContainerInt(CAP_SUPPORTEDCAPS, TWTY_UINT16, TWON_ARRAY, TWQC_GETS,TWON_ARRAY,TWON_ARRAY);
+  m_IndependantCapMap[CAP_SUPPORTEDCAPS] = new CTWAINContainerInt(CAP_SUPPORTEDCAPS, TWTY_UINT16, TWON_ARRAY, TWQC_GETS, TWON_ARRAY, TWON_ARRAY);
   if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_SUPPORTEDCAPS]))
    || !pnCap->Add(CAP_DEVICEONLINE)
    || !pnCap->Add(CAP_INDICATORS)
@@ -394,6 +394,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
    || !pnCap->Add(CAP_DUPLEXENABLED)
    || !pnCap->Add(CAP_AUTOFEED)
    || !pnCap->Add(CAP_SUPPORTEDCAPS)
+   || !pnCap->Add(CAP_SUPPORTEDDATS)
    || !pnCap->Add(CAP_UICONTROLLABLE)
    || !pnCap->Add(CAP_XFERCOUNT)
    || !pnCap->Add(ICAP_BITDEPTH)
@@ -411,7 +412,9 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
    || !pnCap->Add(ICAP_ORIENTATION)
    || !pnCap->Add(ICAP_UNITS)
    || !pnCap->Add(ICAP_XFERMECH)
+   || !pnCap->Add(ICAP_XNATIVERESOLUTION)
    || !pnCap->Add(ICAP_XRESOLUTION)
+   || !pnCap->Add(ICAP_YNATIVERESOLUTION) 
    || !pnCap->Add(ICAP_YRESOLUTION) 
    || !pnCap->Add(ICAP_THRESHOLD) 
    || !pnCap->Add(ICAP_CONTRAST) 
@@ -426,6 +429,32 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     cerr << "Could not create CAP_SUPPORTEDCAPS" << endl;
     setConditionCode(TWCC_LOWMEMORY);
     return TWRC_FAILURE;
+  }
+
+  m_IndependantCapMap[CAP_SUPPORTEDDATS] = new CTWAINContainerInt(CAP_SUPPORTEDCAPS, TWTY_UINT32, TWON_ARRAY, TWQC_GETS, TWON_ARRAY, TWON_ARRAY);
+  if (NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_SUPPORTEDDATS]))
+	  || !pnCap->Add((DG_CONTROL << 16) | DAT_CALLBACK)
+	  || !pnCap->Add((DG_CONTROL << 16) | DAT_CAPABILITY)
+	  || !pnCap->Add((DG_CONTROL << 16) | DAT_CUSTOMDSDATA)
+	  || !pnCap->Add((DG_CONTROL << 16) | DAT_ENTRYPOINT)
+	  || !pnCap->Add((DG_CONTROL << 16) | DAT_EVENT)
+	  || !pnCap->Add((DG_CONTROL << 16) | DAT_EXTIMAGEINFO)
+	  || !pnCap->Add((DG_CONTROL << 16) | DAT_IDENTITY)
+	  || !pnCap->Add((DG_CONTROL << 16) | DAT_PENDINGXFERS)
+	  || !pnCap->Add((DG_CONTROL << 16) | DAT_SETUPFILEXFER)
+	  || !pnCap->Add((DG_CONTROL << 16) | DAT_SETUPMEMXFER)
+	  || !pnCap->Add((DG_CONTROL << 16) | DAT_STATUS)
+	  || !pnCap->Add((DG_CONTROL << 16) | DAT_USERINTERFACE)
+	  || !pnCap->Add((DG_IMAGE << 16) | DAT_IMAGEINFO)
+	  || !pnCap->Add((DG_IMAGE << 16) | DAT_IMAGELAYOUT)
+	  || !pnCap->Add((DG_IMAGE << 16) | DAT_IMAGEFILEXFER)
+	  || !pnCap->Add((DG_IMAGE << 16) | DAT_IMAGEMEMXFER)
+	  || !pnCap->Add((DG_IMAGE << 16) | DAT_IMAGENATIVEXFER)
+	  )
+  {
+	  cerr << "Could not create CAP_SUPPORTEDDATS" << endl;
+	  setConditionCode(TWCC_LOWMEMORY);
+	  return TWRC_FAILURE;
   }
 
   m_IndependantCapMap[ICAP_COMPRESSION] = new CTWAINContainerInt(ICAP_COMPRESSION, TWTY_UINT16, TWON_ENUMERATION);
@@ -505,7 +534,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
 
   m_IndependantCapMap[CAP_XFERCOUNT] = new CTWAINContainerInt(CAP_XFERCOUNT, TWTY_INT16, TWON_ONEVALUE);
   if( NULL == (pnCap = dynamic_cast<CTWAINContainerInt*>(m_IndependantCapMap[CAP_XFERCOUNT]))
-   || !pnCap->Add(TWON_DONTCARE32, true) )
+   || !pnCap->Add(TWON_DONTCARE32, true))
   {
     cerr << "Could not create CAP_XFERCOUNT" << endl;
     setConditionCode(TWCC_LOWMEMORY);
@@ -754,6 +783,16 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     setConditionCode(TWCC_LOWMEMORY);
     return TWRC_FAILURE;
   }
+  
+  // expressed internally as pixels per inch
+  if (NULL == (m_IndependantCapMap[ICAP_XNATIVERESOLUTION] = new CTWAINContainerFix32(ICAP_XNATIVERESOLUTION, TWON_ONEVALUE, TWQC_GETS))
+	  || !(dynamic_cast<CTWAINContainerFix32*>(m_IndependantCapMap[ICAP_XNATIVERESOLUTION]))->Add(300, true))
+  {
+	  cerr << "Could not create ICAP_XNATIVERESOLUTION" << endl;
+	  setConditionCode(TWCC_LOWMEMORY);
+	  return TWRC_FAILURE;
+  }
+
   // expressed internally as pixels per inch
   m_IndependantCapMap[ICAP_XRESOLUTION] = new CTWAINContainerFix32(ICAP_XRESOLUTION, TWON_ENUMERATION, TWQC_ALL);
   if( NULL == (pfixCap = dynamic_cast<CTWAINContainerFix32*>(m_IndependantCapMap[ICAP_XRESOLUTION]))
@@ -769,6 +808,15 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
     cerr << "Could not create ICAP_XRESOLUTION" << endl;
     setConditionCode(TWCC_LOWMEMORY);
     return TWRC_FAILURE;
+  }
+  
+  // expressed internally as pixels per inch
+  if (NULL == (m_IndependantCapMap[ICAP_YNATIVERESOLUTION] = new CTWAINContainerFix32(ICAP_YNATIVERESOLUTION, TWON_ONEVALUE, TWQC_GETS))
+	  || !(dynamic_cast<CTWAINContainerFix32*>(m_IndependantCapMap[ICAP_YNATIVERESOLUTION]))->Add(300, true))
+  {
+	  cerr << "Could not create ICAP_YNATIVERESOLUTION" << endl;
+	  setConditionCode(TWCC_LOWMEMORY);
+	  return TWRC_FAILURE;
   }
 
   // expressed internally as pixels per inch
@@ -842,6 +890,7 @@ TW_INT16 CTWAINDS_FreeImage::Initialize()
 CTWAINDS_FreeImage::~CTWAINDS_FreeImage()
 {
   DestroyUI(m_pGUI);
+  m_pGUI = 0;
 
   // free all resources belonging to m_IndependantCapMap
   TWAINCapabilitiesMap_int::iterator cur_int = m_BitDepthMap.begin();
@@ -854,8 +903,8 @@ CTWAINDS_FreeImage::~CTWAINDS_FreeImage()
   if(m_pICAP_FRAMES)
   {
     delete m_pICAP_FRAMES;
+	m_pICAP_FRAMES = 0;
   }
-  m_pICAP_FRAMES = 0;
   return;
 }
 
@@ -1412,6 +1461,7 @@ TW_INT16 CTWAINDS_FreeImage::resetXfer(pTW_PENDINGXFERS _pXfers)
 //////////////////////////////////////////////////////////////////////////////
 bool CTWAINDS_FreeImage::updateScannerFromCaps()
 {
+  bool bVal;
   int   nVal;
   float fVal;
   bool  bret = true;  // Set to false if anything fails
@@ -1420,9 +1470,21 @@ bool CTWAINDS_FreeImage::updateScannerFromCaps()
   // Get current before updating
   settings = m_Scanner.getSetting();
 
+  CTWAINContainerBool    *pbCap = 0;
   CTWAINContainerInt    *pnCap = 0;
   CTWAINContainerFix32  *pfCap = 0;
   CTWAINContainerFix32Range *pfRCap = 0;
+
+  if (0 == (pbCap = dynamic_cast<CTWAINContainerBool*>(findCapability(CAP_FEEDERENABLED))))
+  {
+	  cerr << "Could not get CAP_FEEDERENABLED" << endl;
+	  bret = false;
+  }
+  else
+  {
+	  pbCap->GetCurrent(bVal);
+	  settings.m_nPaperSource = bVal ? SFI_PAPERSOURCE_ADF : SFI_PAPERSOURCE_FB;
+  }
 
   if(0 == (pnCap = dynamic_cast<CTWAINContainerInt*>(findCapability(ICAP_PIXELTYPE))))
   {

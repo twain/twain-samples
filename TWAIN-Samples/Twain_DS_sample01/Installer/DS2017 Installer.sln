@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DS2017 Installer 32", "DS2017 Installer 32.vdproj", "{A540EBDC-617D-41C1-B8A1-8A7AF85F753F}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DS2017 Installer 64", "DS2017 Installer 64.vdproj", "{3A198E1E-1A53-422A-852A-BF6D613ADC83}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|Default = Release|Default
+		Description = Installers for sample TWAIN DS
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A540EBDC-617D-41C1-B8A1-8A7AF85F753F}.Release|Default.ActiveCfg = Release
+		{A540EBDC-617D-41C1-B8A1-8A7AF85F753F}.Release|Default.Build.0 = Release
+		{3A198E1E-1A53-422A-852A-BF6D613ADC83}.Release|Default.ActiveCfg = Release
+		{3A198E1E-1A53-422A-852A-BF6D613ADC83}.Release|Default.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0BBDA99E-1574-4DFB-B5C1-61C2838ADC6C}
+	EndGlobalSection
+EndGlobal

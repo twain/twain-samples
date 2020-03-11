@@ -221,7 +221,8 @@ protected:
   */
   bool preScanPrep();
 
-
+public:
+  static bool		ms_blShowConsoleMessages;
 
 protected:
   FIBITMAP         *m_pDIB;                   /**< Pointer to current scanned image */
