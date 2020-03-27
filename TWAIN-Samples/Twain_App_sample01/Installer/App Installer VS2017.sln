@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "App Installer 32", "App Installer VS2017 32.vdproj", "{B26F85C9-516D-446E-8641-C10962BA08D3}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "App Installer 64", "App Installer VS2017 64.vdproj", "{29BC35A1-3970-4101-B9F6-59EBD08FD0C0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|Default = Release|Default
+		Description = Installers for sample TWAIN App
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B26F85C9-516D-446E-8641-C10962BA08D3}.Release|Default.ActiveCfg = Release
+		{B26F85C9-516D-446E-8641-C10962BA08D3}.Release|Default.Build.0 = Release
+		{29BC35A1-3970-4101-B9F6-59EBD08FD0C0}.Release|Default.ActiveCfg = Release
+		{29BC35A1-3970-4101-B9F6-59EBD08FD0C0}.Release|Default.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
