@@ -51,7 +51,19 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_886E985518584FE09453C0048FE68EA5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8AB80F151A894ECEAD27208BF99BCC35"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8AB80F151A894ECEAD27208BF99BCC36"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -155,8 +167,8 @@
         {
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_07DA8AEFF84640E38871701AAB3FBCDF"
             {
-            "SourcePath" = "8:..\\pub\\bin\\QtCore4.dll"
-            "TargetName" = "8:QtCore4.dll"
+            "SourcePath" = "8:..\\pub\\bin\\win32\\Qt5Core.dll"
+            "TargetName" = "8:Qt5Core.dll"
             "Tag" = "8:"
             "Folder" = "8:_1963C0C487104258AC3B758ED11B69FB"
             "Condition" = "8:"
@@ -175,7 +187,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_164B111C280C4535AC7E0ECE5A7DE80E"
             {
-            "SourcePath" = "8:..\\..\\pub\\bin\\TWAIN_logo.png"
+            "SourcePath" = "8:..\\images\\TWAIN_logo.png"
             "TargetName" = "8:TWAIN_logo.png"
             "Tag" = "8:"
             "Folder" = "8:_7F3AC73469D641B392D2D1F48A9249E9"
@@ -215,7 +227,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6D44775077304C8E98A7FF634A96486D"
             {
-            "SourcePath" = "8:..\\pub\\bin\\TWAINDS_Sample32.ds"
+            "SourcePath" = "8:..\\pub\\bin\\win32\\TWAINDS_Sample32.ds"
             "TargetName" = "8:TWAINDS_Sample32.ds"
             "Tag" = "8:"
             "Folder" = "8:_1963C0C487104258AC3B758ED11B69FB"
@@ -235,8 +247,28 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_886E985518584FE09453C0048FE68EA4"
             {
-            "SourcePath" = "8:..\\pub\\bin\\QtGui4x64.dll"
-            "TargetName" = "8:QtGui4.dll"
+            "SourcePath" = "8:..\\pub\\bin\\win64\\Qt5Gui.dll"
+            "TargetName" = "8:Qt5Gui.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_7F3AC73469D641B392D2D1F48A9249E9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_886E985518584FE09453C0048FE68EA5"
+            {
+            "SourcePath" = "8:..\\pub\\bin\\win64\\Qt5Widgets.dll"
+            "TargetName" = "8:Qt5Widgets.dll"
             "Tag" = "8:"
             "Folder" = "8:_7F3AC73469D641B392D2D1F48A9249E9"
             "Condition" = "8:"
@@ -255,8 +287,28 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8AB80F151A894ECEAD27208BF99BCC35"
             {
-            "SourcePath" = "8:..\\pub\\bin\\QtGui4.dll"
-            "TargetName" = "8:QtGui4.dll"
+            "SourcePath" = "8:..\\pub\\bin\\win32\\Qt5Gui.dll"
+            "TargetName" = "8:Qt5Gui.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_1963C0C487104258AC3B758ED11B69FB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8AB80F151A894ECEAD27208BF99BCC36"
+            {
+            "SourcePath" = "8:..\\pub\\bin\\win32\\Qt5Gui.dll"
+            "TargetName" = "8:Qt5Widgets.dll"
             "Tag" = "8:"
             "Folder" = "8:_1963C0C487104258AC3B758ED11B69FB"
             "Condition" = "8:"
@@ -275,7 +327,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9EAB8EBF015A4A75A1AD24D2DD183A84"
             {
-            "SourcePath" = "8:..\\pub\\bin\\FreeImage.dll"
+            "SourcePath" = "8:..\\pub\\bin\\win32\\FreeImage.dll"
             "TargetName" = "8:FreeImage.dll"
             "Tag" = "8:"
             "Folder" = "8:_1963C0C487104258AC3B758ED11B69FB"
@@ -335,7 +387,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D8EEE6B5A1E5424B894198FA6274D8C1"
             {
-            "SourcePath" = "8:..\\pub\\bin\\FreeImagex64.dll"
+            "SourcePath" = "8:..\\pub\\bin\\win64\\FreeImagex64.dll"
             "TargetName" = "8:FreeImagex64.dll"
             "Tag" = "8:"
             "Folder" = "8:_7F3AC73469D641B392D2D1F48A9249E9"
@@ -355,7 +407,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E93E83E9992749808BB6A275EA1151DE"
             {
-            "SourcePath" = "8:..\\pub\\bin\\QtCore4x64.dll"
+            "SourcePath" = "8:..\\pub\\bin\\win64\\Qt5Core.dll"
             "TargetName" = "8:QtCore4.dll"
             "Tag" = "8:"
             "Folder" = "8:_7F3AC73469D641B392D2D1F48A9249E9"
@@ -375,7 +427,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F40A1CA4B5EA4C30868BBD264637B56B"
             {
-            "SourcePath" = "8:..\\..\\pub\\bin\\TWAIN_logo.png"
+            "SourcePath" = "8:..\\images\\TWAIN_logo.png"
             "TargetName" = "8:TWAIN_logo.png"
             "Tag" = "8:"
             "Folder" = "8:_1963C0C487104258AC3B758ED11B69FB"
@@ -395,7 +447,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F75AFF55BD444FED817042A445528525"
             {
-            "SourcePath" = "8:..\\pub\\bin\\TWAINDS_Sample64.ds"
+            "SourcePath" = "8:..\\pub\\bin\\win64\\TWAINDS_Sample64.ds"
             "TargetName" = "8:TWAINDS_Sample64.ds"
             "Tag" = "8:"
             "Folder" = "8:_7F3AC73469D641B392D2D1F48A9249E9"

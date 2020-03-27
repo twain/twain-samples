@@ -3,7 +3,7 @@
 #include <QCloseEvent>
 #include "Qt_About.h"
 #include "Qt_ProfileName.h"
-#include <QMessageBox>
+#include <QtWidgets/QMessageBox>
 
 MainForm::MainForm(QT_UI *pUI,QWidget *parent)
     : QDialog(parent), ui(new Ui::MainForm), m_valH(this),  m_valW(this)
@@ -16,7 +16,7 @@ MainForm::MainForm(QT_UI *pUI,QWidget *parent)
   ui->pLineEdit_PaperSize_Custom_Height->setValidator(&m_valH);
   if(m_pUI->m_bSetup)
   {
-    ui->pPushButton_Scan->setText(QApplication::translate("MainForm", "Save", 0, QApplication::UnicodeUTF8));
+    ui->pPushButton_Scan->setText(QApplication::translate("MainForm", "Save", 0));
   }
 
   lstString strFileNames;
@@ -49,8 +49,8 @@ void MainForm::on_pPushButton_Profile_Save_clicked(bool _bChecked)
     if(nItem>=0)
     {
       QMessageBox msgBox(QMessageBox::Critical, 
-      QApplication::translate("MainForm", "Error", 0, QApplication::UnicodeUTF8),
-      QApplication::translate("MainForm", "Profile already exist. Do you want to overwrite it?", 0, QApplication::UnicodeUTF8),
+      QApplication::translate("MainForm", "Error", 0),
+      QApplication::translate("MainForm", "Profile already exist. Do you want to overwrite it?", 0),
       QMessageBox::Yes|QMessageBox::Cancel);
       if(msgBox.exec() == QMessageBox::Cancel)
       {
@@ -341,12 +341,12 @@ void MainForm::UpdateControls()
   const IntVector* lstCapValues = m_pUI->GetValidCap(CAP_FEEDERENABLED);
   if(lstCapValues && lstCapValues->size()>0)
   {
-    ui->pComboBox_Source->addItem(lstCapValues->at(0)!=0?QApplication::translate("MainForm", "ADF", 0, QApplication::UnicodeUTF8):
-      QApplication::translate("MainForm", "Flatbed", 0, QApplication::UnicodeUTF8),lstCapValues->at(0)!=0);
+    ui->pComboBox_Source->addItem(lstCapValues->at(0)!=0?QApplication::translate("MainForm", "ADF", 0):
+      QApplication::translate("MainForm", "Flatbed", 0),lstCapValues->at(0)!=0);
     if(lstCapValues->size()>1)
     {
-      ui->pComboBox_Source->addItem(lstCapValues->at(1)!=0?QApplication::translate("MainForm", "ADF", 0, QApplication::UnicodeUTF8):
-        QApplication::translate("MainForm", "Flatbed", 0, QApplication::UnicodeUTF8),lstCapValues->at(1)!=0);
+      ui->pComboBox_Source->addItem(lstCapValues->at(1)!=0?QApplication::translate("MainForm", "ADF", 0):
+        QApplication::translate("MainForm", "Flatbed", 0),lstCapValues->at(1)!=0);
     }
     ui->pComboBox_Source->setCurrentIndex(nCapIndex);
   }
@@ -356,12 +356,12 @@ void MainForm::UpdateControls()
   lstCapValues = m_pUI->GetValidCap(CAP_DUPLEXENABLED);
   if(lstCapValues && lstCapValues->size()>0)
   {
-    ui->pComboBox_ScanSide->addItem(lstCapValues->at(0)!=0?QApplication::translate("MainForm", "Duplex", 0, QApplication::UnicodeUTF8):
-      QApplication::translate("MainForm", "Simplex", 0, QApplication::UnicodeUTF8),lstCapValues->at(0)!=0);
+    ui->pComboBox_ScanSide->addItem(lstCapValues->at(0)!=0?QApplication::translate("MainForm", "Duplex", 0):
+      QApplication::translate("MainForm", "Simplex", 0),lstCapValues->at(0)!=0);
     if(lstCapValues->size()>1)
     {
-      ui->pComboBox_ScanSide->addItem(lstCapValues->at(1)!=0?QApplication::translate("MainForm", "Duplex", 0, QApplication::UnicodeUTF8):
-        QApplication::translate("MainForm", "Simplex", 0, QApplication::UnicodeUTF8),lstCapValues->at(1)!=0);
+      ui->pComboBox_ScanSide->addItem(lstCapValues->at(1)!=0?QApplication::translate("MainForm", "Duplex", 0):
+        QApplication::translate("MainForm", "Simplex", 0),lstCapValues->at(1)!=0);
     }
     ui->pComboBox_ScanSide->setCurrentIndex(nCapIndex);
   }  
@@ -374,13 +374,13 @@ void MainForm::UpdateControls()
     switch(lstCapValues->at(i))
     {
       case TWPT_BW:
-        ui->pComboBox_ColorMode->addItem(QApplication::translate("MainForm", "Black and White", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_ColorMode->addItem(QApplication::translate("MainForm", "Black and White", 0),lstCapValues->at(i));
         break;
       case TWPT_GRAY:
-        ui->pComboBox_ColorMode->addItem(QApplication::translate("MainForm", "Grayscale", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_ColorMode->addItem(QApplication::translate("MainForm", "Grayscale", 0),lstCapValues->at(i));
         break;
       case TWPT_RGB:
-        ui->pComboBox_ColorMode->addItem(QApplication::translate("MainForm", "Color", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_ColorMode->addItem(QApplication::translate("MainForm", "Color", 0),lstCapValues->at(i));
         break;
       default:
         continue;
@@ -443,10 +443,10 @@ void MainForm::UpdateControls()
     switch(lstCapValues->at(i))
     {
       case TWOR_PORTRAIT:
-        ui->pComboBox_Orientation->addItem(QApplication::translate("MainForm", "Portrait", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_Orientation->addItem(QApplication::translate("MainForm", "Portrait", 0),lstCapValues->at(i));
         break;
       case TWOR_LANDSCAPE:
-        ui->pComboBox_Orientation->addItem(QApplication::translate("MainForm", "Landscape", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_Orientation->addItem(QApplication::translate("MainForm", "Landscape", 0),lstCapValues->at(i));
         break;
       default:
         continue;
@@ -465,13 +465,13 @@ void MainForm::UpdateControls()
     switch(lstCapValues->at(i))
     {
       case TWSS_NONE:
-        ui->pComboBox_PaperSize_StandardSizes->addItem(QApplication::translate("MainForm", "Custom", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_PaperSize_StandardSizes->addItem(QApplication::translate("MainForm", "Custom", 0),lstCapValues->at(i));
         break;
       case TWSS_USLETTER:
-        ui->pComboBox_PaperSize_StandardSizes->addItem(QApplication::translate("MainForm", "US Letter (8.5\" x 11\")", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_PaperSize_StandardSizes->addItem(QApplication::translate("MainForm", "US Letter (8.5\" x 11\")", 0),lstCapValues->at(i));
         break;
       case TWSS_USLEGAL:
-        ui->pComboBox_PaperSize_StandardSizes->addItem(QApplication::translate("MainForm", "US Legal (8.5\" x 14\")", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_PaperSize_StandardSizes->addItem(QApplication::translate("MainForm", "US Legal (8.5\" x 14\")", 0),lstCapValues->at(i));
         break;
       default:
         continue;
@@ -569,22 +569,22 @@ void MainForm::UpdateControls()
     switch(lstCapValues->at(i))
     {
       case TWUN_INCHES:
-        ui->pComboBox_PaperSize_Custom_Units->addItem(QApplication::translate("MainForm", "Inches", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_PaperSize_Custom_Units->addItem(QApplication::translate("MainForm", "Inches", 0),lstCapValues->at(i));
         break;
       case TWUN_PIXELS:
-        ui->pComboBox_PaperSize_Custom_Units->addItem(QApplication::translate("MainForm", "Pixels", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_PaperSize_Custom_Units->addItem(QApplication::translate("MainForm", "Pixels", 0),lstCapValues->at(i));
         break;
       case TWUN_CENTIMETERS:
-        ui->pComboBox_PaperSize_Custom_Units->addItem(QApplication::translate("MainForm", "Centimeters", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_PaperSize_Custom_Units->addItem(QApplication::translate("MainForm", "Centimeters", 0),lstCapValues->at(i));
         break;
       case TWUN_PICAS:
-        ui->pComboBox_PaperSize_Custom_Units->addItem(QApplication::translate("MainForm", "Picas", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_PaperSize_Custom_Units->addItem(QApplication::translate("MainForm", "Picas", 0),lstCapValues->at(i));
         break;
       case TWUN_POINTS:
-        ui->pComboBox_PaperSize_Custom_Units->addItem(QApplication::translate("MainForm", "Points", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_PaperSize_Custom_Units->addItem(QApplication::translate("MainForm", "Points", 0),lstCapValues->at(i));
         break;
       case TWUN_TWIPS:
-        ui->pComboBox_PaperSize_Custom_Units->addItem(QApplication::translate("MainForm", "Twips", 0, QApplication::UnicodeUTF8),lstCapValues->at(i));
+        ui->pComboBox_PaperSize_Custom_Units->addItem(QApplication::translate("MainForm", "Twips", 0),lstCapValues->at(i));
         break;
       default:
         continue;

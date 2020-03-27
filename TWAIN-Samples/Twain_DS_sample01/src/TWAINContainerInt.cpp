@@ -95,7 +95,7 @@ TW_HANDLE CTWAINContainerInt::GetContainer(const TW_UINT16 _unMsg)
     case TWON_ENUMERATION:
     {
       unsigned int unSize = getTWTYSize(m_unItemType);
-      hContainer = _DSM_Alloc(sizeof(TW_ENUMERATION) -1 + (unSize * m_listInts.size()));
+      hContainer = _DSM_Alloc((TW_UINT32)(sizeof(TW_ENUMERATION) -1 + (unSize * m_listInts.size())));
 
       if(0 != hContainer)
       {
@@ -134,7 +134,7 @@ TW_HANDLE CTWAINContainerInt::GetContainer(const TW_UINT16 _unMsg)
     case TWON_ARRAY:
     {
       unsigned int unSize = getTWTYSize(m_unItemType);
-      hContainer = _DSM_Alloc(sizeof(TW_ARRAY)-1 + (unSize * m_listInts.size()));
+      hContainer = _DSM_Alloc((TW_UINT32)(sizeof(TW_ARRAY)-1 + (unSize * m_listInts.size())));
 
       if(0 != hContainer)
       {

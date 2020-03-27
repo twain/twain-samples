@@ -43,8 +43,8 @@
 #include "TWAIN_UI.h"
 #include <QThread>
 #include <QtCore/QCoreApplication>
-#include <QApplication>
-#include <QMessageBox>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMessageBox>
 
 class MainForm;
 class QT_UI;

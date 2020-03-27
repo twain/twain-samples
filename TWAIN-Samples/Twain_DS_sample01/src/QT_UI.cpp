@@ -141,9 +141,9 @@ TW_INT16 QT_UI::DisplayTWAINGUI(TW_USERINTERFACE Data, bool bSetup, bool bIndica
     if(Data.hParent)
     {
       m_pChildWnd = new QWidget();
-      long ll =  GetWindowLong(m_pChildWnd->winId(),GWL_STYLE);
-      SetWindowLong(m_pChildWnd->winId(), GWL_STYLE, WS_CHILD|ll);
-      SetParent(m_pChildWnd->winId(), (HWND)Data.hParent);
+      long ll =  GetWindowLong((HWND)(m_pChildWnd->winId()),GWL_STYLE);
+      SetWindowLong((HWND)(m_pChildWnd->winId()), GWL_STYLE, WS_CHILD|ll);
+      SetParent((HWND)(m_pChildWnd->winId()), (HWND)Data.hParent);
     }
 #endif
     

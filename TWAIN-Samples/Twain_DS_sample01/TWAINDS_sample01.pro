@@ -5,4 +5,4 @@ unix {
 }
 
 SUBDIRS = src
-
+QT += widgets

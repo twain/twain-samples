@@ -100,7 +100,7 @@ TW_HANDLE CTWAINContainerString::GetContainer(const TW_UINT16 _unMsg)
 
     case TWON_ENUMERATION:
     {
-      hContainer = _DSM_Alloc(sizeof(TW_ENUMERATION) -1 + (m_unItemSize * m_listStrs.size()));
+      hContainer = _DSM_Alloc((TW_UINT32)(sizeof(TW_ENUMERATION) -1 + (m_unItemSize * m_listStrs.size())));
 
       if(0 != hContainer)
       {
@@ -138,7 +138,7 @@ TW_HANDLE CTWAINContainerString::GetContainer(const TW_UINT16 _unMsg)
 
     case TWON_ARRAY:
     {
-      hContainer = _DSM_Alloc(sizeof(TW_ARRAY)-1 + (m_unItemSize * m_listStrs.size()));
+      hContainer = _DSM_Alloc((TW_UINT32)(sizeof(TW_ARRAY)-1 + (m_unItemSize * m_listStrs.size())));
 
       if(0 != hContainer)
       {
@@ -399,7 +399,7 @@ bool CTWAINContainerString::Add(string _strAdd, bool _bDefault /*= false*/)
   m_listStrsDefault.push_back(_strAdd);
   if(m_nDefault == -1 || _bDefault)
   {
-    m_nCurrent = m_nDefault = m_listStrsDefault.size()-1;
+	  m_nCurrent = m_nDefault = (int)(m_listStrsDefault.size() - 1);
   }
   return true;
 }

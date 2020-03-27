@@ -2,7 +2,7 @@
 #define QT_MAINFORM_H
 #include "QT_UI.h"
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 #include <QDoubleValidator>
 
 namespace Ui

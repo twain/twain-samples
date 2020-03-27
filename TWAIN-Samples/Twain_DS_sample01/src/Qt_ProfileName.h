@@ -1,7 +1,7 @@
 #ifndef QT_PROFILENAME_H
 #define QT_PROFILENAME_H
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 namespace Ui {
     class ProfileName;

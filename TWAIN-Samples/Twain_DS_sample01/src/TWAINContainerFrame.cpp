@@ -331,7 +331,7 @@ TW_HANDLE CTWAINContainerFrame::GetContainer(const TW_UINT16 _unMsg)
 
     case TWON_ENUMERATION:
     {
-      hContainer = _DSM_Alloc(sizeof(TW_ENUMERATION_FRAME) + (sizeof(TW_FRAME) * (m_listFrames.size()-1))); // -1 because already contains 1 element
+      hContainer = _DSM_Alloc((TW_UINT32)(sizeof(TW_ENUMERATION_FRAME) + (sizeof(TW_FRAME) * (m_listFrames.size()-1)))); // -1 because already contains 1 element
 
       if(0 != hContainer)
       {
@@ -372,7 +372,7 @@ TW_HANDLE CTWAINContainerFrame::GetContainer(const TW_UINT16 _unMsg)
 
     case TWON_ARRAY:
     {
-      hContainer = _DSM_Alloc(sizeof(TW_ARRAY_FRAME) + (sizeof(TW_FRAME) * (m_listFrames.size()-1))); // -1 because a TW_ARRAY_FIX32 already includes 1 element
+      hContainer = _DSM_Alloc((TW_UINT32)(sizeof(TW_ARRAY_FRAME) + (sizeof(TW_FRAME) * (m_listFrames.size()-1)))); // -1 because a TW_ARRAY_FIX32 already includes 1 element
 
       if(0 != hContainer)
       {

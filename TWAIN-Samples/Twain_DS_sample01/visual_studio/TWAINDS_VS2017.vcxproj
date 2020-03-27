@@ -23,7 +23,7 @@
     <ProjectGuid>{1E73CADF-90D9-45E9-97E2-CD25E3532DB4}</ProjectGuid>
     <RootNamespace>TWAINDS_VS2005_mfc32</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
-    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -77,9 +77,11 @@
     <TargetName>$(ProjectName)32</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(Configuration)64\</OutDir>
-    <IntDir>$(Configuration)64\</IntDir>
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)64</TargetName>
+    <TargetExt>.ds</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(Configuration)\</OutDir>
@@ -89,16 +91,17 @@
     <TargetName>$(ProjectName)32</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(Configuration)64\</OutDir>
-    <IntDir>$(Configuration)64\</IntDir>
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>$(ProjectName)64</TargetName>
+    <TargetExt>.ds</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
       <Message>create pub folders if do not exist</Message>
-      <Command>if NOT EXIST "$(ProjectDir)\..\pub\bin" mkdir "$(ProjectDir)\..\pub\bin"
-if NOT EXIST c:\windows\twain_32\sample2 mkdir c:\windows\twain_32\sample2
-</Command>
+      <Command>if NOT EXIST c:\windows\twain_32\sample2 mkdir "c:\windows\twain_32\sample2"
+del /q /f "c:\windows\twain_32\sample2\*.*"</Command>
     </PreBuildEvent>
     <ClCompile>
       <AdditionalOptions>/GR %(AdditionalOptions)</AdditionalOptions>
@@ -114,9 +117,9 @@ if NOT EXIST c:\windows\twain_32\sample2 mkdir c:\windows\twain_32\sample2
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;FreeImage.lib;qtmaind.lib;QtCored4.lib;QtGuid4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;FreeImage.lib;qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName)32.ds</OutputFile>
-      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\..\msvc2015\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\src\TWAINDS.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)TWAINDS_Sample01.pdb</ProgramDatabaseFile>
@@ -129,15 +132,17 @@ if NOT EXIST c:\windows\twain_32\sample2 mkdir c:\windows\twain_32\sample2
       <Command>copy "$(TargetPath)"  c:\windows\twain_32\sample2
 copy "$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll" c:\windows\twain_32\sample2
 copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_32\sample2
+copy "$(QTDIR)\bin\Qt5Cored.dll" c:\windows\twain_32\sample2
+copy "$(QTDIR)\bin\Qt5Guid.dll" c:\windows\twain_32\sample2
+copy "$(QTDIR)\bin\Qt5Widgetsd.dll" c:\windows\twain_32\sample2
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PreBuildEvent>
       <Message>create pub folders if do not exist</Message>
-      <Command>if NOT EXIST "$(ProjectDir)\..\pub\bin" mkdir "$(ProjectDir)\..\pub\bin"
-if NOT EXIST c:\windows\twain_64\sample2 mkdir c:\windows\twain_64\sample2
-</Command>
+      <Command>if NOT EXIST c:\windows\twain_64\sample2 mkdir "c:\windows\twain_64\sample2"
+del /q /f "c:\windows\twain_64\sample2\*.*"</Command>
     </PreBuildEvent>
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -147,7 +152,7 @@ if NOT EXIST c:\windows\twain_64\sample2 mkdir c:\windows\twain_64\sample2
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.;..;..\src\GeneratedFiles\;..\..\pub\external\include\;..\..\Common;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;STRICT;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader />
@@ -156,9 +161,9 @@ if NOT EXIST c:\windows\twain_64\sample2 mkdir c:\windows\twain_64\sample2
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>User32.lib;FreeImagedx64.lib;qtmaind.lib;QtCored4.lib;QtGuid4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;FreeImagedx64.lib;qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName)64.ds</OutputFile>
-      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;$(QTDIR_64)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\src\TWAINDS.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)TWAINDS_Sample01.pdb</ProgramDatabaseFile>
@@ -170,14 +175,19 @@ if NOT EXIST c:\windows\twain_64\sample2 mkdir c:\windows\twain_64\sample2
       <Command>copy "$(TargetPath)"  c:\windows\twain_64\sample2
 copy "$(ProjectDir)\..\..\pub\external\bin\FreeImagedx64.dll" c:\windows\twain_64\sample2
 copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_64\sample2
+copy "$(QTDIR)\bin\Qt5Cored.dll" c:\windows\twain_64\sample2
+copy "$(QTDIR)\bin\Qt5Guid.dll" c:\windows\twain_64\sample2
+copy "$(QTDIR)\bin\Qt5Widgetsd.dll" c:\windows\twain_64\sample2
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
       <Message>create pub folders if do not exist</Message>
-      <Command>if NOT EXIST "$(ProjectDir)\..\pub\bin" mkdir "$(ProjectDir)\..\pub\bin"
-if NOT EXIST c:\windows\twain_32\sample2 mkdir c:\windows\twain_32\sample2</Command>
+      <Command>if NOT EXIST "$(ProjectDir)..\pub\bin\win32" mkdir "$(ProjectDir)..\pub\bin\win32"
+if NOT EXIST "c:\windows\twain_32\sample2" mkdir "c:\windows\twain_32\sample2"
+del /q /f "$(ProjectDir)..\pub\bin\win32\*.*"
+del /q /f "c:\windows\twain_32\sample2\*.*"</Command>
     </PreBuildEvent>
     <ClCompile>
       <AdditionalIncludeDirectories>.;..;..\src\GeneratedFiles\;..\..\pub\external\include\;..\..\Common;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -188,9 +198,9 @@ if NOT EXIST c:\windows\twain_32\sample2 mkdir c:\windows\twain_32\sample2</Comm
       <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>User32.lib;FreeImage.lib;qtmain.lib;QtCore4.lib;QtGui4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;FreeImage.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName)32.ds</OutputFile>
-      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\..\msvc2015\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\src\TWAINDS.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -200,15 +210,29 @@ if NOT EXIST c:\windows\twain_32\sample2 mkdir c:\windows\twain_32\sample2</Comm
     </Link>
     <PostBuildEvent>
       <Message>Copy Data Source to pub\bin directory</Message>
-      <Command>copy "$(TargetPath)"  c:\windows\twain_32\sample2
+      <Command>copy "$(TargetPath)"  $(ProjectDir)..\pub\bin\win32
+copy "$(ProjectDir)..\..\pub\external\bin\FreeImage.dll" $(ProjectDir)..\pub\bin\win32
+copy "$(ProjectDir)..\..\pub\bin\TWAIN_logo.png" $(ProjectDir)..\pub\bin\win32
+copy "$(QTDIR)\..\msvc2015\bin\Qt5Core.dll" $(ProjectDir)..\pub\bin\win32
+copy "$(QTDIR)\..\msvc2015\bin\Qt5Gui.dll" $(ProjectDir)..\pub\bin\win32
+copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgets.dll" $(ProjectDir)..\pub\bin\win32
+
+copy "$(TargetPath)"  c:\windows\twain_32\sample2
 copy "$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll" c:\windows\twain_32\sample2
-copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_32\sample2</Command>
+copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_32\sample2
+copy "$(QTDIR)\..\msvc2015\bin\Qt5Core.dll" c:\windows\twain_32\sample2
+copy "$(QTDIR)\..\msvc2015\bin\Qt5Gui.dll" c:\windows\twain_32\sample2
+copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgets.dll" c:\windows\twain_32\sample2
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PreBuildEvent>
       <Message>create pub folders if do not exist</Message>
-      <Command>if NOT EXIST "$(ProjectDir)\..\pub\bin" mkdir "$(ProjectDir)\..\pub\bin"</Command>
+      <Command>if NOT EXIST "$(ProjectDir)..\pub\bin\win64" mkdir "$(ProjectDir)..\pub\bin\win64"
+if NOT EXIST "c:\windows\twain_32\sample2" mkdir "c:\windows\twain_64\sample2"
+del /q /f "$(ProjectDir)..\pub\bin\win64\*.*"
+del /q /f "c:\windows\twain_64\sample2\*.*"</Command>
     </PreBuildEvent>
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -221,9 +245,9 @@ copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_32\sample2</C
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>User32.lib;FreeImagex64.lib;qtmain.lib;QtCore4.lib;QtGui4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;FreeImagex64.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName)64.ds</OutputFile>
-      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;$(QTDIR_64)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\src\TWAINDS.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -233,8 +257,19 @@ copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_32\sample2</C
     </Link>
     <PostBuildEvent>
       <Message>Copy Application to pub\bin directory</Message>
-      <Command>copy "$(TargetPath)"  "$(ProjectDir)\..\pub\bin"
-copy "$(ProjectDir)\..\..\pub\external\bin\FreeImagex64.dll" "$(ProjectDir)\..\pub\bin"
+      <Command>copy "$(TargetPath)"  $(ProjectDir)..\pub\bin\win64
+copy "$(ProjectDir)..\..\pub\external\bin\FreeImagex64.dll" $(ProjectDir)..\pub\bin\win64
+copy "$(ProjectDir)..\..\pub\bin\TWAIN_logo.png" $(ProjectDir)..\pub\bin\win64
+copy "$(QTDIR)\..\msvc2015\bin\Qt5Core.dll" $(ProjectDir)..\pub\bin\win64
+copy "$(QTDIR)\..\msvc2015\bin\Qt5Gui.dll" $(ProjectDir)..\pub\bin\win64
+copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgets.dll" $(ProjectDir)..\pub\bin\win64
+
+copy "$(TargetPath)"  c:\windows\twain_64\sample2
+copy "$(ProjectDir)\..\..\pub\external\bin\FreeImagex64.dll" c:\windows\twain_64\sample2
+copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_64\sample2
+copy "$(QTDIR)\bin\Qt5Core.dll" c:\windows\twain_64\sample2
+copy "$(QTDIR)\bin\Qt5Gui.dll" c:\windows\twain_64\sample2
+copy "$(QTDIR)\bin\Qt5Widgets.dll" c:\windows\twain_64\sample2
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
