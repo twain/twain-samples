@@ -1,7 +1,7 @@
 #ifndef ENUMSET_H
 #define ENUMSET_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "ui_enumset.h"
 
 class EnumSet : public QDialog

@@ -19,8 +19,8 @@ ExtImageInfoSel::ExtImageInfoSel(vector<TW_UINT16> &lstExtImageInfo, QWidget *pa
     , m_lstExtImageInfo(lstExtImageInfo)
 {
   ui.setupUi(this);
-  ui.treExtImgInfo->header()->setResizeMode(0, QHeaderView::ResizeToContents);
-  ui.treExtImgInfo->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+  ui.treExtImgInfo->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+  ui.treExtImgInfo->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
   
   int nIndex = 0;
   while(TWON_DONTCARE16 != kTWEI_TABLE[nIndex])

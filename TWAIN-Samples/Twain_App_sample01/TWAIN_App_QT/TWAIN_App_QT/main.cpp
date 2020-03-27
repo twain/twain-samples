@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "twain_app_qt.h"
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMessageBox>
 
 int main(int argc, char *argv[])
 {

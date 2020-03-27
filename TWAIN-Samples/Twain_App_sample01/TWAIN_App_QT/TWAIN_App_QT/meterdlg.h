@@ -1,7 +1,7 @@
 #ifndef METERDLG_H
 #define METERDLG_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "ui_meterdlg.h"
 
 class MeterDlg : public QDialog

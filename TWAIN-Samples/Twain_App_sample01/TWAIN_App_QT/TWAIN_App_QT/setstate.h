@@ -7,7 +7,7 @@
 #ifndef SETSTATE_H
 #define SETSTATE_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "ui_setstate.h"
 
 class SetState : public QDialog

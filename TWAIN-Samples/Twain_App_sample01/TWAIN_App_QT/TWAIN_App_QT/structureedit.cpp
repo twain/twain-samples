@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "structureedit.h"
 #include "twainstring.h"
+#include <QtWidgets/QItemDelegate>
+#include <QtWidgets/QComboBox>
 
 class ComboDelegate : public QItemDelegate
 {
@@ -167,8 +169,8 @@ void StructureEdit::SetTWAINStructure(void *pStructure, TW_UINT16 twDat)
   QStringList lstHeader;
   lstHeader << "Field" << "Value";
   m_StructureEditModel.setHorizontalHeaderLabels(lstHeader);
-  ui.treStructure->header()->setResizeMode(0, QHeaderView::ResizeToContents);
-  ui.treStructure->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+  ui.treStructure->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+  ui.treStructure->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 
   
   QStandardItem *pItem = new QStandardItem(convertDataArgType_toString(twDat));
@@ -349,22 +351,22 @@ void StructureEdit::OnItemChanged(QStandardItem *pItem)
         break;
       case TWTY_STR32:
         memset(static_cast<char *>(pValue), 0, sizeof(TW_STR32));
-        SSTRCPY(static_cast<char *>(pValue), 32, pItem->text().toAscii());
+        SSTRCPY(static_cast<char *>(pValue), 32, pItem->text().toLatin1());
         pItem->setText(static_cast<char *>(pValue));
         break;
       case TWTY_STR64:
         memset(static_cast<char *>(pValue), 0, sizeof(TW_STR64));
-        SSTRCPY(static_cast<char *>(pValue), 64, pItem->text().toAscii());
+        SSTRCPY(static_cast<char *>(pValue), 64, pItem->text().toLatin1());
         pItem->setText(static_cast<char *>(pValue));
         break;
       case TWTY_STR128:
         memset(static_cast<char *>(pValue), 0, sizeof(TW_STR128));
-        SSTRCPY(static_cast<char *>(pValue), 128, pItem->text().toAscii());
+        SSTRCPY(static_cast<char *>(pValue), 128, pItem->text().toLatin1());
         pItem->setText(static_cast<char *>(pValue));
         break;
       case TWTY_STR255:
         memset(static_cast<char *>(pValue), 0, sizeof(TW_STR255));
-        SSTRCPY(static_cast<char *>(pValue), 255, pItem->text().toAscii());
+        SSTRCPY(static_cast<char *>(pValue), 255, pItem->text().toLatin1());
         pItem->setText(static_cast<char *>(pValue));
         break;
       case TWTY_HANDLE:

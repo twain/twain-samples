@@ -230,7 +230,7 @@ TW_UINT16 CTWAINSession::DSM_Entry(TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 ui
             case MSG_ENABLEDSUIONLY:
             case MSG_ENABLEDS:
               //only valid in state 4, success means transition to state 5 (using max in case of ShowUI==false race condition)
-              m_uiState = max(m_uiState, 5);
+              m_uiState = (TW_UINT16)((m_uiState > 5) ? m_uiState : 5);
               break;
             case MSG_DISABLEDS:
               //only valid in state 5, success means transition to state 4

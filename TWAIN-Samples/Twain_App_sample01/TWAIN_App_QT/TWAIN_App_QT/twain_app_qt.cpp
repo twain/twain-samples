@@ -8,14 +8,44 @@
 #include "SetState.h"
 #include "StructureEdit.h"
 #include "ExtImageInfoSel.h"
+#include <QtWidgets/qfiledialog.h>
+#include <QtWidgets/qmessagebox.h>
+#include <QtWidgets/qstylefactory.h>
+
+class MyMsgEventFilter : public QAbstractNativeEventFilter
+{
+public:
+	bool nativeEventFilter(const QByteArray &eventType, void *message, long *) override
+	{
+		TW_UINT16 u16Result;
+		bool bRC = false;
+		CQTWAINApp *pApp = dynamic_cast<CQTWAINApp*>(QApplication::instance());
+		//First make sure we have the correct type of instance, there is a window and in the right TWAIN state
+		if (pApp && pApp->m_pMainWnd && (5 <= pApp->m_pMainWnd->GetCurrentState()))
+		{
+			//Initialize the event structure
+			TW_EVENT twEvent = { (MSG*)message, MSG_NULL };
+			//Dispatch the even to the Data Source
+			u16Result = pApp->m_pMainWnd->ProcessEvent(twEvent);
+			if (TWRC_DSEVENT == u16Result)
+			{
+				//The event was handled by the DataSource
+				bRC = true;
+			}
+		}
+		//The event was not handled by the DataSource
+		return (bRC);
+	}
+};
 
 /**
 * Event handler for relaying events to the TWAIN DS (required for TWAIN versions below 2.2
 * @param[in] pMsg pointer to the OS specific message structure
 * @return true if the TWAIN DS handles the event
 */
-static bool eventTWFilter(void *pMsg)
+static bool eventTWFilter(const QByteArray &eventType, void *pMsg, long *result)
 {
+  TW_UINT16 u16Result;
   bool bRC = false;
   CQTWAINApp *pApp = dynamic_cast<CQTWAINApp*>(QApplication::instance());
   //First make sure we have the correct type of instance, there is a window and in the right TWAIN state
@@ -24,7 +54,9 @@ static bool eventTWFilter(void *pMsg)
     //Initialize the event structure
     TW_EVENT twEvent = { pMsg, MSG_NULL };
     //Dispatch the even to the Data Source
-    if(TWRC_DSEVENT==pApp->m_pMainWnd->ProcessEvent(twEvent))
+	u16Result = pApp->m_pMainWnd->ProcessEvent(twEvent);
+	if (result) result = 0;
+    if(TWRC_DSEVENT== u16Result)
     {
       //The event was handled by the DataSource
       bRC = true;
@@ -39,16 +71,18 @@ CQTWAINApp::CQTWAINApp(int &argc, char **argv, int nVer /*= QT_VERSION*/)
   , m_pMainWnd(NULL)
 {
   //Configure the Event filter for TWAIN DAT_EVENT handling
-  QAbstractEventDispatcher::instance()->setEventFilter(eventTWFilter);
+  m_pEventFilter = new MyMsgEventFilter();
+  QAbstractEventDispatcher::instance()->installNativeEventFilter(m_pEventFilter);
   return;
 }
 
 CQTWAINApp::~CQTWAINApp()
 {
+  delete m_pEventFilter;
   return;
 }
 
-TWAIN_App_QT::TWAIN_App_QT(QScriptEngine *pEngine, QWidget *parent, Qt::WFlags flags)
+TWAIN_App_QT::TWAIN_App_QT(QScriptEngine *pEngine, QWidget *parent, Qt::WindowFlags flags)
   : QMainWindow(parent, flags)
   , m_pEngine(pEngine)
   , m_bSignalCalledInTWAIN(false)
@@ -59,18 +93,18 @@ TWAIN_App_QT::TWAIN_App_QT(QScriptEngine *pEngine, QWidget *parent, Qt::WFlags f
   ui.setupUi(this);
 
   //Fixup the Triplet list
-  ui.treTriplet->header()->setResizeMode(0, QHeaderView::ResizeToContents);
-  ui.treTriplet->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+  ui.treTriplet->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+  ui.treTriplet->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
   //Fixup the Capability list
-  ui.treCapability->header()->setResizeMode(0, QHeaderView::ResizeToContents);
-  ui.treCapability->header()->setResizeMode(1, QHeaderView::ResizeToContents);
-  ui.treCapability->header()->setResizeMode(2, QHeaderView::ResizeToContents);
-  ui.treCapability->header()->setResizeMode(3, QHeaderView::ResizeToContents);
-  ui.treCapability->header()->setResizeMode(4, QHeaderView::ResizeToContents);
-  ui.treCapability->header()->setResizeMode(5, QHeaderView::ResizeToContents);
-  ui.treCapability->header()->setResizeMode(6, QHeaderView::ResizeToContents);
-  ui.treCapability->header()->setResizeMode(7, QHeaderView::ResizeToContents);
-  ui.treCapability->header()->setResizeMode(8, QHeaderView::ResizeToContents);
+  ui.treCapability->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+  ui.treCapability->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+  ui.treCapability->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+  ui.treCapability->header()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+  ui.treCapability->header()->setSectionResizeMode(4, QHeaderView::ResizeToContents);
+  ui.treCapability->header()->setSectionResizeMode(5, QHeaderView::ResizeToContents);
+  ui.treCapability->header()->setSectionResizeMode(6, QHeaderView::ResizeToContents);
+  ui.treCapability->header()->setSectionResizeMode(7, QHeaderView::ResizeToContents);
+  ui.treCapability->header()->setSectionResizeMode(8, QHeaderView::ResizeToContents);
 
   //clear the current source identity
   memset(&m_twSourceIdentity, 0, sizeof(m_twSourceIdentity));
@@ -89,7 +123,7 @@ TWAIN_App_QT::TWAIN_App_QT(QScriptEngine *pEngine, QWidget *parent, Qt::WFlags f
   SSTRCPY(m_twAppIdentity.ProductName, sizeof(m_twAppIdentity.ProductName), "QT Sample App");
 
   //QMotifStyle
-  ui.splConfigAcquire->setStyle(new QCDEStyle());
+  ui.splConfigAcquire->setStyle(QStyleFactory::create("Fusion"));
 
   //Populate the triplet list, this never changes and only needs to be done once
   PopulateTripletList();
@@ -657,7 +691,7 @@ void TWAIN_App_QT::OnMemoryTransfer(const TW_IMAGEINFO &twInfo, const TW_IMAGEME
             #pragma message("TODO: this code path not tested")
             //DataSource is not TWAIN compliant - align ourselves
             int nBytesPerRow = (((twData.Columns * twInfo.BitsPerPixel + 31)/32) * 4);
-            int nDifference = min(0, nBytesPerRow-twData.BytesPerRow);
+            int nDifference = (int)((0 < nBytesPerRow-twData.BytesPerRow) ? 0 : nBytesPerRow - twData.BytesPerRow);
             char *pExtra = NULL;
             if(nDifference)
             {
@@ -669,7 +703,7 @@ void TWAIN_App_QT::OnMemoryTransfer(const TW_IMAGEINFO &twInfo, const TW_IMAGEME
             for(int nRow = 0; nRow < twData.Rows; nRow++)
             {
               //dump out a line
-              m_pMemoryDataStream->writeRawData(static_cast<char *>(twData.Memory.TheMem), min(twData.BytesPerRow, nBytesPerRow));
+              m_pMemoryDataStream->writeRawData(static_cast<char *>(twData.Memory.TheMem), (int)((twData.BytesPerRow < nBytesPerRow) ? twData.BytesPerRow : nBytesPerRow));
               if(nDifference)
               {
                 //correct the alignment
@@ -768,7 +802,7 @@ void TWAIN_App_QT::TraceMessage(const char *pszFormatString, ...)
     //format the string
     vsprintf_s(pszFormatted, nCount, pszFormatString, args);
     //Output the result
-    emit customAppendStatusText(QString::fromAscii(pszFormatted));
+    emit customAppendStatusText(QString::fromLatin1(pszFormatted));
     //cleanup local pointers
     delete [] pszFormatted;
     pszFormatted = NULL;
@@ -797,7 +831,7 @@ void TWAIN_App_QT::on_btnUnloadDSM_clicked(bool bChecked)
 void TWAIN_App_QT::on_btnOpenDSM_clicked(bool bChecked)
 {
   //Open the DataSource Manager
-  OpenDSM(winId());
+  OpenDSM((HWND)winId());
   //Populate the DataSource list
   PopulateDSList();
   //Update the state of the GUI
@@ -819,7 +853,7 @@ void TWAIN_App_QT::on_btnOpen_clicked(bool bChecked)
   //Display the wait cursor, this could take a while
   QApplication::setOverrideCursor(Qt::WaitCursor);
   //Open the current DataSource
-  OpenDS( ui.cbxSources->currentText().toAscii() );
+  OpenDS( ui.cbxSources->currentText().toLatin1() );
   //Restore the cursor
   QApplication::restoreOverrideCursor();
   //Populate or re-populate the Capability list
@@ -859,12 +893,12 @@ void TWAIN_App_QT::on_btnEnable_clicked(bool bChecked)
   if(ui.radUIOnly->isChecked())
   {
     //Enable for settings only
-    EnableDSUIOnly(winId());
+    EnableDSUIOnly((HWND)winId());
   }
   else
   {
     //Enable with intent to transfer UI or UIless
-    EnableDS(winId(), ui.radNoUI->isChecked()?false:true);
+    EnableDS((HWND)winId(), ui.radNoUI->isChecked()?false:true);
   }
   //Update the state of the GUI
   EnableGUIByCurrentState();
@@ -946,7 +980,7 @@ void TWAIN_App_QT::on_btnSetDefault_clicked(bool bChecked)
 {
   TW_IDENTITY twIdentity = {0};
   //Get the entire identity from the DSM
-  if(TWRC_SUCCESS==GetDataSourceID(ui.cbxSources->currentText().toAscii(), twIdentity))
+  if(TWRC_SUCCESS==GetDataSourceID(ui.cbxSources->currentText().toLatin1(), twIdentity))
   {
     //Instruct the DSM to make this the default
     DSM_Entry(DG_CONTROL, DAT_IDENTITY, MSG_SET, &twIdentity);
@@ -1307,7 +1341,7 @@ void TWAIN_App_QT::PopulateTripletList()
 
   //Create the top level DG_CONTROL item and store define for later use
   QTreeWidgetItem *pItem = new QTreeWidgetItem(ui.treTriplet);
-  pItem->setText(0, QString::fromAscii(convertDataGroup_toString(DG_CONTROL)));
+  pItem->setText(0, QString::fromLatin1(convertDataGroup_toString(DG_CONTROL)));
   pItem->setData(0, Qt::UserRole, DG_CONTROL);
   ui.treTriplet->addTopLevelItem(pItem);
   //Insert all DAT_* of DG_CONTROL type
@@ -1325,7 +1359,7 @@ void TWAIN_App_QT::PopulateTripletList()
 
   //Create the top level DG_IMAGE item and store define for later use
   pItem = new QTreeWidgetItem(ui.treTriplet);
-  pItem->setText(0, QString::fromAscii(convertDataGroup_toString(DG_IMAGE)));
+  pItem->setText(0, QString::fromLatin1(convertDataGroup_toString(DG_IMAGE)));
   pItem->setData(0, Qt::UserRole, DG_IMAGE);
   ui.treTriplet->addTopLevelItem(pItem);
   //Insert all DAT_* of DG_IMAGE type
@@ -2289,7 +2323,7 @@ int TWAIN_App_QT::GetCurrentState()
 
 void TWAIN_App_QT::AppendScriptStatusText(QString strText)
 {
-  TraceMessage(strText.toAscii());
+  TraceMessage(strText.toLatin1());
   return;
 }
 

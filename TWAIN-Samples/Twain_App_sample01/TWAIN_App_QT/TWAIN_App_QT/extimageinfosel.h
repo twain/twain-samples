@@ -1,7 +1,7 @@
 #ifndef EXTIMAGEINFOSEL_H
 #define EXTIMAGEINFOSEL_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "ui_extimageinfosel.h"
 
 #ifdef _WIN32

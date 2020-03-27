@@ -1,16 +1,17 @@
 #ifndef TWAIN_APP_QT_H
 #define TWAIN_APP_QT_H
 
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include "ui_twain_app_qt.h"
 #include "TWAINSession.h"
 
+class MyMsgEventFilter;
 class TWAIN_App_QT : public QMainWindow, public CTWAINSession, public QScriptable
 {
   Q_OBJECT
 
   public:
-  TWAIN_App_QT(QScriptEngine *pEngine, QWidget *parent = 0, Qt::WFlags flags = 0);
+  TWAIN_App_QT(QScriptEngine *pEngine, QWidget *parent = 0, Qt::WindowFlags flags = 0);
   ~TWAIN_App_QT();
 
   public slots:
@@ -202,6 +203,7 @@ class CQTWAINApp : public QApplication
   CQTWAINApp(int &argc, char **argv, int = QT_VERSION);
   virtual ~CQTWAINApp();
   TWAIN_App_QT *m_pMainWnd;
+  MyMsgEventFilter *m_pEventFilter;
 };
 
 #endif // TWAIN_APP_QT_H

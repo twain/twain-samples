@@ -7,7 +7,7 @@
 #ifndef _inc_structureedit_h
 #define _inc_structureedit_h
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "ui_structureedit.h"
 #include "twain.h"
 #include "twainstring.h"

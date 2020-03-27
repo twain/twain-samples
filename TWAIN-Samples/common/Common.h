@@ -87,7 +87,7 @@
 /**
 * Solution for unused arguments...
 */
-#define UNUSEDARG(x) (void*)x
+#define UNUSEDARG(x) (void)x
 
 /**
 * If the user defines TWNDS_CMP in their make file or project,

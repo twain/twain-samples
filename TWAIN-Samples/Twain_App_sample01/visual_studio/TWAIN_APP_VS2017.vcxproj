@@ -23,18 +23,18 @@
     <ProjectGuid>{431AD693-726F-41AB-AA59-B81F5D2E5847}</ProjectGuid>
     <RootNamespace>Twain_App_sample01</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -68,17 +68,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)32\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)32\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)32\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)32\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -93,16 +93,29 @@
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>$(ProjectName)32</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>$(ProjectName)64</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>$(ProjectName)32</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>$(ProjectName)64</TargetName>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
       <Message>create pub folders if do not exist</Message>
-      <Command>if NOT EXIST "$(ProjectDir)\..\pub\bin" mkdir "$(ProjectDir)\..\pub\bin"</Command>
+      <Command>if NOT EXIST "$(ProjectDir)..\pub\bin\win32" mkdir "$(ProjectDir)..\pub\bin\win32"
+if EXIST "$(ProjectDir)..\pub\bin\win32\$(TargetName).exe" del /q /f "$(ProjectDir)..\pub\bin\win32\$(TargetName).exe"</Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.;..;..\..\pub\external\include\;..\..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -113,8 +126,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>libcmtd.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(TargetPath)</OutputFile>
+      <AdditionalLibraryDirectories>..\..\pub\external\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -127,13 +140,15 @@
     </Link>
     <PostBuildEvent>
       <Message>Copy Application to pub\bin directory</Message>
-      <Command>copy "$(TargetPath)"  "$(ProjectDir)\..\pub\bin\TWAIN_APP_CMD32.exe" &amp; copy "$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll" "$(ProjectDir)\..\pub\bin"</Command>
+      <Command>copy "$(TargetPath)"  "$(ProjectDir)..\pub\bin\win32"
+copy "$(ProjectDir)..\..\pub\external\bin\win32\FreeImage.dll" "$(ProjectDir)..\pub\bin\win32"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PreBuildEvent>
       <Message>create pub folders if do not exist</Message>
-      <Command>if NOT EXIST "$(ProjectDir)\..\pub\bin" mkdir "$(ProjectDir)\..\pub\bin"</Command>
+      <Command>if NOT EXIST "$(ProjectDir)..\pub\bin\win64" mkdir "$(ProjectDir)..\pub\bin\win64"
+if EXIST "$(ProjectDir)..\pub\bin\win64\$(TargetName).exe" del /q /f "$(ProjectDir)..\pub\bin\win64\$(TargetName).exe"</Command>
     </PreBuildEvent>
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -152,9 +167,9 @@
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libcmtd.lib;FreeImagedx64.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcmtd.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(TargetPath)</OutputFile>
+      <AdditionalLibraryDirectories>..\..\pub\external\lib\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -167,13 +182,15 @@
     </Link>
     <PostBuildEvent>
       <Message>Copy Application to pub\bin directory</Message>
-      <Command>copy "$(TargetPath)"  "$(ProjectDir)\..\pub\bin\TWAIN_APP_CMD64.exe" &amp; copy "$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll" "$(ProjectDir)\..\pub\bin"</Command>
+      <Command>copy "$(TargetPath)"  "$(ProjectDir)..\pub\bin\win64"
+copy "$(ProjectDir)..\..\pub\external\bin\win64\FreeImage.dll" "$(ProjectDir)..\pub\bin\win64"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
       <Message>create pub folders if do not exist</Message>
-      <Command>if NOT EXIST "$(ProjectDir)\..\pub\bin" mkdir "$(ProjectDir)\..\pub\bin"</Command>
+      <Command>if NOT EXIST "$(ProjectDir)..\pub\bin\win32" mkdir "$(ProjectDir)..\pub\bin\win32"
+if EXIST "$(ProjectDir)..\pub\bin\win32\$(TargetName).exe" del /q /f "$(ProjectDir)..\pub\bin\win32\$(TargetName).exe"</Command>
     </PreBuildEvent>
     <ClCompile>
       <AdditionalIncludeDirectories>.;..;..\..\pub\external\include\;..\..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -186,8 +203,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>libcmt.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(TargetPath)</OutputFile>
+      <AdditionalLibraryDirectories>..\..\pub\external\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;Nafxcw.lib;Libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -201,13 +218,15 @@
     </Link>
     <PostBuildEvent>
       <Message>Copy Application to pub\bin directory</Message>
-      <Command>copy "$(TargetPath)"  "$(ProjectDir)\..\pub\bin\TWAIN_APP_CMD32.exe" &amp; copy "$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll" "$(ProjectDir)\..\pub\bin"</Command>
+      <Command>copy "$(TargetPath)"  "$(ProjectDir)..\pub\bin\win32"
+copy "$(ProjectDir)..\..\pub\external\bin\win32\FreeImage.dll" "$(ProjectDir)..\pub\bin\win32"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PreBuildEvent>
       <Message>create pub folders if do not exist</Message>
-      <Command>if NOT EXIST "$(ProjectDir)\..\pub\bin" mkdir "$(ProjectDir)\..\pub\bin"</Command>
+      <Command>if NOT EXIST "$(ProjectDir)..\pub\bin\win64" mkdir "$(ProjectDir)..\pub\bin\win64"
+if EXIST "$(ProjectDir)..\pub\bin\win64\$(TargetName).exe" del /q /f "$(ProjectDir)..\pub\bin\win64\$(TargetName).exe"</Command>
     </PreBuildEvent>
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -222,9 +241,9 @@
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libcmt.lib;FreeImagex64.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcmt.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(TargetPath)</OutputFile>
+      <AdditionalLibraryDirectories>..\..\pub\external\lib\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -238,7 +257,8 @@
     </Link>
     <PostBuildEvent>
       <Message>Copy Application to pub\bin directory</Message>
-      <Command>copy "$(TargetPath)"  "$(ProjectDir)\..\pub\bin\TWAIN_APP_CMD64.exe" &amp; copy "$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll" "$(ProjectDir)\..\pub\bin"</Command>
+      <Command>copy "$(TargetPath)"  "$(ProjectDir)..\pub\bin\win64"
+copy "$(ProjectDir)..\..\pub\external\bin\win64\FreeImage.dll" "$(ProjectDir)..\pub\bin\win64"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
