@@ -801,7 +801,7 @@
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:FALSE"
-            "SourcePath" = "8:..\\..\\pub\\external\\bin\\TWAINDSM32.msm"
+            "SourcePath" = "8:..\\..\\pub\\external\\bin\\win32\\TWAINDSM32.msm"
                 "Properties"
                 {
                     "_92C0B735BA65418D80665F240AE78CAF.F6BD06CC863147E1A74785A2413759ED"

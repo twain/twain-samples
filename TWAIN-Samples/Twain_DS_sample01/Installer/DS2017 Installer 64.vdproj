@@ -387,8 +387,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D8EEE6B5A1E5424B894198FA6274D8C1"
             {
-            "SourcePath" = "8:..\\pub\\bin\\win64\\FreeImagex64.dll"
-            "TargetName" = "8:FreeImagex64.dll"
+            "SourcePath" = "8:..\\pub\\bin\\win64\\FreeImage.dll"
+            "TargetName" = "8:FreeImage.dll"
             "Tag" = "8:"
             "Folder" = "8:_7F3AC73469D641B392D2D1F48A9249E9"
             "Condition" = "8:"
@@ -999,7 +999,7 @@
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:FALSE"
-            "SourcePath" = "8:..\\..\\pub\\external\\bin\\TWAINDSM64.msm"
+            "SourcePath" = "8:..\\..\\pub\\external\\bin\\win64\\TWAINDSM64.msm"
                 "Properties"
                 {
                 }

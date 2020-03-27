@@ -119,7 +119,7 @@ del /q /f "c:\windows\twain_32\sample2\*.*"</Command>
     <Link>
       <AdditionalDependencies>user32.lib;FreeImage.lib;qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName)32.ds</OutputFile>
-      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\..\msvc2015\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\pub\external\lib\win32;$(QTDIR)\..\msvc2015\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\src\TWAINDS.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)TWAINDS_Sample01.pdb</ProgramDatabaseFile>
@@ -130,7 +130,7 @@ del /q /f "c:\windows\twain_32\sample2\*.*"</Command>
     <PostBuildEvent>
       <Message>Copy Data Source to windows\twain_32\sample2 dir</Message>
       <Command>copy "$(TargetPath)"  c:\windows\twain_32\sample2
-copy "$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll" c:\windows\twain_32\sample2
+copy "$(ProjectDir)\..\..\pub\external\bin\win32\FreeImage.dll" c:\windows\twain_32\sample2
 copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_32\sample2
 copy "$(QTDIR)\bin\Qt5Cored.dll" c:\windows\twain_32\sample2
 copy "$(QTDIR)\bin\Qt5Guid.dll" c:\windows\twain_32\sample2
@@ -161,9 +161,9 @@ del /q /f "c:\windows\twain_64\sample2\*.*"</Command>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>User32.lib;FreeImagedx64.lib;qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;FreeImage.lib;qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName)64.ds</OutputFile>
-      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\pub\external\lib\win64;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\src\TWAINDS.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)TWAINDS_Sample01.pdb</ProgramDatabaseFile>
@@ -173,7 +173,7 @@ del /q /f "c:\windows\twain_64\sample2\*.*"</Command>
     <PostBuildEvent>
       <Message>Copy datasource to windows\twain_64\sample2 dir</Message>
       <Command>copy "$(TargetPath)"  c:\windows\twain_64\sample2
-copy "$(ProjectDir)\..\..\pub\external\bin\FreeImagedx64.dll" c:\windows\twain_64\sample2
+copy "$(ProjectDir)\..\..\pub\external\bin\win64\FreeImage.dll" c:\windows\twain_64\sample2
 copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_64\sample2
 copy "$(QTDIR)\bin\Qt5Cored.dll" c:\windows\twain_64\sample2
 copy "$(QTDIR)\bin\Qt5Guid.dll" c:\windows\twain_64\sample2
@@ -200,7 +200,7 @@ del /q /f "c:\windows\twain_32\sample2\*.*"</Command>
     <Link>
       <AdditionalDependencies>User32.lib;FreeImage.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName)32.ds</OutputFile>
-      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\..\msvc2015\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\pub\external\lib\win32;$(QTDIR)\..\msvc2015\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\src\TWAINDS.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -211,14 +211,14 @@ del /q /f "c:\windows\twain_32\sample2\*.*"</Command>
     <PostBuildEvent>
       <Message>Copy Data Source to pub\bin directory</Message>
       <Command>copy "$(TargetPath)"  $(ProjectDir)..\pub\bin\win32
-copy "$(ProjectDir)..\..\pub\external\bin\FreeImage.dll" $(ProjectDir)..\pub\bin\win32
+copy "$(ProjectDir)..\..\pub\external\bin\win32\FreeImage.dll" $(ProjectDir)..\pub\bin\win32
 copy "$(ProjectDir)..\..\pub\bin\TWAIN_logo.png" $(ProjectDir)..\pub\bin\win32
 copy "$(QTDIR)\..\msvc2015\bin\Qt5Core.dll" $(ProjectDir)..\pub\bin\win32
 copy "$(QTDIR)\..\msvc2015\bin\Qt5Gui.dll" $(ProjectDir)..\pub\bin\win32
 copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgets.dll" $(ProjectDir)..\pub\bin\win32
 
 copy "$(TargetPath)"  c:\windows\twain_32\sample2
-copy "$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll" c:\windows\twain_32\sample2
+copy "$(ProjectDir)\..\..\pub\external\bin\win32\FreeImage.dll" c:\windows\twain_32\sample2
 copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_32\sample2
 copy "$(QTDIR)\..\msvc2015\bin\Qt5Core.dll" c:\windows\twain_32\sample2
 copy "$(QTDIR)\..\msvc2015\bin\Qt5Gui.dll" c:\windows\twain_32\sample2
@@ -245,9 +245,9 @@ del /q /f "c:\windows\twain_64\sample2\*.*"</Command>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>User32.lib;FreeImagex64.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;FreeImage.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName)64.ds</OutputFile>
-      <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\pub\external\lib\win64;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\src\TWAINDS.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -258,14 +258,14 @@ del /q /f "c:\windows\twain_64\sample2\*.*"</Command>
     <PostBuildEvent>
       <Message>Copy Application to pub\bin directory</Message>
       <Command>copy "$(TargetPath)"  $(ProjectDir)..\pub\bin\win64
-copy "$(ProjectDir)..\..\pub\external\bin\FreeImagex64.dll" $(ProjectDir)..\pub\bin\win64
+copy "$(ProjectDir)..\..\pub\external\bin\win64\FreeImage.dll" $(ProjectDir)..\pub\bin\win64
 copy "$(ProjectDir)..\..\pub\bin\TWAIN_logo.png" $(ProjectDir)..\pub\bin\win64
 copy "$(QTDIR)\..\msvc2015\bin\Qt5Core.dll" $(ProjectDir)..\pub\bin\win64
 copy "$(QTDIR)\..\msvc2015\bin\Qt5Gui.dll" $(ProjectDir)..\pub\bin\win64
 copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgets.dll" $(ProjectDir)..\pub\bin\win64
 
 copy "$(TargetPath)"  c:\windows\twain_64\sample2
-copy "$(ProjectDir)\..\..\pub\external\bin\FreeImagex64.dll" c:\windows\twain_64\sample2
+copy "$(ProjectDir)\..\..\pub\external\bin\win64\FreeImage.dll" c:\windows\twain_64\sample2
 copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_64\sample2
 copy "$(QTDIR)\bin\Qt5Core.dll" c:\windows\twain_64\sample2
 copy "$(QTDIR)\bin\Qt5Gui.dll" c:\windows\twain_64\sample2
