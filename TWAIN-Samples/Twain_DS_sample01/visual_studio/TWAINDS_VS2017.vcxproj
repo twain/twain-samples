@@ -132,9 +132,9 @@ del /q /f "c:\windows\twain_32\sample2\*.*"</Command>
       <Command>copy "$(TargetPath)"  c:\windows\twain_32\sample2
 copy "$(ProjectDir)\..\..\pub\external\bin\win32\FreeImage.dll" c:\windows\twain_32\sample2
 copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_32\sample2
-copy "$(QTDIR)\bin\Qt5Cored.dll" c:\windows\twain_32\sample2
-copy "$(QTDIR)\bin\Qt5Guid.dll" c:\windows\twain_32\sample2
-copy "$(QTDIR)\bin\Qt5Widgetsd.dll" c:\windows\twain_32\sample2
+copy "$(QTDIR)\..\msvc2015\bin\Qt5Cored.dll" c:\windows\twain_32\sample2
+copy "$(QTDIR)\..\msvc2015\bin\Qt5Guid.dll" c:\windows\twain_32\sample2
+copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgetsd.dll" c:\windows\twain_32\sample2
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -260,9 +260,9 @@ del /q /f "c:\windows\twain_64\sample2\*.*"</Command>
       <Command>copy "$(TargetPath)"  $(ProjectDir)..\pub\bin\win64
 copy "$(ProjectDir)..\..\pub\external\bin\win64\FreeImage.dll" $(ProjectDir)..\pub\bin\win64
 copy "$(ProjectDir)..\..\pub\bin\TWAIN_logo.png" $(ProjectDir)..\pub\bin\win64
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Core.dll" $(ProjectDir)..\pub\bin\win64
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Gui.dll" $(ProjectDir)..\pub\bin\win64
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgets.dll" $(ProjectDir)..\pub\bin\win64
+copy "$(QTDIR)\bin\Qt5Core.dll" $(ProjectDir)..\pub\bin\win64
+copy "$(QTDIR)\bin\Qt5Gui.dll" $(ProjectDir)..\pub\bin\win64
+copy "$(QTDIR)\bin\Qt5Widgets.dll" $(ProjectDir)..\pub\bin\win64
 
 copy "$(TargetPath)"  c:\windows\twain_64\sample2
 copy "$(ProjectDir)\..\..\pub\external\bin\win64\FreeImage.dll" c:\windows\twain_64\sample2
