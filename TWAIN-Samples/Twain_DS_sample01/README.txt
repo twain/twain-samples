@@ -1,6 +1,6 @@
 TWAIN Data Source [DS]
 
-When finished this will be a TWAIN version 2.0 of the specification compliant
+When finished this will be a TWAIN version 2.4 of the specification compliant
 data source.  Instead of interfacing with a real scanner, it talks to a 
 virtual scanner.  The virtual scanner acquires its image from a file on disk.
 
@@ -30,8 +30,8 @@ on TWAIN.
 Installation
 ------------
 
-[Linux]
-- install QT 4.5.3 then run it to generate makefiles
+[Linux] (not recently tested!!!)
+- install QT 5.9.9 then run it to generate makefiles
 - make
 - copy images/TWAIN_logo.png to /usr/local/lib/twain/sample2
 - copy src/TWAINDS_Sample01.ds to /usr/local/lib/twain/sample2
@@ -39,16 +39,12 @@ Installation
 notes: it is a future goal to have "make install" do the above copies.
 
 [Windows]
-- install QT 4.5.3 SDK for windows
-- Set environment variable QTDIR and/or QTDIR_64 to qt directory (Ex. QTDIR=C:\Qt\2009.02\qt QTDIR_64=C:\Qt\2009.02_x64\qt)
-- QMake is used to generate the makefiles. You can get a copy of this free in any
-QT Open Source distribution.  Please see http://www.trolltech.com for more info.
-- copy the TWAIN_logo.png and TWAINDS_Sample[32|64].ds to /Windows/twain_[32|64]/sample2
-directory.  
-- Or use the provided Visual Studio project files.
+- install QT 5.9.9 SDK for windows
+- Set environment variable QTDIR to C:\Qt\Qt5.9.9\5.9.9\msvc2017_64
+- Use the provided Visual Studio project files.
 
-[MAC] - *** It is TWAIN 1.9 complient
-- install QT 4.6.2 SDK for MAC
+[MAC] (not recently tested!!!)
+- install QT 5.9.9 SDK for MAC
 - install Xcode
 - build the project
 - build will automatically copy DS bundle to /Library/Image Capture/TWAIN Data Sources/
@@ -60,3 +56,4 @@ directory.
 - updated:  mihailm@jflin.com, Dec 23, 2009
 - updated:  mihailm@jflin.com, Dec 30, 2009
 - updated:  mihailm@jflin.com, Apr 20, 2010
+- updated:  mark.mclaughlin@kodakalaris.com, Apr 30, 2020

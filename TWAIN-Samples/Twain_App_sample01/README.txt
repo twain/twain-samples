@@ -1,6 +1,6 @@
 TWAIN Application
 
-This is a TWAIN version 2.3 of the specification compliant application.  
+This is a TWAIN version 2.4 of the specification compliant application.  
 It offers a text and an MFC based interface.  It shows how to implement
 many of the operations needed by an application.
 

@@ -116,10 +116,8 @@
     <PostBuildEvent>
       <Command>copy "$(TargetPath)"  "$(ProjectDir)..\..\pub\bin\win32"
 copy "$(ProjectDir)..\..\..\pub\external\bin\win32\FreeImage.dll" "$(ProjectDir)..\..\pub\bin\win32"
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Core.dll" "$(ProjectDir)..\..\pub\bin\win32"
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Gui.dll" "$(ProjectDir)..\..\pub\bin\win32"
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Script.dll" "$(ProjectDir)..\..\pub\bin\win32"
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgets.dll" "$(ProjectDir)..\..\pub\bin\win32"</Command>
+"$(QTDIR)\..\msvc2015\bin\windeployqt.exe" --release --compiler-runtime --libdir "$(ProjectDir)..\..\pub\bin\win32"  --plugindir "$(ProjectDir)..\..\pub\bin\win32" "$(ProjectDir)..\..\pub\bin\win32\$(TargetFileName)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,10 +145,8 @@ copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgets.dll" "$(ProjectDir)..\..\pub\bin\win32
     <PostBuildEvent>
       <Command>copy "$(TargetPath)"  "$(ProjectDir)..\..\pub\bin\win64"
 copy "$(ProjectDir)..\..\..\pub\external\bin\win64\FreeImage.dll" "$(ProjectDir)..\..\pub\bin\win64"
-copy "$(QTDIR)\bin\Qt5Core.dll" "$(ProjectDir)..\..\pub\bin\win64"
-copy "$(QTDIR)\bin\Qt5Gui.dll" "$(ProjectDir)..\..\pub\bin\win64"
-copy "$(QTDIR)\bin\Qt5Script.dll" "$(ProjectDir)..\..\pub\bin\win64"
-copy "$(QTDIR)\bin\Qt5Widgets.dll" "$(ProjectDir)..\..\pub\bin\win64"</Command>
+"$(QTDIR)\bin\windeployqt.exe" --release --compiler-runtime --libdir "$(ProjectDir)..\..\pub\bin\win64"  --plugindir "$(ProjectDir)..\..\pub\bin\win64" "$(ProjectDir)..\..\pub\bin\win64\$(TargetFileName)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -175,10 +171,8 @@ copy "$(QTDIR)\bin\Qt5Widgets.dll" "$(ProjectDir)..\..\pub\bin\win64"</Command>
     <PostBuildEvent>
       <Command>copy "$(TargetPath)"  "$(ProjectDir)..\..\pub\bin\win32"
 copy "$(ProjectDir)..\..\..\pub\external\bin\win32\FreeImage.dll" "$(ProjectDir)..\..\pub\bin\win32"
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Cored.dll" "$(ProjectDir)..\..\pub\bin\win32"
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Guid.dll" "$(ProjectDir)..\..\pub\bin\win32"
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Scriptd.dll" "$(ProjectDir)..\..\pub\bin\win32"
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgetsd.dll" "$(ProjectDir)..\..\pub\bin\win32"</Command>
+"$(QTDIR)\..\msvc2015\bin\windeployqt.exe" --debug --compiler-runtime --libdir "$(ProjectDir)..\..\pub\bin\win32"  --plugindir "$(ProjectDir)..\..\pub\bin\win32" "$(ProjectDir)..\..\pub\bin\win32\$(TargetFileName)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -207,10 +201,8 @@ copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgetsd.dll" "$(ProjectDir)..\..\pub\bin\win3
     <PostBuildEvent>
       <Command>copy "$(TargetPath)"  "$(ProjectDir)..\..\pub\bin\win64"
 copy "$(ProjectDir)..\..\..\pub\external\bin\win64\FreeImage.dll" "$(ProjectDir)..\..\pub\bin\win64"
-copy "$(QTDIR)\bin\Qt5Cored.dll" "$(ProjectDir)..\..\pub\bin\win64"
-copy "$(QTDIR)\bin\Qt5Guid.dll" "$(ProjectDir)..\..\pub\bin\win64"
-copy "$(QTDIR)\bin\Qt5Scriptd.dll" "$(ProjectDir)..\..\pub\bin\win64"
-copy "$(QTDIR)\bin\Qt5Widgetsd.dll" "$(ProjectDir)..\..\pub\bin\win64"</Command>
+"$(QTDIR)\..\msvc2015\bin\windeployqt.exe" --debug --compiler-runtime --libdir "$(ProjectDir)..\..\pub\bin\win64"  --plugindir "$(ProjectDir)..\..\pub\bin\win64" "$(ProjectDir)..\..\pub\bin\win64\$(TargetFileName)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

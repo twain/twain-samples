@@ -9,6 +9,9 @@ The project was last built and tested using QT 5.9.9, and
 setting QTDIR to C:\Qt\Qt5.9.9\5.9.9\msvc2017_64 on a
 Windows 10 system.
 
+It has been fixed so a development system is not needed when
+installing using the .msi files.
+
 ## Features
 
  - Software only virtual scanner

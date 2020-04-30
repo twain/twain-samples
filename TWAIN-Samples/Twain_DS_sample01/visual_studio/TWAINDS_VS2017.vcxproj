@@ -101,7 +101,7 @@
     <PreBuildEvent>
       <Message>create pub folders if do not exist</Message>
       <Command>if NOT EXIST c:\windows\twain_32\sample2 mkdir "c:\windows\twain_32\sample2"
-del /q /f "c:\windows\twain_32\sample2\*.*"</Command>
+del /q /f /s "c:\windows\twain_32\sample2\*.*"</Command>
     </PreBuildEvent>
     <ClCompile>
       <AdditionalOptions>/GR %(AdditionalOptions)</AdditionalOptions>
@@ -132,17 +132,14 @@ del /q /f "c:\windows\twain_32\sample2\*.*"</Command>
       <Command>copy "$(TargetPath)"  c:\windows\twain_32\sample2
 copy "$(ProjectDir)\..\..\pub\external\bin\win32\FreeImage.dll" c:\windows\twain_32\sample2
 copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_32\sample2
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Cored.dll" c:\windows\twain_32\sample2
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Guid.dll" c:\windows\twain_32\sample2
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgetsd.dll" c:\windows\twain_32\sample2
-</Command>
+"$(QTDIR)\..\msvc2015\bin\windeployqt.exe" --debug --compiler-runtime --libdir "c:\windows\twain_32\sample2"  --plugindir "c:\windows\twain_32\sample2" "c:\windows\twain_32\sample2\$(TargetFileName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PreBuildEvent>
       <Message>create pub folders if do not exist</Message>
       <Command>if NOT EXIST c:\windows\twain_64\sample2 mkdir "c:\windows\twain_64\sample2"
-del /q /f "c:\windows\twain_64\sample2\*.*"</Command>
+del /q /f /s "c:\windows\twain_64\sample2\*.*"</Command>
     </PreBuildEvent>
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -175,10 +172,7 @@ del /q /f "c:\windows\twain_64\sample2\*.*"</Command>
       <Command>copy "$(TargetPath)"  c:\windows\twain_64\sample2
 copy "$(ProjectDir)\..\..\pub\external\bin\win64\FreeImage.dll" c:\windows\twain_64\sample2
 copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_64\sample2
-copy "$(QTDIR)\bin\Qt5Cored.dll" c:\windows\twain_64\sample2
-copy "$(QTDIR)\bin\Qt5Guid.dll" c:\windows\twain_64\sample2
-copy "$(QTDIR)\bin\Qt5Widgetsd.dll" c:\windows\twain_64\sample2
-</Command>
+"$(QTDIR)\bin\windeployqt.exe" --debug --compiler-runtime --libdir "c:\windows\twain_64\sample2"  --plugindir "c:\windows\twain_64\sample2" "c:\windows\twain_64\sample2\$(TargetFileName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -186,8 +180,9 @@ copy "$(QTDIR)\bin\Qt5Widgetsd.dll" c:\windows\twain_64\sample2
       <Message>create pub folders if do not exist</Message>
       <Command>if NOT EXIST "$(ProjectDir)..\pub\bin\win32" mkdir "$(ProjectDir)..\pub\bin\win32"
 if NOT EXIST "c:\windows\twain_32\sample2" mkdir "c:\windows\twain_32\sample2"
-del /q /f "$(ProjectDir)..\pub\bin\win32\*.*"
-del /q /f "c:\windows\twain_32\sample2\*.*"</Command>
+del /q /f /s "$(ProjectDir)..\pub\bin\win32\*.*"
+del /q /f /s "c:\windows\twain_32\sample2\*.*"
+</Command>
     </PreBuildEvent>
     <ClCompile>
       <AdditionalIncludeDirectories>.;..;..\src\GeneratedFiles\;..\..\pub\external\include\;..\..\Common;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -210,19 +205,15 @@ del /q /f "c:\windows\twain_32\sample2\*.*"</Command>
     </Link>
     <PostBuildEvent>
       <Message>Copy Data Source to pub\bin directory</Message>
-      <Command>copy "$(TargetPath)"  $(ProjectDir)..\pub\bin\win32
-copy "$(ProjectDir)..\..\pub\external\bin\win32\FreeImage.dll" $(ProjectDir)..\pub\bin\win32
-copy "$(ProjectDir)..\..\pub\bin\TWAIN_logo.png" $(ProjectDir)..\pub\bin\win32
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Core.dll" $(ProjectDir)..\pub\bin\win32
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Gui.dll" $(ProjectDir)..\pub\bin\win32
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgets.dll" $(ProjectDir)..\pub\bin\win32
+      <Command>copy "$(TargetPath)"  "$(ProjectDir)..\pub\bin\win32"
+copy "$(ProjectDir)..\..\pub\external\bin\win32\FreeImage.dll" "$(ProjectDir)..\pub\bin\win32"
+copy "$(ProjectDir)..\..\pub\bin\TWAIN_logo.png" "$(ProjectDir)..\pub\bin\win32"
+"$(QTDIR)\..\msvc2015\bin\windeployqt.exe" --release --compiler-runtime --libdir "$(ProjectDir)..\pub\bin\win32"  --plugindir "$(ProjectDir)..\pub\bin\win32" "$(ProjectDir)..\pub\bin\win32\$(TargetFileName)"
 
-copy "$(TargetPath)"  c:\windows\twain_32\sample2
-copy "$(ProjectDir)\..\..\pub\external\bin\win32\FreeImage.dll" c:\windows\twain_32\sample2
-copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_32\sample2
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Core.dll" c:\windows\twain_32\sample2
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Gui.dll" c:\windows\twain_32\sample2
-copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgets.dll" c:\windows\twain_32\sample2
+copy "$(TargetPath)"  "c:\windows\twain_32\sample2"
+copy "$(ProjectDir)\..\..\pub\external\bin\win32\FreeImage.dll" "c:\windows\twain_32\sample2"
+copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" "c:\windows\twain_32\sample2"
+"$(QTDIR)\..\msvc2015\bin\windeployqt.exe" --release --compiler-runtime --libdir "c:\windows\twain_32\sample2"  --plugindir "c:\windows\twain_32\sample2" "c:\windows\twain_32\sample2\$(TargetFileName)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -231,8 +222,8 @@ copy "$(QTDIR)\..\msvc2015\bin\Qt5Widgets.dll" c:\windows\twain_32\sample2
       <Message>create pub folders if do not exist</Message>
       <Command>if NOT EXIST "$(ProjectDir)..\pub\bin\win64" mkdir "$(ProjectDir)..\pub\bin\win64"
 if NOT EXIST "c:\windows\twain_32\sample2" mkdir "c:\windows\twain_64\sample2"
-del /q /f "$(ProjectDir)..\pub\bin\win64\*.*"
-del /q /f "c:\windows\twain_64\sample2\*.*"</Command>
+del /q /f /s "$(ProjectDir)..\pub\bin\win64\*.*"
+del /q /f /s "c:\windows\twain_64\sample2\*.*"</Command>
     </PreBuildEvent>
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -260,17 +251,12 @@ del /q /f "c:\windows\twain_64\sample2\*.*"</Command>
       <Command>copy "$(TargetPath)"  $(ProjectDir)..\pub\bin\win64
 copy "$(ProjectDir)..\..\pub\external\bin\win64\FreeImage.dll" $(ProjectDir)..\pub\bin\win64
 copy "$(ProjectDir)..\..\pub\bin\TWAIN_logo.png" $(ProjectDir)..\pub\bin\win64
-copy "$(QTDIR)\bin\Qt5Core.dll" $(ProjectDir)..\pub\bin\win64
-copy "$(QTDIR)\bin\Qt5Gui.dll" $(ProjectDir)..\pub\bin\win64
-copy "$(QTDIR)\bin\Qt5Widgets.dll" $(ProjectDir)..\pub\bin\win64
+"$(QTDIR)\bin\windeployqt.exe" --release --compiler-runtime --libdir "$(ProjectDir)..\pub\bin\win64"  --plugindir "$(ProjectDir)..\pub\bin\win64" "$(ProjectDir)..\pub\bin\win64\$(TargetFileName)"
 
 copy "$(TargetPath)"  c:\windows\twain_64\sample2
 copy "$(ProjectDir)\..\..\pub\external\bin\win64\FreeImage.dll" c:\windows\twain_64\sample2
 copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_64\sample2
-copy "$(QTDIR)\bin\Qt5Core.dll" c:\windows\twain_64\sample2
-copy "$(QTDIR)\bin\Qt5Gui.dll" c:\windows\twain_64\sample2
-copy "$(QTDIR)\bin\Qt5Widgets.dll" c:\windows\twain_64\sample2
-</Command>
+"$(QTDIR)\bin\windeployqt.exe" --release --compiler-runtime --libdir "c:\windows\twain_64\sample2"  --plugindir "c:\windows\twain_64\sample2" "c:\windows\twain_64\sample2\$(TargetFileName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

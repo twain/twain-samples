@@ -120,6 +120,34 @@ TW_INT16 QT_UI::DisplayTWAINGUI(TW_USERINTERFACE Data, bool bSetup, bool bIndica
   if (!pApp)
   {
     int argc = 0;
+	// Make sure we're in the path for QT so deployment works, but only
+	// do this if we're running from twain_32 or twain_64 so we don't
+	// bugger up the development environment.  We have to do this because
+	// QT gets its path from the .exe, not the .ds
+	HMODULE hmodule;
+	hmodule = ::GetModuleHandleA("TWAINDS_Sample32.ds");
+	if (!hmodule)
+	{
+		hmodule = ::GetModuleHandleA("TWAINDS_Sample64.ds");
+	}
+	if (hmodule)
+	{
+		char szDs[256];
+		char szDsLower[256];
+		::GetModuleFileNameA(hmodule, szDs, sizeof(szDs));
+		strcpy_s(szDsLower, sizeof(szDsLower), szDs);
+		_strlwr_s(szDsLower, sizeof(szDsLower));
+		if (strstr(szDsLower, "\\twain_32\\") || strstr(szDsLower, "\\twain_64\\"))
+		{
+			char *szToken = strrchr(szDs, '\\');
+			if (szToken)
+			{
+				szToken[0] = 0; // folder where the .ds lives
+				QCoreApplication::addLibraryPath(szDs);
+			}
+		}
+	}
+	// Back to our regularly scheduled program, already in progress...
     pApp = m_pQtApp = new QApplication(argc, 0);
 //	  m_pQtApp->setAttribute(Qt::AA_DontUseNativeMenuBar,true);
 	  m_pQtApp->setAttribute(Qt::AA_MacPluginApplication,true);
