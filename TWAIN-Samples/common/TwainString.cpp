@@ -92,7 +92,7 @@ const char* convertCAP_Item_toString(const TW_UINT16 _unCap, const TW_UINT32 _un
       break;
 
     case ICAP_AUTODISCARDBLANKPAGES:
-      pszString = convertICAP_AUTODISCARDBLANKPAGES_toString((TW_UINT16)_unItem);
+      pszString = convertICAP_AUTODISCARDBLANKPAGES_toString((TW_INT32)_unItem);
       break;
 
     case ICAP_BITDEPTH:
@@ -1499,24 +1499,24 @@ const char* convertICAP_BITORDER_toString(const TW_UINT16 InfoID)
 
 //////////////////////////////////////////////////////////////////////////////
 // Convert ICAP_AUTODISCARDBLANKPAGES values to String
-const char* convertICAP_AUTODISCARDBLANKPAGES_toString(const TW_UINT16 InfoID)
+const char* convertICAP_AUTODISCARDBLANKPAGES_toString(const TW_INT32 InfoID)
 {
   const char* text;
 
   switch(InfoID)
   {
-	case TWBP_DISABLE:
+  case TWBP_DISABLE:
     text = "Disable";
     break;
 
-	case TWBP_AUTO:
+  case TWBP_AUTO:
     text = "Auto";
     break;
 
   default:
     {
       char * buff = nextTempBuffer();
-      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Unknown TWBP 0x:%04X", InfoID);
+      SSNPRINTF(buff, TEMPBUFSIZE, TEMPBUFSIZE, "Keep compressed images > %d bytes", InfoID);
       text = buff;
     }
     break;

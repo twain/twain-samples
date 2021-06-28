@@ -152,7 +152,7 @@ const char* convertICAP_BITORDER_toString(const TW_UINT16 _unItem);
 * @param[in] _unItem the value
 * @return the equivalent string
 */
-const char* convertICAP_AUTODISCARDBLANKPAGES_toString(const TW_UINT16 _unItem);
+const char* convertICAP_AUTODISCARDBLANKPAGES_toString(const TW_INT32 _unItem);
 
 /**
 * converts the integer ICAP Bitdepth Reduction type value into string form
