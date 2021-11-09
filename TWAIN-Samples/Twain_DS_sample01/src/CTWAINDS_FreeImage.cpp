@@ -68,13 +68,13 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
   0,                                  // TW_UINT32  Id;               Unique number.  In Windows, application hWnd
   {                                       // TW_VERSION Version;          Identifies the piece of code
     2,                                    // TW_UINT16  MajorNum;         Major revision number of the software
-    4,                                    // TW_UINT16  MinorNum;         Incremental revision number of the software
+    5,                                    // TW_UINT16  MinorNum;         Incremental revision number of the software
     TWLG_ENGLISH,                         // TW_UINT16  Language;         e.g. TWLG_SWISSFRENCH
     TWCY_USA,                             // TW_UINT16  Country;          e.g. TWCY_SWITZERLAND
 #ifdef __APPLE__
      "\p"
 #endif
-    "2.4.0 sample"                        // TW_STR32   Info;             e.g. "1.0b3 Beta release"
+    "2.5.0 sample"                        // TW_STR32   Info;             e.g. "1.0b3 Beta release"
 #ifdef _DEBUG
     " debug"
 #else
@@ -87,7 +87,7 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
 #endif
   },
   2,                                  // TW_UINT16  ProtocolMajor;    Application and DS must set to TWON_PROTOCOLMAJOR
-  4,                                  // TW_UINT16  ProtocolMinor;    Application and DS must set to TWON_PROTOCOLMINOR
+  5,                                  // TW_UINT16  ProtocolMinor;    Application and DS must set to TWON_PROTOCOLMINOR
   DG_IMAGE | DG_CONTROL | DF_DS2,     // TW_UINT32  SupportedGroups;  Bit field OR combination of DG_ constants
 #ifdef __APPLE__
    "\p"

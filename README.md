@@ -2,7 +2,8 @@
 
 Use the TWAIN 2 sample data source and application, to test
 your TWAIN project, or as templates to incorporate TWAIN into
-your graphic applications or Scanner drivers. The samples are released as open source software and uses a Modified BSD
+your graphic applications or Scanner drivers. The samples are
+released as open source software and uses a Modified BSD
 licenses.
 
 The project was last built and tested using QT 5.9.9, and

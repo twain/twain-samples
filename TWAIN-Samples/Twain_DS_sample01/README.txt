@@ -1,6 +1,6 @@
 TWAIN Data Source [DS]
 
-When finished this will be a TWAIN version 2.4 of the specification compliant
+When finished this will be a TWAIN version 2.5 of the specification compliant
 data source.  Instead of interfacing with a real scanner, it talks to a 
 virtual scanner.  The virtual scanner acquires its image from a file on disk.
 
