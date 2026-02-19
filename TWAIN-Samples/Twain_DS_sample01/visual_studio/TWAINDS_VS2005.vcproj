@@ -293,7 +293,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="create pub folders if do not exist"
-				CommandLine="if NOT EXIST &quot;$(ProjectDir)\..\pub\bin&quot; mkdir &quot;$(ProjectDir)\..\pub\bin&quot;"
+				CommandLine="if NOT EXIST '$(ProjectDir)\..\pub\bin' mkdir '$(ProjectDir)\..\pub\bin'"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

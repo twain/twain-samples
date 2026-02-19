@@ -112,13 +112,15 @@ TW_UINT16 _DSM_Entry( pTW_IDENTITY _pOrigin,
 	    {
 		    strcat_s(DSMName,MAX_PATH, "\\");
 	    }		
-	    strcat_s (DSMName,MAX_PATH, "TWAIN_32.dll");
+	    //strcat_s (DSMName,MAX_PATH, "TWAIN_32.dll");
+        strcat_s(DSMName, MAX_PATH, "twain_32.dll");
 #else
 	    if (DSMName[strlen(DSMName)-1] != '\\')
 	    {
 		    strcat(DSMName, "\\");
 	    }		
-	    strcat(DSMName, "TWAIN_32.dll");
+	    //strcat(DSMName, "TWAIN_32.dll");
+        strcat(DSMName, "twain_32.dll");
 #endif
 
       if((0 == gpDSM) && !LoadDSMLib(DSMName))
@@ -143,46 +145,121 @@ TW_UINT16 _DSM_Entry( pTW_IDENTITY _pOrigin,
   return ret;
 }
 
+TW_UINT16 FAR PASCAL DSM_Entry(pTW_IDENTITY _pOrigin,
+    pTW_IDENTITY _pDest,
+    TW_UINT32    _DG,
+    TW_UINT16    _DAT,
+    TW_UINT16    _MSG,
+    TW_MEMREF    _pData)
+//TW_UINT16 DSM_Entry(
+//    pTW_IDENTITY _pOrigin,
+//    pTW_IDENTITY _pDest,
+//    TW_UINT32    _DG,
+//    TW_UINT16    _DAT,
+//    TW_UINT16    _MSG,
+//    TW_MEMREF    _pData)
+{
+    TW_UINT16 ret = TWRC_FAILURE;
+
+    // With DSM2 we do not need to load the DSM we a
+    // Message with the entry points that we use.
+    // So in windows with DSM1(twain_32.dll) we will
+    // need to first laod the dll then find the entry point
+    // First check to see if you have an entry point
+
+    if (0 == g_DSM_Entry.DSM_Entry)
+    {
+        // We do not already have the entry point for regisry callback
+#ifdef TWH_CMP_MSC
+  // This should only happen if not being called by the DSM2
+  // Other words only on Windows with an older DSM
+  // So we load the old dll
+        char DSMName[MAX_PATH];
+
+        memset(DSMName, 0, MAX_PATH * sizeof(char));
+
+        if (GetWindowsDirectory(DSMName, MAX_PATH) == 0)
+        {
+            DSMName[0] = 0;
+        }
+#if (TWNDS_CMP_VERSION >= 1400)
+        if (DSMName[strlen(DSMName) - 1] != '\\')
+        {
+            strcat_s(DSMName, MAX_PATH, "\\");
+        }
+        //strcat_s (DSMName,MAX_PATH, "TWAIN_32.dll");
+        strcat_s(DSMName, MAX_PATH, "twain_32.dll");
+#else
+        if (DSMName[strlen(DSMName) - 1] != '\\')
+        {
+            strcat(DSMName, "\\");
+        }
+        //strcat(DSMName, "TWAIN_32.dll");
+        strcat(DSMName, "twain_32.dll");
+#endif
+
+        if ((0 == gpDSM) && !LoadDSMLib(DSMName))
+        {
+            cerr << "Could not load the DSM" << endl;
+            return TWRC_FAILURE;
+        }
+
+        if (0 == g_DSM_Entry.DSM_Entry)
+        {
+            cerr << "No Entry Point for DSM_Entry" << endl;
+            return TWRC_FAILURE;
+        }
+#else
+        cerr << "No Entry Point for DSM_Entry" << endl;
+        return TWRC_FAILURE;
+#endif
+    }
+
+    // If we did not have an enty point before we do now.
+    ret = g_DSM_Entry.DSM_Entry(_pOrigin, _pDest, _DG, _DAT, _MSG, _pData);
+    return ret;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 bool LoadDSMLib(char* _pszLibName)
 {
-  // check if already opened
-  if(0 != gpDSM)
-  {
-    return true;
-  }
+        // check if already opened
+        if (0 != gpDSM)
+        {
+            return true;
+        }
 
-  memset(&g_DSM_Entry, 0, sizeof(TW_ENTRYPOINT));
+        memset(&g_DSM_Entry, 0, sizeof(TW_ENTRYPOINT));
 
 #ifdef TWH_CMP_GNU
-  char *error;
+        char* error;
 #endif //TWH_CMP_GNU
 
-  if((gpDSM=LOADLIBRARY(_pszLibName)) != 0)
-  {
-    if((g_DSM_Entry.DSM_Entry=(DSMENTRYPROC)LOADFUNCTION(gpDSM, "DSM_Entry")) == 0)
-    {
+        if ((gpDSM = LOADLIBRARY(_pszLibName)) != 0)
+        {
+            if ((g_DSM_Entry.DSM_Entry = (DSMENTRYPROC)LOADFUNCTION(gpDSM, "DSM_Entry")) == 0)
+            {
 #ifdef TWH_CMP_MSC // dlsym returning NULL is not an error on Unix
-      cerr << "Error - Could not find DSM_Entry function in DSM: " << _pszLibName << endl;
-      return false; 
+                cerr << "Error - Could not find DSM_Entry function in DSM: " << _pszLibName << endl;
+                return false;
 #endif //TWH_CMP_MSC
-    }
+            }
 #ifdef TWH_CMP_GNU
-    if ((error = dlerror()) != 0)
-    {
-      cerr << "App - dlsym: " << error << endl;
-      return false;
-    }
+            if ((error = dlerror()) != 0)
+            {
+                cerr << "App - dlsym: " << error << endl;
+                return false;
+            }
 #endif //TWH_CMP_GNU
-  }
-  else
-  {
-    cerr << "Error - Could not load DSM: " << _pszLibName << endl;
+        }
+        else
+        {
+            cerr << "Error - Could not load DSM: " << _pszLibName << endl;
 #ifdef TWH_CMP_GNU
-    cerr << "App - dlopen: " << dlerror() << endl;
+            cerr << "App - dlopen: " << dlerror() << endl;
 #endif //TWH_CMP_GNU
-    return false;
-  }
+            return false;
+        }
 
 
   return true;

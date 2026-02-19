@@ -103,103 +103,113 @@ TW_UINT16 CTWAINDS_Base::DS_Entry( pTW_IDENTITY _pOrigin,
 {
   TW_INT16 twrc = TWRC_SUCCESS;
 
-  switch (_DG)
-  {
-    case DG_CONTROL:
+  try {
+      switch (_DG)
       {
-        switch (_DAT)
-        {
+      case DG_CONTROL:
+      {
+          switch (_DAT)
+          {
           case DAT_EVENT:
-            twrc = dat_event(_MSG, (pTW_EVENT) _pData);
-            break;
+              twrc = dat_event(_MSG, (pTW_EVENT)_pData);
+              break;
 
           case DAT_IDENTITY:
-            twrc = dat_identity(_pOrigin, _MSG, (pTW_IDENTITY) _pData);
-            break;
+              twrc = dat_identity(_pOrigin, _MSG, (pTW_IDENTITY)_pData);
+              break;
 
           case DAT_CAPABILITY:
-            twrc = dat_capability(_MSG, (pTW_CAPABILITY) _pData);
-            break;
+              twrc = dat_capability(_MSG, (pTW_CAPABILITY)_pData);
+              break;
 
           case DAT_USERINTERFACE:
-            twrc = dat_userinterface(_MSG, (pTW_USERINTERFACE) _pData);
-            break;
+              twrc = dat_userinterface(_MSG, (pTW_USERINTERFACE)_pData);
+              break;
 
           case DAT_SETUPFILEXFER:
-            twrc = dat_setupfilexfer(_MSG, (pTW_SETUPFILEXFER) _pData);
-            break;
+              twrc = dat_setupfilexfer(_MSG, (pTW_SETUPFILEXFER)_pData);
+              break;
 
           case DAT_SETUPMEMXFER:
-            twrc = dat_setupmemxfer(_MSG, (pTW_SETUPMEMXFER) _pData);
-            break;
+              twrc = dat_setupmemxfer(_MSG, (pTW_SETUPMEMXFER)_pData);
+              break;
 
           case DAT_STATUS:
-            twrc = dat_status(_MSG, (pTW_STATUS) _pData);
-            break;
+              twrc = dat_status(_MSG, (pTW_STATUS)_pData);
+              break;
 
           case DAT_PENDINGXFERS:
-            twrc = dat_pendingxfers(_MSG, (pTW_PENDINGXFERS)_pData);
-            break;
+              twrc = dat_pendingxfers(_MSG, (pTW_PENDINGXFERS)_pData);
+              break;
 
           case DAT_ENTRYPOINT:
-            twrc = dat_entrypoint(_MSG, (pTW_ENTRYPOINT)_pData);
-            break;
+              twrc = dat_entrypoint(_MSG, (pTW_ENTRYPOINT)_pData);
+              break;
 
           case DAT_XFERGROUP:
-            twrc = dat_xfergroup(_MSG, (pTW_UINT32)_pData);
-            break;
-            
+              twrc = dat_xfergroup(_MSG, (pTW_UINT32)_pData);
+              break;
+
           default:
-            setConditionCode(TWCC_BADPROTOCOL);
-            //assert(0);
-            twrc = TWRC_FAILURE;
-            break;
-        }
+              setConditionCode(TWCC_BADPROTOCOL);
+              //assert(0);
+              twrc = TWRC_FAILURE;
+              break;
+          }
       }
       break;
 
-    case DG_IMAGE:
+      case DG_IMAGE:
       {
-        switch (_DAT)
-        {
+          switch (_DAT)
+          {
           case DAT_IMAGEINFO:
-            twrc = dat_imageinfo(_MSG, (pTW_IMAGEINFO)_pData);
-          break;
+              twrc = dat_imageinfo(_MSG, (pTW_IMAGEINFO)_pData);
+              break;
 
           case DAT_IMAGENATIVEXFER:
-            twrc = dat_imagenativexfer(_MSG, (TW_MEMREF*)_pData);
-          break;
+              twrc = dat_imagenativexfer(_MSG, (TW_MEMREF*)_pData);
+              break;
 
           case DAT_IMAGEFILEXFER:
-            twrc = dat_imagefilexfer(_MSG);
-          break;
+              twrc = dat_imagefilexfer(_MSG);
+              break;
 
           case DAT_IMAGEMEMXFER:
-            twrc = dat_imagememxfer(_MSG, (pTW_IMAGEMEMXFER)_pData);
-          break;
+              twrc = dat_imagememxfer(_MSG, (pTW_IMAGEMEMXFER)_pData);
+              break;
 
           case DAT_IMAGELAYOUT:
-            twrc = dat_imagelayout(_MSG, (pTW_IMAGELAYOUT)_pData);
-          break;
+              twrc = dat_imagelayout(_MSG, (pTW_IMAGELAYOUT)_pData);
+              break;
 
           case DAT_EXTIMAGEINFO:
-            twrc = dat_extimageinfo(_MSG, (pTW_EXTIMAGEINFO)_pData);
-          break;
+              twrc = dat_extimageinfo(_MSG, (pTW_EXTIMAGEINFO)_pData);
+              break;
 
           default:
-            setConditionCode(TWCC_CAPUNSUPPORTED);
-            //assert(0);
-            twrc = TWRC_FAILURE;
-          break;
-        }
+              setConditionCode(TWCC_CAPUNSUPPORTED);
+              //assert(0);
+              twrc = TWRC_FAILURE;
+              break;
+          }
       }
       break;
 
-    default:
-      setConditionCode(TWCC_CAPUNSUPPORTED);
-      //assert(0);
-      twrc = TWRC_FAILURE;
-      break;
+      default:
+          setConditionCode(TWCC_CAPUNSUPPORTED);
+          //assert(0);
+          twrc = TWRC_FAILURE;
+          break;
+      }
+  }
+  catch (int e)
+  {
+#ifdef _WIN32
+#include "windows.h";
+      MessageBox(NULL, "Erro code: " + e, "Erro Entry", MB_OK);
+#endif // _WIN32
+
   }
 
   return twrc;
@@ -703,7 +713,7 @@ bool CTWAINDS_Base::DoXferReadyEvent()
   {
     bRC = true;
   }
-  return bRC;
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////

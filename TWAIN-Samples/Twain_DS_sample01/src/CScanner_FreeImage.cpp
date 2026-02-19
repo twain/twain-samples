@@ -57,6 +57,7 @@
 
 using namespace std;
 
+
 /**
 * Environment vars to get the Xfer Count.  Create this enviroment Varable on your system to simulate the 
 * number of pages sitting in the scanner waiting to be scanned.
@@ -108,8 +109,26 @@ CScanner_FreeImage::CScanner_FreeImage() :
   // In non-windows, kTWAIN_DS_DIR is set on the compiler command line
   strncpy(szTWAIN_DS_DIR, kTWAIN_DS_DIR, PATH_MAX);
 #endif
-
-  SSNPRINTF(m_szSourceImagePath, sizeof(m_szSourceImagePath), PATH_MAX, "%s%cTWAIN_logo.png", szTWAIN_DS_DIR, PATH_SEPERATOR);
+  // open file select dialog
+  if (false == GetImageFromSystem::Instance().FileIsOpen())
+  {
+      GetImageFromSystem::Instance().OpenFile("Imagens\0*.png;\0");
+  }
+  if (GetImageFromSystem::Instance().FileIsOpen())
+  {
+      SSNPRINTF(
+          m_szSourceImagePath,
+          sizeof(m_szSourceImagePath),
+          PATH_MAX,
+          "%s%c%s",
+          GetImageFromSystem::Instance().GetFolder().c_str(),
+          PATH_SEPERATOR,
+          GetImageFromSystem::Instance().GetFileName().c_str()
+      );
+  }
+  else {
+      SSNPRINTF(m_szSourceImagePath, sizeof(m_szSourceImagePath), PATH_MAX, "%s%cTWAIN_logo.png", szTWAIN_DS_DIR, PATH_SEPERATOR);
+  }
 
   // set default caps
   resetScanner();
@@ -125,7 +144,6 @@ CScanner_FreeImage::~CScanner_FreeImage()
   {
     FreeImage_Unload(m_pDIB);
   }
-
   FreeImage_DeInitialise();
 }
 

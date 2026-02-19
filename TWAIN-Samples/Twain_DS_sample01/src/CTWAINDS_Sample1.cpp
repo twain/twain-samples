@@ -108,21 +108,27 @@ DS_Entry( pTW_IDENTITY _pOrigin,
     {
       return TWRC_SUCCESS;
     }
-
-    // Open the DS
-    pTWAINLayer = new CTWAINDS_FreeImage(*_pOrigin);
-    if( NULL == pTWAINLayer 
-     || TWRC_SUCCESS != pTWAINLayer->Initialize())
-    {
-      // Failed to create the DS 
-      //setConditionCode(TWCC_LOWMEMORY);
-      return TWRC_FAILURE;
+    try {
+        // Open the DS
+        pTWAINLayer = new CTWAINDS_FreeImage(*_pOrigin);
+        if (NULL == pTWAINLayer
+            || TWRC_SUCCESS != pTWAINLayer->Initialize())
+        {
+            // Failed to create the DS 
+            //setConditionCode(TWCC_LOWMEMORY);
+            return TWRC_FAILURE;
+        }
+        DS_inst _DS;
+        _DS.pDS = pTWAINLayer;
+        _DS.AppId = *_pOrigin;
+        g_lstDS.push_back(_DS);
     }
-    DS_inst _DS;
-    _DS.pDS = pTWAINLayer;
-    _DS.AppId = *_pOrigin;
-    g_lstDS.push_back(_DS);
-
+    catch (const exception& e)
+    {
+        cout << "Erro: " << e.what() << endl;
+        return TWRC_CANCEL;
+    }
+    //return TWRC_FAILURE;
   }
 
   // If we were not open before, we are now, so continue with the TWAIN call
