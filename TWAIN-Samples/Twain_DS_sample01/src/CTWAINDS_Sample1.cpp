@@ -36,8 +36,14 @@
 * @date April 2007
 */
 
+
 #include "CTWAINDS_Sample1.h"
 #include <list>
+#include <thread>
+#include "WaitWindow.h"
+
+WaitWindow g_waitWindow;
+
 //////////////////////////////////////////////////////////////////////////////
 // Globals
 /**
@@ -75,6 +81,7 @@ DS_Entry( pTW_IDENTITY _pOrigin,
 {
   CTWAINDS_Base* pTWAINLayer = 0;
 
+
   if(_pOrigin)
   {
     lstDS::iterator llIter=g_lstDS.begin();
@@ -109,6 +116,7 @@ DS_Entry( pTW_IDENTITY _pOrigin,
       return TWRC_SUCCESS;
     }
     try {
+        //thread msgThread(ShowWaitMessage);
         // Open the DS
         pTWAINLayer = new CTWAINDS_FreeImage(*_pOrigin);
         if (NULL == pTWAINLayer
@@ -133,6 +141,7 @@ DS_Entry( pTW_IDENTITY _pOrigin,
 
   // If we were not open before, we are now, so continue with the TWAIN call
   TW_INT16 result = pTWAINLayer->DS_Entry(_pOrigin, _DG, _DAT, _MSG, _pData);
+
 
   /**
   * Special case - free memory if closing DS 
@@ -172,7 +181,7 @@ DS_Entry( pTW_IDENTITY _pOrigin,
 BOOL WINAPI DllMain(HINSTANCE _hmodule,
                     DWORD     _dwReasonCalled,
                     LPVOID)
-{
+{   
   switch (_dwReasonCalled)
   {
     case DLL_THREAD_ATTACH:
@@ -180,10 +189,13 @@ BOOL WINAPI DllMain(HINSTANCE _hmodule,
       break;
     case DLL_PROCESS_ATTACH:
       g_hinstance = _hmodule;
+      g_waitWindow.Create(g_hinstance, NULL);
+      g_waitWindow.Show();
       break;
     case DLL_PROCESS_DETACH:
-      unLoadDSMLib();
+      g_waitWindow.Close();
       g_hinstance = 0;
+      unLoadDSMLib();
       break;
   }
   return(TRUE);

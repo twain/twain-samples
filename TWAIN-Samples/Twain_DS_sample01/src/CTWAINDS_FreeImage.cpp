@@ -1,5 +1,5 @@
 /***************************************************************************
-* Copyright © 2007 TWAIN Working Group:  
+* Copyright ï¿½ 2007 TWAIN Working Group:  
 *   Adobe Systems Incorporated, AnyDoc Software Inc., Eastman Kodak Company, 
 *   Fujitsu Computer Products of America, JFL Peripheral Solutions Inc., 
 *   Ricoh Corporation, and Xerox Corporation.
@@ -86,7 +86,7 @@ TW_IDENTITY CTWAINDS_Base::m_TheIdentity =
   DG_IMAGE | DG_CONTROL | DF_DS2,     // TW_UINT32  SupportedGroups;  Bit field OR combination of DG_ constants
   "TWAIN Working Group",              // TW_STR32   Manufacturer;     Manufacturer name, e.g. "Hewlett-Packard"
   "Software Scan",                    // TW_STR32   ProductFamily;    Product family name, e.g. "ScanJet"
-  "TWAIN2 FreeImage Software Scanner" // TW_STR32   ProductName;      Product name, e.g. "ScanJet Plus"
+  "TWAIN2 Scanner Custom"             // TW_STR32   ProductName;      Product name, e.g. "ScanJet Plus"
 };
 
 //////////////////////////////////////////////////////////////////////////////

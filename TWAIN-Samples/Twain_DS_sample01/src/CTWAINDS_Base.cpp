@@ -37,6 +37,7 @@
 */
 
 #include "CTWAINDS_Base.h"
+#include "WaitWindow.h"
 
 #if (TWNDS_CMP == TWNDS_CMP_VISUALCPP)
   #include <io.h>
@@ -203,11 +204,11 @@ TW_UINT16 CTWAINDS_Base::DS_Entry( pTW_IDENTITY _pOrigin,
           break;
       }
   }
-  catch (int e)
+  catch (exception e)
   {
 #ifdef _WIN32
 #include "windows.h";
-      MessageBox(NULL, "Erro code: " + e, "Erro Entry", MB_OK);
+      MessageBox(NULL, "Erro code: " + (char)e.what(), "Erro Entry", MB_OK);
 #endif // _WIN32
 
   }
@@ -457,9 +458,19 @@ TW_INT16 CTWAINDS_Base::dat_imagenativexfer(TW_UINT16    _MSG,
   switch(_MSG)
   {
     case MSG_GET:
-      twrc = transferNativeImage(_pData);
-      break;
+    {
+        if (waitWindow_Canceled)
+        {
+            twrc = TWRC_FAILURE;
+            _DSM_Free(m_hImageData);
+        }
+        else {
+            twrc = transferNativeImage(_pData);
+        }
 
+        break;
+
+    }
     default:
       setConditionCode(TWCC_BADPROTOCOL);
       //assert(0);
@@ -1907,6 +1918,7 @@ TW_INT16 CTWAINDS_Base::transferMemoryBuffers(pTW_IMAGEMEMXFER _ImageXfer)
 //////////////////////////////////////////////////////////////////////////////
 TW_INT16 CTWAINDS_Base::transferNativeImage(TW_MEMREF* _pData)
 {
+
   TW_INT16 twrc = TWRC_FAILURE;
 
   if( dsState_XferReady != m_CurrentState )
