@@ -24,6 +24,7 @@
     <ProjectGuid>{1E73CADF-90D9-45E9-97E2-CD25E3532DB4}</ProjectGuid>
     <RootNamespace>TWAINDS_VS2005_mfc32</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -83,6 +84,8 @@
     <OutDir>$(Configuration)32\</OutDir>
     <IntDir>$(Configuration)32\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.ds</TargetExt>
+    <TargetName>$(ProjectName)32</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(Configuration)64\</OutDir>
@@ -120,7 +123,7 @@ if NOT EXIST c:\windows\twain_32\sample2 mkdir c:\windows\twain_32\sample2
       <BaseAddress />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
-	  <PostBuildEvent>
+    <PostBuildEvent>
       <Message>Copy Data Source to windows\twain_32\sample2 dir</Message>
       <Command>copy "$(TargetPath)"  c:\windows\twain_32\sample2
 copy "$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll" c:\windows\twain_32\sample2
@@ -182,8 +185,8 @@ copy "$(ProjectDir)\..\..\pub\bin\TWAIN_logo.png" c:\windows\twain_64\sample2
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(ProjectName)32.ds</OutputFile>
+      <AdditionalDependencies>FreeImage.lib;Comdlg32.lib;User32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)32_custom.ds</OutputFile>
       <AdditionalLibraryDirectories>..\..\pub\external\lib;..\..\pub\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\src\TWAINDS.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -241,11 +244,13 @@ copy "$(ProjectDir)\..\..\pub\external\bin\FreeImagex64.dll" "$(ProjectDir)\..\p
     <ClCompile Include="..\src\CTWAINDS_FreeImage.cpp" />
     <ClCompile Include="..\src\CTWAINDS_Sample1.cpp" />
     <ClCompile Include="..\src\DSMInterface.cpp" />
+    <ClCompile Include="..\src\GetImageFromSystem.cpp" />
     <ClCompile Include="..\src\TWAINContainer.cpp" />
     <ClCompile Include="..\src\TWAINContainerBool.cpp" />
     <ClCompile Include="..\src\TWAINContainerFix32.cpp" />
     <ClCompile Include="..\src\TWAINContainerFrame.cpp" />
     <ClCompile Include="..\src\TWAINContainerInt.cpp" />
+    <ClCompile Include="..\src\WaitWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\Common.h" />
@@ -257,11 +262,13 @@ copy "$(ProjectDir)\..\..\pub\external\bin\FreeImagex64.dll" "$(ProjectDir)\..\p
     <ClInclude Include="..\src\CTWAINDS_FreeImage.h" />
     <ClInclude Include="..\src\CTWAINDS_Sample1.h" />
     <ClInclude Include="..\src\DSMInterface.h" />
+    <ClInclude Include="..\src\GetImageFromSystem.h" />
     <ClInclude Include="..\src\TWAINContainer.h" />
     <ClInclude Include="..\src\TWAINContainerBool.h" />
     <ClInclude Include="..\src\TWAINContainerFix32.h" />
     <ClInclude Include="..\src\TWAINContainerFrame.h" />
     <ClInclude Include="..\src\TWAINContainerInt.h" />
+    <ClInclude Include="..\src\WaitWindow.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

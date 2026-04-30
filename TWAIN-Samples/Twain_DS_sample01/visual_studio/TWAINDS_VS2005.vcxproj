@@ -128,7 +128,7 @@ if NOT EXIST c:\windows\twain_32\sample2 mkdir c:\windows\twain_32\sample2
       <BaseAddress />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
-	  <!-->PostBuildEvent>
+    <!-->PostBuildEvent>
       <Message>Copy Data Source to windows\twain_32\sample2 dir</Message>
       <Command>copy "$(TargetPath)"  c:\windows\twain_32\sample2
 copy "$(ProjectDir)\..\..\pub\external\bin\FreeImage.dll" c:\windows\twain_32\sample2
@@ -199,7 +199,7 @@ if NOT EXIST c:\windows\twain_64\sample2 mkdir c:\windows\twain_64\sample2
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
-	  <!-->PostBuildEvent>
+    <!-->PostBuildEvent>
       <Message>Copy datasource to windows\twain_64\sample2 dir</Message>
       <Command>copy "$(TargetPath)"  c:\windows\twain_64\sample2
 copy "$(ProjectDir)\..\..\pub\external\bin\FreeImagedx64.dll" c:\windows\twain_64\sample2
@@ -255,6 +255,7 @@ copy "$(ProjectDir)\..\..\pub\external\bin\FreeImagex64.dll" "$(ProjectDir)\..\p
     <ClCompile Include="..\src\TWAINContainerFix32.cpp" />
     <ClCompile Include="..\src\TWAINContainerFrame.cpp" />
     <ClCompile Include="..\src\TWAINContainerInt.cpp" />
+    <ClCompile Include="WaitWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\Common.h" />
@@ -271,8 +272,9 @@ copy "$(ProjectDir)\..\..\pub\external\bin\FreeImagex64.dll" "$(ProjectDir)\..\p
     <ClInclude Include="..\src\TWAINContainerFix32.h" />
     <ClInclude Include="..\src\TWAINContainerFrame.h" />
     <ClInclude Include="..\src\TWAINContainerInt.h" />
-    <ClInclude Include="GetImagemFromSystem.h" />
+    <ClInclude Include="GetImageFromSystem.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="WaitWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TWAINDS_GUI.rc" />

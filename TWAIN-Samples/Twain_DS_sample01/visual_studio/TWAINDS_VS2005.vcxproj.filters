@@ -54,6 +54,9 @@
     <ClCompile Include="..\src\TWAINContainerInt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WaitWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\Common.h">
@@ -101,7 +104,10 @@
     <ClInclude Include="..\src\TWAINContainerInt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GetImagemFromSystem.h">
+    <ClInclude Include="GetImageFromSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WaitWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
