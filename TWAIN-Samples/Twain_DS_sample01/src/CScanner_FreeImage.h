@@ -42,7 +42,7 @@
 #include "Common.h"
 #include "FreeImage.h"
 #include "twain.h"
-#include "GetImagemFromSystem.h"
+#include "GetImageFromSystem.h"
 
 /**
 * This is a virtual scanner.  The virtual scanner is used by the data source 
